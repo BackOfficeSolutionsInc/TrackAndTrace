@@ -7,6 +7,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Models.Payments;
+using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace RadialReview.Controllers {
             public int MeetingCount { get; set; }
             public AccountType AccountType { get; set; }
             public List<OrganizationFlag> Flags { get; set; }
-
+            public DateTime? LastLogin { get;  set; }
         }
 
 
@@ -39,6 +40,8 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.Radial)]
         public ActionResult Close(AccountType accountType=AccountType.Demo) {
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+
             var output = new List<CloseVM>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -63,10 +66,18 @@ namespace RadialReview.Controllers {
                                     .Where(x => x.DeleteTime == null && orgAlias.AccountType == accountType)
                                     .Future();
 
+                    var maxLoginQ = s.QueryOver<UserLookup>()
+                                    .JoinAlias(x => x._Organization, () => orgAlias)
+                                    .Where(x => x.DeleteTime == null && orgAlias.AccountType == accountType)
+                                    .SelectList(list =>list.SelectGroup(x=>x.OrganizationId).SelectMax(x=>x.LastLogin))
+                                    .Future<object[]>();
+
                     var meetings = meetingsQ.Select(x => new {
                         Duration = ((DateTime)x[1] - (DateTime)x[0]),
                         OrgId = (long)x[2]
                     }).ToList();
+
+                    var lastLogin = maxLoginQ.Select(x => new { OrgId = (long)x[0], LastLogin = (DateTime?)x[1] }).ToDictionary(x => x.OrgId, x => x.LastLogin);
 
                     var flagsLu = flagsQ.GroupBy(x => x.OrganizationId).ToDictionary(x => x.Key, x => x.ToList());
                     var orgMeetingCount = meetings.Where(x => x.Duration > TimeSpan.FromMinutes(30))
@@ -87,8 +98,9 @@ namespace RadialReview.Controllers {
                             Expiration = trialEnd,
                             MeetingCount = orgMeetingCount.GetOrDefault(org.Id, 0),
                             Id = org.Id,
-                            Flags = flagsLu.GetOrDefault(org.Id,new List<OrganizationFlag>()),
-                            AccountType = org.AccountType
+                            Flags = flagsLu.GetOrDefault(org.Id, new List<OrganizationFlag>()),
+                            AccountType = org.AccountType,
+                            LastLogin = lastLogin.GetOrDefault(org.Id, null)
                         };
                         output.Add(o);
 

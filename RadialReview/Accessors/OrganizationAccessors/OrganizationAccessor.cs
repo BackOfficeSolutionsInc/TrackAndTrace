@@ -1457,9 +1457,9 @@ namespace RadialReview.Accessors {
         }
 
         public static async Task AddFlag(ISession s, PermissionsUtility perms, long orgId, OrganizationFlagType type) {
-            perms.ViewOrganization(orgId);
+            perms.Or(x=>x.ViewOrganization(orgId),x=>x.RadialAdmin(true));
             var any = s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == orgId && type == x.FlagType && x.DeleteTime == null).RowCount();
-            var user = s.Get<OrganizationModel>(orgId);
+            //var user = s.Get<OrganizationModel>(orgId);
             if (any == 0) {
                 s.Save(new OrganizationFlag() {
                     OrganizationId = orgId,
@@ -1470,16 +1470,16 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static async Task RemoveFlag(ISession s, PermissionsUtility perms, long userId, OrganizationFlagType type) {
-            perms.ViewOrganization(userId);
-            var any = s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == userId && type == x.FlagType && x.DeleteTime == null).List().ToList();
-            var user = s.Get<UserOrganizationModel>(userId);
+        public static async Task RemoveFlag(ISession s, PermissionsUtility perms, long orgId, OrganizationFlagType type) {
+            perms.Or(x => x.ViewOrganization(orgId), x => x.RadialAdmin(true));
+            var any = s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == orgId && type == x.FlagType && x.DeleteTime == null).List().ToList();
+            //var org = s.Get<UserOrganizationModel>(orgId);
             if (any.Count > 0) {
                 foreach (var a in any) {
                     a.DeleteTime = DateTime.UtcNow;
                     s.Update(a);
                 }
-                await HooksRegistry.Each<IOrganizationFlagHook>((ses, x) => x.RemoveFlag(ses, userId, type));
+                await HooksRegistry.Each<IOrganizationFlagHook>((ses, x) => x.RemoveFlag(ses, orgId, type));
             }
         }
     }

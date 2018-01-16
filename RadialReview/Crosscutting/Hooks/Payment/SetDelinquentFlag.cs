@@ -23,21 +23,23 @@ namespace RadialReview.Crosscutting.Hooks.Payment {
             await OrganizationAccessor.AddFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
         }
 
-        private async Task AreAllPaid(ISession s, long orgId) {
+        public async Task<bool> UpdateFlag(ISession s, long orgId) {
             var allInvoice = s.QueryOver<InvoiceModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List().ToList();
             if (allInvoice.All(x => !x.AnythingDue())) {
                 await OrganizationAccessor.RemoveFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
+                return false;
             }else {             
                 await OrganizationAccessor.AddFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
+                return true;
             }
         }
 
         public async Task SuccessfulCharge(ISession s, PaymentSpringsToken token) {
-            await AreAllPaid(s, token.OrganizationId);
+            await UpdateFlag(s, token.OrganizationId);
         }
 
         public async Task UpdateInvoice(ISession s, InvoiceModel invoice, IInvoiceUpdates updates) {
-            await AreAllPaid(s, invoice.Organization.Id);
+            await UpdateFlag(s, invoice.Organization.Id);
         }
 
         public bool CanRunRemotely() {

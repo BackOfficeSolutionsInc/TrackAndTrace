@@ -34,6 +34,8 @@ using RadialReview.Model.Enums;
 using System.Linq.Expressions;
 using RadialReview.Reflection;
 using RadialReview.Controllers.AbstractController;
+using RadialReview.Variables;
+using RadialReview.Crosscutting.Hooks.Payment;
 
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -2000,150 +2002,150 @@ namespace RadialReview.Controllers {
 
         #endregion
 
-		[Access(AccessLevel.Radial)]
-		public async Task<ActionResult> RevertScores() {
-			var count = 0;
-			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
-				using (var tx = s.BeginTransaction()) {
-					
-					var scores = s.QueryOver<ScoreModel>()
-						.Where(x => x.DeleteTime == new DateTime(2017, 11, 9))
-						.List().ToList();
+        [Access(AccessLevel.Radial)]
+        public async Task<ActionResult> RevertScores() {
+            var count = 0;
+            using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+                using (var tx = s.BeginTransaction()) {
 
-					foreach (var score in scores) {
-						score.DeleteTime = null;
-						s.Update(score);
-						count += 1;
-					}
+                    var scores = s.QueryOver<ScoreModel>()
+                        .Where(x => x.DeleteTime == new DateTime(2017, 11, 9))
+                        .List().ToList();
 
-					tx.Commit();
-					//s.Flush();
-				}
-			}
-			return Content("count:" + count);
-		}
+                    foreach (var score in scores) {
+                        score.DeleteTime = null;
+                        s.Update(score);
+                        count += 1;
+                    }
 
-		public ScoreModel DecideOnScores(List<ScoreModel> scores, TimeSpan threshold) {
+                    tx.Commit();
+                    //s.Flush();
+                }
+            }
+            return Content("count:" + count);
+        }
 
-			var ordered = scores.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
+        public ScoreModel DecideOnScores(List<ScoreModel> scores, TimeSpan threshold) {
 
-			var prev = DateTime.MinValue;
-			var best = ordered.FirstOrDefault();
-						
+            var ordered = scores.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
 
-			foreach (var o in ordered) {
-				if (o.DateEntered == null)
-					break;
-				if (o.DateEntered - prev < threshold) {
-					if (best.Measured < o.Measured) {
-						best = o;
-					}
-				}
-
-				prev = o.DateEntered.Value;
-			}
-
-			return best;
-
-			//var grouped = new List<List<ScoreModel>>();
-
-			//var currentGroup = new List<ScoreModel>();
-			//var currentGroupMaxTime = DateTime.MinValue;
-			//ScoreModel currentGroupBest = null;
-
-			//var prevTime = DateTime.MinValue;
-
-			//ScoreModel finalScore = null;
-			//var finalTime = DateTime.MinValue;
-
-			//foreach (var cur in ordered) {
-			//	var myEntryTime = cur.DateEntered ?? DateTime.MinValue;
-
-			//	currentGroupBest = currentGroupBest ?? cur;
-			//	currentGroup.Add(cur);
-
-			//	if (myEntryTime > currentGroupMaxTime) {
-			//		currentGroupMaxTime = myEntryTime;
-			//	}				
-
-			//	if (Math.Abs(myEntryTime.Ticks - prevTime.Ticks) > threshold.Ticks) {
-			//		if (currentGroupMaxTime
-
-			//		//reset;
-			//		currentGroup = new List<ScoreModel>();
-			//		currentGroupMaxTime = DateTime.MinValue;
-			//		currentGroupBest = null;
-			//	}
-			//	prevTime = myEntryTime;
-			//}
-			//return finalScore;
-		}
-		
-
-		[Access(AccessLevel.Radial)]
-		public async Task<ActionResult> FixScores(Divisor d = null) {
-			return await BreakUpAction("FixScores", d, dd => {
-
-				using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
-					using (var tx = s.BeginTransaction()) {
-
-						var scores = s.QueryOver<ScoreModel>()
-							.Where(Mod<ScoreModel>(x => x.MeasurableId, dd))
-							.Where(x => x.DeleteTime == null)
-							.List().ToList();
-
-						foreach (var measurableWeekGroup in scores.GroupBy(x => Tuple.Create(x.ForWeek, x.MeasurableId))) {
-							if (measurableWeekGroup.Count() > 1) {
-								var ordered = measurableWeekGroup.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
-								var best = DecideOnScores(ordered.ToList(), TimeSpan.FromSeconds(6));
+            var prev = DateTime.MinValue;
+            var best = ordered.FirstOrDefault();
 
 
-								foreach (var mw in ordered) {
-									if (mw.Id == best.Id)
-										continue;
+            foreach (var o in ordered) {
+                if (o.DateEntered == null)
+                    break;
+                if (o.DateEntered - prev < threshold) {
+                    if (best.Measured < o.Measured) {
+                        best = o;
+                    }
+                }
 
-									mw.DeleteTime = new DateTime(2017, 11, 10);
-									s.Update(mw);
-									dd.updates += 1;
-								}
-							}
-						}
-						tx.Commit();
-					}
-				}
-			});
+                prev = o.DateEntered.Value;
+            }
 
-		}
+            return best;
 
-		[Access(AccessLevel.Radial)]
-		public async Task<ActionResult> FixScoresOld(Divisor d = null) {
-			return await BreakUpAction("FixScores",d, dd => {
+            //var grouped = new List<List<ScoreModel>>();
 
-				using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
-					using (var tx = s.BeginTransaction()) {
+            //var currentGroup = new List<ScoreModel>();
+            //var currentGroupMaxTime = DateTime.MinValue;
+            //ScoreModel currentGroupBest = null;
 
-						var scores = s.QueryOver<ScoreModel>()
-							.Where(Mod<ScoreModel>(x => x.MeasurableId, dd))
-							.Where(x => x.DeleteTime == null)
-							.List().ToList();
+            //var prevTime = DateTime.MinValue;
 
-						foreach (var measurableWeekGroup in scores.GroupBy(x => Tuple.Create(x.ForWeek, x.MeasurableId))) {
-							if (measurableWeekGroup.Count() > 1) {
-								var ordered  = measurableWeekGroup.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
-								
-								foreach (var mw in ordered.Skip(1)) {
-									mw.DeleteTime = new DateTime(2017,11,7);
-									s.Update(mw);
-									dd.updates += 1;
-								}
-							}
-						}
-						tx.Commit();
-					}
-				}
-			});
+            //ScoreModel finalScore = null;
+            //var finalTime = DateTime.MinValue;
 
-		}
+            //foreach (var cur in ordered) {
+            //	var myEntryTime = cur.DateEntered ?? DateTime.MinValue;
+
+            //	currentGroupBest = currentGroupBest ?? cur;
+            //	currentGroup.Add(cur);
+
+            //	if (myEntryTime > currentGroupMaxTime) {
+            //		currentGroupMaxTime = myEntryTime;
+            //	}				
+
+            //	if (Math.Abs(myEntryTime.Ticks - prevTime.Ticks) > threshold.Ticks) {
+            //		if (currentGroupMaxTime
+
+            //		//reset;
+            //		currentGroup = new List<ScoreModel>();
+            //		currentGroupMaxTime = DateTime.MinValue;
+            //		currentGroupBest = null;
+            //	}
+            //	prevTime = myEntryTime;
+            //}
+            //return finalScore;
+        }
+
+
+        [Access(AccessLevel.Radial)]
+        public async Task<ActionResult> FixScores(Divisor d = null) {
+            return await BreakUpAction("FixScores", d, dd => {
+
+                using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+                    using (var tx = s.BeginTransaction()) {
+
+                        var scores = s.QueryOver<ScoreModel>()
+                            .Where(Mod<ScoreModel>(x => x.MeasurableId, dd))
+                            .Where(x => x.DeleteTime == null)
+                            .List().ToList();
+
+                        foreach (var measurableWeekGroup in scores.GroupBy(x => Tuple.Create(x.ForWeek, x.MeasurableId))) {
+                            if (measurableWeekGroup.Count() > 1) {
+                                var ordered = measurableWeekGroup.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
+                                var best = DecideOnScores(ordered.ToList(), TimeSpan.FromSeconds(6));
+
+
+                                foreach (var mw in ordered) {
+                                    if (mw.Id == best.Id)
+                                        continue;
+
+                                    mw.DeleteTime = new DateTime(2017, 11, 10);
+                                    s.Update(mw);
+                                    dd.updates += 1;
+                                }
+                            }
+                        }
+                        tx.Commit();
+                    }
+                }
+            });
+
+        }
+
+        [Access(AccessLevel.Radial)]
+        public async Task<ActionResult> FixScoresOld(Divisor d = null) {
+            return await BreakUpAction("FixScores", d, dd => {
+
+                using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+                    using (var tx = s.BeginTransaction()) {
+
+                        var scores = s.QueryOver<ScoreModel>()
+                            .Where(Mod<ScoreModel>(x => x.MeasurableId, dd))
+                            .Where(x => x.DeleteTime == null)
+                            .List().ToList();
+
+                        foreach (var measurableWeekGroup in scores.GroupBy(x => Tuple.Create(x.ForWeek, x.MeasurableId))) {
+                            if (measurableWeekGroup.Count() > 1) {
+                                var ordered = measurableWeekGroup.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
+
+                                foreach (var mw in ordered.Skip(1)) {
+                                    mw.DeleteTime = new DateTime(2017, 11, 7);
+                                    s.Update(mw);
+                                    dd.updates += 1;
+                                }
+                            }
+                        }
+                        tx.Commit();
+                    }
+                }
+            });
+
+        }
 
 
         [Access(Controllers.AccessLevel.Radial)]
@@ -2153,7 +2155,7 @@ namespace RadialReview.Controllers {
             var pageCount = 0;
             using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var _rl = s.QueryOver<RockModel>().List().ToDictionary(x=>x.Id,x=>x);
+                    var _rl = s.QueryOver<RockModel>().List().ToDictionary(x => x.Id, x => x);
                     var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().List().ToList();
                     foreach (var rr in rocks) {
                         var rock = _rl[rr.ForRock.Id];
@@ -2181,7 +2183,7 @@ namespace RadialReview.Controllers {
             var createTime = new DateTime(2017, 11, 22);
             using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var _VtoModel = s.QueryOver<VtoModel>().List().ToList();                   
+                    var _VtoModel = s.QueryOver<VtoModel>().List().ToList();
 
                     var _VtoItemString = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques).List().ToList();
 
@@ -2207,7 +2209,7 @@ namespace RadialReview.Controllers {
                             b++;
 
                             s.Update(item);
-    }
+                        }
                     }
 
                     tx.Commit();
@@ -2254,7 +2256,9 @@ namespace RadialReview.Controllers {
             var pageCount = 0;
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var invoices = s.QueryOver<InvoiceModel>().Where(x=>x.PaidTime==null && x.DeleteTime==null).List().ToList();
+                    var invoices = s.QueryOver<InvoiceModel>().Where(x => x.PaidTime == null && x.DeleteTime == null).List().ToList();
+
+                    s.GetSettingOrDefault("M01_09_2018", true);
 
                     var forgive = new[] {
                         AccountType.Implementer,
@@ -2263,12 +2267,12 @@ namespace RadialReview.Controllers {
                         AccountType.Other,
                         AccountType.Coach,
                         AccountType.Cancelled,
-                        AccountType.UserGroup,                        
+                        AccountType.UserGroup,
                     };
-
+                    //Keeps all trial, and paying invoices
                     foreach (var i in invoices) {
                         if (forgive.Contains(i.Organization.AccountType)) {
-                            i.DeleteTime = new DateTime(2018, 1, 9);
+                            i.DeleteTime = new DateTime(2017, 1, 9);
                             a += 1;
                         }
                     }
@@ -2280,6 +2284,32 @@ namespace RadialReview.Controllers {
             return "Updated:" + a;
         }
 
+        [Access(Controllers.AccessLevel.Radial)]
+        public async Task<string> M01_16_2018() {
+            var a = 0;
+            var b = 0;
+            var pageCount = 0;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var orgs = s.QueryOver<OrganizationModel>().Select(Xls => Xls.Id).List<long>().ToList();
+
+                    s.GetSettingOrDefault("M01_16_2018", true);
+
+                    var f = new SetDelinquentFlag();
+
+                    foreach (var i in orgs) {
+                        var has = await f.UpdateFlag(s, i);
+                        if (has)
+                            a += 1;
+                        b += 1;
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return "Updated: " + a +"/"+b;
+        }
 
     }
 }

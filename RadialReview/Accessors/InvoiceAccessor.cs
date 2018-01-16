@@ -52,7 +52,7 @@ namespace RadialReview.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
-                    perms.RadialAdmin();
+                    perms.RadialAdmin(true);
                     var invoice = s.Get<InvoiceModel>(invoiceId);
                     if (invoice.PaidTime != null)
                         throw new PermissionsException("Invoice already paid");
@@ -79,7 +79,7 @@ namespace RadialReview.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
-                    perms.RadialAdmin();
+                    perms.RadialAdmin(true);
                     var invoice = s.Get<InvoiceModel>(invoiceId);
                     //automatically paid
                     if (invoice.PaidTime!=null && invoice.ManuallyMarkedPaidBy==null)

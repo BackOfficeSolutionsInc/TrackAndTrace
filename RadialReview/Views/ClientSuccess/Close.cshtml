@@ -5,9 +5,10 @@
 <div id="table"></div>
 @using (Html.BeginStyles()) {
     <style>
-        tr{
-            vertical-align:middle;
+        tr {
+            vertical-align: middle;
         }
+
         .date-column {
             min-width: 122px;
         }
@@ -16,43 +17,79 @@
             /*color: darkgreen;
             background-color: lightgreen;*/
         }
-        
+
         .past-date {
             color: darkblue;
             background-color: lightblue;
         }
+
         .enough-meetings {
             color: darkblue;
             background-color: lightblue;
-            border-bottom:1px solid white;
+            border-bottom: 1px solid white;
             padding-top: 14px !important;
         }
 
         .w120 {
-            min-width:120px;
+            min-width: 120px;
         }
 
         .flag[data-enabled='true'] {
             color: #333;
-		}
-
-		.flag {
-            padding-left:4px;
-            padding-right:4px;
-			color: lightgray;
-            cursor:pointer;
-            border-right:solid lightgray 1px;
-		}
-        .flag:last-of-type{
-            border-right:none;
         }
 
+        .flag {
+            padding-left: 4px;
+            padding-right: 4px;
+            color: lightgray;
+            cursor: pointer;
+            border-right: solid lightgray 1px;
+        }
+
+            .flag:last-of-type {
+                border-right: none;
+            }
+
+        .days {
+            padding: 4px 8px;
+            top: 7px;
+            position: relative;
+        }
+
+        .days-0,
+        .days-1 {
+            /*color: white;*/
+            color: darkgreen;
+        }
+
+        .days-7 {
+            color: green;
+            background-color: lightgoldenrodyellow;
+        }
+
+        .days-14 {
+            color: #ef7622;
+            background-color: #ffd68a;
+        }
+
+        .days-28 {
+            background-color: lightcoral;
+            color: white;
+        }
     </style>
     <link rel="~/Content/SnackbarAlerts.css" />
 
 }
 @using (Html.BeginScripts()) {
     <script>
+        //return "green";
+        //}
+        //return "lightgreen";
+        //}
+        //return "#ef7622";
+        //}
+        //return "red";
+        //})??"darkred")">
 
         var data = @Html.ArrayToString(Model);
 
@@ -64,24 +101,42 @@
             //},
             cells: [
 				{ name: "Id", contents: function (r) { return r.Id; } },
-				{ name: "Name", contents: function (r) { return "<a href='/Organization/Which/"+r.Id+"'>"+r.Name+"</a>"; }, classes: "fullWidth"  },
-				{ name: "Expiration", contents: function (r) {
-				    //Html.EditorFor(x => x.PaymentPlan.FreeUntil, new { startDate = Html.Organization().ConvertFromUTC(DateTime.UtcNow) });
-				    setTimeout(function(){
-				        var evt = createDatepicker(".expire-"+r.Id,r.Expiration,"expire-"+r.Id,r.Id,{ startDate:new Date() });
-				        $(evt).on("change",function(d){
-				            $.ajax({
-				                method:"get",
-				                url:"/payment/FreeUntil/"+r.Id+"?date=" + $(this).val()
-				            });
-				        });
-				    },1);
-				    return "<span class='hidden'>"+r.Expiration+"</span><span class='expire-"+r.Id+"'></span>";
-				    //return r.Expiration;
-				} , classes:"date-column"},
+				{ name: "Name", contents: function (r) { return "<a target='_blank' href='/Organization/Which/"+r.Id+"'>"+r.Name+"</a>"; }, classes: "fullWidth"  },
+				{ name: "LastLogin",classes:"w120",contents:
+                    function(r){
+                        var date = Time.parseJsonDate(r.LastLogin);
+                        if (date==null)
+                            return "never";
+                        var daysAgo = (new Date() - date)/(24 * 60 *60 *1000);
+
+
+                        var days = [0,1,7,14,28];
+                        //var colors = "color:darkgreen","color:green","color:lightgreen","color:#ef7622",""];
+                        var css = "days";
+                        for(var i=0;i<days.length;i++){
+                            if (daysAgo>days[i])
+                                css="days days-"+days[i];
+                        }
+                        return "<span class='"+css+"'>"+getFormattedDate(date)+"</span>";
+                    }
+				},
+                { name: "Expiration", contents: function (r) {
+                    //Html.EditorFor(x => x.PaymentPlan.FreeUntil, new { startDate = Html.Organization().ConvertFromUTC(DateTime.UtcNow) });
+                    setTimeout(function(){
+                        var evt = createDatepicker(".expire-"+r.Id,r.Expiration,"expire-"+r.Id,r.Id,{ startDate:new Date() });
+                        $(evt).on("change",function(d){
+                            $.ajax({
+                                method:"get",
+                                url:"/payment/FreeUntil/"+r.Id+"?date=" + $(this).val()
+                            });
+                        });
+                    },1);
+                    return "<span class='hidden'>"+r.Expiration+"</span><span class='expire-"+r.Id+"'></span>";
+                    //return r.Expiration;
+                } , classes:"date-column"},
                 {name : "Status", contents:function(r){
                     var options =@Html.ArrayToString(Enum.GetValues(typeof(RadialReview.Models.Enums.AccountType)).Cast<RadialReview.Models.Enums.AccountType>().Select(x => new { value = (int)x, html = "<option value='" + x + "'>" + x.GetDisplayName() + "</option>" }).ToList());
-                    
+
                     var builder = $("<select>");
                     options.map(function(x){
                         var o = $(x.html);
@@ -89,9 +144,9 @@
                             o.attr("selected","true");
 
 
-                        builder.append(o); 
+                        builder.append(o);
                     });
-                    
+
                     var obj = $(builder);
                     var oid = r.Id;
                     $(obj).on("change",function(){
@@ -100,11 +155,11 @@
                     return obj;
                 }},
                 { name: "Meetings", contents: function (r) { return r.MeetingCount; } ,classes:function(r){
-                        var b ="alignCenter";
-                        if (r.MeetingCount>=4)
-                            b+=" enough-meetings";                   
-                        return b;
-                    }
+                    var b ="alignCenter";
+                    if (r.MeetingCount>=4)
+                        b+=" enough-meetings";
+                    return b;
+                }
                 },
                 {
                     name:"", contents: function(r){
@@ -119,7 +174,6 @@
                         var container = $("<div/>");
                         options.map(function(x){
                             var enabled = Enumerable.from(r.Flags).any(function(y){
-                                debugger;
                                 return y.FlagType==x.value;
                             });
                             var o = $("<span class='flag' data-id='"+r.Id+"' data-type='"+x.value+"' data-enabled='"+enabled+"'>"+x.name+"</span>");
@@ -142,7 +196,7 @@
             ]
         });
 
-        
+
         function setFlag(self,orgId){
 
             var type = $(self).data("type");
