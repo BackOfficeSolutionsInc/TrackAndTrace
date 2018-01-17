@@ -39,6 +39,7 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.UserOrganization)]
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
         public ActionResult List(long? id = null) {
             var orgid = id ?? GetUser().Organization.Id;
             var list = InvoiceAccessor.GetInvoicesForOrganization(GetUser(), orgid);
@@ -53,6 +54,7 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.Radial)]
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
         public ActionResult Outstanding() {
             var o = InvoiceAccessor.AllOutstanding_Unsafe(GetUser());
             ViewBag.ShowOrganization = true;
