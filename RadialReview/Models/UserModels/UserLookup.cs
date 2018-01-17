@@ -81,7 +81,7 @@ namespace RadialReview.Models.UserModels
 #pragma warning restore CS0618 // Type or member is obsolete
 				Map(x => x.UserId).Index("UserLookup_UserId_IDX");
                 // References(x => x._User).Column("UserId").LazyLoad().ReadOnly();
-                References(x => x._Organization).Column("OrganizationId").ForeignKey("none").LazyLoad().ReadOnly();
+                References(x => x._Organization).Column("OrganizationId").ForeignKey("none").Nullable().LazyLoad().ReadOnly();
                 Map(x => x.AttachTime);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
