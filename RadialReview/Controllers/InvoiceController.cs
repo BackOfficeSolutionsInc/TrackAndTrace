@@ -39,7 +39,7 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.UserOrganization)]
-        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
+        //[OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
         public ActionResult List(long? id = null) {
             var orgid = id ?? GetUser().Organization.Id;
             var list = InvoiceAccessor.GetInvoicesForOrganization(GetUser(), orgid);

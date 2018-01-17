@@ -15,7 +15,8 @@ namespace RadialReview.Controllers
         public ActionResult Index(String message = null, String redirectUrl = null) {
             ViewBag.Message = message;
             ViewBag.RedirectUrl = redirectUrl;
-            return View();
+            var ex = HttpException.CreateFromLastError("error");            
+            return View(ex);
         }
 
         [Access(AccessLevel.Any)]

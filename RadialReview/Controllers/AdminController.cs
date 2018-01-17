@@ -694,7 +694,7 @@ namespace RadialReview.Controllers {
                     var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
 
                     var allUserNames = s.QueryOver<UserModel>()
-                        .Select(x => x.Email, x => x.FirstName, x => x.LastName)
+                        .Select(x => x.UserName, x => x.FirstName, x => x.LastName)
                         .Future<object[]>()
                         .Select(x => new {
                             Email = (string)x[0],
@@ -787,7 +787,7 @@ namespace RadialReview.Controllers {
                             continue;
                         }
                         var fn = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.FN) ?? o.UserName.NotNull(x => x.SubstringBefore(" ")) ?? o.UserName;
-                        var ln = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.FN) ?? o.UserName.NotNull(x => x.SubstringAfter(" ")) ?? o.UserName;
+                        var ln = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.LN) ?? o.UserName.NotNull(x => x.SubstringAfter(" ")) ?? o.UserName;
 
                         csv.Add("" + o.UserId, "UserName", o.UserName);
                         csv.Add("" + o.UserId, "FirstName", fn);
