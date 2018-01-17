@@ -9,8 +9,7 @@ namespace RadialReview {
     public class RouteConfig {
         public static void RegisterRoutes(RouteCollection routes) {
             //routes.IgnoreRoute("Content/AngularTemplates/{file}.html");
-
-
+            
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(name: "url",url: "u/{id}",defaults: new { controller = "Url", action = "Index", id = "" });
