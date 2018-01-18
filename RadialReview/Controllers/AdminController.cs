@@ -36,6 +36,7 @@ using System.Web.Mvc;
 using NHibernate.Criterion;
 using static RadialReview.Controllers.AbstractController.BaseExpensiveController;
 using RadialReview.Controllers.AbstractController;
+using RadialReview.Crosscutting.Flags;
 
 namespace RadialReview.Controllers {
 
@@ -615,9 +616,11 @@ namespace RadialReview.Controllers {
             public long UserId { get; set; }
             public long OrgId { get; set; }
             public DateTime UserCreateTime { get; set; }
+            public DateTime? UserDeleteTime { get; set; }
             public string AccountType { get; set; }
             public DateTime? OrgCreateTime { get; set; }
-            public DateTime? LastLogin { get; internal set; }
+            public DateTime? LastLogin { get; set; }
+            //public bool Blacklist { get; set; }
         }
         [Access(AccessLevel.Radial)]
         public ActionResult AllUsers(long id) {
@@ -694,12 +697,13 @@ namespace RadialReview.Controllers {
                     var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
 
                     var allUserNames = s.QueryOver<UserModel>()
-                        .Select(x => x.UserName, x => x.FirstName, x => x.LastName)
+                        .Select(x => x.UserName, x => x.FirstName, x => x.LastName, x=>x.DeleteTime)
                         .Future<object[]>()
                         .Select(x => new {
                             Email = (string)x[0],
                             FN = (string)x[1],
-                            LN = (string)x[2]
+                            LN = (string)x[2],
+                            Deleted = ((DateTime?)x[3])!=null
                         });
 
 
@@ -709,6 +713,8 @@ namespace RadialReview.Controllers {
                         x => x.ParentNodeId,
                         x => x.UserId
                     ).Future<object[]>();
+                    var orgflagsF = s.QueryOver<OrganizationFlag>().Where(x => x.DeleteTime == null).Future();
+                    var userFlagsF = s.QueryOver<UserRole>().Where(x => x.DeleteTime == null).Future();
 
                     var allUsers = allUsersF.ToList();
                     var allLocalizedStrings = localizedStringF.Select(x => new {
@@ -723,9 +729,10 @@ namespace RadialReview.Controllers {
                         DeleteTime = (DateTime?)x[2],
                         CreateTime = (DateTime)x[3],
                         AccountType = (AccountType)x[4],
+                        
                     }).ToDictionary(x => x.Id, x => x);
 
-
+                    
                     var items = allUsers.Select(x => {
                         var org = allOrgs.GetOrDefault(x.OrganizationId, null);
                         if (org.DeleteTime != null)
@@ -739,8 +746,10 @@ namespace RadialReview.Controllers {
                             AccountType = "" + org.NotNull(y => y.AccountType),
                             OrgCreateTime = org.NotNull(y => y.CreateTime),
                             UserCreateTime = x.CreateTime,
+                            UserDeleteTime = x.DeleteTime,
                             LastLogin = x.LastLogin,
-
+                            
+                            //Deleted = x.DeleteTime!=null  || org.DeleteTime !=null || org.AccountType == AccountType.Cancelled
                         };
                     }).Where(x => x != null).ToList();
 
@@ -778,7 +787,8 @@ namespace RadialReview.Controllers {
                     }
 
                     var nameLookup = allUserNames.ToList().Distinct(x => x.Email).ToDictionary(x => x.Email.ToLower(), x => x);
-
+                    var orgFlags = orgflagsF.GroupBy(x => x.OrganizationId).ToDictionary(x => x.Key, x => x.ToList());
+                    var userFlags = userFlagsF.GroupBy(x => x.UserId).ToDictionary(x => x.Key, x => x.ToList());
 
                     var csv = new Csv();
                     csv.Title = "UserId";
@@ -789,19 +799,32 @@ namespace RadialReview.Controllers {
                         var fn = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.FN) ?? o.UserName.NotNull(x => x.SubstringBefore(" ")) ?? o.UserName;
                         var ln = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.LN) ?? o.UserName.NotNull(x => x.SubstringAfter(" ")) ?? o.UserName;
 
+                        var of = orgFlags.GetOrAddDefault(o.OrgId, (x) => new List<OrganizationFlag>()).Select(x => x.FlagType).ToArray();
+                        var uf = userFlags.GetOrAddDefault(o.UserId, (x) => new List<UserRole>()).Select(x => x.RoleType).ToArray();
+
+                        //csv.Add("" + o.UserId, "UserName", o.UserName);
                         csv.Add("" + o.UserId, "UserName", o.UserName);
                         csv.Add("" + o.UserId, "FirstName", fn);
                         csv.Add("" + o.UserId, "LastName", ln);
-                        //csv.Add("" + o.UserId, "UserName", o.UserName);
                         csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
                         csv.Add("" + o.UserId, "OrgName", o.OrgName);
                         csv.Add("" + o.UserId, "UserId", "" + o.UserId);
                         csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
                         csv.Add("" + o.UserId, "LastLogin", "" + o.LastLogin);
                         csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
+                        csv.Add("" + o.UserId, "UserDeleteTime", "" + o.UserDeleteTime);
                         csv.Add("" + o.UserId, "AccountType", o.AccountType);
                         csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
-                        csv.Add("" + o.UserId, "LeadershipTeam", "" + leadershipMembers[o.UserId]);
+                        csv.Add("" + o.UserId, "LeadershipTeam_Guess", "" + leadershipMembers[o.UserId]);
+                        csv.Add("" + o.UserId, "LeadershipTeam_ClientMarked", "" + uf.Any(x=>x == UserRoleType.LeadershipTeamMember));
+                        csv.Add("" + o.UserId, "UserType_AccountContact", "" + uf.Any(x=>x == UserRoleType.AccountContact));
+                        csv.Add("" + o.UserId, "UserType_Placeholder", "" + uf.Any(x=>x == UserRoleType.PlaceholderOnly));
+                        csv.Add("" + o.UserId, "Delinquent", "" + of.Any(x => x == OrganizationFlagType.Delinquent));
+                        csv.Add("" + o.UserId, "OrgFlags", string.Join("|", of));
+                        csv.Add("" + o.UserId, "UserFlags", string.Join("|", uf));
+                        csv.Add("" + o.UserId, "TT_Blacklist", "" + uf.Any(x => x == UserRoleType.EmailBlackList ));
+                        
+
                     }
 
                     /*First Name        
