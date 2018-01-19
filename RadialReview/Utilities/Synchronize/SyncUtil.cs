@@ -250,7 +250,12 @@ namespace RadialReview.Utilities.Synchronize {
                     if (found == null) {
                         //Didnt exists. Lets atomically create it
                         //LockMode.Upgrade prevents creating simultaniously 
-                        var createLock = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
+                        SyncLock createLock = null;
+                        try {
+                            createLock = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
+                        } catch (Exception e) {
+                            throw;
+                        }
                         if (createLock == null)
                             throw new Exception("CreateLock doesnt exist. Call ApplicationAccessor.EnsureExists()");
 
