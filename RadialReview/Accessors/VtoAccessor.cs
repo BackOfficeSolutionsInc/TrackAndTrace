@@ -82,16 +82,17 @@ namespace RadialReview.Accessors {
 		}
 
 		private static VtoModel GetOrganizationVTO(ISession s, PermissionsUtility perms, long orgId) {
-			perms.ViewOrganization(orgId);
-			var l10 = s.QueryOver<L10Recurrence>()
-				.Where(x => x.DeleteTime == null && x.OrganizationId == orgId && x.ShareVto == true)
-				.Take(1).SingleOrDefault();
+            var l10 = s.QueryOver<L10Recurrence>()
+                .Where(x => x.DeleteTime == null && x.OrganizationId == orgId && x.ShareVto == true)
+                .Take(1).SingleOrDefault();
 
-			if (l10 != null) {
-				return GetVTO(s, perms, l10.VtoId);
-			}
-			return null;
-		}
+            if (l10 != null)
+            {
+                perms.Or(x => x.ViewOrganization(orgId), x => x.ViewL10Recurrence(l10.Id));
+                return GetVTO(s, perms, l10.VtoId);
+            }
+            return null;
+        }
 
 		public static VtoModel GetVTO(ISession s, PermissionsUtility perms, long vtoId) {
 			perms.ViewVTO(vtoId);
