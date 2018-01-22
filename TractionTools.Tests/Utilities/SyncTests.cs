@@ -232,6 +232,42 @@ namespace TractionTools.Tests.Utilities {
         //}
 
         [TestMethod]
+        public async Task TestMutlipleSimultaniousAccessSync_SameId() {
+            using (HibernateSession.SetDatabaseEnv_TestOnly(Env.local_mysql)) {
+                var org = await OrgUtil.CreateOrganization();
+                var list = new List<Task<bool>>();
+                var id = DateTime.UtcNow.Ticks;
+                for (var i = 0; i < 100; i++) {
+                    var j = i;
+                    list.Add(Task.Run(() => {
+                        org.Manager.IncrementClientTimestamp();
+                        return SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateScore(id), async s => { await Task.Delay(0); },
+                            noSyncException:true);
+                    }));
+                }
+
+                await Task.WhenAll(list);
+            }
+
+        }
+
+        [TestMethod]
+        public async Task TestMutlipleSimultaniousAccessSync_DifferentId() {
+            using (HibernateSession.SetDatabaseEnv_TestOnly(Env.local_mysql)) {
+                var org = await OrgUtil.CreateOrganization();
+                var list = new List<Task<bool>>();
+                org.Manager.IncrementClientTimestamp();
+                for (var i = 0; i < 100; i++) {
+                    var j = i;
+                    list.Add(Task.Run(()=>SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateScore(1 + j), async s => { await Task.Delay(0); })));
+                }
+
+                await Task.WhenAll(list);
+            }
+
+        }
+
+        [TestMethod]
         public void TestDualOrderedList() {
 
             var list1 = new[] { "A", "B" };

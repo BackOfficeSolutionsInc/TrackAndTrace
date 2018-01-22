@@ -1028,6 +1028,13 @@ namespace RadialReview.Controllers {
 			} catch (Exception e) {
 
 			}
+            var gitRow = "<tr><td>Git:</td><td><i>failed</i></td></tr>";
+            try {
+                gitRow = "<tr><td>Git:</td><td>" + ThisAssembly.Git.Branch+" </td><td>" +ThisAssembly.Git.Sha+ "</td></tr>";
+            } catch(Exception e) {
+
+            }
+
 			DateTime? dbTime = null;
 			var now = DateTime.UtcNow;
 			double? diff = null;
@@ -1046,10 +1053,11 @@ namespace RadialReview.Controllers {
 			} catch (Exception e) {
 			}
 			var txt	 = "<table>";
-			txt		+= "<tr><td>Build Date: </td><td>"+ buildDate.ToString("U") + " </td><td> [version: "+ version.ToString() + "]</td></tr>";
-			txt		+= dbTimeRow;
 			txt		+= "<tr><td>Server Time:</td><td>" + now.ToString("U") +	  " </td><td> [ticks: "+now.Ticks+"]</td></tr>";
+			txt		+= "<tr><td>Build Date: </td><td>"+ buildDate.ToString("U") + " </td><td> [version: "+ version.ToString() + "]</td></tr>";
+            txt     += gitRow;
 			txt		+= serverRow;
+			txt		+= dbTimeRow;
 			txt		+= "</table>";
 
 			return Content(txt);
