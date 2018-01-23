@@ -1,6 +1,5 @@
-﻿
-var uploader = UploadSteps({
-	defaultData: { recurrenceId: window.recurrenceId, type: "Users", csv: false },
+﻿var settings = {
+    defaultData: { recurrenceId: window.recurrenceId, type: "Users", csv: false },
     uploadFileUrl: "/Upload/UploadRecurrenceFile",
     uploadSelectionUrl: "/Upload/ProcessUserSelection",
     confirmSelectionUrl: "/Upload/SubmitUsers",
@@ -18,7 +17,18 @@ var uploader = UploadSteps({
         //    uploader.addSelectionStep("Select Name (Do not select header)", validateName);
         //}
     }
-});
+};
+
+
+if (window.OrgUploader == true) {
+    debugger;
+    settings.defaultData.orgId = window.OrgId;
+    settings.uploadSelectionUrl = "/Upload/ProcessOrgUserSelection";
+    settings.confirmSelectionUrl = "/Upload/SubmitOrgUsers";
+    settings.uploadFileUrl = "/Upload/UploadOrgFile";
+}
+
+var uploader = UploadSteps(settings);
 
 function validateName(rect) {
     var allTrue = true;

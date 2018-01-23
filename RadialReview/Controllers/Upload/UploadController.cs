@@ -86,8 +86,7 @@ namespace RadialReview.Controllers {
         private static Dictionary<string, string> Backup = new Dictionary<string, string>();
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult L10(string id = null, long recurrence = 0)
-        {
+        public ActionResult L10(string id = null, long recurrence = 0) {
             if (string.IsNullOrWhiteSpace(id)) {
                 var recurs = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false);
                 return View(recurs);
@@ -113,12 +112,42 @@ namespace RadialReview.Controllers {
                 "<p>If uploading a .csv file, please have a column for your rocks. You can also optionally add a column for rock details, rock due-dates, and rock owners.</p>" +
                 "<p>If uploading a .txt file, please add one rock per line</p>");
             dictinary["users"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload as a .csv file.</h3>" +
-                "<p>Please upload a .csv with a column for first names, last names, and e-mails. You can also optionally add a column for positions, and "+Config.ManagerName().ToLower()+"s.</p><p><b>Note:</b>If adding a column for "+Config.ManagerName().ToLower()+ "s, please separate into two columns for the " + Config.ManagerName().ToLower() + "s' first and last names</p>" +
+                "<p>Please upload a .csv with a column for first names, last names, and e-mails. You can also optionally add a column for positions, and " + Config.ManagerName().ToLower() + "s.</p><p><b>Note:</b>If adding a column for " + Config.ManagerName().ToLower() + "s, please separate into two columns for the " + Config.ManagerName().ToLower() + "s' first and last names</p>" +
                 "");
             ViewBag.Instructions = dictinary[title.ToLower()];
 
 
             return View("UploadL10");
+        }
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Org(string id = null, long? orgId = null) {
+            orgId = orgId ?? GetUser().Organization.Id;
+            _PermissionsAccessor.Permitted(GetUser(), x => x.ViewOrganization(orgId.Value));
+            //ViewBag.Org = recurrence;
+            var title = id.ToTitleCase();
+            ViewBag.Title = "Upload " + title.Replace("Todos", "To-dos");
+            ViewBag.UploadScript = "Upload" + title + ".js";
+
+            var dictinary = new DefaultDictionary<string, MvcHtmlString>(x => null);
+
+            //dictinary["todos"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload either a .txt file or .csv file.</h3>" +
+            //    "<p>If uploading a .csv file, please have a column for your to-dos. You can also optionally add a column for to-do details, to-do owners, and due dates.</p>" +
+            //    "<p>If uploading a .txt file, please add one to-do per line</p>");
+            //dictinary["scorecard"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload as a .csv file.</h3>" +
+            //    "<p>Please upload a .csv with a column for the title of your measurable, the owner, the goal, and columns for your weekly data.</p><p>Please have a row with the week-start dates above your data.</p>");
+            //dictinary["issues"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload either a .txt file or .csv file.</h3>" +
+            //    "<p>If uploading a .csv file, please have a column for your issues. You can also optionally add a column for issue details, and issue owners.</p>" +
+            //    "<p>If uploading a .txt file, please add one issue per line</p>");
+            //dictinary["rocks"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload either a .txt file or .csv file.</h3>" +
+            //    "<p>If uploading a .csv file, please have a column for your rocks. You can also optionally add a column for rock details, rock due-dates, and rock owners.</p>" +
+            //    "<p>If uploading a .txt file, please add one rock per line</p>");
+            dictinary["users"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload as a .csv file.</h3>" +
+                "<p>Please upload a .csv with a column for first names, last names, and e-mails. You can also optionally add a column for positions, and " + Config.ManagerName().ToLower() + "s.</p><p><b>Note:</b>If adding a column for " + Config.ManagerName().ToLower() + "s, please separate into two columns for the " + Config.ManagerName().ToLower() + "s' first and last names</p>" +
+                "");
+            ViewBag.Instructions = dictinary[title.ToLower()];
+
+
+            return View("UploadOrg");
         }
 
 
@@ -154,6 +183,45 @@ namespace RadialReview.Controllers {
                 if (e.FileType == FileType.XLS || e.FileType == FileType.XLSX) {
 
                     err = "File cannot be in the Excel format (*."+(e.FileType).ToString().ToLower()+").";
+                    if (csv) {
+                        err += " Please open the file in Excel and use Save As... to save as a .CSV file and reupload.";
+                    }
+                }
+                return Json(ResultObject.CreateError(err));
+
+            }
+        }
+
+        [Access(AccessLevel.Manager)]
+        public async Task<JsonResult> UploadOrgFile(long orgId, HttpPostedFileBase file, UploadType type, bool csv = false) {
+            _PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(orgId));
+            // _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Recurrence(model.RecurrenceId));
+            try {
+                var upload = await UploadAccessor.UploadAndParse(GetUser(), type, file, ForModel.Create<OrganizationModel>(orgId));
+
+
+
+                if (csv && upload.GetLikelyFileType() != FileType.CSV)
+                    throw new FileNotFoundException("File must be a csv.");
+                var linedat = upload.GetLikelyFileType() == FileType.CSV ? upload.Csv : upload.Lines.Select(x => x.AsList()).ToList();
+                var table = HtmlUtility.Table(linedat, new TableOptions<string>() {
+                    CellClass = (x => "tdItem"),
+                    TableClass = "table table-bordered table-condensed noselect",
+                    Responsive = true
+                });
+
+                table = "<div>" + table + "<input id='file_name' type='hidden' value='" + upload.Path + "'/></div>";
+
+                var data = new Dictionary<string, string> { { "Path", upload.Path }, { "UseAWS", upload.UseAWS + "" }, { "FileType", upload.GetLikelyFileType() + "" } };
+                return Json(ResultObject.CreateHtml(table, data));
+
+            } catch (FileNotFoundException e) {
+                return Json(ResultObject.CreateError("An error has occurred. " + e.Message));
+            } catch (FileTypeException e) {
+                var err = "File file type cannot be used.";
+                if (e.FileType == FileType.XLS || e.FileType == FileType.XLSX) {
+
+                    err = "File cannot be in the Excel format (*." + (e.FileType).ToString().ToLower() + ").";
                     if (csv) {
                         err += " Please open the file in Excel and use Save As... to save as a .CSV file and reupload.";
                     }
@@ -204,8 +272,9 @@ namespace RadialReview.Controllers {
             }
         }
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult UploadUsers(long? recurrenceId = null)
+        public ActionResult UploadUsers(long? recurrenceId = null,bool orgUpload=false)
         {
+            ViewBag.OrgUpload = orgUpload;
             ViewBag.RecurrenceId = recurrenceId;
             return View();
         }

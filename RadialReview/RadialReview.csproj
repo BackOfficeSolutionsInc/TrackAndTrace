@@ -166,6 +166,7 @@
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Controllers\Upload\Upload_OrgUsersController.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\Formula\CascadeScorecardUpdates.cs" />
     <Compile Include="Crosscutting\Hooks\Payment\ExecutePaymentOnCardUpdate.cs" />
     <Compile Include="Crosscutting\Hooks\Payment\FirstPaymentEmail.cs" />
@@ -1079,6 +1080,7 @@
     <Content Include="Content\creditcard_icon\bank.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\etherpad\web.css" />
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
@@ -1824,6 +1826,7 @@
     <Content Include="Views\ClientSuccess\Close.cshtml" />
     <Content Include="Views\Data\Dashboard.cshtml" />
     <Content Include="Views\Admin\EmployeeCount.cshtml" />
+    <Content Include="Views\Upload\UploadOrg.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

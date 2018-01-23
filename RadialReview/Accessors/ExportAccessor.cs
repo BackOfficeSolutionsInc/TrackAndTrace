@@ -14,6 +14,7 @@ using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Scorecard;
 using static RadialReview.Accessors.L10Accessor;
 using RadialReview.Models.Enums;
+using NHibernate;
 
 namespace RadialReview.Accessors {
 	public class ExportAccessor : BaseAccessor {
@@ -51,9 +52,7 @@ namespace RadialReview.Accessors {
 			var csv = new Csv();
 			csv.SetTitle("Measurable");
 
-
-
-			foreach (var s in data.MeasurablesAndDividers.OrderBy(x => x._Ordering)) {// scores.GroupBy(x => x.MeasurableId).OrderBy(x=>x.First().Measurable._Ordering)) {
+            foreach (var s in data.MeasurablesAndDividers.OrderBy(x => x._Ordering)) {// scores.GroupBy(x => x.MeasurableId).OrderBy(x=>x.First().Measurable._Ordering)) {
 				var measurable = s.Measurable;
 				//var ss = s.First();
 				if (measurable != null) {
@@ -352,6 +351,38 @@ namespace RadialReview.Accessors {
 		}
 
 
+        public static Csv ExportAllUsers(UserOrganizationModel caller,long orgId) {
+            //using (var s = HibernateSession.GetCurrentSession()) {
+            //    using (var tx = s.BeginTransaction()) {
+            //        var perms = PermissionsUtility.Create(s, caller);
+            //        perms.ManagingOrganization(orgId);
+            PermissionsAccessor.EnsurePermitted(caller, x => x.ManagingOrganization(orgId));
 
-	}
+                    var users = TinyUserAccessor.GetOrganizationMembers(caller, orgId, true);//s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId).List().ToList();
+                    var csv = new Csv("Users");
+                    foreach(var u in users) {
+                        //var managers = u.ManagedBy.ToList();
+                        //if (managers.Any()) {
+                        //    foreach (var m in managers) {
+                        //        csv.Add("" + u.Id + "_" + m.Id, "Email", u.GetEmail());
+                        //        csv.Add("" + u.Id + "_" + m.Id, "FirstName", u.GetFirstName());
+                        //        csv.Add("" + u.Id + "_" + m.Id,"LastName",u.GetLastName());
+                        //        csv.Add("" + u.Id + "_" + m.Id,"Position",u.Positions.FirstOrDefault().NotNull(x=>x.Position.GetName()));
+                        //        csv.Add("" + u.Id + "_" + m.Id,"Manager_FirstName",m.Manager.GetFirstName());
+                        //        csv.Add("" + u.Id + "_" + m.Id,"Manager_LastName",m.Manager.GetLastName());
+                        //    }
+                        //}else {
+                            csv.Add("" + u.UserOrgId, "Email", u.Email);
+                            csv.Add("" + u.UserOrgId, "FirstName", u.FirstName);
+                            csv.Add("" + u.UserOrgId, "LastName", u.LastName);
+                            //csv.Add("" + u.UserOrgId, "Position", u.po);
+                            //csv.Add("" + u.Id , "Manager_FirstName","");
+                            //csv.Add("" + u.Id , "Manager_LastName", "");
+                        //}
+                    }
+                    return csv;
+            //    }
+            //}
+        }
+    }
 }
