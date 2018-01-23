@@ -70,7 +70,7 @@
                                         ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering'] track by measurable.Key">
                                         @if (reorderable) {
                                             <td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.Disabled" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
-											<td ng-if="measurable.Disabled"></td>
+											<td class="button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.Disabled"></td>
                                         }
 
                                         @if (disableName) {
@@ -175,7 +175,7 @@
                                 <tr as-sortable-item="measurable" ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering']"  ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}">
                                     @if (reorderable) {
                                             <td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.Disabled" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
-											<td ng-if="measurable.Disabled"></td>
+											<td class="button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.Disabled"></td>
                                     }
                                     @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
                                         <td class="who first1 alignRight accountable-column text-column" ng-class="{handle: measurable.IsDivider}">
