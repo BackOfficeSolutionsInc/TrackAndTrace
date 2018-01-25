@@ -405,13 +405,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="_data\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\RadialReview\RadialReview.csproj">
       <Project>{7104473e-4e35-4107-9b11-4346291f8b4e}</Project>
       <Name>RadialReview</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="_data\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
