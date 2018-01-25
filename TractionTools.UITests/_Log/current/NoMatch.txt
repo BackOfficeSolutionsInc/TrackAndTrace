@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Chrome~Visual_CanCreateEval~_~Complete.png
 Chrome~Visual_CreateNoSupervisor_2~_~Complete.png
 Chrome~Visual_CreateNoSupervisor_2~_~CreateNoSupervisor_DropdownEmployee.png
@@ -7,3 +8,5 @@ Chrome~Visual_CreateSupervisor~_~CreateSupervisor_Dropdown1.png
 Chrome~Visual_L10_Wizard_Attendees~_l10_wizard_{id}~Basics-Select.png
 Chrome~Visual_L10_Wizard_Attendees~_l10_wizard_{id}~Blank.png
 Chrome~Visual_L10_Wizard_Attendees~_l10_wizard_{id}~Complete.png
+=======
+>>>>>>> version/20180123/2.0.2

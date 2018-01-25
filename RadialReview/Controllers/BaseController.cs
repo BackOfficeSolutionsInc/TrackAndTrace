@@ -47,6 +47,7 @@ using System.Net.Mime;
 using System.Text.RegularExpressions;
 using SpreadsheetLight;
 using RadialReview.Hooks;
+using System.Net;
 
 namespace RadialReview.Controllers {
 	public class UserManagementController : BaseController {
@@ -528,6 +529,7 @@ namespace RadialReview.Controllers {
 
 				if (isJsonResult) {
 					var exception = new ResultObject(filterContext.Exception);
+                    HttpStatusCode? statusOverride = null;
 					if (filterContext.Exception is RedirectException) {
 						var re = ((RedirectException)filterContext.Exception);
 						if (re.Silent != null)
@@ -537,12 +539,17 @@ namespace RadialReview.Controllers {
 
 						if (re.ForceReload)
 							exception.Refresh = true;
+
+                        if (re.StatusCodeOverride != null) {
+                            statusOverride = re.StatusCodeOverride.Value;
+                        }
+
 					}
 
 					filterContext.ExceptionHandled = true;
 					filterContext.HttpContext.Response.Clear();
+					filterContext.HttpContext.Response.StatusCode = (int)(statusOverride??System.Net.HttpStatusCode.InternalServerError);
 					filterContext.HttpContext.Response.TrySkipIisCustomErrors = true;
-					filterContext.HttpContext.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
 					filterContext.Result = new JsonResult() { Data = exception, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 					return;
 				}

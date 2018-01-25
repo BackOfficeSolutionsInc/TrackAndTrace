@@ -100,7 +100,7 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<JsonResult> UpdateAngularScore(AngularScore model, string connectionId = null) {
+		public async Task<JsonResult> UpdateAngularScore(AngularScore model, string connectionId = null) {           
 			await L10Accessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess());
 		}

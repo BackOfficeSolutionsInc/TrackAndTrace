@@ -359,17 +359,17 @@ namespace RadialReview.Controllers {
 
                     #region Cleanup Sync model
                     try {
-                        {
-                            var syncTable = "Sync";
-                            s.CreateSQLQuery("delete from " + syncTable + " where CreateTime < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
-                             .ExecuteUpdate();
-                        }
-                        {
-                            var syncTable = "SyncLock";
-                            s.CreateSQLQuery("delete from " + syncTable + " where LastUpdate < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
-                             .ExecuteUpdate();
-                        }
-                    } catch (Exception e) {
+						{
+							var syncTable = "Sync";
+							s.CreateSQLQuery("delete from " + syncTable + " where CreateTime < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
+							 .ExecuteUpdate();
+						}
+						{
+							var syncTable = "SyncLock";
+							s.CreateSQLQuery("delete from " + syncTable + " where LastUpdateDb < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
+							 .ExecuteUpdate();
+						}
+					} catch (Exception e) {
                         log.Error(e);
                     }
                     #endregion

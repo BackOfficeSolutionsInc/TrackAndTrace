@@ -47,6 +47,8 @@ namespace RadialReview.Accessors {
                             var m = (AngularAccountabilityNode)model;
                             //UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
                             UpdateAccountabilityNode(s, rt, perms, m.Id, m.Group, m.User.NotNull(x => (long?)x.Id));
+                            tx.Commit();
+                            s.Flush();
                         }
                     }
                 }

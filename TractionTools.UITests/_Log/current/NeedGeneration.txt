@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Chrome~Visual_CanCreateEval_3~_~Complete.png
 Chrome~Visual_CreateSupervisor_2~_~Complete.png
 Chrome~Visual_CreateSupervisor_2~_~CreateSupervisor_DropdownEmployee.png
@@ -36,3 +37,5 @@ Chrome~Visual_L10_Wizard_Scorecard~_l10_wizard_{id}~Complete.png
 Chrome~Visual_L10_Wizard_Scorecard~_l10_wizard_{id}~Rocks-Picture.png
 Chrome~Visual_L10_Wizard_Scorecard~_l10_wizard_{id}~Scorecard-AfterAdd.png
 Chrome~Visual_L10_Wizard_Scorecard~_l10_wizard_{id}~Scorecard-BeforeAdd.png
+=======
+>>>>>>> version/20180123/2.0.2

@@ -230,32 +230,30 @@ namespace RadialReview.Utilities.Synchronize {
             var nil = await Lock(keySelector, clientUpdateTimeMs, async (s, lck) => { await atomic(s, lck); return false; }, testHooks);
         }
 
-        public static async Task<T> Lock<T>(Func<ISession,string> keySelector, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task<T>> atomic, TestHooks testHooks = null) {
+        public static async Task<T> Lock<T>(Func<ISession, string> keySelector, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task<T>> atomic, TestHooks testHooks = null) {
             if (clientUpdateTimeMs == null) {
                 //probably want to make sure its not null...
                 int a = 0;
             }
 
             //Make sure lock key exists
+            while (true) {
+                var key = "";
+                try {
             using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
+                        using (var tx = s.BeginTransaction(/*IsolationLevel.Serializable*/)) {
 
                     if (s is SingleRequestSession) {
                         var srs = (SingleRequestSession)s;
                         if (srs.GetCurrentContext().Depth != 0)
                             throw new Exception("Lock must be called outside of a session.");
                     }
-                    var key = keySelector(s);
+                            key = keySelector(s);
                     var found = s.Get<SyncLock>(key, LockMode.Upgrade);
                     if (found == null) {
                         //Didnt exists. Lets atomically create it
                         //LockMode.Upgrade prevents creating simultaniously 
-                        SyncLock createLock = null;
-                        try {
-                            createLock = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
-                        } catch (Exception e) {
-                            throw;
-                        }
+                        var createLock = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
                         if (createLock == null)
                             throw new Exception("CreateLock doesnt exist. Call ApplicationAccessor.EnsureExists()");
 
@@ -267,16 +265,25 @@ namespace RadialReview.Utilities.Synchronize {
                             s.Save(new SyncLock() {
                                 Id = key,
                             });
+                                }
+                                s.Flush();
+                                tx.Commit();
+                            }
                         }
-                        s.Flush();
-                        tx.Commit();
                     }
+                    break;
+                }catch(GenericADOException e) {
+                    Console.WriteLine("Deadlock: " + key);
+                    //Try again.
+                    await Task.Delay(10);
+                }catch(Exception) {
+                    throw;
                 }
-            }
+            } 
             T result = default(T);
             //Lets lock on the thing we just created..
             using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
+                using (var tx = s.BeginTransaction(/*IsolationLevel.Serializable*/)) {
                     var key = keySelector(s);
                     //LOCK
                     SyncLock lck;

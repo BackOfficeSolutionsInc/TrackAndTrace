@@ -1031,656 +1031,666 @@ Flag For Disabled / Blacklisted from CS
                     };
 
 
-                    foreach (var h in headlines) {
-                        //var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
-                        var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
-                        await HeadlineAccessor.CreateHeadline(s, perms, new PeopleHeadline {
-                            Message = h.Message,
-                            AboutId = h.AboutId,
-                            AboutName = h.AboutName,
-                            OwnerId = owner,
-                            RecurrenceId = recurId,
-                            About = h.About,
-                            Owner = s.Load<UserOrganizationModel>(owner),
-                            _Details = h.Details,
+					foreach (var h in headlines) {
+						//var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
+						var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
+						await HeadlineAccessor.CreateHeadline(s, perms, new PeopleHeadline {
+							Message = h.Message,
+							AboutId = h.AboutId,
+							AboutName = h.AboutName,
+							OwnerId = owner,
+							RecurrenceId = recurId,
+							About = h.About,
+							Owner = s.Load<UserOrganizationModel>(owner),
+							_Details = h.Details,
 
-                            OrganizationId = caller.Organization.Id,
-                            CreateTime = createTime,
-                        });
-                        createTime = createTime.AddMinutes(r.Next(5, 15));
-                        addedIssues += 1;
-                    }
-
-
-
-                    var current = recur.Scorecard.Weeks.FirstOrDefault(x => x.IsCurrentWeek).ForWeekNumber;
-                    var emptyMeasurable = recur.Scorecard.Measurables.ElementAtOrDefault(r.Next(recur.Scorecard.Measurables.Count() - 1)).NotNull(x => x.Id);
-
-                    foreach (var angScore in recur.Scorecard.Scores.Where(x => x.ForWeek > current - 13)) {
-                        if (angScore.Id > 0) {
-                            if (angScore.ForWeek == current && angScore.Measurable.Id == emptyMeasurable) {
-                                var score = s.Load<ScoreModel>(angScore.Id);
-                                score.Measured = null;
-                                s.Update(score);
-                                deletedScores += 0;
-
-                            } else if (angScore.Measured == null) {
-                                var score = s.Load<ScoreModel>(angScore.Id);
-                                double stdDev = (double)(angScore.Measurable.Target.Value * (angScore.Measurable.Id.GetHashCode() % 5 * 2 + 1) / 100.0m);
-                                double mean = (double)angScore.Measurable.Target.Value;
-                                score.Measured = (decimal)Math.Floor(100 * r.NextNormal(mean, stdDev)) / 100m;
-                                s.Update(score);
-                                addedScores += 1;
-                            }
-                        }
-
-                    }
-
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-            var duration = (DateTime.UtcNow - start).TotalSeconds;
-
-            return Content("Todos: +" + addedTodos + "/-" + deletedTodos + " <br/>Issues: +" + addedIssues + "/-" + deletedIssues + " <br/>Scores: +" + addedScores + "/-" + deletedScores + " <br/>Duration: " + duration + "s");
-        }
+							OrganizationId = caller.Organization.Id,
+							CreateTime = createTime,
+						});
+						createTime = createTime.AddMinutes(r.Next(5, 15));
+						addedIssues += 1;
+					}
 
 
-    }
-    public partial class AccountController : UserManagementController {
+
+					var current = recur.Scorecard.Weeks.FirstOrDefault(x => x.IsCurrentWeek).ForWeekNumber;
+					var emptyMeasurable = recur.Scorecard.Measurables.ElementAtOrDefault(r.Next(recur.Scorecard.Measurables.Count() - 1)).NotNull(x => x.Id);
+
+					foreach (var angScore in recur.Scorecard.Scores.Where(x => x.ForWeek > current - 13)) {
+						if (angScore.Id > 0) {
+							if (angScore.ForWeek == current && angScore.Measurable.Id == emptyMeasurable) {
+								var score = s.Load<ScoreModel>(angScore.Id);
+								score.Measured = null;
+								s.Update(score);
+								deletedScores += 0;
+
+							} else if (angScore.Measured == null) {
+								var score = s.Load<ScoreModel>(angScore.Id);
+								double stdDev = (double)(angScore.Measurable.Target.Value * (angScore.Measurable.Id.GetHashCode() % 5 * 2 + 1) / 100.0m);
+								double mean = (double)angScore.Measurable.Target.Value;
+								score.Measured = (decimal)Math.Floor(100 * r.NextNormal(mean, stdDev)) / 100m;
+								s.Update(score);
+								addedScores += 1;
+							}
+						}
+
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			var duration = (DateTime.UtcNow - start).TotalSeconds;
+
+			return Content("Todos: +" + addedTodos + "/-" + deletedTodos + " <br/>Issues: +" + addedIssues + "/-" + deletedIssues + " <br/>Scores: +" + addedScores + "/-" + deletedScores + " <br/>Duration: " + duration + "s");
+		}
 
 
-        [Access(Controllers.AccessLevel.Radial)]
-        public async Task<string> SetRadialAdmin(bool admin = true, string user = null) {
-            user = user ?? GetUser().User.Id;
-            var u = _UserAccessor.GetUserById(user);
-            if (admin) {
-                await UserManager.AddToRoleAsync(user, "RadialAdmin");
-                return "Added " + u.UserName + ". (" + string.Join(", ", await UserManager.GetRolesAsync(u.Id)) + ")";
-            } else {
-                await UserManager.RemoveFromRoleAsync(user, "RadialAdmin");
-                return "Removed " + u.UserName + ". (" + string.Join(", ", await UserManager.GetRolesAsync(u.Id)) + ")";
-            }
-        }
+	}
+	public partial class AccountController : UserManagementController {
 
-        [Access(Controllers.AccessLevel.Radial)]
-        public ActionResult ListRadialAdmin() {
 
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var res = s.CreateSQLQuery("select user.UserName,role.UserModel_id from UserRoleModel as role inner join UserModel as user where role.Role='RadialAdmin' and user.Id=role.UserModel_id").List<object[]>();
-                    var builder = "<table>";
-                    foreach (var o in res) {
-                        builder += "<tr><td>" + o[0] + "</td><td>" + o[1] + "</td></tr>";
-                    }
-                    builder += "</table>";
-                    return Content(builder);
-                }
-            }
-        }
+		[Access(Controllers.AccessLevel.Radial)]
+		public async Task<string> SetRadialAdmin(bool admin = true, string user = null) {
+			user = user ?? GetUser().User.Id;
+			var u = _UserAccessor.GetUserById(user);
+			if (admin) {
+				await UserManager.AddToRoleAsync(user, "RadialAdmin");
+				return "Added " + u.UserName + ". (" + string.Join(", ", await UserManager.GetRolesAsync(u.Id)) + ")";
+			} else {
+				await UserManager.RemoveFromRoleAsync(user, "RadialAdmin");
+				return "Removed " + u.UserName + ". (" + string.Join(", ", await UserManager.GetRolesAsync(u.Id)) + ")";
+			}
+		}
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult Headers() {
-            return View();
-        }
+		[Access(Controllers.AccessLevel.Radial)]
+		public ActionResult ListRadialAdmin() {
 
-        [Access(AccessLevel.Radial)]
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var res = s.CreateSQLQuery("select user.UserName,role.UserModel_id from UserRoleModel as role inner join UserModel as user where role.Role='RadialAdmin' and user.Id=role.UserModel_id").List<object[]>();
+					var builder = "<table>";
+					foreach (var o in res) {
+						builder += "<tr><td>" + o[0] + "</td><td>" + o[1] + "</td></tr>";
+					}
+					builder += "</table>";
+					return Content(builder);
+				}
+			}
+		}
 
-        public JsonResult GetRedis() {
-            return Json(Config.Redis("CHANNEL"), JsonRequestBehavior.AllowGet);
-        }
-        [Access(AccessLevel.Radial)]
-        public string Chrome(string id) {
-            ChromeExtensionComms.SendCommand(id);
-            return "ok: \"" + id + "\"";
-        }
+		[Access(AccessLevel.Radial)]
+		public ActionResult Headers() {
+			return View();
+		}
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult Version() {
+		[Access(AccessLevel.Radial)]
 
-            var version = Assembly.GetExecutingAssembly().GetName().Version;
-            var buildDate = new DateTime(2000, 1, 1)
-                .AddDays(version.Build)
-                .AddSeconds(version.Revision * 2);
+		public JsonResult GetRedis() {
+			return Json(Config.Redis("CHANNEL"), JsonRequestBehavior.AllowGet);
+		}
+		[Access(AccessLevel.Radial)]
+		public string Chrome(string id) {
+			ChromeExtensionComms.SendCommand(id);
+			return "ok: \"" + id + "\"";
+		}
 
-            //var server = NetworkAccessor.GetPublicIP();//Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
-            var serverRow = "<tr><td>Amazon Server: </td><td><i>failed</i></td></tr>";
+		[Access(AccessLevel.Radial)]
+		public ActionResult Version() {
+
+			var version = Assembly.GetExecutingAssembly().GetName().Version;
+			var buildDate = new DateTime(2000, 1, 1)
+				.AddDays(version.Build)
+				.AddSeconds(version.Revision * 2);
+
+			//var server = NetworkAccessor.GetPublicIP();//Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+			var serverRow = "<tr><td>Amazon Server: </td><td><i>failed</i></td></tr>";
+			try {
+				serverRow = "<tr><td>Amazon Server: </td><td>"+Amazon.EC2.Util.EC2Metadata.InstanceId.ToString()+"</td></tr>";
+			} catch (Exception e) {
+
+			}
+            var gitRow = "<tr><td>Git:</td><td><i>failed</i></td></tr>";
             try {
-                serverRow = "<tr><td>Amazon Server: </td><td>" + Amazon.EC2.Util.EC2Metadata.InstanceId.ToString() + "</td></tr>";
-            } catch (Exception e) {
+                gitRow = "<tr><td>Git:</td><td>" + ThisAssembly.Git.Branch+" </td><td>" +ThisAssembly.Git.Sha+ "</td></tr>";
+            } catch(Exception e) {
 
             }
-            DateTime? dbTime = null;
-            var now = DateTime.UtcNow;
-            double? diff = null;
-            var dbTimeRow = "<tr><td>DbTime:</td><td><i>failed</i></td></tr>";
-            try {
-                using (var s = HibernateSession.GetCurrentSession()) {
-                    using (var tx = s.BeginTransaction()) {
-                        dbTime = TimingUtility.GetDbTimestamp(s);
-                    }
-                }
-                var nowAfter = DateTime.UtcNow;
-                var half = new DateTime((nowAfter.Ticks - now.Ticks) / 2 + now.Ticks);
-                diff = (dbTime - half).Value.TotalMilliseconds;
-                dbTimeRow = "<tr><td>DbTime:</td><td>" + dbTime.Value.ToString("U") + " </td><td> [diff: " + diff + "ms]</td></tr>";
-
-            } catch (Exception e) {
-            }
-            var txt = "<table>";
-            txt += "<tr><td>Build Date: </td><td>" + buildDate.ToString("U") + " </td><td> [version: " + version.ToString() + "]</td></tr>";
-            txt += dbTimeRow;
-            txt += "<tr><td>Server Time:</td><td>" + now.ToString("U") + " </td><td> [ticks: " + now.Ticks + "]</td></tr>";
-            txt += serverRow;
-            txt += "</table>";
-
-            return Content(txt);
-        }
-
-
-        [Access(AccessLevel.Radial)]
-        public ActionResult Subscribe(long org, NotificationKind kind) {
-
-            PubSub.Subscribe(GetUser(), GetUser().Id, ForModel.Create<OrganizationModel>(org), kind);
-
-            return Content("Subscribed");
-        }
-
-
-        [Access(AccessLevel.Radial)]
-        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
-
-        public ActionResult FixEmail() {
-            return View();
-        }
-
-        [Access(AccessLevel.Radial)]
-        [HttpPost]
-        public ActionResult FixEmail(FormCollection form) {
-            var user = GetUser();
-            var newEmail = form["newEmail"].ToLower();
-
-            if (user.GetEmail() != form["oldEmail"] || user.Id != form["userId"].ToLong())
-                throw new PermissionsException("Incorrect User.");
-
-            if (!IsValidEmail(newEmail))
-                throw new PermissionsException("Email invalid.");
-
-
-
-
-
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-
-                    var any = s.QueryOver<UserModel>().Where(x => x.UserName == newEmail).Take(1).SingleOrDefault();
-
-                    if (any != null)
-                        throw new PermissionsException("User already exists with this email address. Could not change.");
-
-                    s.Evict(user);
-                    user = s.Get<UserOrganizationModel>(user.Id);
-                    user.EmailAtOrganization = form["newEmail"];
-
-                    if (user.User != null) {
-                        //s.Evict(user.User);
-                        user.User.UserName = form["newEmail"].ToLower();
-                        //s.Update(user.User);
-                    }
-
-                    if (user.TempUser != null) {
-                        //s.Evict(user.TempUser);
-                        user.TempUser.Email = form["newEmail"];
-                        //s.Update(user.TempUser);
-                    }
-                    user.UpdateCache(s);
-                    var c = new Cache();
-                    c.InvalidateForUser(user, CacheKeys.USERORGANIZATION);
-                    c.InvalidateForUser(user, CacheKeys.USER);
-                    s.Update(user);
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-            ViewBag.InfoAlert = "Make sure to email this person with their new login.";
-            return RedirectToAction("FixEmail");
-        }
-        private bool IsValidEmail(string email) {
-            try {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
-            } catch {
-                return false;
-            }
-        }
-
-        [Access(AccessLevel.Radial)]
-        public JsonResult Stats() {
-            return Json(ApplicationAccessor.Stats(), JsonRequestBehavior.AllowGet);
-        }
-
-        [Access(AccessLevel.Radial)]
-        public String TempDeep(long id) {
-            var now = DateTime.UtcNow;
-            var count = _UserAccessor.CreateDeepSubordinateTree(GetUser(), id, now);
-
-            var o = "TempDeep - " + now.Ticks + " - " + count;
-            log.Info(o);
-            return o;
-        }
-
-        [Access(AccessLevel.Radial)]
-        public int FixTeams() {
-            var count = 0;
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var teams = s.QueryOver<OrganizationTeamModel>().List();
-                    foreach (var t in teams) {
-                        if (t.Type == TeamType.Subordinates && t.DeleteTime == null) {
-                            var mid = t.ManagedBy;
-                            var m = s.Get<UserOrganizationModel>(mid);
-                            if (m.DeleteTime != null) {
-                                t.DeleteTime = m.DeleteTime;
-                                s.Update(t);
-                                count++;
-                            }
-                        }
-                    }
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-            return count;
-
-        }
-
-        [Access(AccessLevel.Radial)]
-        public string UndoRandomReview(long id) {
-            var count = 0;
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var values = s.QueryOver<CompanyValueAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
-                    var roles = s.QueryOver<GetWantCapacityAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
-                    var rocks = s.QueryOver<RockAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
-                    var feedbacks = s.QueryOver<FeedbackAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
-
-                    foreach (var v in values) {
-                        v.Exhibits = PositiveNegativeNeutral.Indeterminate;
-                        v.Complete = false;
-                        v.CompleteTime = null;
-                        s.Update(v);
-                        count++;
-                    }
-                    foreach (var v in roles) {
-                        v.GetIt = FiveState.Indeterminate;
-                        v.WantIt = FiveState.Indeterminate;
-                        v.HasCapacity = FiveState.Indeterminate;
-                        v.Complete = false;
-                        v.CompleteTime = null;
-                        s.Update(v);
-                        count += 3;
-                    }
-                    foreach (var v in rocks) {
-                        v.Finished = Tristate.Indeterminate;
-                        v.Complete = false;
-                        v.CompleteTime = null;
-                        s.Update(v);
-                        count++;
-                    }
-                    foreach (var v in feedbacks) {
-                        v.Feedback = null;
-                        v.Complete = false;
-                        v.CompleteTime = null;
-                        s.Update(v);
-                        count++;
-                    }
-                    tx.Commit();
-                    s.Flush();
-
-                }
-            }
-            return "Undo Random Review. Update: " + count;
-
-        }
-
-        [Access(AccessLevel.Radial)]
-        public string RandomReview(long id) {
-            var count = 0;
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-
-                    var desenterPercent = .1;
-                    var standardPercent = .8;
-                    var standardPercentDeviation = .2;
-
-                    var unstartedPercent = .05;
-                    var incompletePercent = .1;
-
-                    var rockPercent = .88;
-
-                    var values = s.QueryOver<CompanyValueAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
-                    var roles = s.QueryOver<GetWantCapacityAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
-                    var rocks = s.QueryOver<RockAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
-                    var feebacks = s.QueryOver<FeedbackAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
-
-                    var about2 = new HashSet<long>(values.Select(x => x.RevieweeUserId));
-                    roles.Select(x => x.RevieweeUserId).ToList().ForEach(x => about2.Add(x));
-                    rocks.Select(x => x.RevieweeUserId).ToList().ForEach(x => about2.Add(x));
-
-                    var reviewIds = new HashSet<long>();
-
-                    var about = about2.ToList();
-
-                    var r = new Random();
-                    var unstartedList = new List<long>();
-                    var incompleteList = new List<long>();
-
-                    for (var i = 0; i <= unstartedPercent * about.Count; i++)
-                        unstartedList.Add(about[r.Next(about.Count)]);
-                    for (var i = 0; i <= incompletePercent * about.Count; i++)
-                        incompleteList.Add(about[r.Next(about.Count)]);
-
-
-                    var lookup = about.ToDictionary(x => x, x => {
-                        //BadEgg
-                        var luckA = 0.3;
-                        var luckB = 0.3;
-
-                        if (r.NextDouble() > desenterPercent) {//Standard
-                            luckA = Math.Max(Math.Min((r.NextDouble() - .5) * standardPercentDeviation + standardPercent, 1), 0);
-                        }
-                        if (r.NextDouble() > desenterPercent) {//Standard
-                            luckB = Math.Max(Math.Min((r.NextDouble() - .5) * standardPercentDeviation + standardPercent, 1), 0);
-                        }
-
-                        return new { luckA, luckB };
-                    });
-
-                    foreach (var v in values) {
-                        var a = lookup[v.RevieweeUserId];
-                        if (!v.Complete) {
-                            if (unstartedList.Contains(v.ReviewerUserId))
-                                continue;
-                            if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
-                                continue;
-                            count++;
-                            v.CompleteTime = DateTime.MinValue;
-                            v.Complete = true;
-                            if (r.NextDouble() < a.luckA) {
-                                v.Exhibits = PositiveNegativeNeutral.Positive;
-                            } else {
-                                if (r.NextDouble() < a.luckA / 2) {
-                                    v.Exhibits = PositiveNegativeNeutral.Negative;
-                                } else {
-                                    v.Exhibits = PositiveNegativeNeutral.Neutral;
-                                }
-                            }
-                            s.Update(v);
-                        }
-                    }
-
-                    foreach (var v in roles) {
-                        var a = lookup[v.RevieweeUserId];
-                        if (!v.Complete) {
-                            if (unstartedList.Contains(v.ReviewerUserId))
-                                continue;
-                            if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
-                                continue;
-
-                            count += 3;
-                            v.CompleteTime = DateTime.MinValue;
-                            v.Complete = true;
-                            if (r.NextDouble() < a.luckB) {
-                                v.GetIt = (r.NextDouble() > .1) ? FiveState.Always : FiveState.Mostly;
-                                v.WantIt = (r.NextDouble() > .1) ? FiveState.Always : FiveState.Mostly;
-                                v.HasCapacity = (r.NextDouble() > .1) ? FiveState.Always : FiveState.Mostly;
-                            } else {
-                                v.GetIt = (r.NextDouble() > .25) ? FiveState.Rarely : FiveState.Never;
-                                v.WantIt = (r.NextDouble() > 25) ? FiveState.Rarely : FiveState.Never;
-                                v.HasCapacity = (r.NextDouble() > 25) ? FiveState.Rarely : FiveState.Never;
-                            }
-                            s.Update(v);
-                        }
-                    }
-
-                    foreach (var v in rocks) {
-                        var a = lookup[v.RevieweeUserId];
-                        if (!v.Complete) {
-                            if (unstartedList.Contains(v.ReviewerUserId))
-                                continue;
-                            if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
-                                continue;
-
-                            count++;
-                            v.CompleteTime = DateTime.MinValue;
-                            v.Complete = true;
-                            v.Finished = (r.NextDouble() < rockPercent) ? Tristate.True : Tristate.False;
-                            s.Update(v);
-                        }
-                    }
-
-                    var allFeedbacks = new[] { "No comment.", "Good progress.", "Could use some work", "Excellent", "A pleasure to work with" };
-
-                    foreach (var v in feebacks) {
-                        var a = lookup[v.RevieweeUserId];
-                        if (!v.Complete) {
-                            if (unstartedList.Contains(v.ReviewerUserId))
-                                continue;
-                            if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
-                                continue;
-                            if (!v.Required)
-                                continue;
-                            count++;
-                            v.CompleteTime = DateTime.MinValue;
-                            v.Complete = true;
-
-                            v.Feedback = (r.NextDouble() < .05) ? allFeedbacks[r.Next(allFeedbacks.Length)] : "";
-                            s.Update(v);
-                        }
-                    }
-
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-            return "Completed Randomize. Updated:" + count;
-        }
-
-        [Access(AccessLevel.Radial)]
-        public JsonResult AdminAllUserLookups(string search) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var users = s.QueryOver<UserLookup>()
-                        .Where(x => x.DeleteTime == null)
-                        .WhereRestrictionOn(c => c.Email).IsLike("%" + search + "%")
-                        .Select(x => x.Email, x => x.UserId, x => x.Name, x => x.OrganizationId)
-                        .List<object[]>().ToList();
-                    var orgs = s.QueryOver<OrganizationModel>()
-                        .Where(x => x.DeleteTime == null)
-                        .WhereRestrictionOn(x => x.Id).IsIn(users.Select(x => (long)x[3]).ToList())
-                        .List().ToDictionary(x => x.Id, x => x.GetName());
-
-                    return Json(new {
-                        results = users.Select(x => new {
-                            text = "" + x[0],
-                            value = "" + x[1],
-                            name = "" + x[2],
-                            organization = "" + orgs.GetOrDefault((long)x[3], "")
-                        }).ToArray()
-                    }, JsonRequestBehavior.AllowGet);
-                }
-            }
-        }
-
-        [Access(AccessLevel.Radial)]
-        public String FixScatterChart(bool delete = false) {
-            var i = 0;
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var scatters = s.QueryOver<ClientReviewModel>().List();
-                    foreach (var sc in scatters) {
-                        if (sc.ScatterChart == null || delete) {
-                            i++;
-                            sc.ScatterChart = new LongTuple();
-                            if (sc.Charts.Any()) {
-                                sc.ScatterChart.Filters = sc.Charts.First().Filters;
-                                sc.ScatterChart.Groups = sc.Charts.First().Groups;
-                                sc.ScatterChart.Title = sc.Charts.First().Title;
-                            }
-                            s.Update(sc);
-                        }
-                    }
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-
-            return "" + i;
-        }
-
-        //[Access(AccessLevel.Radial)]
-        //[Obsolete("Fix for AC")]
-        //public String FixAnswers(long id) {
-        //	var reviewContainerId = id;
-        //	using (var s = HibernateSession.GetCurrentSession()) {
-        //		using (var tx = s.BeginTransaction()) {
-        //			var reviewContainer = s.Get<ReviewsModel>(id);
-        //			var orgId = reviewContainer.ForOrganizationId;
-
-
-        //			var answers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == id).List().ToList();
-        //			var perms = PermissionsUtility.Create(s, GetUser());
-
-        //			int i = 0;
-
-        //			var dataInteraction = ReviewAccessor.GetReviewDataInteraction(s, orgId);
-        //			var qp = dataInteraction.GetQueryProvider();
-
-        //			foreach (var a in answers) {
-        //				var relationship = RelationshipAccessor.GetRelationships(qp, perms, a.ReviewerUserId, a.RevieweeUserId).First();
-        //				if (relationship == Models.Enums.AboutType.NoRelationship) {
-        //					//int b = 0;
-        //				}
-
-
-        //				if (relationship != a.AboutType) {
-        //					a.AboutType = relationship;
-        //					s.Update(a);
-        //					i++;
-        //				}
-        //			}
-
-
-        //			tx.Commit();
-        //			s.Flush();
-        //			return "" + i;
-        //		}
-        //	}
-        //}
-
-
-        [Access(AccessLevel.Radial)]
-        public async Task<JsonResult> Emails(int id) {
-            var emails = Enumerable.Range(0, id).Select(x => Mail.To(EmailTypes.Test, "clay.upton@gmail.com").Subject("TestBulk").Body("Email #{0}", "" + x));
-            var result = (await Emailer.SendEmails(emails));
-            result.Errors = null;
-
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        [Access(AccessLevel.Radial)]
-        public JsonResult FixReviewData() {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var reviews = s.QueryOver<ReviewModel>().List().ToList();
-                    var allAnswers = s.QueryOver<AnswerModel>().List().ToList();
-
-                    foreach (var r in reviews) {
-                        var update = false;
-                        if (r.DurationMinutes == null && r.Complete) {
-                            var ans = allAnswers.Where(x => x.ForReviewId == r.Id).ToList();
-                            r.DurationMinutes = (decimal?)TimingUtility.ReviewDurationMinutes(ans, TimingUtility.ExcludeLongerThan);
-                            update = true;
-                        }
-
-                        if (r.Started == false) {
-                            var started = allAnswers.Any(x => x.ForReviewId == r.Id && x.Complete);
-                            r.Started = started;
-                            update = true;
-                        }
-                        if (update) {
-                            s.Update(r);
-                        }
-                    }
-
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-
-            return Json(true, JsonRequestBehavior.AllowGet);
-        }
-
-        private RadialReview.Controllers.ReviewController.ReviewDetailsViewModel GetReviewDetails(ReviewModel review) {
-            var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
-            var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ReviewerUserId, review.ForReviewContainerId);
-            var model = new RadialReview.Controllers.ReviewController.ReviewDetailsViewModel() {
-                Review = review,
-                Axis = categories.ToSelectList(x => x.Category.Translate(), x => x.Id),
-                xAxis = categories.FirstOrDefault().NotNull(x => x.Id),
-                yAxis = categories.Skip(1).FirstOrDefault().NotNull(x => x.Id),
-                AnswersAbout = answers,
-                Categories = categories.ToDictionary(x => x.Id, x => x.Category.Translate()),
-                NumberOfWeeks = TimingUtility.NumberOfWeeks(GetUser())
-            };
-            return model;
-        }
-
-        [Access(AccessLevel.Any)]
-        public bool TestTask(long id) {
-            var fire = DateTime.UtcNow.AddSeconds(id);
-            TaskAccessor.AddTask(new ScheduledTask() { Fire = fire, Url = "/Account/TestTaskRecieve" });
-            log.Debug("TestTaskRecieve scheduled for: " + fire.ToString());
-            return true;
-        }
-
-        [AllowAnonymous]
-        [Access(AccessLevel.Any)]
-        public bool TestTaskRecieve() {
-            log.Debug("TestTaskRecieve hit: " + DateTime.UtcNow.ToString());
-            return true;
-        }
-
-        [Access(AccessLevel.Any)]
-        public ActionResult TestChart(long id, long reviewsId) {
-            var review = _ReviewAccessor.GetReview(GetUser(), id);
-
-            var model = GetReviewDetails(review);
-            return View(model);
-        }
-
-        [Access(AccessLevel.Radial)]
-        public String SendMessage(long id, string message) {
-            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-            hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(id)).status(message);
-            return "Sent: " + message;
-        }
-
-        [Access(AccessLevel.Radial)]
-        public String UpdateCache(long id) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var org = s.Get<UserOrganizationModel>(id).UpdateCache(s);
-                    tx.Commit();
-                    s.Flush();
-                    return "Updated: " + org.GetName();
-                }
-            }
-        }
-
-
-        [Access(AccessLevel.Radial)]
-        public async Task<JsonResult> TestChargeOrg(long id, decimal amt) {
+
+			DateTime? dbTime = null;
+			var now = DateTime.UtcNow;
+			double? diff = null;
+			var dbTimeRow = "<tr><td>DbTime:</td><td><i>failed</i></td></tr>";
+			try {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						dbTime = TimingUtility.GetDbTimestamp(s);
+					}
+				}
+				var nowAfter = DateTime.UtcNow;
+				var half = new DateTime((nowAfter.Ticks - now.Ticks) / 2+now.Ticks);
+				diff = (dbTime - half).Value.TotalMilliseconds;
+				dbTimeRow = "<tr><td>DbTime:</td><td>" + dbTime.Value.ToString("U") + " </td><td> [diff: "+diff+ "ms]</td></tr>";
+
+			} catch (Exception e) {
+			}
+			var txt	 = "<table>";
+			txt		+= "<tr><td>Server Time:</td><td>" + now.ToString("U") +	  " </td><td> [ticks: "+now.Ticks+"]</td></tr>";
+			txt		+= "<tr><td>Build Date: </td><td>"+ buildDate.ToString("U") + " </td><td> [version: "+ version.ToString() + "]</td></tr>";
+            txt     += gitRow;
+			txt		+= serverRow;
+			txt		+= dbTimeRow;
+			txt		+= "<tr><td>Server Time:</td><td>" + now.ToString("U") +	  " </td><td> [ticks: "+now.Ticks+"]</td></tr>";
+			txt		+= serverRow;
+			txt		+= "</table>";
+
+			return Content(txt);
+		}
+
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult Subscribe(long org, NotificationKind kind) {
+
+			PubSub.Subscribe(GetUser(), GetUser().Id, ForModel.Create<OrganizationModel>(org), kind);
+
+			return Content("Subscribed");
+		}
+
+
+		[Access(AccessLevel.Radial)]
+		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
+
+		public ActionResult FixEmail() {
+			return View();
+		}
+
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public ActionResult FixEmail(FormCollection form) {
+			var user = GetUser();
+			var newEmail = form["newEmail"].ToLower();
+
+			if (user.GetEmail() != form["oldEmail"] || user.Id != form["userId"].ToLong())
+				throw new PermissionsException("Incorrect User.");
+
+			if (!IsValidEmail(newEmail))
+				throw new PermissionsException("Email invalid.");
+
+
+
+
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var any = s.QueryOver<UserModel>().Where(x => x.UserName == newEmail).Take(1).SingleOrDefault();
+
+					if (any != null)
+						throw new PermissionsException("User already exists with this email address. Could not change.");
+
+					s.Evict(user);
+					user = s.Get<UserOrganizationModel>(user.Id);
+					user.EmailAtOrganization = form["newEmail"];
+
+					if (user.User != null) {
+						//s.Evict(user.User);
+						user.User.UserName = form["newEmail"].ToLower();
+						//s.Update(user.User);
+					}
+
+					if (user.TempUser != null) {
+						//s.Evict(user.TempUser);
+						user.TempUser.Email = form["newEmail"];
+						//s.Update(user.TempUser);
+					}
+					user.UpdateCache(s);
+					var c = new Cache();
+					c.InvalidateForUser(user, CacheKeys.USERORGANIZATION);
+					c.InvalidateForUser(user, CacheKeys.USER);
+					s.Update(user);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			ViewBag.InfoAlert = "Make sure to email this person with their new login.";
+			return RedirectToAction("FixEmail");
+		}
+		private bool IsValidEmail(string email) {
+			try {
+				var addr = new System.Net.Mail.MailAddress(email);
+				return addr.Address == email;
+			} catch {
+				return false;
+			}
+		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult Stats() {
+			return Json(ApplicationAccessor.Stats(), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.Radial)]
+		public String TempDeep(long id) {
+			var now = DateTime.UtcNow;
+			var count = _UserAccessor.CreateDeepSubordinateTree(GetUser(), id, now);
+
+			var o = "TempDeep - " + now.Ticks + " - " + count;
+			log.Info(o);
+			return o;
+		}
+
+		[Access(AccessLevel.Radial)]
+		public int FixTeams() {
+			var count = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var teams = s.QueryOver<OrganizationTeamModel>().List();
+					foreach (var t in teams) {
+						if (t.Type == TeamType.Subordinates && t.DeleteTime == null) {
+							var mid = t.ManagedBy;
+							var m = s.Get<UserOrganizationModel>(mid);
+							if (m.DeleteTime != null) {
+								t.DeleteTime = m.DeleteTime;
+								s.Update(t);
+								count++;
+							}
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return count;
+
+		}
+
+		[Access(AccessLevel.Radial)]
+		public string UndoRandomReview(long id) {
+			var count = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var values = s.QueryOver<CompanyValueAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
+					var roles = s.QueryOver<GetWantCapacityAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
+					var rocks = s.QueryOver<RockAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
+					var feedbacks = s.QueryOver<FeedbackAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
+
+					foreach (var v in values) {
+						v.Exhibits = PositiveNegativeNeutral.Indeterminate;
+						v.Complete = false;
+						v.CompleteTime = null;
+						s.Update(v);
+						count++;
+					}
+					foreach (var v in roles) {
+						v.GetIt = FiveState.Indeterminate;
+						v.WantIt = FiveState.Indeterminate;
+						v.HasCapacity = FiveState.Indeterminate;
+						v.Complete = false;
+						v.CompleteTime = null;
+						s.Update(v);
+						count += 3;
+					}
+					foreach (var v in rocks) {
+						v.Finished = Tristate.Indeterminate;
+						v.Complete = false;
+						v.CompleteTime = null;
+						s.Update(v);
+						count++;
+					}
+					foreach (var v in feedbacks) {
+						v.Feedback = null;
+						v.Complete = false;
+						v.CompleteTime = null;
+						s.Update(v);
+						count++;
+					}
+					tx.Commit();
+					s.Flush();
+
+				}
+			}
+			return "Undo Random Review. Update: " + count;
+
+		}
+
+		[Access(AccessLevel.Radial)]
+		public string RandomReview(long id) {
+			var count = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var desenterPercent = .1;
+					var standardPercent = .8;
+					var standardPercentDeviation = .2;
+
+					var unstartedPercent = .05;
+					var incompletePercent = .1;
+
+					var rockPercent = .88;
+
+					var values = s.QueryOver<CompanyValueAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
+					var roles = s.QueryOver<GetWantCapacityAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
+					var rocks = s.QueryOver<RockAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
+					var feebacks = s.QueryOver<FeedbackAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
+
+					var about2 = new HashSet<long>(values.Select(x => x.RevieweeUserId));
+					roles.Select(x => x.RevieweeUserId).ToList().ForEach(x => about2.Add(x));
+					rocks.Select(x => x.RevieweeUserId).ToList().ForEach(x => about2.Add(x));
+
+					var reviewIds = new HashSet<long>();
+
+					var about = about2.ToList();
+
+					var r = new Random();
+					var unstartedList = new List<long>();
+					var incompleteList = new List<long>();
+
+					for (var i = 0; i <= unstartedPercent * about.Count; i++)
+						unstartedList.Add(about[r.Next(about.Count)]);
+					for (var i = 0; i <= incompletePercent * about.Count; i++)
+						incompleteList.Add(about[r.Next(about.Count)]);
+
+
+					var lookup = about.ToDictionary(x => x, x => {
+						//BadEgg
+						var luckA = 0.3;
+						var luckB = 0.3;
+
+						if (r.NextDouble() > desenterPercent) {//Standard
+							luckA = Math.Max(Math.Min((r.NextDouble() - .5) * standardPercentDeviation + standardPercent, 1), 0);
+						}
+						if (r.NextDouble() > desenterPercent) {//Standard
+							luckB = Math.Max(Math.Min((r.NextDouble() - .5) * standardPercentDeviation + standardPercent, 1), 0);
+						}
+
+						return new { luckA, luckB };
+					});
+
+					foreach (var v in values) {
+						var a = lookup[v.RevieweeUserId];
+						if (!v.Complete) {
+							if (unstartedList.Contains(v.ReviewerUserId))
+								continue;
+							if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
+								continue;
+							count++;
+							v.CompleteTime = DateTime.MinValue;
+							v.Complete = true;
+							if (r.NextDouble() < a.luckA) {
+								v.Exhibits = PositiveNegativeNeutral.Positive;
+							} else {
+								if (r.NextDouble() < a.luckA / 2) {
+									v.Exhibits = PositiveNegativeNeutral.Negative;
+								} else {
+									v.Exhibits = PositiveNegativeNeutral.Neutral;
+								}
+							}
+							s.Update(v);
+						}
+					}
+
+					foreach (var v in roles) {
+						var a = lookup[v.RevieweeUserId];
+						if (!v.Complete) {
+							if (unstartedList.Contains(v.ReviewerUserId))
+								continue;
+							if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
+								continue;
+
+							count += 3;
+							v.CompleteTime = DateTime.MinValue;
+							v.Complete = true;
+							if (r.NextDouble() < a.luckB) {
+								v.GetIt = (r.NextDouble() > .1) ? FiveState.Always : FiveState.Mostly;
+								v.WantIt = (r.NextDouble() > .1) ? FiveState.Always : FiveState.Mostly;
+								v.HasCapacity = (r.NextDouble() > .1) ? FiveState.Always : FiveState.Mostly;
+							} else {
+								v.GetIt = (r.NextDouble() > .25) ? FiveState.Rarely : FiveState.Never;
+								v.WantIt = (r.NextDouble() > 25) ? FiveState.Rarely : FiveState.Never;
+								v.HasCapacity = (r.NextDouble() > 25) ? FiveState.Rarely : FiveState.Never;
+							}
+							s.Update(v);
+						}
+					}
+
+					foreach (var v in rocks) {
+						var a = lookup[v.RevieweeUserId];
+						if (!v.Complete) {
+							if (unstartedList.Contains(v.ReviewerUserId))
+								continue;
+							if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
+								continue;
+
+							count++;
+							v.CompleteTime = DateTime.MinValue;
+							v.Complete = true;
+							v.Finished = (r.NextDouble() < rockPercent) ? Tristate.True : Tristate.False;
+							s.Update(v);
+						}
+					}
+
+					var allFeedbacks = new[] { "No comment.", "Good progress.", "Could use some work", "Excellent", "A pleasure to work with" };
+
+					foreach (var v in feebacks) {
+						var a = lookup[v.RevieweeUserId];
+						if (!v.Complete) {
+							if (unstartedList.Contains(v.ReviewerUserId))
+								continue;
+							if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
+								continue;
+							if (!v.Required)
+								continue;
+							count++;
+							v.CompleteTime = DateTime.MinValue;
+							v.Complete = true;
+
+							v.Feedback = (r.NextDouble() < .05) ? allFeedbacks[r.Next(allFeedbacks.Length)] : "";
+							s.Update(v);
+						}
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "Completed Randomize. Updated:" + count;
+		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult AdminAllUserLookups(string search) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var users = s.QueryOver<UserLookup>()
+						.Where(x => x.DeleteTime == null)
+						.WhereRestrictionOn(c => c.Email).IsLike("%" + search + "%")
+						.Select(x => x.Email, x => x.UserId, x => x.Name, x => x.OrganizationId)
+						.List<object[]>().ToList();
+					var orgs = s.QueryOver<OrganizationModel>()
+						.Where(x => x.DeleteTime == null)
+						.WhereRestrictionOn(x => x.Id).IsIn(users.Select(x => (long)x[3]).ToList())
+						.List().ToDictionary(x => x.Id, x => x.GetName());
+
+					return Json(new {
+						results = users.Select(x => new {
+							text = "" + x[0],
+							value = "" + x[1],
+							name = "" + x[2],
+							organization = "" + orgs.GetOrDefault((long)x[3], "")
+						}).ToArray()
+					}, JsonRequestBehavior.AllowGet);
+				}
+			}
+		}
+
+		[Access(AccessLevel.Radial)]
+		public String FixScatterChart(bool delete = false) {
+			var i = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var scatters = s.QueryOver<ClientReviewModel>().List();
+					foreach (var sc in scatters) {
+						if (sc.ScatterChart == null || delete) {
+							i++;
+							sc.ScatterChart = new LongTuple();
+							if (sc.Charts.Any()) {
+								sc.ScatterChart.Filters = sc.Charts.First().Filters;
+								sc.ScatterChart.Groups = sc.Charts.First().Groups;
+								sc.ScatterChart.Title = sc.Charts.First().Title;
+							}
+							s.Update(sc);
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+			return "" + i;
+		}
+
+		//[Access(AccessLevel.Radial)]
+		//[Obsolete("Fix for AC")]
+		//public String FixAnswers(long id) {
+		//	var reviewContainerId = id;
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var reviewContainer = s.Get<ReviewsModel>(id);
+		//			var orgId = reviewContainer.ForOrganizationId;
+
+
+		//			var answers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == id).List().ToList();
+		//			var perms = PermissionsUtility.Create(s, GetUser());
+
+		//			int i = 0;
+
+		//			var dataInteraction = ReviewAccessor.GetReviewDataInteraction(s, orgId);
+		//			var qp = dataInteraction.GetQueryProvider();
+
+		//			foreach (var a in answers) {
+		//				var relationship = RelationshipAccessor.GetRelationships(qp, perms, a.ReviewerUserId, a.RevieweeUserId).First();
+		//				if (relationship == Models.Enums.AboutType.NoRelationship) {
+		//					//int b = 0;
+		//				}
+
+
+		//				if (relationship != a.AboutType) {
+		//					a.AboutType = relationship;
+		//					s.Update(a);
+		//					i++;
+		//				}
+		//			}
+
+
+		//			tx.Commit();
+		//			s.Flush();
+		//			return "" + i;
+		//		}
+		//	}
+		//}
+
+
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> Emails(int id) {
+			var emails = Enumerable.Range(0, id).Select(x => Mail.To(EmailTypes.Test, "clay.upton@gmail.com").Subject("TestBulk").Body("Email #{0}", "" + x));
+			var result = (await Emailer.SendEmails(emails));
+			result.Errors = null;
+
+			return Json(result, JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult FixReviewData() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var reviews = s.QueryOver<ReviewModel>().List().ToList();
+					var allAnswers = s.QueryOver<AnswerModel>().List().ToList();
+
+					foreach (var r in reviews) {
+						var update = false;
+						if (r.DurationMinutes == null && r.Complete) {
+							var ans = allAnswers.Where(x => x.ForReviewId == r.Id).ToList();
+							r.DurationMinutes = (decimal?)TimingUtility.ReviewDurationMinutes(ans, TimingUtility.ExcludeLongerThan);
+							update = true;
+						}
+
+						if (r.Started == false) {
+							var started = allAnswers.Any(x => x.ForReviewId == r.Id && x.Complete);
+							r.Started = started;
+							update = true;
+						}
+						if (update) {
+							s.Update(r);
+						}
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+			return Json(true, JsonRequestBehavior.AllowGet);
+		}
+
+		private RadialReview.Controllers.ReviewController.ReviewDetailsViewModel GetReviewDetails(ReviewModel review) {
+			var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
+			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ReviewerUserId, review.ForReviewContainerId);
+			var model = new RadialReview.Controllers.ReviewController.ReviewDetailsViewModel() {
+				Review = review,
+				Axis = categories.ToSelectList(x => x.Category.Translate(), x => x.Id),
+				xAxis = categories.FirstOrDefault().NotNull(x => x.Id),
+				yAxis = categories.Skip(1).FirstOrDefault().NotNull(x => x.Id),
+				AnswersAbout = answers,
+				Categories = categories.ToDictionary(x => x.Id, x => x.Category.Translate()),
+				NumberOfWeeks = TimingUtility.NumberOfWeeks(GetUser())
+			};
+			return model;
+		}
+
+		[Access(AccessLevel.Any)]
+		public bool TestTask(long id) {
+			var fire = DateTime.UtcNow.AddSeconds(id);
+			TaskAccessor.AddTask(new ScheduledTask() { Fire = fire, Url = "/Account/TestTaskRecieve" });
+			log.Debug("TestTaskRecieve scheduled for: " + fire.ToString());
+			return true;
+		}
+
+		[AllowAnonymous]
+		[Access(AccessLevel.Any)]
+		public bool TestTaskRecieve() {
+			log.Debug("TestTaskRecieve hit: " + DateTime.UtcNow.ToString());
+			return true;
+		}
+
+		[Access(AccessLevel.Any)]
+		public ActionResult TestChart(long id, long reviewsId) {
+			var review = _ReviewAccessor.GetReview(GetUser(), id);
+
+			var model = GetReviewDetails(review);
+			return View(model);
+		}
+
+		[Access(AccessLevel.Radial)]
+		public String SendMessage(long id, string message) {
+			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+			hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(id)).status(message);
+			return "Sent: " + message;
+		}
+
+		[Access(AccessLevel.Radial)]
+		public String UpdateCache(long id) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var org = s.Get<UserOrganizationModel>(id).UpdateCache(s);
+					tx.Commit();
+					s.Flush();
+					return "Updated: " + org.GetName();
+				}
+			}
+		}
+
+
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> TestChargeOrg(long id, decimal amt) {
 #pragma warning disable CS0618 // Type or member is obsolete
             return Json(await PaymentAccessor.ChargeOrganizationAmount(id, amt, true), JsonRequestBehavior.AllowGet);
 #pragma warning restore CS0618 // Type or member is obsolete
