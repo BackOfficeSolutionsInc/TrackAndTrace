@@ -198,7 +198,7 @@ namespace RadialReview.Accessors {
 
             perms.CanView(ResourceType.AccountabilityHierarchy, node.AccountabilityChartId);
 
-            var a = node.AccountabilityRolesGroup.Position;
+            var a = node.AccountabilityRolesGroup.Position; 
             return node;
         }
 
