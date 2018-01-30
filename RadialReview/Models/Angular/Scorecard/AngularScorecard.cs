@@ -10,17 +10,14 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using static RadialReview.Models.L10.L10Recurrence;
 
-namespace RadialReview.Models.Angular.Scorecard
-{
-    public class AngularScorecard : BaseAngular
-    {
+namespace RadialReview.Models.Angular.Scorecard {
+    public class AngularScorecard : BaseAngular {
         //public AngularScorecard(long id, DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeetingMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart) 
         //    : this(id,weekstart,timezoneOffset,)
         //{
 
         //}
-        public AngularScorecard(long id) : base(id)
-        {
+        public AngularScorecard(long id) : base(id) {
 
         }
         //public AngularScorecard(long id, DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart,DateRange range=null,bool includeNextWeek=true,DateTime? now=null) : base(id)
@@ -29,8 +26,7 @@ namespace RadialReview.Models.Angular.Scorecard
 
         //}
 
-        public AngularScorecard(long id, TimeSettings settings, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null, bool reverseScorecard = false) : base(id)
-        {
+        public AngularScorecard(long id, TimeSettings settings, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null, bool reverseScorecard = false) : base(id) {
             var cur = currentWeek;
             //if (cur != null)
             //    cur = cur.Value.AddDays(7);
@@ -49,11 +45,9 @@ namespace RadialReview.Models.Angular.Scorecard
 
             //var allMeasurables = measurableGroups.SelectMany(x => x.Measurables);
 
-            foreach (var s in Scores)
-            {
+            foreach (var s in Scores) {
                 var found = Measurables.FirstOrDefault(x => x.Id == s.Measurable.Id);
-                if (found != null)
-                {
+                if (found != null) {
                     s.Measurable.Ordering = found.Ordering;
                     s.Measurable.RecurrenceId = found.RecurrenceId;
                 }
@@ -62,18 +56,13 @@ namespace RadialReview.Models.Angular.Scorecard
             Period = "" + settings.GetTimeSettings().Period;
         }
 
-        public static AngularScorecard Create(long id, TimeSettings settings, IEnumerable<L10Recurrence_Measurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null, bool reverseScorecard = false)
-        {
-            var ms = measurables.Select(x =>
-            {
-                if (x.IsDivider)
-                {
+        public static AngularScorecard Create(long id, TimeSettings settings, IEnumerable<L10Recurrence_Measurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null, bool reverseScorecard = false) {
+            var ms = measurables.Select(x => {
+                if (x.IsDivider) {
                     var m = AngularMeasurable.CreateDivider(x._Ordering, x.Id);
                     m.RecurrenceId = x.L10Recurrence.Id;
                     return m;
-                }
-                else
-                {
+                } else {
                     var m = new AngularMeasurable(x.Measurable, false);
                     m.Ordering = x._Ordering;
                     m.RecurrenceId = x.L10Recurrence.Id;
@@ -84,8 +73,7 @@ namespace RadialReview.Models.Angular.Scorecard
             return new AngularScorecard(id, settings, ms, scores, currentWeek, range, includeNextWeek, now, reverseScorecard);
         }
 
-        public AngularScorecard()
-        {
+        public AngularScorecard() {
         }
 
         public IEnumerable<AngularMeasurable> Measurables { get; set; }
