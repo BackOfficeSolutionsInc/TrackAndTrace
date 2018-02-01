@@ -469,8 +469,8 @@ namespace RadialReview.Accessors {
 						}
 					}
 
+					var headlines = GetHeadlinesForMeeting(s, perms, recurrenceId);
 					if (closeHeadlines) {
-						var headlines = GetHeadlinesForMeeting(s, perms, recurrenceId);
 						foreach (var headline in headlines) {
 							if (headline.CloseTime == null) {
 								headline.CloseDuringMeetingId = meeting.Id;
@@ -482,10 +482,7 @@ namespace RadialReview.Accessors {
 
 
 					//Conclude the forum
-
-
 					recurrence = s.Get<L10Recurrence>(recurrenceId);
-
 					var externalForumNumbers = s.QueryOver<ExternalUserPhone>()
 											.Where(x => x.DeleteTime > now && x.ForModel.ModelId == recurrenceId && x.ForModel.ModelType == ForModel.GetModelType<L10Recurrence>())
 											.List().ToList();
@@ -538,8 +535,6 @@ namespace RadialReview.Accessors {
 						s.Update(i);
 					}
 
-
-
 					meeting.CompleteTime = now;
 					meeting.TodoCompletion = todoRatio;
 
@@ -590,14 +585,17 @@ namespace RadialReview.Accessors {
 								).List().ToList();
 
 							//All awaitables 
+							//headline.CloseDuringMeetingId = meeting.Id;
 
 							var issuesForTable = issue_recurParents.Where(x => !x.AwaitingSolve);
+
 							var pads = issuesForTable.Select(x => x.Issue.PadId).ToList();
 							pads.AddRange(todoList.Select(x => x.PadId));
+							pads.AddRange(headlines.Select(x => x.HeadlinePadId));
 							var padTexts = await PadAccessor.GetHtmls(pads);
 
 							/////
-
+							var headlineTable = await HeadlineAccessor.BuildHeadlineTable(headlines.ToList(), "Headlines", recurrenceId,true, padTexts);
 
 							var issueTable = await IssuesAccessor.BuildIssuesSolvedTable(issuesForTable.ToList(), "Issues Solved", recurrenceId, true, padTexts);
 							var todosTable = new DefaultDictionary<long, string>(x => "");
@@ -621,11 +619,16 @@ namespace RadialReview.Accessors {
 									hasTodos[personTodos.First().AccountableUserId] = true;
 
 								var todoTable = await TodoAccessor.BuildTodoTable(personTodos.ToList(), "Outstanding To-dos", true, padLookup: padTexts);
+								
 
 								var output = new StringBuilder();
 
 								output.Append(todoTable.ToString());
 								output.Append("<br/>");
+								if (headlines.Any()) {
+									output.Append(headlineTable.ToString());
+									output.Append("<br/>");
+								}
 
 								todosTable[user.Id] = output.ToString();
 							}

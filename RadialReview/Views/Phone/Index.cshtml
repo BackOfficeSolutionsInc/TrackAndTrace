@@ -14,7 +14,7 @@
 			data: @Html.ArrayToString(Model),
 			//clickAdd: "/TwilioApi/ModalRecurrence",
 			//postAdd:'/TwilioApi/Modal',
-			clickRemove: "/phone/remove/{0}",
+			clickRemove: "/TwilioApi/RemoveAction/{0}",
 			//addButton:{text: "Add"},
 			cells:[{
 				name: "Number",
@@ -24,7 +24,11 @@
 				name: "Action",
 				classes:"fullWidth",
 				contents:function(x){
-					return x._ActionName + " to <span class='dotted'>" + x._RecurrenceName+"</span>";
+					var name = x._RecurrenceName;
+					if (x._RecurrenceName==null)
+						name = "my personal to-do list";
+
+					return x._ActionName + " to <span class='dotted'>" + name+"</span>";
 				}
 			},/*{
 				name: "",

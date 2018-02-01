@@ -252,7 +252,7 @@ function concludeMeeting() {
 	resetClickables();
 	delete startTime;// = undefined;
 
-	if ($("body").is(".preview-meeting")) {
+	if (!$("body").is(".preview-meeting")) {
 		loadPage("stats");
 	} else {
 		setPreviewMode(false);
