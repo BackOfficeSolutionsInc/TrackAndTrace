@@ -625,11 +625,6 @@ namespace RadialReview.Accessors {
 
 								output.Append(todoTable.ToString());
 								output.Append("<br/>");
-								if (headlines.Any()) {
-									output.Append(headlineTable.ToString());
-									output.Append("<br/>");
-								}
-
 								todosTable[user.Id] = output.ToString();
 							}
 
@@ -663,6 +658,12 @@ namespace RadialReview.Accessors {
 									toSend = true;
 								}
 
+
+								if (headlines.Any()) {
+									output.Append(headlineTable.ToString());
+									output.Append("<br/>");
+									toSend = true;
+								}
 
 
 								var mail = Mail.To(EmailTypes.L10Summary, email)

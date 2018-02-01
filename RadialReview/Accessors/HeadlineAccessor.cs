@@ -242,7 +242,7 @@ namespace RadialReview.Accessors {
 
 						table.Append(@" <tr><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + url + @""">")
 							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + url + @""">")
-							.Append(headline.Message).Append(@"</a></b></td><td>"+ (headline.About.NotNull(x => x.GetName()) ?? headline.AboutName) + "</td></tr>");
+							.Append(headline.Message).Append(@"</a></b></td><td style=""text-align: right;"">" + (headline.About.NotNull(x => x.GetName()) ?? headline.AboutName) + "</td></tr>");
 
 						if (showDetails) {
 							HtmlString details = null;
