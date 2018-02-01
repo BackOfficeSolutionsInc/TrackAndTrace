@@ -809,9 +809,9 @@ a.editable-click:hover {
   -webkit-filter: contrast(80%);
   filter: contrast(80%);
 }
-html {
-  overflow: hidden;
-}
+/*html {
+	overflow: hidden;
+}*/
 .meeting-preview .navbar-inverse {
   background-color: #EF7622;
   background-image: url("/Content/img/graystripe-light.png");

@@ -1045,7 +1045,7 @@ namespace RadialReview.Accessors {
 			}
 
 			if (!potentialUsers.Any())
-				throw new PermissionsException("No users");
+				throw new PermissionsException("No users. Add an attendee first.");
 			
 			var selected = potentialUsers.LastOrDefault(x => x.Selected);
 			if (selected == null)

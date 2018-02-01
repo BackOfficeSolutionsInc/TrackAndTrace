@@ -45,7 +45,7 @@ namespace RadialReview.Controllers {
 			var oo = await RockAccessor.Search(GetUser(), GetUser().Organization.Id, q, excludeLong);
 			//var oo = _SearchUsers(q, results, exclude);
 			var o = oo.Select(x => {
-				var desc = "Owner: " + x.AccountableUser.GetName();				
+				var desc = "Owner: " + x.AccountableUser.GetName();
 				return new BaseSelectExistingOrCreateItem {
 					ItemValue = "" + x.Id,
 					Name = x.Rock,
@@ -57,15 +57,15 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<ActionResult> Pad(long id, bool showControls=true) {
+		public async Task<ActionResult> Pad(long id, bool showControls = true, bool readOnly = false) {
 			try {
 				var rock = RockAccessor.GetRock(GetUser(), id);
 				var padId = rock.PadId;
-				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditRock(id))) {
+				if (readOnly || !_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditRock(id))) {
 					padId = await PadAccessor.GetReadonlyPad(rock.PadId);
 				}
 				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
-			} catch (Exception ) {
+			} catch (Exception) {
 				return RedirectToAction("Index", "Error");
 			}
 		}
@@ -229,12 +229,12 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("Vto_Rocks","Make sure that Company rock is uneditable.")]
+		[Untested("Vto_Rocks", "Make sure that Company rock is uneditable.")]
 		public PartialViewResult EditModal(long id) {
 			var rockAndMs = RockAccessor.GetRockAndMilestones(GetUser(), id);
 
 			var model = new RockAndMilestonesVM() {
-				Rock = new AngularRock(rockAndMs.Rock,false),
+				Rock = new AngularRock(rockAndMs.Rock, false),
 				Milestones = rockAndMs.Milestones.Select(x => new AngularMilestone(x)).ToList()
 			};
 

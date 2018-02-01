@@ -84,7 +84,7 @@ namespace RadialReview.Accessors {
 						//var todoData = TodoData.FromTodo(todo);
 						//userMeetingHub.appendTodo(".todo-list", todoData);
 						var updates = new AngularRecurrence(-2);
-						updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(ms, rock.AccountableUser));
+						updates.Milestones = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(ms, rock.AccountableUser));
 						userMeetingHub.update(updates);
 
 
@@ -103,7 +103,7 @@ namespace RadialReview.Accessors {
 
 			var splits = search.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			var dist = new DiscreteDistribution<RockModel>(0, 9, true);
-			
+
 			foreach (var u in visible) {
 
 				var fname = false;
@@ -470,7 +470,7 @@ namespace RadialReview.Accessors {
 			}
 
 			if (!potentialUsers.Any())
-				throw new PermissionsException("No users");
+				throw new PermissionsException("No users. Add an attendee first.");
 
 			var selected = potentialUsers.LastOrDefault(x => x.Selected);
 			if (selected == null)

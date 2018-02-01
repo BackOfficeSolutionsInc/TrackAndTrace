@@ -1,386 +1,387 @@
 ﻿@using ImageResizer.Configuration
 @model RadialReview.Models.L10.VM.L10MeetingVM
 @{
-    ViewBag.Title = Model.Recurrence.Name;
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.FullWidth = true;
-    if (ViewBag.VideoChatRoom == null) {
-        ViewBag.VideoChatRoom = Model.Recurrence.Id;
-    }
+	ViewBag.Title = Model.Recurrence.Name;
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.FullWidth = true;
+	if (ViewBag.VideoChatRoom == null) {
+		ViewBag.VideoChatRoom = Model.Recurrence.Id;
+	}
 }
 @using (Html.BeginStyles()) {
-    @Styles.Render("~/styles/L10")
-    <style>
-        .bootstrap-switch.bootstrap-switch-small {
-            min-width: 120px;
-        }
+	@Styles.Render("~/styles/L10")
+	<style>
+		.bootstrap-switch.bootstrap-switch-small {
+			min-width: 120px;
+		}
 
-        .bootstrap-switch > div > span.bootstrap-switch-default {
-            color: #999;
-        }
-    </style>
+		.bootstrap-switch > div > span.bootstrap-switch-default {
+			color: #999;
+		}
+	</style>
 
 	<!--vvvv  DO NOT DELETE THIS  vvvv-->
-    <!--[if IE]>
-        <link rel="stylesheet" type="text/css" href="/content/l10/l10-ie-only.css" />
-    <![endif]-->
+	<!--[if IE]>
+		<link rel="stylesheet" type="text/css" href="/content/l10/l10-ie-only.css" />
+	<![endif]-->
 	<!--^^^^  DO NOT DELETE THIS  ^^^^-->
 }
 @using (Html.BeginScripts()) {
-    <script>
-        @*Initialize some variables for the scripts*@
+	<script>
+		@*Initialize some variables for the scripts*@
 		@*Dangerous MeetingId*@
-        window.RecurrenceId = @Model.Recurrence.Id;
-        @if (Model.MeetingStart != null){
+		window.RecurrenceId = @Model.Recurrence.Id;
+		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-        }
+		        }
 
 
-    </script>
-    @Scripts.Render("~/bundles/MeetingPage")
+	</script>
+	@Scripts.Render("~/bundles/MeetingPage")
 
-    @Scripts.Render("~/bundles/L10")
-    @Html.Partial("_SetupScript", Model)
-    <script>
+	@Scripts.Render("~/bundles/L10")
+	@Html.Partial("_SetupScript", Model)
+	<script>
+		setPreviewMode(false);
 
-        var picturesLookup={};
+		var picturesLookup={};
 
-        function addToPictureLookup(id,url,name,initials){
-            picturesLookup[id]= {url:url,name:name,initials:initials};
-        }
+		function addToPictureLookup(id,url,name,initials){
+			picturesLookup[id]= {url:url,name:name,initials:initials};
+		}
 
-        function afterLoad() {
-            console.log("called afterLoad");
-            userId = @(ViewBag.UserId);
+		function afterLoad() {
+			console.log("called afterLoad");
+			userId = @(ViewBag.UserId);
 
-            @if (Model.Meeting != null){
+			@if (Model.Meeting != null){
 				foreach (var m in Model.MemberPictures.ToList()) {
 					@:addToPictureLookup(@m.UserId,"@m.Url","@m.Name","@m.Initials");
-                                    																																		}
+			                                    																																		}
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-                                    	@:var bmin = (@(Math.Round((Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0)*1000))/1000) + (@((DateTime.UtcNow.ToJavascriptMilliseconds()-(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds())))))/(60*1000);
-                                    	@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin@*,Model.Meeting._MeetingLeaderCurrentPageType*@);
-                                    	foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
+			                                    	@:var bmin = (@(Math.Round((Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0)*1000))/1000) + (@((DateTime.UtcNow.ToJavascriptMilliseconds()-(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds())))))/(60*1000);
+			                                    	@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin@*,Model.Meeting._MeetingLeaderCurrentPageType*@);
+			                                    	foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
 						@:setPageTime("@i.Item1",@(Math.Round(i.Item2*10000))/10000);
-                                    																						}
+			                                    																						}
 			}else{
 					@:isLeader =false;
-                                    																					}
-            initL10();
-            try {
-                resetClickables();
-            } catch (e) {
+			                                    																					}
+			initL10();
+			try {
+				resetClickables();
+			} catch (e) {
 
-            }
-        }
+			}
+		}
 
-        $(".switch").addClass("hide");
+		$(".switch").addClass("hide");
 
-        function printFromUrl(printUrl){
-            $("#hidden12335325").remove();
-            var embed = $("<div id='hidden12335325' style='display:none'></div>");
-            embed.append($('<iframe  type="application/pdf" src="'+printUrl+'" id="pdf-frame" width="100%" height="100%"></embeded>'));
+		function printFromUrl(printUrl){
+			$("#hidden12335325").remove();
+			var embed = $("<div id='hidden12335325' style='display:none'></div>");
+			embed.append($('<iframe  type="application/pdf" src="'+printUrl+'" id="pdf-frame" width="100%" height="100%"></embeded>'));
 
-            $("body").append(embed);
-            var PDF = document.getElementById("pdf-frame");
-            PDF.focus();
-            PDF.contentWindow.print();
-        }
-        $(function() {
-            $('.switch').bootstrapSwitch();
+			$("body").append(embed);
+			var PDF = document.getElementById("pdf-frame");
+			PDF.focus();
+			PDF.contentWindow.print();
+		}
+		$(function() {
+			$('.switch').bootstrapSwitch();
 
-            $(".switch").removeClass("hide");
-            $('#Follow').on('switchChange', function(e, data) {
-                setFollowLeader(data.value);
-            });
+			$(".switch").removeClass("hide");
+			$('#Follow').on('switchChange', function(e, data) {
+				setFollowLeader(data.value);
+			});
 
-            $(".back-button").hide();
-            $(".print-vto-button").hide();
-            var page = "main";
-            var vtoLastScroll=0;
-            $(".vto-button").click(function(){
-                showAltPage("vto","/vto/edit/@(Model.VtoId)?noheading=true","32px",1000);
-            });
+			$(".back-button").hide();
+			$(".print-vto-button").hide();
+			var page = "main";
+			var vtoLastScroll=0;
+			$(".vto-button").click(function(){
+				showAltPage("vto","/vto/edit/@(Model.VtoId)?noheading=true","32px",1000);
+			});
 
-            $(".ac-button").click(function(){
-                showAltPage("ac","/accountability/chart/@(Html.Organization().AccountabilityChartId)?noheading=true#/","32px",1000);
-            });
+			$(".ac-button").click(function(){
+				showAltPage("ac","/accountability/chart/@(Html.Organization().AccountabilityChartId)?noheading=true#/","32px",1000);
+			});
 
-            $("body").on("click",".editMeeting-button",function(){
-                showAltPage("wizard#/"+currentPageType,"/l10/wizard/@(Model.Recurrence.Id)?noheading=true#/"+currentPageType,"32px");
-            });
+			$("body").on("click",".editMeeting-button",function(){
+				showAltPage("wizard#/"+currentPageType,"/l10/wizard/@(Model.Recurrence.Id)?noheading=true#/"+currentPageType,"32px");
+			});
 
-            function showAltPage(pageName,pageUrl,backButtonTop,wait){
-                var timer = 0;
-                if (typeof(wait)==="undefined")
-                    wait =  500;
-                if (wait<5)
-                    wait =5;
+			function showAltPage(pageName,pageUrl,backButtonTop,wait){
+				var timer = 0;
+				if (typeof(wait)==="undefined")
+					wait =  500;
+				if (wait<5)
+					wait =5;
 
-                if (typeof($(".vto-frame").attr("src"))==="undefined"|| $(".vto-frame").attr("data-page")!=pageName){
-                    $("body").addClass("loading");
-                    $(".vto-frame").attr("src","about:blank");
-                    setTimeout(function(){
-                        $(".vto-frame").attr("src",pageUrl);
-                        $(".vto-frame").attr("data-page",pageName);
-                    },0);
-                    timer=wait;
-                }
-                setTimeout(function(){
-                    setTimeout(function(){
-                        $("body").removeClass("loading");
-                    },100);
-                    $(".slider").css({marginLeft:"-100%"});
-                    $(".slider-container").css("overflow-y","hidden");
-                    $(".back-button").css("top",backButtonTop).show();
-                    page=pageName;
-                    vtoLastScroll = $(".slider-container").scrollTop();
-                    $(".slider-container").scrollTop(0);
-                },timer);
-            }
-
-
-            $(".back-button").click(function(){
-                $(".slider").css({marginLeft:"0%"});
-                $(".back-button").hide();
-                $(".print-vto-button").hide();
-                $(".slider-container").css("overflow-y","inherit");
-                page="main";
-
-                vtoLastScroll = $(".slider-container").scrollTop(vtoLastScroll)
-            });
+				if (typeof($(".vto-frame").attr("src"))==="undefined"|| $(".vto-frame").attr("data-page")!=pageName){
+					$("body").addClass("loading");
+					$(".vto-frame").attr("src","about:blank");
+					setTimeout(function(){
+						$(".vto-frame").attr("src",pageUrl);
+						$(".vto-frame").attr("data-page",pageName);
+					},0);
+					timer=wait;
+				}
+				setTimeout(function(){
+					setTimeout(function(){
+						$("body").removeClass("loading");
+					},100);
+					$(".slider").css({marginLeft:"-100%"});
+					$(".slider-container").css("overflow-y","hidden");
+					$(".back-button").css("top",backButtonTop).show();
+					page=pageName;
+					vtoLastScroll = $(".slider-container").scrollTop();
+					$(".slider-container").scrollTop(0);
+				},timer);
+			}
 
 
-            $(document).bind("keyup keydown", function(e){
-                if(e.ctrlKey && e.keyCode == 80){
-                    var printUrl = "/quarterly/printout/@(Model.Recurrence.Id)";
-                    if (page=="vto"){
-                        printUrl = "/quarterly/PrintPages/@(Model.Recurrence.Id)?vto=true";
-                    }
-                    printFromUrl(printUrl);
-                    e.preventDefault();
-                }
-            });
-        });
+			$(".back-button").click(function(){
+				$(".slider").css({marginLeft:"0%"});
+				$(".back-button").hide();
+				$(".print-vto-button").hide();
+				$(".slider-container").css("overflow-y","inherit");
+				page="main";
+
+				vtoLastScroll = $(".slider-container").scrollTop(vtoLastScroll)
+			});
 
 
-    </script>
+			$(document).bind("keyup keydown", function(e){
+				if(e.ctrlKey && e.keyCode == 80){
+					var printUrl = "/quarterly/printout/@(Model.Recurrence.Id)";
+					if (page=="vto"){
+						printUrl = "/quarterly/PrintPages/@(Model.Recurrence.Id)?vto=true";
+					}
+					printFromUrl(printUrl);
+					e.preventDefault();
+				}
+			});
+		});
+
+
+	</script>
 
 }
-<div class="slider-container level-10" style="overflow-y: scroll;">
-    <div class="slider">
-        <div class="row full left-panel" >
-            <div class="col-sm-3 col-md-2 full fixed-pos" style="padding-bottom: 15px;">
-                <div class="clock-container">
-                    <div class="timer-bar"></div>
-                    <div class="component clocks hidden">
-                        <div class="elapsed-time centered">
-                            <span class="">
-                                <span class="hour hour-item"></span>
-                                <span class="gray hour-item">h</span>
-                                <span class="minute "></span>
-                                <span class="gray ">m</span>
-                                <span class="second1"></span>
-                            </span>
-                        </div>
-                        <div class="current-time test-ignore">
-                            <span class="centered">
-                                <span class="hour big"></span>
-                                <span class="colon big">:</span>
-                                <span class="minute big"></span>
-                                <span class="second gray"></span>
-                            </span>
-                        </div>
+<div class="slider-container level-10" style="overflow-y: auto;">
+	<div class="slider">
+		<div class="row full left-panel">
+			<div class="col-sm-3 col-md-2 full fixed-pos" style="padding-bottom: 15px;">
+				<div class="clock-container">
+					<div class="timer-bar"></div>
+					<div class="component clocks hidden">
+						<div class="elapsed-time centered">
+							<span class="">
+								<span class="hour hour-item"></span>
+								<span class="gray hour-item">h</span>
+								<span class="minute "></span>
+								<span class="gray ">m</span>
+								<span class="second1"></span>
+							</span>
+						</div>
+						<div class="current-time test-ignore">
+							<span class="centered">
+								<span class="hour big"></span>
+								<span class="colon big">:</span>
+								<span class="minute big"></span>
+								<span class="second gray"></span>
+							</span>
+						</div>
 
-                    </div>
+					</div>
 
-                </div>
-                <div class="agenda">
-                    <div class="component">
-                        <div class="btn-group pull-left">
-                            <span class="btn btn-default btn-xs dropdown-toggle print-button" data-toggle="dropdown" aria-expanded="false">
-                                <span class="icon fontastic-icon-print" style="top:2px;"></span>
-                            </span>
-                            <ul class="dropdown-menu" role="menu">
-                                <li>
-                                    <a onclick="showPrint()"><span class="glyphicon glyphicon-book"></span> Quarterly Printout</a>
-                                </li>
-                                <li><a class="" target="_blank" href="/L10/printout/@Model.Recurrence.Id"><span class="glyphicon glyphicon-file"></span> L10 Printout</a></li>
-                            </ul>
-                        </div>
-                        <div class="btn-group pull-right">
-                            <span class="btn btn-default btn-xs dropdown-toggle settings-button" data-toggle="dropdown" aria-expanded="false">
-                                <span class="glyphicon glyphicon-cog" style="top:2px;"></span>
-                            </span>
-                            <ul class="dropdown-menu pull-right" role="menu">
-                                @if (ViewBag.Links != null) {
-                                    foreach (var link in ViewBag.Links) {
-                                        <li><a href="@(link["href"])" target="_blank"><span class="@(link["class"])"></span> @(link["text"])</a></li>
-                                    }
-                                    <li class="divider"></li>
-                                }
-                                @if (Model.CanEdit) {
-                                    <li><a class="editMeeting-button" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-edit"></span> Edit Meeting</a></li>
-                                    <li class="divider"></li>
-                                }
-                                <li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})" target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
-                                <li><a href="@Url.Action("Timeline",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a></li>
-                                <li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
-                                @if (Model.CanAdmin) {
-                                    <li class="divider"></li>
-                                    <li><a href="/L10/Edit/@(Model.Recurrence.Id)?return=meeting" onclick="skipBeforeUnload = true" style="color:#AB3333"><span class="glyphicon glyphicon-cog"></span> Advanced Settings</a></li>
-                                }
-                            </ul>
-                        </div>
-                        <div class="title">Agenda</div>
-                        <ol class="agenda-items">
-                            @foreach (var p in Model.Recurrence._Pages) {
-                                <li class="page-item page-@p.Id pagetype-@(p.PageTypeStr.ToLower())" data-pagetype="@(p.PageTypeStr.ToLower())"><a data-location="page-@p.Id" href="#page-@p.Id">@p.Title</a><span title="Spend @String.Format("{0:0.##}", p.Minutes) minutes on your @Html.Encode(p.Title)" data-over="@p.Minutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", p.Minutes))m</span></span></li>
-                            }
-                        </ol>
+				</div>
+				<div class="agenda">
+					<div class="component">
+						<div class="btn-group pull-left">
+							<span class="btn btn-default btn-xs dropdown-toggle print-button" data-toggle="dropdown" aria-expanded="false">
+								<span class="icon fontastic-icon-print" style="top:2px;"></span>
+							</span>
+							<ul class="dropdown-menu" role="menu">
+								<li>
+									<a onclick="showPrint()"><span class="glyphicon glyphicon-book"></span> Quarterly Printout</a>
+								</li>
+								<li><a class="" target="_blank" href="/L10/printout/@Model.Recurrence.Id"><span class="glyphicon glyphicon-file"></span> L10 Printout</a></li>
+							</ul>
+						</div>
+						<div class="btn-group pull-right">
+							<span class="btn btn-default btn-xs dropdown-toggle settings-button" data-toggle="dropdown" aria-expanded="false">
+								<span class="glyphicon glyphicon-cog" style="top:2px;"></span>
+							</span>
+							<ul class="dropdown-menu pull-right" role="menu">
+								@if (ViewBag.Links != null) {
+									foreach (var link in ViewBag.Links) {
+										<li><a href="@(link["href"])" target="_blank"><span class="@(link["class"])"></span> @(link["text"])</a></li>
+									}
+									<li class="divider"></li>
+								}
+								@if (Model.CanEdit) {
+									<li><a class="editMeeting-button" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-edit"></span> Edit Meeting</a></li>
+									<li class="divider"></li>
+								}
+								<li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})" target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
+								<li><a href="@Url.Action("Timeline",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a></li>
+								<li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+								@if (Model.CanAdmin) {
+									<li class="divider"></li>
+									<li><a href="/L10/Edit/@(Model.Recurrence.Id)?return=meeting" onclick="skipBeforeUnload = true" style="color:#AB3333"><span class="glyphicon glyphicon-cog"></span> Advanced Settings</a></li>
+								}
+							</ul>
+						</div>
+						<div class="title">Agenda</div>
+						<ol class="agenda-items">
+							@foreach (var p in Model.Recurrence._Pages) {
+								<li class="page-item page-@p.Id pagetype-@(p.PageTypeStr.ToLower())" data-pagetype="@(p.PageTypeStr.ToLower())"><a data-location="page-@p.Id" href="#page-@p.Id">@p.Title</a><span title="Spend @String.Format("{0:0.##}", p.Minutes) minutes on your @Html.Encode(p.Title)" data-over="@p.Minutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", p.Minutes))m</span></span></li>
+							}
+						</ol>
 
-                        @if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
-                            <br />
-                            <div class="alignCenter">
-                                <div style="color: #bbb;">Follow meeting leader:</div>
-                                <input id="Follow"
-                                       type="checkbox"
-                                       checked
-                                       class="switch switch-large fullWidth hide"
-                                       style="min-width: 138px;"
-                                       data-on-color="default"
-                                       data-off-color="info"
-                                       data-on-text="Locked"
-                                       data-off-text="Unlocked"
-                                       data-size="small"
-                                       data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
+						@if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
+							<br />
+							<div class="alignCenter">
+								<div style="color: #bbb;">Follow meeting leader:</div>
+								<input id="Follow"
+									   type="checkbox"
+									   checked
+									   class="switch switch-large fullWidth hide"
+									   style="min-width: 138px;"
+									   data-on-color="default"
+									   data-off-color="info"
+									   data-on-text="Locked"
+									   data-off-text="Unlocked"
+									   data-size="small"
+									   data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
 
-                            </div>
-                            <br />
-                        }
-                    </div>
-                    <div class="component additional-pages">
-                        <div>
-                            @if (Model.VtoId != 0) {
-                                <div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="vto" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
-                            }
-                        </div>
-                    </div>
+							</div>
+							<br />
+						}
+					</div>
+					<div class="component additional-pages">
+						<div>
+							@if (Model.VtoId != 0) {
+								<div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="vto" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
+							}
+						</div>
+					</div>
 
-                    @if (ViewBag.ViewAccountabilityChart ?? false) {
-                        <div class="component additional-pages">
-                            <div>
-                                <div class="alignRight" style1="padding-left:24px;"><div class="ac-button clickable gray" data-location="ac" href="#ac">View Accountability Chart <span class="glyphicon glyphicon-chevron-right"></span></div></div>
+					@if (ViewBag.ViewAccountabilityChart ?? false) {
+						<div class="component additional-pages">
+							<div>
+								<div class="alignRight" style1="padding-left:24px;"><div class="ac-button clickable gray" data-location="ac" href="#ac">View Accountability Chart <span class="glyphicon glyphicon-chevron-right"></span></div></div>
 
-                            </div>
-                            @*<div class="alignCenter">
-                                <a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
-                            </div>*@
+							</div>
+							@*<div class="alignCenter">
+									<a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
+								</div>*@
 
-                        </div>
-                    }
-                    <div class="clearfix"></div>
-                    @*Chat*@
-                    <div class="chat-container">
-                        <div class="component">
-                            <ul class="log"></ul>
-                        </div>
-                    </div>
-                    <div class="online-component-container">
-                        <div class="component additional-pages online-component">
-                            <div class="toggle alignRight" style="padding-left: 7px;"><div class="clickable gray">Online <span class="glyphicon glyphicon-chevron-right pull-right"></span></div></div>
-                            <div class="user-picture-container"></div>
-                            @using (Html.BeginScripts()) {
+						</div>
+					}
+					<div class="clearfix"></div>
+					@*Chat*@
+					<div class="chat-container">
+						<div class="component">
+							<ul class="log"></ul>
+						</div>
+					</div>
+					<div class="online-component-container">
+						<div class="component additional-pages online-component">
+							<div class="toggle alignRight" style="padding-left: 7px;"><div class="clickable gray">Online <span class="glyphicon glyphicon-chevron-right pull-right"></span></div></div>
+							<div class="user-picture-container"></div>
+							@using (Html.BeginScripts()) {
 								<!--enter meetings-->
-                                <script>
-                                    (function(){
-                                        var existingUsers = @Html.ArrayToString(Model.Connected);
-                                        Enumerable.from(existingUsers).forEach(function(c){
-                                            userEnterMeeting(c);
-                                        });
-                                    })();
-                                </script>
-                            }
-                            <div class="options noselect"><span class="option clickable uncheck">Uncheck All</span> <span class="option clickable randomize">Randomize</span></div>
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 10px;width:100%;clear:both"></div>
-                    @if (Model.Recurrence.ForumCode != null) {
-                        <div class="component">
-                            <div>
-                                <h4 class="alignCenter">Text <b>@Model.Recurrence.ForumCode.ToUpper()</b> to <nobr>@RadialReview.Utilities.Config.TextInNumber().ToPhoneNumber()</nobr></h4>
+								<script>
+									(function(){
+										var existingUsers = @Html.ArrayToString(Model.Connected);
+										Enumerable.from(existingUsers).forEach(function(c){
+											userEnterMeeting(c);
+										});
+									})();
+								</script>
+							}
+							<div class="options noselect"><span class="option clickable uncheck">Uncheck All</span> <span class="option clickable randomize">Randomize</span></div>
+						</div>
+					</div>
+					<div style="margin-bottom: 10px;width:100%;clear:both"></div>
+					@if (Model.Recurrence.ForumCode != null) {
+						<div class="component">
+							<div>
+								<h4 class="alignCenter">Text <b>@Model.Recurrence.ForumCode.ToUpper()</b> to <nobr>@RadialReview.Utilities.Config.TextInNumber().ToPhoneNumber()</nobr></h4>
 
-                            </div>
-                        </div>
-                    }
-                    <div class="clearfix"></div>
-                </div>
-            </div>
-            <div class="col-sm-9 col-md-10  full">
-                <div class="main-window-container">
-                    <div id="main-window"></div>
-                    <div id="hiddenWindow" style="display:none"></div>
-                </div>
-            </div>
-        </div>
-        <div class="right-panel">
-            <div class="back-button btn btn-primary btn-xs" style="display:none"><span class="glyphicon glyphicon-chevron-left"></span> Back</div>
-            <div class="print-vto-button btn btn-default btn-xs" style="display:none" onclick="printFromUrl('/quarterly/PrintPages/@(Model.Recurrence.Id)?vto=true')"><span class="glyphicon glyphicon-print"></span> Print</div>
-            @if (Model.VtoId != 0) {
-                <iframe id="vto-frame" class="vto-frame"></iframe>}
+							</div>
+						</div>
+					}
+					<div class="clearfix"></div>
+				</div>
+			</div>
+			<div class="col-sm-9 col-md-10  full">
+				<div class="main-window-container">
+					<div id="main-window"></div>
+					<div id="hiddenWindow" style="display:none"></div>
+				</div>
+			</div>
+		</div>
+		<div class="right-panel">
+			<div class="back-button btn btn-primary btn-xs" style="display:none"><span class="glyphicon glyphicon-chevron-left"></span> Back</div>
+			<div class="print-vto-button btn btn-default btn-xs" style="display:none" onclick="printFromUrl('/quarterly/PrintPages/@(Model.Recurrence.Id)?vto=true')"><span class="glyphicon glyphicon-print"></span> Print</div>
+			@if (Model.VtoId != 0) {
+				<iframe id="vto-frame" class="vto-frame"></iframe>}
 
-        </div>
-    </div>
+		</div>
+	</div>
 </div>
 <div class="notes" style="display: none;">
-    <div class="overlay"></div>
-    <div class="row">
-        <div class="col-xs-9 noPadLeft noPadRight">
-            <div class="container main">
-                <span class="notes-instruction" @(Model.Recurrence.NotNull(x => x._MeetingNotes.Any()) ? "style=display:none" : "")>No notes to show. Click the Add Page button to create a custom note.</span>
-                <iframe class="" style="background-color: white" width="100%" src="about:blank"></iframe>
-            </div>
-        </div>
-        <div class="col-xs-3 noPadRight">
-            <div class="side tabs">
-                <div class="tab add"><span class="pull-right glyphicon glyphicon-plus-sign"></span> Add Page</div>
-                @if (Model.Recurrence != null) {
-                    foreach (var t in Model.Recurrence._MeetingNotes) {
-                        <div data-id="@t.Id" class="tab">@t.Name</div>
-                    }
-                }
-            </div>
-        </div>
-    </div>
+	<div class="overlay"></div>
+	<div class="row">
+		<div class="col-xs-9 noPadLeft noPadRight">
+			<div class="container main">
+				<span class="notes-instruction" @(Model.Recurrence.NotNull(x => x._MeetingNotes.Any()) ? "style=display:none" : "")>No notes to show. Click the Add Page button to create a custom note.</span>
+				<iframe class="" style="background-color: white" width="100%" src="about:blank"></iframe>
+			</div>
+		</div>
+		<div class="col-xs-3 noPadRight">
+			<div class="side tabs">
+				<div class="tab add"><span class="pull-right glyphicon glyphicon-plus-sign"></span> Add Page</div>
+				@if (Model.Recurrence != null) {
+					foreach (var t in Model.Recurrence._MeetingNotes) {
+						<div data-id="@t.Id" class="tab">@t.Name</div>
+					}
+				}
+			</div>
+		</div>
+	</div>
 </div>
-@using (Html.BeginScripts()) {	
-    <script>
-        var shouldStartTranscribe = false;
-        var countDown = @(Model.Recurrence.CountDown.ToJavascript());
-        @if (Model.EnableTranscript)
+@using (Html.BeginScripts()) {
+	<script>
+		var shouldStartTranscribe = false;
+		var countDown = @(Model.Recurrence.CountDown.ToJavascript());
+		@if (Model.EnableTranscript)
 		{
-			@:shouldStartTranscribe = true;                     														
-		}
-        var notesUrl = "@RadialReview.Utilities.Config.NotesUrl()";
-        $(function() {
-            InitTranscribe(@Model.Recurrence.Id,@(Model.Meeting==null?-1:Model.Meeting.Id),shouldStartTranscribe);
-        });
-    </script>
+			@:shouldStartTranscribe = true;
+				}
+		var notesUrl = "@RadialReview.Utilities.Config.NotesUrl()";
+		$(function() {
+			InitTranscribe(@Model.Recurrence.Id,@(Model.Meeting==null?-1:Model.Meeting.Id),shouldStartTranscribe);
+		});
+	</script>
 }
 
 @*Transcript*@
 <div class="transcript-container hidden footer-bar-container" data-height="200px" style="bottom: -200px;">
-    <div class="tab footer-bar-tab">
-        <span class="transcribing" style="opacity: 0"><img src="~/Content/img/ajax-loader-ob.gif" height="11" width="16" /></span>
-        <span class="clicker">Transcript</span>
-        <span class="sendAudio icon fontastic-icon-mic" onclick="clickMuteTranscribe(this)"></span>
-    </div>
-    <div class="transcript-bar footer footer-bar-contents">
-        <ul class="temp gray"></ul>
-        <ul class="transcription-contents">
-            @foreach (var t in Model.CurrentTranscript.OrderByDescending(x => x.Order)) {
-                <li title="@t.Owner" data-order="@t.Order">@t.Message</li>}
-        </ul>
-        <span class="noselect experimental" style="position: relative;left:0;bottom:0;" target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers">This experimental feature is built for Chrome.</span>
-    </div>
+	<div class="tab footer-bar-tab">
+		<span class="transcribing" style="opacity: 0"><img src="~/Content/img/ajax-loader-ob.gif" height="11" width="16" /></span>
+		<span class="clicker">Transcript</span>
+		<span class="sendAudio icon fontastic-icon-mic" onclick="clickMuteTranscribe(this)"></span>
+	</div>
+	<div class="transcript-bar footer footer-bar-contents">
+		<ul class="temp gray"></ul>
+		<ul class="transcription-contents">
+			@foreach (var t in Model.CurrentTranscript.OrderByDescending(x => x.Order)) {
+				<li title="@t.Owner" data-order="@t.Order">@t.Message</li>}
+		</ul>
+		<span class="noselect experimental" style="position: relative;left:0;bottom:0;" target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers">This experimental feature is built for Chrome.</span>
+	</div>
 </div>
