@@ -2180,7 +2180,7 @@ namespace RadialReview.Controllers {
 			var b = 0;
 			var pageCount = 0;
 			var createTime = new DateTime(2017, 11, 22);
-			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var _VtoModel = s.QueryOver<VtoModel>().List().ToList();
 
@@ -2212,6 +2212,7 @@ namespace RadialReview.Controllers {
 					}
 
 					tx.Commit();
+					s.Flush();
 				}
 			}
 			return "VtoStrategyMap Inserted:" + a + ", VtoITemString Inserted:" + b;
