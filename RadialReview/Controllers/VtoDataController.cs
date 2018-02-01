@@ -64,13 +64,13 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult RemoveMarketStrategy(long strategyId, string connectionId = null) {
-			VtoAccessor.RemoveMarketingStrategy(GetUser(), strategyId, connectionId);
-			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-		}
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> RemoveMarketStrategy(long strategyId, string connectionId = null) {
+            await VtoAccessor.RemoveMarketingStrategy(GetUser(), strategyId, connectionId);
+            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+        }
 
-		[Access(AccessLevel.UserOrganization)]
+        [Access(AccessLevel.UserOrganization)]
 		public JsonResult AddThreeYear(long vto, string connectionId = null) {
 			VtoAccessor.AddThreeYear(GetUser(), vto);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
@@ -99,13 +99,13 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult DeleteCompanyValue(long value, string connectionId = null) {
-			VtoAccessor.UpdateCompanyValue(GetUser(), value, null, null, true, connectionId);
-			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-		}
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> DeleteCompanyValue(long value, string connectionId = null) {
+            await VtoAccessor.UpdateCompanyValue(GetUser(), value, null, null, true, connectionId);
+            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+        }
 
-		[Access(AccessLevel.UserOrganization)]
+        [Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> UpdateAngularCompanyValue(AngularCompanyValue model, string connectionId = null) {
 			await VtoAccessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
@@ -126,13 +126,13 @@ namespace RadialReview.Controllers {
 			VtoAccessor.AddIssue(GetUser(), vto);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult DeleteString(long value, string connectionId = null) {
-			VtoAccessor.UpdateVtoString(GetUser(), value, null, true, connectionId);
-			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-		}
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> DeleteString(long value, string connectionId = null) {
+            await VtoAccessor.UpdateVtoString(GetUser(), value, null, true, connectionId);
+            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+        }
 
-		[HttpPost]
+        [HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> XUpdateRock(string pk, string name, string value) {
 			switch (name.ToLower()) {

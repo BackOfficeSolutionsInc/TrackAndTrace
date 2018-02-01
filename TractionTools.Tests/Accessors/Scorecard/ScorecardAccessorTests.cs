@@ -67,6 +67,7 @@ namespace TractionTools.Tests.Accessors.Scorecard {
                 Assert.IsNull(score.DateEntered);
 
                 Assert.AreEqual(score.ForWeek, TimingUtility.GetDateSinceEpoch(weekId1));
+                o.Manager.IncrementClientTimestamp();
 
                 await ScorecardAccessor.UpdateScore(o.Manager, score.Id, 1);
                 var scoreAgain = ScorecardAccessor.GetScore(o.Manager, score.Id);
@@ -82,6 +83,8 @@ namespace TractionTools.Tests.Accessors.Scorecard {
                     var scores = ScorecardAccessor.GetMeasurableScores(o.Manager, m.Id);
                     Assert.AreEqual(1, scores.Count);
                 }
+                o.Manager.IncrementClientTimestamp();
+
                 await ScorecardAccessor.UpdateScore(o.Manager, m.Id, TimingUtility.GetDateSinceEpoch(weekId2), 2.1m);
                 {
                     var scores = ScorecardAccessor.GetMeasurableScores(o.Manager, m.Id);
@@ -97,6 +100,8 @@ namespace TractionTools.Tests.Accessors.Scorecard {
                     //Test priority of ScoreId,MeasurableId,WeekId
                     {
                         //(ScoreId) from w1Score, (MeasurableId,WeekId) from w2Score
+                        o.Manager.IncrementClientTimestamp();
+
                         await ScorecardAccessor.UpdateScore(o.Manager,w1Score.Id, m.Id, TimingUtility.GetDateSinceEpoch(weekId2), 3.35m);
                         //Should use w1Score as priority
                         var newW1Score = ScorecardAccessor.GetScore(o.Manager, w1Score.Id);
@@ -107,20 +112,15 @@ namespace TractionTools.Tests.Accessors.Scorecard {
 
                     //Test setting to null
                     {
+                        o.Manager.IncrementClientTimestamp();
                         await ScorecardAccessor.UpdateScore(o.Manager, m.Id, TimingUtility.GetDateSinceEpoch(weekId2), null);
                         var newScore = ScorecardAccessor.GetScore(o.Manager, w2Score.Id);
 
                         Assert.IsTrue(newScore.Measured == null);
                         Assert.IsTrue(newScore.DateEntered == null);
                     }
-                }               
-
+                } 
             }
-
-
-
         }
-
-        
     }
 }

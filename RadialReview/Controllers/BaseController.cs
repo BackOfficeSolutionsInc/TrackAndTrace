@@ -47,6 +47,7 @@ using System.Net.Mime;
 using System.Text.RegularExpressions;
 using SpreadsheetLight;
 using RadialReview.Hooks;
+using System.Net;
 
 namespace RadialReview.Controllers {
 	public class UserManagementController : BaseController {
@@ -158,18 +159,20 @@ namespace RadialReview.Controllers {
 				user._IsRadialAdmin = user.IsRadialAdmin;
 
 				user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
-				user._ClientOffset = Request.Params.Get("_tz").TryParseInt();
+                user._ClientOffset = Request.Params.Get("_tz").TryParseInt();
+                user._ClientRequestId = Request.Params.Get("_rid");
 
-				if (user._ClientTimestamp != null && user._ClientOffset==null) {
+                if (user._ClientTimestamp != null && user._ClientOffset==null) {
 					var diff = (int)(Math.Round((user._ClientTimestamp.Value.ToDateTime()-DateTime.UtcNow).TotalMinutes / 30.0) * 30.0);
 					user._ClientOffset = diff;// Thread.SetData(Thread.GetNamedDataSlot("timeOffset"), diff);
 				}
 
 				HookData.SetData("ConnectionId", Request.Params.Get("connectionId"));
 				HookData.SetData("ClientTimestamp", user._ClientTimestamp);
-				HookData.SetData("ClientTimezone", user._ClientOffset);
+                HookData.SetData("ClientTimezone", user._ClientOffset);
+                HookData.SetData("ClientRequestId", user._ClientRequestId);
 
-			}
+            }
 			return user;
 		}
 		public UserOrganizationModel GetUser() {
@@ -526,6 +529,7 @@ namespace RadialReview.Controllers {
 
 				if (isJsonResult) {
 					var exception = new ResultObject(filterContext.Exception);
+                    HttpStatusCode? statusOverride = null;
 					if (filterContext.Exception is RedirectException) {
 						var re = ((RedirectException)filterContext.Exception);
 						if (re.Silent != null)
@@ -535,12 +539,17 @@ namespace RadialReview.Controllers {
 
 						if (re.ForceReload)
 							exception.Refresh = true;
+
+                        if (re.StatusCodeOverride != null) {
+                            statusOverride = re.StatusCodeOverride.Value;
+                        }
+
 					}
 
 					filterContext.ExceptionHandled = true;
 					filterContext.HttpContext.Response.Clear();
+					filterContext.HttpContext.Response.StatusCode = (int)(statusOverride??System.Net.HttpStatusCode.InternalServerError);
 					filterContext.HttpContext.Response.TrySkipIisCustomErrors = true;
-					filterContext.HttpContext.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
 					filterContext.Result = new JsonResult() { Data = exception, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 					return;
 				}

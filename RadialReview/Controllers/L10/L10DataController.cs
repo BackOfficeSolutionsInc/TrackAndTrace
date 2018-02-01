@@ -447,24 +447,24 @@ namespace RadialReview.Controllers {
 			public long recurrenceId { get; set; }
 		}
 
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateMeasurableOrdering(MeasurableOrdering model) {
-			L10Accessor.SetMeetingMeasurableOrdering(GetUser(), model.recurrenceId, model.ordering.ToList());
-			return Json(ResultObject.SilentSuccess());
-		}
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> UpdateMeasurableOrdering(MeasurableOrdering model) {
+            await L10Accessor.SetMeetingMeasurableOrdering(GetUser(), model.recurrenceId, model.ordering.ToList());
+            return Json(ResultObject.SilentSuccess());
+        }
 
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateRecurrenceMeasurableOrdering(MeasurableOrdering model) {
-			L10Accessor.SetRecurrenceMeasurableOrdering(GetUser(), model.recurrenceId, model.ordering.ToList());
-			return Json(ResultObject.SilentSuccess());
-		}
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> UpdateRecurrenceMeasurableOrdering(MeasurableOrdering model) {
+            await L10Accessor.SetRecurrenceMeasurableOrdering(GetUser(), model.recurrenceId, model.ordering.ToList());
+            return Json(ResultObject.SilentSuccess());
+        }
 
-		#endregion
+        #endregion
 
-		#region Issues
-		public class IssuesListVm {
+        #region Issues
+        public class IssuesListVm {
 			public string connectionId { get; set; }
 			public List<IssueListItemVm> issues { get; set; }
 			public string orderby { get; set; }

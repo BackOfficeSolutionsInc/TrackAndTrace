@@ -69,6 +69,7 @@ using Twilio.Types;
 using Twilio.Rest.Api.V2010.Account;
 using RadialReview.Accessors;
 using RadialReview.Models.UserModels;
+using RadialReview.Utilities.NHibernate;
 
 namespace RadialReview.Accessors {
 	public partial class L10Accessor : BaseAccessor {
@@ -266,7 +267,7 @@ namespace RadialReview.Accessors {
 			perm.EditL10Recurrence(issue.Recurrence.Id);
 			if (issue.CloseTime != null)
 				throw new PermissionsException("Issue already deleted.");
-			await IssuesAccessor.EditIssue(s, perm, recurrenceIssue, complete: true);
+			await IssuesAccessor.EditIssue(OrderedSession.Indifferent(s), perm, recurrenceIssue, complete: true);
 		}
 
 		public static void UpdateIssues(UserOrganizationModel caller, long recurrenceId, /*IssuesDataList*/L10Controller.IssuesListVm model) {

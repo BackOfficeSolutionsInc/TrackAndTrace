@@ -151,4 +151,39 @@
 ]</ExpectedJson>
     <GeneratedDate>2017-10-26T00:45:31.715592Z</GeneratedDate>
   </XmlApiResult>
+  <XmlApiResult Name="ScorecardApiTests_v0.GetScore_V0" GeneratedVersion="0.0">
+    <ExpectedJson>{
+  "Id": 1,
+  "Value": null,
+  "ForWeek": 2000,
+  "Measurable": {
+    "Id": 1,
+    "Title": "Meas1",
+    "GoalDirection": "GreaterThan",
+    "Goal": 0.0,
+    "UnitType": "None",
+    "AccountableUser": {
+      "Id": 9,
+      "Name": "E1 151601055",
+      "Username": "e1@test_656632799.com"
+    },
+    "AdminUser": {
+      "Id": 9,
+      "Name": "E1 151601055",
+      "Username": "e1@test_656632799.com"
+    }
+  },
+  "AccountableUser": {
+    "Id": 9,
+    "Name": "E1 151601055",
+    "Username": "e1@test_656632799.com"
+  },
+  "AdminUser": {
+    "Id": 9,
+    "Name": "E1 151601055",
+    "Username": "e1@test_656632799.com"
+  }
+}</ExpectedJson>
+    <GeneratedDate>2018-01-15T10:02:38.8291967Z</GeneratedDate>
+  </XmlApiResult>
 </ArrayOfXmlApiResult>

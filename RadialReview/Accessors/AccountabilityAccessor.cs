@@ -18,6 +18,7 @@ using RadialReview.Models.UserTemplate;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Hooks;
+using RadialReview.Utilities.NHibernate;
 using RadialReview.Utilities.Query;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Utilities.Synchronize;
@@ -33,29 +34,37 @@ namespace RadialReview.Accessors {
     public class AccountabilityAccessor : BaseAccessor {
 
         #region Single call
+        //[Obsolete("Update for StrictlyAfter", true)]
+        [Untested("StrictlyAfter","Both angularTypes")]
         public static async Task Update(UserOrganizationModel caller, IAngularId model, string connectionId) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    using (var rt = RealTimeUtility.Create(connectionId)) {
-                        var perms = PermissionsUtility.Create(s, caller);
 
-                        if (model.GetAngularType() == typeof(AngularAccountabilityNode).Name) {
+
+            if (model.GetAngularType() == typeof(AngularAccountabilityNode).Name) {
+                using (var s = HibernateSession.GetCurrentSession()) {
+                    using (var tx = s.BeginTransaction()) {
+                        using (var rt = RealTimeUtility.Create(connectionId)) {
+                            var perms = PermissionsUtility.Create(s, caller);
                             var m = (AngularAccountabilityNode)model;
                             //UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
                             UpdateAccountabilityNode(s, rt, perms, m.Id, m.Group, m.User.NotNull(x => (long?)x.Id));
-                        } else if (model.GetAngularType() == typeof(AngularRole).Name) {
-                            var m = (AngularRole)model;
-                            //UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
-                            await UpdateRole(s, rt, perms, m.Id, m.Name);
-                        } else {
-                            throw new PermissionsException("Unhandled type: " + model.GetAngularType());
+                            tx.Commit();
+                            s.Flush();
                         }
-
-                        tx.Commit();
-                        s.Flush();
                     }
                 }
+            } else if (model.GetAngularType() == typeof(AngularRole).Name) {
+                var m = (AngularRole)model;
+                await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateRole(m.Id), async s => {
+                    using (var rt = RealTimeUtility.Create(connectionId)) {
+                        var perms = PermissionsUtility.Create(s, caller);
+                        //UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
+                        await UpdateRole(s, rt, perms, m.Id, m.Name);
+                    }
+                });
+            } else {
+                throw new PermissionsException("Unhandled type: " + model.GetAngularType());
             }
+
         }
 
         #endregion
@@ -187,9 +196,9 @@ namespace RadialReview.Accessors {
                 throw new PermissionsException("Seat is not accessible.");
             }
 
-            perms.CanView(ResourceType.AccountabilityHierarchy, node.AccountabilityChartId);           
+            perms.CanView(ResourceType.AccountabilityHierarchy, node.AccountabilityChartId);
 
-            var a = node.AccountabilityRolesGroup.Position;
+            var a = node.AccountabilityRolesGroup.Position; 
             return node;
         }
 
@@ -270,12 +279,12 @@ namespace RadialReview.Accessors {
             var chart = s.Get<AccountabilityChart>(chartId);
 
             var nodesQ = s.QueryOver<AccountabilityNode>().Where(x => x.AccountabilityChartId == chartId).Where(range.Filter<AccountabilityNode>()).Future();
-			PositionModel posAlias = null;
+            PositionModel posAlias = null;
             var groupsQ = s.QueryOver<AccountabilityRolesGroup>()
-				//.JoinAlias(x=>x.Position,()=>posAlias)
-				.Where(x => x.AccountabilityChartId == chartId)
-				.Where(range.Filter<AccountabilityRolesGroup>())
-				.Future();
+                //.JoinAlias(x=>x.Position,()=>posAlias)
+                .Where(x => x.AccountabilityChartId == chartId)
+                .Where(range.Filter<AccountabilityRolesGroup>())
+                .Future();
 
             var userTemplatesQ = s.QueryOver<UserTemplate>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<UserTemplate>()).Future();
 
@@ -288,21 +297,21 @@ namespace RadialReview.Accessors {
             var teamDursQ = s.QueryOver<TeamDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<TeamDurationModel>()).Select(x => x.TeamId, x => x.UserId).Future<object[]>();
             var posDursQ = s.QueryOver<PositionDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<PositionDurationModel>()).Select(x => x.Position.Id, x => x.UserId).Future<object[]>();
 
-			var userLookupsQ = s.QueryOver<UserLookup>().Where(x=>x.OrganizationId == chart.OrganizationId).Where(range.Filter<UserLookup>()).Future();
-			var usersF = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == chart.OrganizationId && !x.IsClient).Where(range.Filter<UserOrganizationModel>()).List().ToList();
+            var userLookupsQ = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<UserLookup>()).Future();
+            var usersF = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == chart.OrganizationId && !x.IsClient).Where(range.Filter<UserOrganizationModel>()).List().ToList();
 
-			var nodes = nodesQ.ToList();
-			var groups = groupsQ.ToList();
-			var userTemplates = userTemplatesQ.ToList();
-			var roles = rolesQ.ToList();
-			var roleLinks= roleLinksQ.ToList();
-			var teams = teamsQ.ToList();
-			var positions = positionsQ.ToList();
-			var teamDurs = teamDursQ.ToList();
-			var userLookups = userLookupsQ.ToList();
-			var posDurs = posDursQ.ToList();
-			
-			var teamName = teams.ToDictionary(x => (long)x[0], x => (string)x[1]);
+            var nodes = nodesQ.ToList();
+            var groups = groupsQ.ToList();
+            var userTemplates = userTemplatesQ.ToList();
+            var roles = rolesQ.ToList();
+            var roleLinks = roleLinksQ.ToList();
+            var teams = teamsQ.ToList();
+            var positions = positionsQ.ToList();
+            var teamDurs = teamDursQ.ToList();
+            var userLookups = userLookupsQ.ToList();
+            var posDurs = posDursQ.ToList();
+
+            var teamName = teams.ToDictionary(x => (long)x[0], x => (string)x[1]);
             var posName = positions.ToDictionary(x => (long)x[0], x => (string)x[1]);
 
             var pd = posDurs.Select(x => new PosDur { PosId = (long)x[0], PosName = posName.GetOrDefault((long)x[0], null), UserId = (long)x[1] }).ToList();
@@ -319,8 +328,8 @@ namespace RadialReview.Accessors {
                     centerNode = cn.Id;
             }
 
-			var editAC = perms.IsPermitted(x => x.EditHierarchy(chart.Id));
-			var editAll = perms.IsPermitted(x => x.Or(y => y.ManagingOrganization(chart.OrganizationId), y => y.EditHierarchy(chart.Id)));
+            var editAC = perms.IsPermitted(x => x.EditHierarchy(chart.Id));
+            var editAll = perms.IsPermitted(x => x.Or(y => y.ManagingOrganization(chart.OrganizationId), y => y.EditHierarchy(chart.Id)));
 
             var allManaging = new HashSet<long>();
 
@@ -334,8 +343,8 @@ namespace RadialReview.Accessors {
                 Root = root,
                 CenterNode = centerNode,
                 AllUsers = allUsers,
-				CanReorganize = editAC,
-			};
+                CanReorganize = editAC,
+            };
 
             c.Root.Name = chart.Name;
 
@@ -1035,7 +1044,7 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-		
+
         public static async Task<RoleModel> AddRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, Attach attachTo, string name = null) {
 
             perms.EditAttach(attachTo);
@@ -1251,10 +1260,12 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static async Task UpdateRole(ISession s, RealTimeUtility rt, PermissionsUtility perms, long roleId, string name) {
+        //[Obsolete("Update for StrictlyAfter", true)]
+        [Untested("StrictlyAfter")]
+        public static async Task UpdateRole(IOrderedSession s, RealTimeUtility rt, PermissionsUtility perms, long roleId, string name) {
             perms.EditRole(roleId);
 
-            SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRole(roleId));
+            //SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRole(roleId));
 
             var role = s.Get<RoleModel>(roleId);
 

@@ -364,7 +364,7 @@ namespace RadialReview.Controllers {
 						}
 						{
 							var syncTable = "SyncLock";
-							s.CreateSQLQuery("delete from " + syncTable + " where LastUpdate < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
+							s.CreateSQLQuery("delete from " + syncTable + " where LastUpdateDb < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
 							 .ExecuteUpdate();
 						}
 					} catch (Exception e) {

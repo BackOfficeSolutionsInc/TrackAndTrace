@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace RadialReview {
         }
 
 
-        public static void AssertEqual<T>(IEnumerable<T> expected, IEnumerable<T> found, string additionaErrorInfo = null) {
+        public static void AssertEqual<T>(IEnumerable<T> expected, IEnumerable<T> found, string additionaErrorInfo = null,bool inconclusive=false) {
             var res = AddRemove(found, expected);
             var finalErrors = new List<string>();
             if (res.AddedValues.Any()) {
@@ -52,7 +53,10 @@ namespace RadialReview {
                 finalErrors.Add("Expected " + res.RemovedValues.Count() + " additional items. " + additionaErrorInfo ?? "");
             }
             if (finalErrors.Any()) {
-                throw new Exception(string.Join("\n", finalErrors));
+                var err = string.Join("\n", finalErrors);
+                if (inconclusive)
+                    throw new AssertInconclusiveException(err);
+                throw new Exception(err);
             }
         }
 

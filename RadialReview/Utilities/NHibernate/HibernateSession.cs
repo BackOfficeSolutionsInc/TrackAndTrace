@@ -57,24 +57,25 @@ using log4net;
 
 namespace RadialReview.Utilities {
     public static class NHSQL {
-		public static string NHibernateSQL { get; set; }
-		public static bool SaveCommands { get; set; }
-	}
+        public static string NHibernateSQL { get; set; }
+        public static bool SaveCommands { get; set; }
+    }
     public class NHSQLInterceptor : EmptyInterceptor, IInterceptor {
-		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-		SqlString IInterceptor.OnPrepareStatement(SqlString sql) {
+        SqlString IInterceptor.OnPrepareStatement(SqlString sql) {
             NHSQL.NHibernateSQL = sql.ToString();
-			if (NHSQL.SaveCommands) {
-				log.Info(NHSQL.NHibernateSQL);
-			}
+            if (NHSQL.SaveCommands) {
+                //log.Info(NHSQL.NHibernateSQL);
+            }
 
             return sql;
         }
     }
 
     public class HibernateSession {
-        private static ISessionFactory factory;
+        private static Dictionary<Env, ISessionFactory> factories;
+        private static Env? CurrentEnv;
         private static String DbFile = null;
         /*public static void SetDbFile(string file)
         {
@@ -83,15 +84,46 @@ namespace RadialReview.Utilities {
         private static object lck = new object();
         public static ISession Session { get; set; }
 
-        public static ISessionFactory GetDatabaseSessionFactory() {
-            lock (lck) {
-                if (factory == null) {
+        public class TestClearDispose : IDisposable {
+            public Action OnDispose { get; set; }
+            public Env? OldEnv { get; set; }
+            public void Dispose() {
+                OnDispose?.Invoke();
+                //ClearSessionFactory_TestOnly(Config.GetEnv(),null);
+                GetDatabaseSessionFactory(OldEnv);
+                //CurrentEnv = OldEnv;
+            }
+        }
+        static HibernateSession() {
+            factories = new Dictionary<Env, ISessionFactory>();
+        }
 
+        [Obsolete("Run in a using(). Use only in synchronous environments. Built for test purposes.")]
+        public static IDisposable SetDatabaseEnv_TestOnly(Env environmentOverride, Action onDispose=null) {
+            lock (lck) {
+                //factory = null;
+                var old = CurrentEnv;
+                GetDatabaseSessionFactory(environmentOverride);
+
+                return new TestClearDispose() {
+                    OldEnv = old.Value,
+                    OnDispose = onDispose,
+                };
+            } 
+        }
+
+        public static ISessionFactory GetDatabaseSessionFactory(Env? environmentOverride_testOnly = null) {
+            lock (lck) {
+                var env = environmentOverride_testOnly ?? CurrentEnv ?? Config.GetEnv();
+                CurrentEnv = env;
+                //if (factories == null)
+                //    factories = new Dictionary<Env, ISessionFactory>();
+                if (!factories.ContainsKey(env)) {
                     ChromeExtensionComms.SendCommand("dbStart");
                     var config = System.Configuration.ConfigurationManager.AppSettings;
                     var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
 
-                    switch (Config.GetEnv()) {
+                    switch (environmentOverride_testOnly ?? Config.GetEnv()) {
                         case Env.local_sqlite: {
 
                                 var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
@@ -101,7 +133,7 @@ namespace RadialReview.Utilities {
                                     var c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
-                                    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+                                    factories[env] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
                                     .Mappings(m => {
                                         //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                         //   .Conventions.Add<StringColumnLengthConvention>();
@@ -123,7 +155,7 @@ namespace RadialReview.Utilities {
                                     var c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
-                                    factory = Fluently.Configure(c).Database(
+                                    factories[env] = Fluently.Configure(c).Database(
                                                 MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
                                        .Mappings(m => {
                                            m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
@@ -149,7 +181,7 @@ namespace RadialReview.Utilities {
                         case Env.production: {
                                 var c = new Configuration();
                                 //SetupAudit(c);
-                                factory = Fluently.Configure(c).Database(
+                                factories[env] = Fluently.Configure(c).Database(
                                             MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
                                    .Mappings(m => {
                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
@@ -189,7 +221,7 @@ namespace RadialReview.Utilities {
                                     var c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
-                                    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString).IsolationLevel(System.Data.IsolationLevel.ReadCommitted))
+                                    factories[env] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString).IsolationLevel(System.Data.IsolationLevel.ReadCommitted))
                                     .Mappings(m => {
                                         m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                            .Conventions.Add<StringColumnLengthConvention>();
@@ -243,8 +275,8 @@ namespace RadialReview.Utilities {
                     ChromeExtensionComms.SendCommand("dbComplete");
 
                 }
+                return factories[env];
                 // DataCollection.MarkProfile(1);
-                return factory;
             }
         }
 
@@ -291,13 +323,13 @@ namespace RadialReview.Utilities {
             }
         }
 
-        public static ISession GetCurrentSession(bool singleSession = true) {
+        public static ISession GetCurrentSession(bool singleSession = true, Env? environmentOverride_TestOnly = null) {
 
             if (singleSession && !(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] == null) {
                 try {
                     var session = GetExistingSingleRequestSession();
                     if (session == null) {
-                        session = new SingleRequestSession(GetDatabaseSessionFactory().OpenSession()); // Create session, like SessionFactory.createSession()...
+                        session = new SingleRequestSession(GetDatabaseSessionFactory(environmentOverride_TestOnly).OpenSession()); // Create session, like SessionFactory.createSession()...
                         HttpContext.Current.Items.Add("NHibernateSession", session);
                     } else {
                         session.AddContext();
@@ -309,11 +341,11 @@ namespace RadialReview.Utilities {
                 }
             }
             if (!(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] != null)
-                return GetDatabaseSessionFactory().OpenSession();
+                return GetDatabaseSessionFactory(environmentOverride_TestOnly).OpenSession();
             if (singleSession == false)
-                return GetDatabaseSessionFactory().OpenSession();
+                return GetDatabaseSessionFactory(environmentOverride_TestOnly).OpenSession();
 
-            return new SingleRequestSession(GetDatabaseSessionFactory().OpenSession(), true);
+            return new SingleRequestSession(GetDatabaseSessionFactory(environmentOverride_TestOnly).OpenSession(), true);
             //GetDatabaseSessionFactory().OpenSession();
             /*while(true)
             {

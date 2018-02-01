@@ -21,6 +21,7 @@ using RadialReview.Models;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities.RealTime;
 using System.Text.RegularExpressions;
+using RadialReview.Utilities.NHibernate;
 
 namespace RadialReview.Controllers {
 	public partial class UploadController : BaseController {
@@ -265,7 +266,7 @@ namespace RadialReview.Controllers {
 									for (var i = 0; i < dates.Count; i++) {
 										var week = TimingUtility.GetWeekSinceEpoch(dates[i].AddDays(7).AddDays(6).StartOfWeek(DayOfWeek.Sunday))+weekShift;
 										var score = scoresFound[i];
-										await ScorecardAccessor.UpdateScore(s, perms, measurable.Id, TimingUtility.GetDateSinceEpoch(week), score);
+										await ScorecardAccessor.UpdateScore(OrderedSession.Indifferent(s), perms, measurable.Id, TimingUtility.GetDateSinceEpoch(week), score);
 										//await L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
 									}
 								}

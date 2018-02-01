@@ -96,14 +96,12 @@ namespace RadialReview.Accessors {
 			}
 		}
 		
-		public static async Task UpdateHeadline(UserOrganizationModel caller, long headlineId, string message, string connectionId = null,long? aboutId=null,string aboutName=null) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
+        [Untested("Test EnsureAfter")]
+		public static async Task UpdateHeadline(UserOrganizationModel caller, long headlineId, string message, long? aboutId = null, string aboutName = null) {
+            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateHeadlineMessage(headlineId), async s => {
 					var perms = PermissionsUtility.Create(s, caller);
 					var headline = s.Get<PeopleHeadline>(headlineId);
 					perms.EditL10Recurrence(headline.RecurrenceId);
-
-					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateHeadlineMessage(headlineId));
 
 					var updates = new IHeadlineHookUpdates();
 
@@ -117,14 +115,9 @@ namespace RadialReview.Accessors {
 						updates.MessageChanged = true;
 						headline.About = s.Get<ResponsibilityGroupModel>(headline.AboutId);
 					}
-					s.Update(headline);
-
-					tx.Commit();
-					s.Flush();
-
-					await HooksRegistry.Each<IHeadlineHook>((ses, x) => x.UpdateHeadline(ses, headline,updates));
-				}
-			}
+					s.Update(headline);                
+					await HooksRegistry.Each<IHeadlineHook>((ses, x) => x.UpdateHeadline(ses, headline, updates));
+            });
 		}
 
 
