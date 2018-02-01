@@ -297,8 +297,14 @@ function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
 }
 
 Date.prototype.addDays = function (pDays) {
+	
+	var oDate = new Date(this.valueOf());
 	var mDate = new Date(this.valueOf());
 	mDate.setDate(mDate.getDate() + pDays);
+
+	var shift = oDate.getTimezoneOffset() - mDate.getTimezoneOffset();
+	debugger;
+
 	return mDate;
 };
 Date.prototype.startOfWeek = function (pStartOfWeek) {
