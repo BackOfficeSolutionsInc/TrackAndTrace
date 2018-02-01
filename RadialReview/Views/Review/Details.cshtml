@@ -1,60 +1,60 @@
 ﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 @using RadialReview.Models;
 @{
-	ViewBag.Title = Model.Review.ReviewerUser.GetName() + " - Details";
-	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.Page = "me";
+    ViewBag.Title = Model.Review.ReviewerUser.GetName() + " - Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "me";
 
-	var tabs = ExtraTab.Create(
-		"<span class='hover' style='white-space:nowrap;'>" +
-			"<span class='visible-xs'>" +
-				"<span class='icon new-icon-page-multiple'></span>Back" +
-			"</span>" +
-			"<span class='hidden-xs'>" +
-				"<span class='icon new-icon-page-multiple'></span>Reports: " + Model.Review.Name +
-			"</span>" +
-		"</span>",
-		"/Reports/Index/" + Model.Review.ForReviewContainerId + "#Reports"
-	);
+    var tabs = ExtraTab.Create(
+        "<span class='hover' style='white-space:nowrap;'>" +
+            "<span class='visible-xs'>" +
+                "<span class='icon new-icon-page-multiple'></span>Back" +
+            "</span>" +
+            "<span class='hidden-xs'>" +
+                "<span class='icon new-icon-page-multiple'></span>Reports: " + Model.Review.Name +
+            "</span>" +
+        "</span>",
+        "/Reports/Index/" + Model.Review.ForReviewContainerId + "#Reports"
+    );
 
-	tabs.Add(new ExtraTab.Tab {
-		Page = "me",
-		Text = new HtmlString("<span class='hidden-xs'>" + Model.Review.ReviewerUser.GetName() + "</span><span class='visible-xs'>Report</span>"),
-		Url = "/Review/Details/" + Model.Review.Id
-	});
+    tabs.Add(new ExtraTab.Tab {
+        Page = "me",
+        Text = new HtmlString("<span class='hidden-xs'>" + Model.Review.ReviewerUser.GetName() + "</span><span class='visible-xs'>Report</span>"),
+        Url = "/Review/Details/" + Model.Review.Id
+    });
 
-	var shareButton = @"<div class=""btn-group header-sharing-btn authorized " + (Model.Review.ClientReview.Visible ? " on" : "") + @""">
-		<button type=""button"" onclick=""var self=this;setTimeout(function(){setAuthorize(!$(self).closest('.header-sharing-btn').is('.on'));},1)"" class=""btn btn-default""><span class='icon'></span> </button>
-		<button type=""button"" class=""btn btn-default dropdown-toggle"" data-toggle=""dropdown"" aria-haspopup=""true"" aria-expanded=""false"">
-			<span class=""caret""></span>
-			<span class=""sr-only"">Toggle Dropdown</span>
-		</button>
-		<ul class=""dropdown-menu dropdown-menu-right"">
-			<li><a href=""#"" onclick=""clickDetails(this)""><span class=""glyphicon glyphicon-file""></span> View Report</a></li>
-			<li><a href=""#"" onclick=""clickPrint(this)""  ><span class=""glyphicon glyphicon-print""></span> Print Report</a></li>
-		</ul>
-	</div>";
+    var shareButton = @"<div class=""btn-group header-sharing-btn authorized " + (Model.Review.ClientReview.Visible ? " on" : "") + @""">
+<button type=""button"" onclick=""var self=this;setTimeout(function(){setAuthorize(!$(self).closest('.header-sharing-btn').is('.on'));},1)"" class=""btn btn-default""><span class='icon'></span> </button>
+<button type=""button"" class=""btn btn-default dropdown-toggle"" data-toggle=""dropdown"" aria-haspopup=""true"" aria-expanded=""false"">
+    <span class=""caret""></span>
+    <span class=""sr-only"">Toggle Dropdown</span>
+</button>
+<ul class=""dropdown-menu dropdown-menu-right"">
+    <li><a href=""#"" onclick=""clickDetails(this)""><span class=""glyphicon glyphicon-file""></span> View Report</a></li>
+    <li><a href=""#"" onclick=""clickPrint(this)""  ><span class=""glyphicon glyphicon-print""></span> Print Report</a></li>
+</ul>
+</div>";
 
-	//<li class='divider'></li>
-	//<li><a href=""#"" onclick=""clickSaveFinalized(this)""  ><span class=""glyphicon glyphicon-floppy-disk""></span>Save Finalized Report</a></li>
-	//<li><a href=""/Reports/Finalized?review=" + Model.Review.Id +@"""  ><span class=""glyphicon glyphicon-print""></span> View Saved Reports</a></li>
-
-
-	tabs.Add(new ExtraTab.Tab {
-		//Html = new MvcHtmlString("<span onclick='setAuthorize(!$(this).is(\".on\"))' class='btn btn-default header-sharing-btn authorized " + (Model.Review.ClientReview.Visible ? "on" : "") + "'> </span>")
-		Html = new MvcHtmlString(shareButton)
-	});
-	ViewBag.ExtraTabs = tabs;
+    //<li class='divider'></li>
+    //<li><a href=""#"" onclick=""clickSaveFinalized(this)""  ><span class=""glyphicon glyphicon-floppy-disk""></span>Save Finalized Report</a></li>
+    //<li><a href=""/Reports/Finalized?review=" + Model.Review.Id +@"""  ><span class=""glyphicon glyphicon-print""></span> View Saved Reports</a></li>
 
 
-	var pluralized = Model.Review.ReviewerUser.GetName().Trim();
-	if (pluralized.ToLower().EndsWith("s")) {
-		pluralized += "'";
-	} else {
-		pluralized += "'s";
-	}
+    tabs.Add(new ExtraTab.Tab {
+        //Html = new MvcHtmlString("<span onclick='setAuthorize(!$(this).is(\".on\"))' class='btn btn-default header-sharing-btn authorized " + (Model.Review.ClientReview.Visible ? "on" : "") + "'> </span>")
+        Html = new MvcHtmlString(shareButton)
+    });
+    ViewBag.ExtraTabs = tabs;
 
-	var heading = "Create " + pluralized + " report for '" + Model.Review.Name + "'";
+
+    var pluralized = Model.Review.ReviewerUser.GetName().Trim();
+    if (pluralized.ToLower().EndsWith("s")) {
+        pluralized += "'";
+    } else {
+        pluralized += "'s";
+    }
+
+    var heading = "Create " + pluralized + " report for '" + Model.Review.Name + "'";
 }
 
 
@@ -63,47 +63,47 @@
 }
 
 @section top{
-	@*<div class="aboveJumbotron"><h2>@heading</h2></div>*@
-	<div class="jumbotron authorized @(Model.Review.ClientReview.Visible?"on":"")">
-		<h1 class="hidden-xs">Report</h1>
-	</div>
+    @*<div class="aboveJumbotron"><h2>@heading</h2></div>*@
+    <div class="jumbotron authorized @(Model.Review.ClientReview.Visible?"on":"")">
+        <h1 class="hidden-xs">Report</h1>
+    </div>
 }
 
 @section header{
-	@Html.Partial("_ReportsHeader")
+    @Html.Partial("_ReportsHeader")
 }
 <a href="top"></a>
 <div class="row">
-	<div class="col-md-3 ">
-		<div class="row">
-			<div class="col-sm-6 col-md-12 ">
-				<div class="" style="padding-top:5px;font-size:12px">
-					@Html.Partial("_User", Model.Review.ReviewerUser)
-				</div>
-				<div class="smallBreak2"></div>
-			</div>
-			<div class="col-sm-6 col-md-12 ">
-				<!--SideBar-->
-				@Html.Partial("Details/Sidebar", Model)
-			</div>
-		</div>
-		<div class="smallBreak2"></div>
-	</div>
-	<div class="col-md-9 mainContent hidden">
-		<!--Main Content-->
-		@Html.Partial("Details/MainContent", Model)
-		<div class="smallBreak"></div>
-	</div>
+    <div class="col-md-3 ">
+        <div class="row">
+            <div class="col-sm-6 col-md-12 ">
+                <div class="" style="padding-top:5px;font-size:12px">
+                    @Html.Partial("_User", Model.Review.ReviewerUser)
+                </div>
+                <div class="smallBreak2"></div>
+            </div>
+            <div class="col-sm-6 col-md-12 ">
+                <!--SideBar-->
+                @Html.Partial("Details/Sidebar", Model)
+            </div>
+        </div>
+        <div class="smallBreak2"></div>
+    </div>
+    <div class="col-md-9 mainContent hidden">
+        <!--Main Content-->
+        @Html.Partial("Details/MainContent", Model)
+        <div class="smallBreak"></div>
+    </div>
 </div>
 @using (Html.BeginScripts()) {
-	<script type="text/javascript">
+    <script type="text/javascript">
 		var ReviewId = "@Model.Review.Id";
 		var ForReviewsId = "@Model.Review.ForReviewContainerId";
 		var ForUserId = "@Model.Review.ReviewerUserId";
 		var IncludePrevious = @(Model.Review.ClientReview.ScatterChart.IncludePrevious?"true":"false");
-	</script>
-	@Scripts.Render("~/bundles/ReviewDetails")
-	<script>
+    </script>
+    @Scripts.Render("~/bundles/ReviewDetails")
+    <script>
 		@{
 			var client = Model.Review.ClientReview;
 		}
@@ -125,7 +125,9 @@
 		});
 
 
-		$(function() {
+        $(function () {
+            $('body').css('overflow-y', 'auto');
+
 			var False = false;
 			var True = true;
 			setupSection("includeNotes",@client.IncludeNotes, "/Review/SetIncludeNotes");
@@ -156,15 +158,15 @@
 
 		});
 
-	</script>
+    </script>
 
-	}
+}
 
-@using (Html.BeginStyles()) {	
-	@Styles.Render("~/Content/ReviewDetails")
-	<style>
-		.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
-			background-color: #eee;
-		}
-	</style>
+@using (Html.BeginStyles()) {
+    @Styles.Render("~/Content/ReviewDetails")
+    <style>
+        .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+            background-color: #eee;
+        }
+    </style>
 }
