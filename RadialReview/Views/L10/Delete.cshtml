@@ -1,0 +1,78 @@
+﻿@model RadialReview.Models.Angular.Meeting.AngularRecurrence
+<div class="form-horizontal">
+
+	<input type="hidden" id="meetingId" value="@Model" />
+	<div class="form-group">
+		<div class="col-sm-12 ">
+			<span>You are about to delete this meeting.  Are you sure you want to continue?</span>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+			<h3>Rocks</h3>
+			@foreach (var item in Model.Rocks) {
+				<div class="col-sm-4 col-lg-1 col-md-1 col-xs-4">
+					<input type="checkbox" class="checkbox  pull-right" id="rocks_@item.Id" name="rocks_@item.Id" checked />
+				</div>
+				<label for="rocks_@item.Id" class="col-sm-8 col-xs-12 col-lg-11 col-md-11 control-label alignLeft">@item.Name</label>
+			}
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+			<h3>Measurables</h3>
+			@foreach (var item in Model.Scorecard.Measurables) {
+				<div class="col-sm-4  col-lg-1 col-md-1 col-xs-4">
+					<input type="checkbox" class="checkbox  pull-right" id="measurables_@item.Id" name="measurables_@item.Id" checked />
+				</div>
+				<label for="measurables_@item.Id" class="col-sm-8 col-xs-8 col-lg-11 col-md-11 control-label alignLeft">@item.Name</label>
+			}
+		</div>
+	</div>
+
+	@*<div class="form-group">
+			<div class="col-sm-1  ">
+				<input type="checkbox" class="checkbox  pull-right" id="vto" name="vto" checked />
+			</div>
+			<label for="vto" class="col-sm-9 control-label alignLeft">Include Vision/Traction Organizer™</label>
+		</div>*@
+
+
+
+	@*<div class="form-group">S
+			<div class="col-sm-1 ">
+				<input type="checkbox" class="checkbox  pull-right" id="l10" name="l10" checked />
+			</div>
+			<label for="l10" class="col-sm-9 control-label alignLeft">Include Level 10 Meeting™ (Issues &amp; Todos)</label>
+
+		</div>*@
+	@*<div class="form-group">
+			<div class="col-sm-1 ">
+				<input type="checkbox" class="checkbox  pull-right" id="acc" name="acc" checked />
+			</div>
+			<label for="acc" class="col-sm-9 control-label alignLeft">Include Accountability Chart <span style="top: -2px;left:2px;position: relative;" id="accLoadingContainer"></span></label>
+		</div>*@
+
+
+	@*<div class="form-group">
+			<div class="col-sm-1 ">
+				<input type="checkbox" class="checkbox  pull-right" id="scorecard" name="scorecard" checked />
+			</div>
+			<label for="scorecard" class="col-sm-9 control-label alignLeft">Include Scorecard</label>
+
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-1 ">
+				<input type="checkbox" class="checkbox  pull-right" id="rocks" name="rocks" checked />
+			</div>
+			<label for="rocks" class="col-sm-9 control-label alignLeft">Include Rocks</label>
+
+		</div>*@
+
+	@*<div class="form-group">
+			<div class="col-sm-1 ">
+				<input type="checkbox" class="checkbox  pull-right" id="headlines" name="headlines" checked />
+			</div>
+			<label for="headlines" class="col-sm-9 control-label alignLeft">Include Headlines</label>
+		</div>*@
+
+</div>
