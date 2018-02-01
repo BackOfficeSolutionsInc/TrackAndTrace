@@ -2175,47 +2175,74 @@ namespace RadialReview.Controllers {
 
 		[Access(Controllers.AccessLevel.Radial)]
 		[AsyncTimeout(20 * 60 * 1000)]
-		public async Task<String> M11_22_2017(System.Threading.CancellationToken token) {
-			var a = 0;
-			var b = 0;
-			var pageCount = 0;
-			var createTime = new DateTime(2017, 11, 22);
-			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var _VtoModel = s.QueryOver<VtoModel>().List().ToList();
+		public async Task<ActionResult> M11_22_2017(System.Threading.CancellationToken token, Divisor d = null) {
 
-					var _VtoItemString = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques).List().ToList();
+			return await BreakUpAction("M11_22_2017", d, dd => {
 
-					//foreach (var rr in _VtoModel) {
-					//    if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
-					//     && x.MarketingStrategyId == rr.MarketingStrategy.Id
-					//    )) {
-					//        // save new
-					//        VtoStrategyMap _map = new VtoStrategyMap() {
-					//            CreateTime = createTime,
-					//            VtoId = rr.Id,
-					//            MarketingStrategyId = rr.MarketingStrategy.Id,
-					//        };
+				using (var s = HibernateSession.GetDatabaseSessionFactory().OpenSession()) {
+					using (var tx = s.BeginTransaction()) {
 
-					//        s.Insert(_map);
-					//        a++;
-					//    }
-					//}
+						var _VtoItemString = s.QueryOver<VtoItem_String>()
+							.Where(Mod<VtoItem_String>(x => x.Id, dd))
+							.Where(x => x.Type == VtoItemType.List_Uniques)
+							.List().ToList();
 
-					foreach (var item in _VtoItemString) {
-						if (item.MarketingStrategyId == null) {
-							item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
-							b++;
 
-							s.Update(item);
+						foreach (var item in _VtoItemString) {
+							if (item.MarketingStrategyId == null) {
+								item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
+								//b++;
+
+								s.Update(item);
+							}
 						}
+						tx.Commit();
+						s.Flush();
 					}
-
-					tx.Commit();
-					s.Flush();
 				}
-			}
-			return "VtoStrategyMap Inserted:" + a + ", VtoITemString Inserted:" + b;
+			});
+
+
+			//var a = 0;
+			//var b = 0;
+			//var pageCount = 0;
+			//var createTime = new DateTime(2017, 11, 22);
+			//using (var s = HibernateSession.GetDatabaseSessionFactory().OpenSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+			//		var _VtoModel = s.QueryOver<VtoModel>().List().ToList();
+
+			//		var _VtoItemString = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques).List().ToList();
+
+			//		//foreach (var rr in _VtoModel) {
+			//		//    if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
+			//		//     && x.MarketingStrategyId == rr.MarketingStrategy.Id
+			//		//    )) {
+			//		//        // save new
+			//		//        VtoStrategyMap _map = new VtoStrategyMap() {
+			//		//            CreateTime = createTime,
+			//		//            VtoId = rr.Id,
+			//		//            MarketingStrategyId = rr.MarketingStrategy.Id,
+			//		//        };
+
+			//		//        s.Insert(_map);
+			//		//        a++;
+			//		//    }
+			//		//}
+
+			//		foreach (var item in _VtoItemString) {
+			//			if (item.MarketingStrategyId == null) {
+			//				item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
+			//				b++;
+
+			//				s.Update(item);
+			//			}
+			//		}
+
+			//		tx.Commit();
+			//		s.Flush();
+			//	}
+			//}
+			//return "VtoStrategyMap Inserted:" + a + ", VtoITemString Inserted:" + b;
 		}
 		[Access(Controllers.AccessLevel.Radial)]
 		public String M12_01_2017() {
