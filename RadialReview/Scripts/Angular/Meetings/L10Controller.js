@@ -925,8 +925,8 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
     		var startOfWeek = selector.startOfWeek; // Monday            
     		//var dat = week.LocalDate;
     		debugger;
-    		var forWeek = week.ForWeek;
-    		forWeek = forWeek.addDays(-7);
+    		var forWeek = week.LocalDate;
+    		//forWeek = forWeek.addDays(-7);
     		var dat = $scope.functions.startOfWeek(forWeek, selector.ScorecardWeekDay);
 
     		if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
