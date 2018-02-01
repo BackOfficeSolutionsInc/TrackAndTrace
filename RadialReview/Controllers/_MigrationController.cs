@@ -2174,7 +2174,8 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(Controllers.AccessLevel.Radial)]
-		public String M11_22_2017() {
+		[AsyncTimeout(20 * 60 * 1000)]
+		public async Task<String> M11_22_2017(System.Threading.CancellationToken token) {
 			var a = 0;
 			var b = 0;
 			var pageCount = 0;
