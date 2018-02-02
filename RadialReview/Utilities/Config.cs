@@ -253,7 +253,7 @@ namespace RadialReview.Utilities {
 
 			switch (env) {
 				case Env.local_test_sqlite:
-					goto case Env.local_sqlite;
+                    return true;
 				case Env.local_mysql:
 					goto case Env.local_sqlite;
 				case Env.local_sqlite: {

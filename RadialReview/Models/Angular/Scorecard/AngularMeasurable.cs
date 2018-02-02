@@ -45,8 +45,10 @@ namespace RadialReview.Models.Angular.Scorecard
             AltTarget = measurable.AlternateGoal;
             Direction = measurable.GoalDirection;
 			Modifiers = measurable.UnitType;
-			if (measurable.Id < 0)
+            IsFormula = !string.IsNullOrWhiteSpace(measurable.Formula);
+            if (measurable.Id < 0 || IsFormula.Value)
 				Disabled = true;
+
 			Ordering = measurable._Ordering;
 			IsDivider = false;
 			ShowCumulative = measurable.ShowCumulative;
@@ -95,5 +97,6 @@ namespace RadialReview.Models.Angular.Scorecard
 		public long? RecurrenceMeasurableId { get; set; }
 		[IgnoreDataMember]
 		public AngularMeasurableGroup Grouping { get; set; }
-	}
+        public bool? IsFormula { get; set; }
+    }
 }

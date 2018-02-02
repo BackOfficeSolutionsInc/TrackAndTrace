@@ -501,6 +501,11 @@ body {
 .acc-chart svg .node-button:focus circle {
   fill: #d5d5d5;
 }
+.acc-chart svg .node-button.print text {
+  transform: translate(-4.2px, 5.3px);
+  font-size: 10px;
+  fill: gray;
+}
 .acc-chart svg .node-button.add text {
   transform: translate(-4.5px, 5.3px);
   font-size: 16px;

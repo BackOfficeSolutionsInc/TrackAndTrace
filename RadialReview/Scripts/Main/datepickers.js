@@ -1,61 +1,12 @@
 ﻿
-//function getFormattedDate(date) {
-//	if (typeof (date) === "undefined") {
-//		date = new Date();
-//	} else if (typeof (date) === "string") {
-//		console.error("Could not determine format from date string: " + date)
-//	}
-//	var _d = date.getDate(),
-//                dd = _d > 9 ? _d : '0' + _d,
-//                _m = date.getMonth() + 1,
-//                mm = _m > 9 ? _m : '0' + _m,
-//                yyyy = date.getFullYear(),
-//                formatted = mm + '-' + dd + '-' + (yyyy);
-//	var _userFormat = window.dateFormat
-//        .replace(/mm/gi, mm).replace(/m/gi, _m)
-//        .replace(/dd/gi, dd).replace(/d/gi, _d)
-//        .replace(/yyyy/gi, yyyy).replace(/yy/gi, (yyyy - 2000));
-//	return _userFormat;
-//}
-
 //Date stuff
 function parseJsonDate(value, allowNumbers) {
 	console.warn("obsolete. use Time.parseJsonDate(...) instead");
 	return Time.parseJsonDate(value, allowNumbers);
-	//var type = typeof (value);
-	//var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
-	//var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
-	//var dateRegex3 = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
-	//if (type === "undefined" || value === null)
-	//	return false;
-	//if (allowNumbers == true && type === "number") {
-	//	Time.toLocalTime(new Date(value));
-
-	//	return new Date(value - new Date().getTimezoneOffset() * 60000);
-	//}
-	//if (type == 'string' && dateRegex1.test(value)) {
-	//	var d = new Date(parseInt(value.substr(6)));
-	//	return Time.toLocalTime(d);
-	//	//return new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
-	//} else if (type == 'string' && dateRegex2.test(value)) {
-	//	var d = new Date(value);
-	//	return Time.toLocalTime(d);
-	//	//return  new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-	//} else if (type == 'string' && dateRegex3.test(value)) {
-	//	var d = new Date(value);
-	//	return Time.toLocalTime(d);
-	//	//return new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-	//} else if (value.getDate !== undefined) {
-	//	console.warn("timezone not applied");
-	//	return new Date(value.getTime());
-	//}
-	//if (allowNumbers == true && type === "string" && !isNaN(value)) {
-	//	var d = new Date(+value);
-	//	return Time.toLocalTime(d);
-	//	//return new Date(+value - new Date().getTimezoneOffset() * 60000);
-	//}
-
-	//return false;
+}
+function getWeekSinceEpoch(day) {
+    console.warn("obsolete. use Time.getWeekSinceEpoch(...) instead");
+    return Time.getWeekSinceEpoch(day);
 }
 
 function dateFormatter(date) {
@@ -63,8 +14,7 @@ function dateFormatter(date) {
 }
 
 function clientDateFormat(date) {
-	console.info("using clientDateFormat");
-	//console.warn("obsolete. use Time.clientDateFormat()");
+	//console.info("using clientDateFormat");
 	if (date == false)
 		return "";
 	var _d = date.getDate(),
@@ -79,7 +29,7 @@ function clientDateFormat(date) {
 }
 
 function serverDateFormat(edate) {
-	console.info("using serverDateFormat");
+	//console.info("using serverDateFormat");
 	if (edate == false)
 		return "";
 	var _d = edate.getDate(),
@@ -96,13 +46,13 @@ function serverDateFormat(edate) {
 }
 
 function createDatepicker(selector, date, name, id, options) {
-	debugger;
+	//debugger;
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (date == false) {
 		//do nothing.
 	} else {
-		var pdate = parseJsonDate(date, true);
+		var pdate = Time.parseJsonDate(date, true);
 		if (!pdate) {
 			console.error("Could not determine format from date: " + date);
 			var err = $("<span style='color:rgba(255,0,0,.5)' >DateErr</span>");
@@ -117,22 +67,18 @@ function createDatepicker(selector, date, name, id, options) {
 	if (typeof (id) === "undefined")
 		id = name;
 
-	//var offsetMinutes;
-	//if (date == false)
-	//	offsetMinutes = new Date().getTimezoneOffset();
-	//else
-	//	offsetMinutes = date.getTimezoneOffset();
-	//var newDate = date;
-	//if (date != false)
-	//	newDate = Time.toServerTime(date);// new Date(date.getTime() + offsetMinutes * 60000);
-
-	//if (date != false){
-	//	if (typeof(date.Local)!=="undefined" && typeof(date.Date)!=="undefined"){
-	//		date = date.Date;
-	//	}else {
-	//		date = Time.toLocalTime(date);
-	//	}
-	//}
+	var setClasses = function (obj, d) {
+	    //debugger;
+	    var o = $(obj);
+        if (!o.is(".client-date"))
+	        o = $(obj).find(".client-date");
+	    $(o).removeClass("past-date");
+	    $(o).removeClass("future-date");
+	    if (d < new Date())
+	        $(o).addClass("past-date");
+	    else
+	        $(o).addClass("future-date");
+	}
 
 
 	var formatted = serverDateFormat(date);
@@ -148,6 +94,7 @@ function createDatepicker(selector, date, name, id, options) {
 	builder += '<input type="hidden" class="server-date" id="' + id + '" name="' + name + '" value="' + formatted + '" />';
 	builder += '</div>';
 	var dp = $(builder);
+	setClasses(dp, date);
 	$(selector).append(dp);
 	var dpOptions = {
 		format: window.dateFormat.toLowerCase(),
@@ -168,10 +115,17 @@ function createDatepicker(selector, date, name, id, options) {
 			$('.' + guid + ' .server-date').val("");
 		}
 	});
+
+
+
 	$('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
 		var edate = Time.toServerTime(e.date);// new Date(e.date.getTime() + _offsetMin * 60000);
 		var formatted = serverDateFormat(edate);
 		$('.' + guid + ' .server-date').val(formatted);
+
+
+		setClasses(this, e.date);
+
 		$(eventHolder).trigger("change", [{
 			clientDate: edate,
 			serverDate: formatted,
@@ -193,7 +147,7 @@ function generateDatepickerLocalize(selector, date, name, id, options) {
 	} else if (date == false) {
 
 	} else {
-		var pdate = parseJsonDate(date, true);
+		var pdate = Time.parseJsonDate(date, true);
 		if (!pdate) {
 			console.error("Could not determine format from date: " + date);
 			var err = $("<span style='color:rgba(255,0,0,.5)' >DateErr</span>");
@@ -212,7 +166,6 @@ function generateDatepickerLocalize(selector, date, name, id, options) {
 		newDate = new Date(date.getTime() + offset * 60000);
 	return generateDatepicker(selector, newDate, name, id, options, offset);
 }
-
 
 function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
 	console.warn("obsolete: use createDatepicker");
@@ -309,18 +262,9 @@ Date.prototype.addDays = function (pDays) {
 };
 Date.prototype.startOfWeek = function (pStartOfWeek) {
 	var mDifference = this.getDay() - pStartOfWeek;
-
 	if (mDifference < 0) {
 		mDifference += 7;
 	}
-
 	return new Date(this.addDays(mDifference * -1));
 }
 
-function getWeekSinceEpoch(day) {
-	console.warn("obsolete. use Time.getWeekSinceEpoch(...) instead");
-	return Time.getWeekSinceEpoch(day);
-	//var oneDay = 24 * 60 * 60 * 1000;
-	//var span = day.startOfWeek(0);
-	//return Math.floor((span.getTime() / oneDay) / 7);
-}

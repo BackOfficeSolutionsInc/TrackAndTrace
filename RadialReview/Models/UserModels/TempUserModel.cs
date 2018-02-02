@@ -25,8 +25,8 @@ namespace RadialReview.Models.UserModels
 		public virtual bool EmailStatusUnseen { get; set; }
 		public virtual long LastSentByUserId { get; set; }
 		public virtual String ImageGuid { get; set; }
-
-		public virtual string Name()
+        public virtual String EmailTemplate { get; set; }
+        public virtual string Name()
         {
             var possible=((FirstName ?? "").Trim() + " " + (LastName ?? "").Trim()).Trim();
             if (String.IsNullOrWhiteSpace(possible))

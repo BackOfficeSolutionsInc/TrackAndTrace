@@ -272,14 +272,14 @@ namespace RadialReview.Accessors {
 			//using (var s = HibernateSession.GetCurrentSession()) {
 			//	using (var tx = s.BeginTransaction()) {
             await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateIssueMessage(issueRecurrenceId),async s=>{
-                var perms = PermissionsUtility.Create(s, caller);
-                await EditIssue(s, perms, issueRecurrenceId, message, complete, owner, priority, rank, awaitingSolve, now);
+					var perms = PermissionsUtility.Create(s, caller);
+					await EditIssue(s, perms, issueRecurrenceId, message, complete, owner, priority, rank, awaitingSolve, now);
             });
 			//		tx.Commit();
 			//		s.Flush();
 			//	}
 			//}
-		}
+				}
         /// <summary>
         /// SyncAction.UpdateIssueMessage(issue.Issue.Id)
         /// </summary>
@@ -569,9 +569,82 @@ namespace RadialReview.Accessors {
 			}
 			viewModel.children = childrenVMs.ToArray();
 		}
-		public static Csv Listing(UserOrganizationModel caller, long organizationId) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
+
+        public static IssueModel.IssueModel_Recurrence UnCopyIssue(UserOrganizationModel caller, long parentIssue_RecurrenceId, long childRecurrenceId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var now = DateTime.UtcNow;
+
+                    var parent = s.Get<IssueModel.IssueModel_Recurrence>(parentIssue_RecurrenceId);
+
+                    PermissionsUtility.Create(s, caller)
+                        .ViewL10Recurrence(parent.Recurrence.Id)
+                        .ViewIssue(parent.Issue.Id);
+
+                    var childRecur = s.Get<L10Recurrence>(childRecurrenceId);
+
+                    if (childRecur.Organization.Id != caller.Organization.Id)
+                        throw new PermissionsException("You cannot Uncopy an issue into this meeting.");
+                    if (parent.DeleteTime != null)
+                        throw new PermissionsException("Issue does not exist.");
+
+                    var possible = L10Accessor._GetAllL10RecurrenceAtOrganization(s, caller, caller.Organization.Id);
+                    if (possible.All(x => x.Id != childRecurrenceId))
+                    {
+                        throw new PermissionsException("You do not have permission to uncopy this issue.");
+                    }
+
+                    var getL10RecurrenceChild = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                        .Where(x => x.DeleteTime == null && x.Recurrence.Id == childRecurrenceId && x.Issue.Id == parent.Issue.Id)
+                        .SingleOrDefault();
+
+                    if (getL10RecurrenceChild == null)
+                    {
+                        throw new PermissionsException("Issue Recurrence does not exist.");
+                    }
+                    
+                    getL10RecurrenceChild.DeleteTime = now;
+                    s.Update(getL10RecurrenceChild);
+
+                    var viewModel = IssuesData.FromIssueRecurrence(getL10RecurrenceChild);
+                    _UnRecurseCopy(s, viewModel, caller, parent, now);
+                    tx.Commit();
+                    s.Flush();
+
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                    var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(childRecurrenceId));
+
+                    meetingHub.removeIssueRow(getL10RecurrenceChild.Id);
+                    var issue = s.Get<IssueModel>(parent.Issue.Id);
+                    Audit.L10Log(s, caller, parent.Recurrence.Id, "UnCopyIssue", ForModel.Create(getL10RecurrenceChild), issue.NotNull(x => x.Message) + " Uncopied from " + childRecur.NotNull(x => x.Name));
+                    return getL10RecurrenceChild;
+                }
+            }
+        }
+
+        private static void _UnRecurseCopy(ISession s, IssuesData viewModel, UserOrganizationModel caller, IssueModel.IssueModel_Recurrence copiedFrom, DateTime now)
+        {
+            var children = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                .Where(x => x.DeleteTime == null && x.ParentRecurrenceIssue.Id == copiedFrom.Id)
+                .List();
+            var childrenVMs = new List<IssuesData>();
+            foreach (var child in children)
+            {
+                child.DeleteTime = now;              
+                s.Update(child);
+                var childVM = IssuesData.FromIssueRecurrence(child);
+                childrenVMs.Add(childVM);
+                _UnRecurseCopy(s, childVM, caller, child, now);
+            }
+            viewModel.children = childrenVMs.ToArray();
+        }
+
+        public static Csv Listing(UserOrganizationModel caller, long organizationId) {
+            using (var s = HibernateSession.GetCurrentSession()){
+                using (var tx = s.BeginTransaction()){
 					// var p = s.Get<PeriodModel>(period);
 
 					PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);

@@ -18,7 +18,12 @@ body {
   opacity: 1;
   transition: ease-in-out 0.2s opacity, ease-in-out 0.2s color, ease-in-out 0.2s color;
 }
+.vto .panel-body {
+  padding-top: 0px;
+}
 .vto .panel {
+  -webkit-box-shadow: none;
+  box-shadow: none;
   border: none;
 }
 .vto .panel-heading {
@@ -456,19 +461,23 @@ body {
   display: none;
 }
 @media (min-width: 1200px) {
-  .vto .core-focus .boxed,
   .vto .core-values .boxed {
     min-height: 100px;
-    height: calc(21vh - 47px);
+    height: calc(22vh - 47px);
+    padding: 5px;
+  }
+  .vto .core-focus .boxed {
+    min-height: 85px;
+    height: calc(18vh - 47px);
     padding: 5px;
   }
   .vto .ten-year-target .boxed {
     min-height: 50px;
-    height: calc(10vh - 22px);
+    height: calc(11vh - 22px);
   }
   .vto .marketing-strategy .boxed {
     min-height: 208px;
-    height: calc(47vh - 105px);
+    height: calc(48vh - 105px);
   }
   .vto .three-year-picture .boxed.content {
     min-height: 405px;

@@ -34,6 +34,8 @@ using RadialReview.Model.Enums;
 using System.Linq.Expressions;
 using RadialReview.Reflection;
 using RadialReview.Controllers.AbstractController;
+using RadialReview.Variables;
+using RadialReview.Crosscutting.Hooks.Payment;
 
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -2005,7 +2007,7 @@ namespace RadialReview.Controllers {
 			var count = 0;
 			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
 				using (var tx = s.BeginTransaction()) {
-
+					
 					var scores = s.QueryOver<ScoreModel>()
 						.Where(x => x.DeleteTime == new DateTime(2017, 11, 9))
 						.List().ToList();
@@ -2029,7 +2031,7 @@ namespace RadialReview.Controllers {
 
 			var prev = DateTime.MinValue;
 			var best = ordered.FirstOrDefault();
-
+						
 
 			foreach (var o in ordered) {
 				if (o.DateEntered == null)
@@ -2078,7 +2080,7 @@ namespace RadialReview.Controllers {
 			//}
 			//return finalScore;
 		}
-
+		
 
 		[Access(AccessLevel.Radial)]
 		public async Task<ActionResult> FixScores(Divisor d = null) {
@@ -2117,7 +2119,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Radial)]
 		public async Task<ActionResult> FixScoresOld(Divisor d = null) {
-			return await BreakUpAction("FixScores", d, dd => {
+			return await BreakUpAction("FixScores",d, dd => {
 
 				using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
 					using (var tx = s.BeginTransaction()) {
@@ -2129,10 +2131,10 @@ namespace RadialReview.Controllers {
 
 						foreach (var measurableWeekGroup in scores.GroupBy(x => Tuple.Create(x.ForWeek, x.MeasurableId))) {
 							if (measurableWeekGroup.Count() > 1) {
-								var ordered = measurableWeekGroup.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
-
+								var ordered  = measurableWeekGroup.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
+								
 								foreach (var mw in ordered.Skip(1)) {
-									mw.DeleteTime = new DateTime(2017, 11, 7);
+									mw.DeleteTime = new DateTime(2017,11,7);
 									s.Update(mw);
 									dd.updates += 1;
 								}
@@ -2146,60 +2148,76 @@ namespace RadialReview.Controllers {
 		}
 
 
-		[Access(Controllers.AccessLevel.Radial)]
-		public String M10_17_2017() {
-			var a = 0;
-			var b = 0;
-			var pageCount = 0;
-			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var _rl = s.QueryOver<RockModel>().List().ToDictionary(x => x.Id, x => x);
-					var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().List().ToList();
-					foreach (var rr in rocks) {
-						var rock = _rl[rr.ForRock.Id];
+        [Access(Controllers.AccessLevel.Radial)]
+        public String M10_17_2017() {
+            var a = 0;
+            var b = 0;
+            var pageCount = 0;
+            using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var _rl = s.QueryOver<RockModel>().List().ToDictionary(x=>x.Id,x=>x);
+                    var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().List().ToList();
+                    foreach (var rr in rocks) {
+                        var rock = _rl[rr.ForRock.Id];
 
-						if (rock.CompanyRock && !rr.VtoRock) {
-							rr.VtoRock = true;
-							s.Update(rr);
-							a += 1;
-						} else {
-							b += 1;
-						}
-					}
+                        if (rock.CompanyRock && !rr.VtoRock) {
+                            rr.VtoRock = true;
+                            s.Update(rr);
+                            a += 1;
+                        } else {
+                            b += 1;
+                        }
+                    }
 
-					tx.Commit();
-				}
-			}
-			return "Updated:" + a + ",  Not Updated:" + b;
-		}
+                    tx.Commit();
+                }
+            }
+            return "Updated:" + a + ",  Not Updated:" + b;
+        }
 
-		[Access(Controllers.AccessLevel.Radial)]
+        [Access(Controllers.AccessLevel.Radial)]
 		[AsyncTimeout(20 * 60 * 1000)]
 		public async Task<ActionResult> M11_22_2017(System.Threading.CancellationToken token, Divisor d = null) {
 
 			return await BreakUpAction("M11_22_2017", d, dd => {
 
 				using (var s = HibernateSession.GetDatabaseSessionFactory().OpenSession()) {
-					using (var tx = s.BeginTransaction()) {
+                using (var tx = s.BeginTransaction()) {
+                    var _VtoModel = s.QueryOver<VtoModel>().List().ToList();                   
 
 						var _VtoItemString = s.QueryOver<VtoItem_String>()
 							.Where(Mod<VtoItem_String>(x => x.Id, dd))
 							.Where(x => x.Type == VtoItemType.List_Uniques)
 							.List().ToList();
 
+                    //foreach (var rr in _VtoModel) {
+                    //    if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
+                    //     && x.MarketingStrategyId == rr.MarketingStrategy.Id
+                    //    )) {
+                    //        // save new
+                    //        VtoStrategyMap _map = new VtoStrategyMap() {
+                    //            CreateTime = createTime,
+                    //            VtoId = rr.Id,
+                    //            MarketingStrategyId = rr.MarketingStrategy.Id,
+                    //        };
 
-						foreach (var item in _VtoItemString) {
-							if (item.MarketingStrategyId == null) {
-								item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
+                    //        s.Insert(_map);
+                    //        a++;
+                    //    }
+                    //}
+
+                    foreach (var item in _VtoItemString) {
+                        if (item.MarketingStrategyId == null) {
+                            item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
 								//b++;
 
-								s.Update(item);
-							}
-						}
-						tx.Commit();
+                            s.Update(item);
+    }
+                    }
+                    tx.Commit();
 						s.Flush();
-					}
-				}
+                }
+            }
 			});
 
 
@@ -2243,7 +2261,7 @@ namespace RadialReview.Controllers {
 			//	}
 			//}
 			//return "VtoStrategyMap Inserted:" + a + ", VtoITemString Inserted:" + b;
-		}
+        }
 		[Access(Controllers.AccessLevel.Radial)]
 		public String M12_01_2017() {
 			var a = 0;
@@ -2252,13 +2270,13 @@ namespace RadialReview.Controllers {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var orgs = s.QueryOver<OrganizationModel>().List().ToList();
-					var permItems = s.QueryOver<PermItem>().Where(x => x.ResType == PermItem.ResourceType.UpdatePaymentForOrganization).List().ToList();
+					var permItems = s.QueryOver<PermItem>().Where(x=>x.ResType == PermItem.ResourceType.UpdatePaymentForOrganization).List().ToList();
 
 					foreach (var org in orgs) {
 						if (!permItems.Any(x => x.ResId == org.Id && x.CanAdmin)) {
-
+							
 							var tempUser = new UserOrganizationModel() {
-								Id = -11,
+								Id= -11,
 								Organization = org,
 							};
 
@@ -2275,7 +2293,70 @@ namespace RadialReview.Controllers {
 			}
 			return "Updated:" + a;
 		}
-	}
+
+        [Access(Controllers.AccessLevel.Radial)]
+        public String M01_09_2018() {
+            var a = 0;
+            var b = 0;
+            var pageCount = 0;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var invoices = s.QueryOver<InvoiceModel>().Where(x => x.PaidTime == null && x.DeleteTime == null).List().ToList();
+
+                    s.GetSettingOrDefault("M01_09_2018", true);
+
+                    var forgive = new[] {
+                        AccountType.Implementer,
+                        AccountType.Dormant,
+                        AccountType.SwanServices,
+                        AccountType.Other,
+                        AccountType.Coach,
+                        AccountType.Cancelled,
+                        AccountType.UserGroup,
+                    };
+                    //Keeps all trial, and paying invoices
+                    foreach (var i in invoices) {
+                        if (forgive.Contains(i.Organization.AccountType)) {
+                            i.DeleteTime = new DateTime(2017, 1, 9);
+                            a += 1;
+    }
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return "Updated:" + a;
+        }
+
+        [Access(Controllers.AccessLevel.Radial)]
+        public async Task<string> M01_16_2018() {
+            var a = 0;
+            var b = 0;
+            var pageCount = 0;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var orgs = s.QueryOver<OrganizationModel>().Select(Xls => Xls.Id).List<long>().ToList();
+
+                    s.GetSettingOrDefault("M01_16_2018", true);
+
+                    var f = new SetDelinquentFlag();
+
+                    foreach (var i in orgs) {
+                        var has = await f.UpdateFlag(s, i);
+                        if (has)
+                            a += 1;
+                        b += 1;
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return "Updated: " + a +"/"+b;
+        }
+
+    }
 }
 #pragma warning restore CS0618 // Type or member is obsolete
 #pragma warning restore CS0219 // Variable is assigned but its value is never used
