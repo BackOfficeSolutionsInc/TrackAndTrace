@@ -927,7 +927,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
     		var startOfWeek = selector.startOfWeek; // Monday            
     		//var dat = week.LocalDate;
-    		debugger;
+    		//debugger;
     		var forWeek = week.ForWeek;
     		//forWeek = forWeek.addDays(-7);
     		var dat = $scope.functions.startOfWeek(forWeek, selector.ScorecardWeekDay);

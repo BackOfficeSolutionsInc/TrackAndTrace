@@ -2465,15 +2465,20 @@ body.resizing .notes-tile:after,
   color: darkgray;
   margin-left: 6px;
 }
+.dashboard .software-updates .su-details {
+  padding-left: 14px;
+  border-bottom: 2px dashed #c7c7c7;
+  margin-bottom: 14px;
+}
 .dashboard .software-updates .su-row {
   display: block;
   transition: ease-in-out 0.2s color;
 }
 .dashboard .software-updates .su-row:before {
-  content: ".";
+  /*content: ".";*/
   color: #333;
   /* font-size: 21px; */
-  left: -5px;
+  left: -8px;
   position: relative;
   top: -3px;
   font-weight: bold;
@@ -2488,7 +2493,7 @@ body.resizing .notes-tile:after,
 .dashboard .software-updates ul {
   /*padding-left: 6px;
 			font-size: 9px;*/
-  font-size: 14px;
+  font-size: 13px;
   color: #A9A9A9;
   list-style: none;
   transition: ease-in-out 0.2s color;
@@ -2506,11 +2511,11 @@ body.resizing .notes-tile:after,
   /* or whatever color you prefer */
 }
 .dashboard .software-updates blockquote {
-  padding: 5px 15px;
+  padding: 0px 10px;
   margin-bottom: 20px;
   border-left: 4px solid #D0D0D0;
   font-size: 14px;
-  margin-top: 2px;
+  margin-top: 10px;
 }
 .dashboard .width_1 .software-updates {
   padding: 5px;

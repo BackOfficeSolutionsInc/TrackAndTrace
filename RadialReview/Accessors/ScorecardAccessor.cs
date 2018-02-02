@@ -798,7 +798,6 @@ namespace RadialReview.Accessors {
         //[Obsolete("Update for StrictlyAfter", true)]
         [Untested("StrictlyAfter")]
         public static async Task<ScoreModel> UpdateScore(IOrderedSession s, PermissionsUtility perms, long scoreId, decimal? value) {
-==== BASE ====
 			perms.EditScore(scoreId);
 			//SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(scoreId));
             return await UpdateScore_Unsafe(s, scoreId, value);

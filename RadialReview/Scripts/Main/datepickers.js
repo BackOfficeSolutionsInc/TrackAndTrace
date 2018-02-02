@@ -256,7 +256,7 @@ Date.prototype.addDays = function (pDays) {
 	mDate.setDate(mDate.getDate() + pDays);
 
 	var shift = oDate.getTimezoneOffset() - mDate.getTimezoneOffset();
-	debugger;
+	//debugger;
 
 	return mDate;
 };
