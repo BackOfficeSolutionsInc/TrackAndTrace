@@ -181,8 +181,10 @@ acapp.directive("ttOverflow", ["$timeout", function ($timeout) {
 						mv = mv.substring(0, length) + "...";
 						//console.log(" - shorten");
 					}
-					ngModel.$viewValue = mv;
-					ngModel.$render();
+					$timeout(function () {
+						ngModel.$viewValue = mv;
+						ngModel.$render();
+					}, 1);
 
 					return mv;
 				}
