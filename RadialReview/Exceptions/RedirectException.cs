@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 
 namespace RadialReview.Exceptions
@@ -14,6 +15,8 @@ namespace RadialReview.Exceptions
 		public bool DisableStacktrace { get; set; }
 
 		public bool NoErrorReport { get; set; }
+
+        public HttpStatusCode? StatusCodeOverride { get; set; }
 
         public RedirectException(String message) : base(message) {
         }

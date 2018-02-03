@@ -59,11 +59,11 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> Pad(long id, bool showControls = true) {
+        public async Task<ActionResult> Pad(long id, bool showControls = true,bool readOnly=false) {
             try {
                 var todo = TodoAccessor.GetTodo(GetUser(), id);
                 var padId = todo.PadId;
-                if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id))) {
+                if (readOnly || !_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id))) {
                     padId = await PadAccessor.GetReadonlyPad(todo.PadId);
                 }
                 return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
@@ -338,7 +338,10 @@ namespace RadialReview.Controllers {
             people.Add(GetUser());
             people = people.Distinct(x => x.Id).ToList();
 
-            var model = new HeadlineTodoVm(recur.GetDefaultTodoOwner(GetUser()),GetUser()) {
+			//get Notes
+			s._Notes = await PadAccessor.GetText(s.HeadlinePadId);
+
+			var model = new HeadlineTodoVm(recur.GetDefaultTodoOwner(GetUser()),GetUser()) {
                 ByUserId = GetUser().Id,
                 Message = await s.NotNull(async x => await x.GetTodoMessage()),
                 Details = await s.NotNull(async x => await x.GetTodoDetails()),

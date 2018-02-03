@@ -34,6 +34,7 @@ using RadialReview.Utilities.Hooks;
 using RadialReview.Utilities.Synchronize;
 using System.Web.Mvc;
 using RadialReview.Models.ViewModels;
+using RadialReview.Utilities.NHibernate;
 
 namespace RadialReview.Accessors {
 	public class RockAndMilestones {
@@ -83,7 +84,7 @@ namespace RadialReview.Accessors {
 						//var todoData = TodoData.FromTodo(todo);
 						//userMeetingHub.appendTodo(".todo-list", todoData);
 						var updates = new AngularRecurrence(-2);
-						updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(ms, rock.AccountableUser));
+						updates.Milestones = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(ms, rock.AccountableUser));
 						userMeetingHub.update(updates);
 
 
@@ -102,7 +103,7 @@ namespace RadialReview.Accessors {
 
 			var splits = search.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			var dist = new DiscreteDistribution<RockModel>(0, 9, true);
-			
+
 			foreach (var u in visible) {
 
 				var fname = false;
@@ -469,7 +470,7 @@ namespace RadialReview.Accessors {
 			}
 
 			if (!potentialUsers.Any())
-				throw new PermissionsException("No users");
+				throw new PermissionsException("No users. Add an attendee first.");
 
 			var selected = potentialUsers.LastOrDefault(x => x.Selected);
 			if (selected == null)
@@ -482,21 +483,36 @@ namespace RadialReview.Accessors {
 		}
 
 		public static async Task UpdateRock(UserOrganizationModel caller, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					await UpdateRock(s, perms, rockId, message, ownerId, completion, dueDate, DateTime.UtcNow);
-					tx.Commit();
-					s.Flush();
-				}
-			}
+            //using (var s = HibernateSession.GetCurrentSession()) {
+            //	using (var tx = s.BeginTransaction()) {
+            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateRockCompletion(rockId), async s => {
+                var perms = PermissionsUtility.Create(s, caller);
+                await UpdateRock(s, perms, rockId, message, ownerId, completion, dueDate, DateTime.UtcNow);
+            });
+					//tx.Commit();
+					//s.Flush();
+			//	}
+			//}
 		}
 
 
-		public static async Task UpdateRock(ISession s, PermissionsUtility perms, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
+        //[Obsolete("Update for StrictlyAfter", true)]
+        //[Untested("StrictlyAfter")]
+        /// <summary>
+        /// SyncAction.UpdateRockCompletion(rockId)
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="perms"></param>
+        /// <param name="rockId"></param>
+        /// <param name="message"></param>
+        /// <param name="ownerId"></param>
+        /// <param name="completion"></param>
+        /// <param name="dueDate"></param>
+        /// <param name="now"></param>
+        /// <returns></returns>
+        public static async Task UpdateRock(IOrderedSession s, PermissionsUtility perms, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
 
-			SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRockCompletion(rockId));
-
+            //SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRockCompletion(rockId));
 			perms.EditRock(rockId);
 			now = now ?? DateTime.UtcNow;
 

@@ -252,7 +252,7 @@ function concludeMeeting() {
 	resetClickables();
 	delete startTime;// = undefined;
 
-	if ($("body").is(".preview-meeting")) {
+	if (!$("body").is(".preview-meeting")) {
 		loadPage("stats");
 	} else {
 		setPreviewMode(false);
@@ -278,6 +278,12 @@ function setCurrentPage(pageName, startTime, baseMinutes) {
 		loadPageForce(pageName);
 	}
 
+}
+
+function editRating(id) {
+    //showModal("Edit Rating", "/L10/EditRanting/" + id, null, null, null, null);
+    showModal("Edit Rating", "/l10/EditRanting?recurrenceId=" + id, null ,null);
+    //showModal("Edit Rating", "/l10/EditRanting/" + id, null);
 }
 
 function setHash(hash) {

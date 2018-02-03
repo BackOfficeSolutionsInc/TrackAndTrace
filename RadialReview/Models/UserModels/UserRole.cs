@@ -11,9 +11,10 @@ namespace RadialReview.Models.UserModels {
 		Standard = 0,
 		PlaceholderOnly =1,
 		LeadershipTeamMember = 2,
-		AccountContact =100,
+        AccountContact = 100,
+        EmailBlackList = 9999,
 
-	}
+    }
 
 	public class UserRole : ILongIdentifiable, IHistorical {
 		public virtual long Id { get; set; }			    

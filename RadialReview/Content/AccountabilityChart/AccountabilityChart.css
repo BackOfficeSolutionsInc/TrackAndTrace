@@ -106,6 +106,14 @@ body {
 .node.root-node .node-button.remove {
   display: none;
 }
+.node input {
+  max-width: 200px;
+}
+.node input:focus {
+  margin-left: -150px;
+  margin-right: -150px;
+  max-width: 500px;
+}
 .root-node-link {
   display: none;
 }
@@ -177,7 +185,7 @@ body {
 .acc-chart svg .acc-node {
   fill: none;
   stroke: black;
-  width: 200px;
+  min-width: 200px;
   /*padding: 2px;*/
   /*position:relative;*/
 }
@@ -500,6 +508,11 @@ body {
 }
 .acc-chart svg .node-button:focus circle {
   fill: #d5d5d5;
+}
+.acc-chart svg .node-button.print text {
+  transform: translate(-4.2px, 5.3px);
+  font-size: 10px;
+  fill: gray;
 }
 .acc-chart svg .node-button.add text {
   transform: translate(-4.5px, 5.3px);

@@ -27,7 +27,7 @@ namespace TractionTools.UITests.Selenium {
         
         [TestMethod]
 		[TestCategory("Visual")]
-		public async Task L10_Archive_TestScorecard()
+		public async Task Visual_L10_Archive_TestScorecard()
         {
             var testId = Guid.NewGuid();
             //Ensure correct week

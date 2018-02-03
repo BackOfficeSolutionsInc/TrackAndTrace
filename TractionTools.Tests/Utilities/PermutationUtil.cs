@@ -29,5 +29,53 @@ namespace TractionTools.Tests.Utilities {
 				}
 			}
 		}
+
+        /// <summary>
+        /// Useful when pairing up two concurrent requests
+        /// Ex:
+        ///     A========B
+        ///         C============D
+        ///  = > ACBD
+        ///  
+        ///     A==========B
+        ///         C==D
+        ///  
+        ///  = > ACDB
+        /// 
+        /// A is always before B
+        /// C always before D
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="orderedSequence1"></param>
+        /// <param name="orderedSequence2"></param>
+        /// <returns></returns>
+        public static IEnumerable<IList<T>> DualOrderdLists<T>(IList<T> orderedSequence1, IList<T> orderedSequence2) {
+
+            var combine = orderedSequence1.Union(orderedSequence2).Select((x,i)=>new { x, i }).ToList();
+            var o1 = combine.Take(orderedSequence1.Count()).Select(x=>x.i).ToList();
+            var o2 = combine.Skip(orderedSequence1.Count()).Select(x=>x.i).ToList();
+
+            return Permutate(combine).Where(ii => {
+                var iter = ii.Select(x => x.i).ToList();
+                var idx = 0;
+                foreach (var o in o1) {
+                    var temp = iter.IndexOf(o);
+                    if (temp < idx)
+                        return false;
+                    idx = temp;
+                }
+                idx = 0;
+                foreach (var o in o2) {
+                    var temp = iter.IndexOf(o);
+                    if (temp < idx)
+                        return false;
+                    idx = temp;
+                }
+                return true;
+            }).Select(x=>x.Select(y=>y.x).ToList());
+
+
+        }
 	}
 }

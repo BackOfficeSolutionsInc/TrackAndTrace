@@ -11,7 +11,7 @@ namespace TractionTools.Tests.Codebase {
 	public class AllHooksRegistered {
 		[TestMethod]
 		[TestCategory("Codebase")]
-		public void EnsureHooksAreRegistered() {
+		public void _ALERT_EnsureHooksAreRegistered() {
 			var type = typeof(IHook);
 			var expectedTypes = AppDomain.CurrentDomain.GetAssemblies()
 				.SelectMany(s => s.GetTypes())
@@ -23,7 +23,7 @@ namespace TractionTools.Tests.Codebase {
 			var expectedNames = expectedTypes.Select(x => x.FullName).ToList();
 			var registeredNames = allRegistered.Select(x => x.GetType().FullName).ToList();
 
-			SetUtility.AssertEqual(expectedNames, registeredNames);
+			SetUtility.AssertEqual(expectedNames, registeredNames,inconclusive:true);
 
 		}
 	}

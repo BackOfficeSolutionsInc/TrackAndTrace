@@ -1346,6 +1346,23 @@ body,
             max-width:90px;
         }*/
 }
+.wizard .rock-list-container .grayRow:after {
+  content: "ARCHIVED";
+  text-align: center;
+  left: 0;
+  right: 0;
+  display: inline;
+  height: 0px;
+  padding: 13px;
+  letter-spacing: 18px;
+  position: absolute;
+  color: #c3c3c3;
+  font-size: 19px;
+  font-family: monospace;
+  font-weight: 900;
+  text-shadow: 0 0 8px white;
+  pointer-events: none;
+}
 .wizard .rock-list-container .create-row {
   float: right;
   height: 56px;
@@ -1437,7 +1454,7 @@ body,
   background-repeat: no-repeat;
   background-position: 50% 50%;
 }
-.wizard .rock-list-container thead,
+.wizard .rock-list-container thead1,
 .wizard .rock-list-container .createtime-column,
 .wizard .rock-list-container .due-column {
   display: none;
@@ -2331,6 +2348,11 @@ body,
   border-radius: 21px;
   background-color: rgba(0, 0, 0, 0.16);
 }
+.wizard .wizard-menu {
+  /*.btn-advanced{
+            color: #a2a2a2;
+        }*/
+}
 .wizard .wizard-menu .btn-row .btn {
   width: 100%;
   margin: 0 5px;
@@ -2344,6 +2366,18 @@ body,
   font-size: 10px;
   color: #a2a2a2;
   float: right;
+}
+@-moz-document url-prefix() {
+  .wizard .wizard-menu .btn-row .btn .glyphicon-triangle-right {
+    top: -15px;
+    left: 1px;
+    font-size: 10px;
+    color: #a2a2a2;
+    float: right;
+  }
+}
+.wizard .wizard-menu .btn-advanced:hover {
+  color: darkred;
 }
 .wizard .wizard-menu .wizard-extra-buttons {
   padding: 3px 0px 7px;
@@ -2538,6 +2572,7 @@ body,
 .edit-disabled .app .item-wrapper,
 .edit-disabled .btn-pages,
 .edit-disabled .btn-texting,
+.edit-disabled .btn-advanced,
 .edit-disabled .on-edit-enabled {
   pointer-events: none;
   touch-action: none;
@@ -2548,12 +2583,14 @@ body,
 .edit-disabled .app .item-wrapper,
 .edit-disabled .btn-pages,
 .edit-disabled .btn-texting,
+.edit-disabled .btn-advanced,
 .edit-disabled .on-edit-enabled,
 .edit-disabled .app input:hover,
 .edit-disabled .app md-checkbox:hover,
 .edit-disabled .app .item-wrapper:hover,
 .edit-disabled .btn-pages:hover,
 .edit-disabled .btn-texting:hover,
+.edit-disabled .btn-advanced:hover,
 .edit-disabled .on-edit-enabled:hover {
   cursor: default;
 }
@@ -2562,6 +2599,7 @@ body,
 .edit-disabled .app .item-wrapper input[type='checkbox'],
 .edit-disabled .btn-pages input[type='checkbox'],
 .edit-disabled .btn-texting input[type='checkbox'],
+.edit-disabled .btn-advanced input[type='checkbox'],
 .edit-disabled .on-edit-enabled input[type='checkbox'] {
   opacity: 0.65;
   filter: alpha(opacity=65);
@@ -2571,12 +2609,14 @@ body,
 .edit-disabled .app .item-wrapper.btn,
 .edit-disabled .btn-pages.btn,
 .edit-disabled .btn-texting.btn,
+.edit-disabled .btn-advanced.btn,
 .edit-disabled .on-edit-enabled.btn,
 .edit-disabled .app input .btn,
 .edit-disabled .app md-checkbox .btn,
 .edit-disabled .app .item-wrapper .btn,
 .edit-disabled .btn-pages .btn,
 .edit-disabled .btn-texting .btn,
+.edit-disabled .btn-advanced .btn,
 .edit-disabled .on-edit-enabled .btn {
   opacity: 0.65;
   filter: alpha(opacity=65);
@@ -2588,12 +2628,14 @@ body,
 .edit-disabled .app .item-wrapper.btn:hover,
 .edit-disabled .btn-pages.btn:hover,
 .edit-disabled .btn-texting.btn:hover,
+.edit-disabled .btn-advanced.btn:hover,
 .edit-disabled .on-edit-enabled.btn:hover,
 .edit-disabled .app input .btn:hover,
 .edit-disabled .app md-checkbox .btn:hover,
 .edit-disabled .app .item-wrapper .btn:hover,
 .edit-disabled .btn-pages .btn:hover,
 .edit-disabled .btn-texting .btn:hover,
+.edit-disabled .btn-advanced .btn:hover,
 .edit-disabled .on-edit-enabled .btn:hover {
   cursor: not-allowed !important;
 }
@@ -2602,24 +2644,28 @@ body,
 .edit-disabled .app .item-wrapper.btn .icon,
 .edit-disabled .btn-pages.btn .icon,
 .edit-disabled .btn-texting.btn .icon,
+.edit-disabled .btn-advanced.btn .icon,
 .edit-disabled .on-edit-enabled.btn .icon,
 .edit-disabled .app input .btn .icon,
 .edit-disabled .app md-checkbox .btn .icon,
 .edit-disabled .app .item-wrapper .btn .icon,
 .edit-disabled .btn-pages .btn .icon,
 .edit-disabled .btn-texting .btn .icon,
+.edit-disabled .btn-advanced .btn .icon,
 .edit-disabled .on-edit-enabled .btn .icon,
 .edit-disabled .app input.btn .glyphicon,
 .edit-disabled .app md-checkbox.btn .glyphicon,
 .edit-disabled .app .item-wrapper.btn .glyphicon,
 .edit-disabled .btn-pages.btn .glyphicon,
 .edit-disabled .btn-texting.btn .glyphicon,
+.edit-disabled .btn-advanced.btn .glyphicon,
 .edit-disabled .on-edit-enabled.btn .glyphicon,
 .edit-disabled .app input .btn .glyphicon,
 .edit-disabled .app md-checkbox .btn .glyphicon,
 .edit-disabled .app .item-wrapper .btn .glyphicon,
 .edit-disabled .btn-pages .btn .glyphicon,
 .edit-disabled .btn-texting .btn .glyphicon,
+.edit-disabled .btn-advanced .btn .glyphicon,
 .edit-disabled .on-edit-enabled .btn .glyphicon {
   opacity: 1;
   filter: alpha(opacity=100);
@@ -2629,12 +2675,14 @@ body,
 .edit-disabled .app .item-wrapper .icon,
 .edit-disabled .btn-pages .icon,
 .edit-disabled .btn-texting .icon,
+.edit-disabled .btn-advanced .icon,
 .edit-disabled .on-edit-enabled .icon,
 .edit-disabled .app input .glyphicon,
 .edit-disabled .app md-checkbox .glyphicon,
 .edit-disabled .app .item-wrapper .glyphicon,
 .edit-disabled .btn-pages .glyphicon,
 .edit-disabled .btn-texting .glyphicon,
+.edit-disabled .btn-advanced .glyphicon,
 .edit-disabled .on-edit-enabled .glyphicon {
   opacity: 0.25;
   filter: alpha(opacity=25);

@@ -91,14 +91,16 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
 
 	var message = "[";
 	var mArray = [];
-	for (var i in consoleStore) {
-		if (arrayHasOwnIndex(consoleStore, i)) {
-			try {
-				mArray.push(JSON.stringify(consoleStore[i]));
-			} catch (e) {
-				mArray.push("SupportEmailGenerationError:" + e);
-			}
-		}
+	if (typeof (consoleStore) !== "undefined") {
+	    for (var i in consoleStore) {
+	        if (arrayHasOwnIndex(consoleStore, i)) {
+	            try {
+	                mArray.push(JSON.stringify(consoleStore[i]));
+	            } catch (e) {
+	                mArray.push("SupportEmailGenerationError:" + e);
+	            }
+	        }
+	    }
 	}
 	message = "[" + mArray.join(",\n") + "]";
 	var fields = [

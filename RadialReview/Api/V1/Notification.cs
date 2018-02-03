@@ -54,7 +54,7 @@ namespace RadialReview.Api.V1 {
         /// </summary>
         /// <returns></returns>
         [Route("notification/list")]
-        [HttpPost]
+        [HttpGet]
         public List<AngularAppNotification> List(bool seen=false) {
             return  NotificationAccessor.GetNotificationsForUser(GetUser(), GetUser().Id,seen)
                 .Select(x=> new AngularAppNotification(x))

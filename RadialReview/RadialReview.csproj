@@ -129,6 +129,7 @@
     <Compile Include="Accessors\PDF\JS\Tree.js.cs" />
     <Compile Include="Accessors\ReportAccessor.cs" />
     <Compile Include="Accessors\SearchAccessor.cs" />
+    <Compile Include="Accessors\StatsAccessor.cs" />
     <Compile Include="Accessors\TinyUserAccessor.cs" />
     <Compile Include="Accessors\VideoConferenceProviders\VideoProviderAccessor.cs" />
     <Compile Include="Accessors\WebhooksAccessor.cs" />
@@ -159,10 +160,20 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\People\Controllers\ErrorController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
+    <None Include="Content\Chart\metric-graphics.less" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\Formula\CascadeScorecardUpdates.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\ExecutePaymentOnCardUpdate.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\FirstPaymentEmail.cs" />
+    <Compile Include="Crosscutting\Flags\OrganizationFlag.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IOrganizationFlagHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\CardExpireEmail.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\SetDelinquentFlag.cs" />
+    <Compile Include="Exceptions\TestException.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventExecutor.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnalyzers.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\ConsecutiveLateEnds.cs" />
@@ -209,6 +220,7 @@
     <Compile Include="Models\Angular\Notifications\AngularAppNotification.cs" />
     <Compile Include="Models\Angular\Users\AngularUserRole.cs" />
     <Compile Include="Models\Application\Variable.cs" />
+    <Compile Include="Models\Charts\MetricGraphic.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
@@ -893,6 +905,7 @@
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\DistanceUtility.cs" />
     <Compile Include="Utilities\ForModelUtil.cs" />
+    <Compile Include="Utilities\FormulaUtility.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\HashUtil.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IAccountEvent.cs" />
@@ -917,6 +930,7 @@
     <Compile Include="Utilities\NHibernate\Context.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
     <Compile Include="Utilities\NHibernate\NHibernateProxyJsonConvert.cs" />
+    <Compile Include="Utilities\NHibernate\OrderedSession.cs" />
     <Compile Include="Utilities\NHibernate\SingleRequestTransaction.cs" />
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
@@ -1041,6 +1055,7 @@
     <Content Include="Areas\People\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\People\Views\QuarterlyConversation\Issue.cshtml" />
     <Content Include="Areas\People\Views\PeopleAnalyzer\Index.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Surveys.cshtml" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
@@ -1061,12 +1076,22 @@
     <Content Include="Content\bootstrap\custom\XEditable.css">
       <DependentUpon>XEditable.less</DependentUpon>
     </Content>
+    <Content Include="Content\Chart\metric-graphics.css">
+      <DependentUpon>metric-graphics.less</DependentUpon>
+    </Content>
     <Content Include="Content\creditcard_icon\bank.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
+    </Content>
+    <Content Include="Content\img\TRACTION-TOOLS_large_stacked_2c.png" />
+    <Content Include="Content\L10\L10Scorecard.css">
+      <DependentUpon>L10Scorecard.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Inputs\TagInput.css">
+      <DependentUpon>TagInput.less</DependentUpon>
     </Content>
     <Content Include="Content\People\MaterialRadio.css">
       <DependentUpon>MaterialRadio.less</DependentUpon>
@@ -1253,7 +1278,9 @@
     <Content Include="Content\People\MaterialRadio.less" />
     <Content Include="project.json" />
     <Content Include="Content\Swagger\CustomSwaggerStyle.less" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IPaymentHook.cs" />
     <Compile Include="Crosscutting\Hooks\Realtime\L10\RealTime_L10_Headline.cs" />
+    <Content Include="Content\Inputs\TagInput.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1302,10 +1329,12 @@
     <Content Include="Scripts\Angular\People\Survey\SurveyComponents.js" />
     <Content Include="Scripts\Angular\Tiles\L10StatsTile.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
+    <Content Include="Scripts\Charts\metrics-graphics.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\AccountabilityChart\accountabilityChart.js" />
     <Content Include="Scripts\components\milestones.js" />
     <Content Include="Scripts\CoreProcess\coreProcessRT.js" />
+    <Content Include="Scripts\d3\d3.v4.12.2.js" />
     <Content Include="Scripts\d3\d3.v4.js" />
     <Content Include="Scripts\d3\radial.d3.tree.js" />
     <Content Include="Scripts\Dashboard\dashboard.js" />
@@ -1314,6 +1343,16 @@
     <Content Include="Scripts\home\screenshot.js" />
     <Content Include="Scripts\home\landscape.js" />
     <Content Include="Scripts\home\pretty-json.min.js" />
+    <Content Include="Scripts\Inputs\backbone.min.js" />
+    <Content Include="Scripts\Inputs\backbone.subviews.js" />
+    <Content Include="Scripts\Inputs\bullseye.js" />
+    <Content Include="Scripts\Inputs\jquery.min.js" />
+    <Content Include="Scripts\Inputs\liquidmetal.js" />
+    <Content Include="Scripts\Inputs\list.png" />
+    <Content Include="Scripts\Inputs\require.js" />
+    <Content Include="Scripts\Inputs\token-editor.js" />
+    <Content Include="Scripts\Inputs\underscore.min.js" />
+    <Content Include="Scripts\Inputs\underscore.string.min.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.min.js">
       <DependentUpon>jquery.autoresize.js</DependentUpon>
     </Content>
@@ -1336,6 +1375,7 @@
     <Content Include="Scripts\Main\alerts.js" />
     <Content Include="Scripts\Main\backwardcompatability.js" />
     <Content Include="Scripts\Main\beta.js" />
+    <Content Include="Scripts\Main\chart.js" />
     <Content Include="Scripts\Main\clickableclass.js" />
     <Content Include="Scripts\Main\datatable.js" />
     <Content Include="Scripts\Main\datepickers.js" />
@@ -1390,6 +1430,7 @@
     <Content Include="SoftwareUpdates\20160622.txt" />
     <Content Include="SoftwareUpdates\20160620.txt" />
     <Content Include="SoftwareUpdates\20171207.txt" />
+    <Compile Include="Utilities\QuarterGuessUtility.cs" />
     <Content Include="Views\Permissions\Dropdown.cshtml" />
     <Content Include="Content\Bootstrap-tabs.css" />
     <Content Include="Content\bootstrap.vertical-tabs.css" />
@@ -1780,14 +1821,20 @@
     <Content Include="Views\Headlines\EditModal.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\LocalDateTime.cshtml" />
     <Content Include="Views\L10\Pages.cshtml" />
+    <Content Include="Views\Organization\ResendJoinEmailManual.cshtml" />
+    <Content Include="Views\L10\EditRating.cshtml" />
+    <Content Include="Views\Scorecard\FormulaPartial.cshtml" />
+    <Content Include="Views\ClientSuccess\Close.cshtml" />
+    <Content Include="Views\Data\Dashboard.cshtml" />
+    <Content Include="Views\Admin\EmployeeCount.cshtml" />
     <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="Web.UPDATE DATABSE.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -1872,7 +1919,7 @@
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\jquery.qtip.css" />
     <Content Include="Content\L10\L10IDS.css" />
-    <Content Include="Content\L10\L10Scorecard.css" />
+    <None Include="Content\L10\L10Scorecard.less" />
     <Content Include="Content\L10\L10Stats.css" />
     <Content Include="Content\print.css" />
     <Content Include="Content\ReportBuilder\evaluation.css" />
@@ -2214,7 +2261,7 @@
     <Content Include="Views\Dashboard\_L10TileList.cshtml" />
     <Content Include="Views\L10\ExternalPage.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
-    <Content Include="Web.config">
+    <Content Include="web.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="wkhtmltox0.dll">
@@ -2497,11 +2544,12 @@
     <Folder Include="External\" />
     <Folder Include="logs\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
+    <Folder Include="Scripts\Models\" />
+    <Folder Include="Scripts\typings\d3\plugins\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />
     <Folder Include="Views\Console\" />
-    <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\HealthCheck\" />
     <Folder Include="Views\Img\" />
@@ -2600,10 +2648,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Scripts\d3\Charts.ts" />
-    <TypeScriptCompile Include="Scripts\Models\Charts.ts" />
-    <TypeScriptCompile Include="Scripts\typings\d3\d3.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\d3\plugins\d3.superformula.d.ts" />
     <Content Include="SoftwareUpdates\20151217.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -2705,7 +2749,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:44301</IISUrl>
+          <IISUrl>http://localhost:44302</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

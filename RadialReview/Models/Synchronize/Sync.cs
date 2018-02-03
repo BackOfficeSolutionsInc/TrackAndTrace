@@ -49,20 +49,24 @@ namespace RadialReview.Models.Synchronize {
 		}
 	}
 	public class SyncLock {
-		public virtual string Id { get; set; }
-		public virtual DateTime LastUpdate { get; set; }
-		public virtual int UpdateCount { get; set; }
 
-		public SyncLock() {
-			LastUpdate = DateTime.UtcNow;
+        public const string CREATE_KEY = "__CreateKey";
+		public virtual string Id { get; set; }
+		public virtual DateTime LastUpdateDb { get; set; }
+		public virtual int UpdateCount { get; set; }
+        public virtual long? LastClientUpdateTimeMs { get; set; }
+
+        public SyncLock() {
+			//LastUpdateDb = DateTime.UtcNow;
 		}
 
 		public class Map : ClassMap<SyncLock> {
 			public Map() {
 				Id(x => x.Id).GeneratedBy.Assigned();
-				Map(x => x.LastUpdate);
-				Map(x => x.UpdateCount);
-			}
+				Map(c => c.LastUpdateDb).CustomSqlType("timestamp").Length(3).Generated.Always();
+                Map(x => x.UpdateCount);
+                Map(x => x.LastClientUpdateTimeMs);
+            }
 		}
 	}
 }

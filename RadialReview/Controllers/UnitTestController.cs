@@ -18,6 +18,7 @@ using RadialReview.Models.VideoConference;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.ViewModels;
+using RadialReview.Exceptions;
 
 namespace RadialReview.Controllers
 {
@@ -229,11 +230,18 @@ namespace RadialReview.Controllers
 			return View(id);
 		}
 
-		[Access(AccessLevel.Radial)]
-		public ActionResult SpeechRecog(long id)
-		{
-			return View(id);
-		}
+        [Access(AccessLevel.Radial)]
+        public ActionResult SpeechRecog(long id) {
+            return View(id);
+        }
+
+        [Access(AccessLevel.Radial)]
+        public JsonResult SyncException(long? id=null) {
+            throw new SyncException(id);
+        }
+
+
+
 
     }
 }

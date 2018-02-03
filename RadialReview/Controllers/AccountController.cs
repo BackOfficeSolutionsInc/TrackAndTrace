@@ -166,7 +166,7 @@ namespace RadialReview.Controllers {
 			var userOrgs = GetUserOrganizations(null);
 			ViewBag.Admin = GetUserModel().IsRadialAdmin;
 			ViewBag.ReturnUrl = ReturnUrl;
-			return View(userOrgs.ToList());
+			return View(userOrgs.Where(x=>x.DeleteTime==null && x.Organization.DeleteTime==null && x.Organization.AccountType != AccountType.Cancelled).ToList());
 		}
 
 		[Access(AccessLevel.Any)]

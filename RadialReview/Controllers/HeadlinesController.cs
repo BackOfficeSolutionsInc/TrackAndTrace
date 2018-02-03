@@ -49,11 +49,11 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<ActionResult> Pad(long id, bool showControls = true) {
+		public async Task<ActionResult> Pad(long id, bool showControls = true,bool readOnly = false) {
 			try {
 				var headline = HeadlineAccessor.GetHeadline(GetUser(), id);
 				var padId = headline.HeadlinePadId;
-				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditHeadline(id))) {
+				if (readOnly || !_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditHeadline(id))) {
 					padId = await PadAccessor.GetReadonlyPad(headline.HeadlinePadId);
 				}
 				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
@@ -115,7 +115,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public async Task<JsonResult> EditModal(PeopleHeadline model) {
-			await HeadlineAccessor.UpdateHeadline(GetUser(), model.Id, model.Message,null,model.AboutId,model.AboutIdText);
+			await HeadlineAccessor.UpdateHeadline(GetUser(), model.Id, model.Message, model.AboutId, model.AboutIdText);
 			return Json(ResultObject.SilentSuccess());
 		}
 

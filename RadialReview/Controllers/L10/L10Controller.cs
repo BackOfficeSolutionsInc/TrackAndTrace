@@ -211,7 +211,7 @@ namespace RadialReview.Controllers {
 				_PermissionsAccessor.Permitted(GetUser(), x => x.CanView(PermItem.ResourceType.L10Recurrence, id.Value));
 
 				ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, id.Value));
-				//ViewBag.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, id.Value));
+				ViewBag.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, id.Value));
 
 				var now = DateTime.UtcNow.ToJavascriptMilliseconds();
 				try {
@@ -446,7 +446,7 @@ namespace RadialReview.Controllers {
 				var createdUser = result.Item2;
 				try {
 					await L10Accessor.AddAttendee(GetUser(), meetingId, createdUser.Id);
-				} catch (Exception) {
+				} catch (Exception e) {
 					throw new PermissionsException("Could not add to meeting.");
 				}
 			} else {
@@ -466,7 +466,7 @@ namespace RadialReview.Controllers {
 				var result = await ScorecardAccessor.CreateMeasurable(GetUser(), builder);
 				try {
 					await L10Accessor.AttachMeasurable(GetUser(), meetingId, result.Id);
-				} catch (Exception) {
+				} catch (Exception e) {
 					throw new PermissionsException("Could not add to meeting.");
 				}
 			} else {
@@ -486,7 +486,7 @@ namespace RadialReview.Controllers {
 				var result = await RockAccessor.CreateRock(GetUser(), o.AccountableUser, o.Title);
 				try {
 					await L10Accessor.AttachRock(GetUser(), meetingId, result.Id, o.AddToVTO);
-				} catch (Exception) {
+				} catch (Exception e) {
 					throw new PermissionsException("Could not add to meeting.");
 				}
 			} else {

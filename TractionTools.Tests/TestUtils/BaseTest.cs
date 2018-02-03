@@ -201,6 +201,13 @@ namespace TractionTools.Tests.TestUtils {
             HttpContext.Current.Items[SyncUtil.NO_SYNC_EXCEPTION] = true;
         }
 
+        public static void MockHttpContext(Controller ctrl, bool isTest = true) {
+            MockHttpContext(isTest);
+            ctrl.ControllerContext = new ControllerContext() {
+                HttpContext = new HttpContextWrapper(HttpContext.Current)
+            };
+        }
+
         public static void MockHttpContext(bool isTest = true) {
             if (HttpContext.Current == null) {
                 HttpContext.Current = new HttpContext(new HttpRequest("", "http://fake.url", ""), new HttpResponse(HttpWriter.Null));

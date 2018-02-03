@@ -572,6 +572,9 @@ namespace RadialReview.Accessors {
 					if (found == null)
 						throw new PermissionsException("Phone number is unavailable.");
 
+
+					//s.QueryOver<PhoneActionMap>().Where(x=>x.DeleteTime==null && x.CallerId == userId && CallerNumber!=-1 && )
+
 					var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 					var random = new Random();
 					var result = new string(

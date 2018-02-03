@@ -1,0 +1,12 @@
+git config --global alias.alive "branch --list '[^(z/old/)]*'"
+git config --global alias.dead "branch --list 'z/old/*'"
+git config --global alias.old "!f() { git branch -m $1 z/old/%date:~10,4%%date:~4,2%%date:~7,2%/$1; } ;f"
+git config --global alias.feature "!f() { git branch -m $1 feature/%date:~10,4%%date:~4,2%%date:~7,2%/$1; } ;f"
+git config --global alias.bug "!f() { git branch -m $1 bug/%date:~10,4%%date:~4,2%%date:~7,2%/$1; } ;f"
+git config --global alias.patch "!f() { git branch -m $1 patch/%date:~10,4%%date:~4,2%%date:~7,2%/$1; } ;f"
+git config --global alias.merged "branch --list '[^(z/old/)]*' --merged"
+git config --global alias.unmerged "branch --list '[^(z/old/)]*' --no-merged"
+git config --global alias.features "branch --list 'feature/*'"
+git config --global alias.bugs "branch --list 'bug/*'"
+git config --global alias.patchs "branch --list 'patch/*'"
+

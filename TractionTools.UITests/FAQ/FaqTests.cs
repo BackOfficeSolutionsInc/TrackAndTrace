@@ -18,7 +18,7 @@ namespace TractionTools.UITests.FAQ {
 
 		[TestMethod]
 		[TestCategory("Visual")]
-		public async Task FAQ_CreateMeeting() {
+		public async Task Visual_FAQ_CreateMeeting() {
 
 			var testId = Guid.NewGuid();
 			var AUC = await GetAdminCredentials(testId);

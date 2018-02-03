@@ -24,13 +24,15 @@ namespace TractionTools.Tests.TestUtils {
 			TestName = "TractionTools.Tests";
 		}
 
-		public void CompareModelProperties(bool? _nil, object actual,bool lastComparison=true) {
+		public void CompareModelProperties(bool? _nil_PRINT, object actual,bool lastComparison=true) {
 			_compareModelProperties(null, actual,lastComparison);
 		}
 
 
 		public void CompareModelProperties(object actual,bool lastComparison=true) {
 			var expected = new ApiExpected(TestContext, VERSION);
+            //if (expected == null || ExpectedApiResults.Get(expected)==null)
+            //    Assert.Fail("JSON does not exist");
 			_compareModelProperties(expected, actual, lastComparison);
 		}
 		private static void _compareModelProperties(ApiExpected expected, object actual, bool lastComparison) {
@@ -47,8 +49,12 @@ namespace TractionTools.Tests.TestUtils {
 				Console.WriteLine("====" + actual.NotNull(x => x.GetType().Name) + "====");
 				actualJson = Newtonsoft.Json.JsonConvert.SerializeObject(actual, Newtonsoft.Json.Formatting.Indented);
 				Console.WriteLine(actualJson);
-				if (lastComparison)
-					Assert.Inconclusive("Expected JSON does not exist. See console output for actual.");
+                if (lastComparison) {
+                    var err = "Expected JSON does not exist.See console output for actual.Temporarily add to the App.config: '<add key = \"RegenerateAPI\" value = \"V"+(expected.NotNull(x=>x.Verison+"")??"X")+"\" />' to regenerate";
+                    if (expectedXml == null)
+                        Assert.Fail(err);
+                    Assert.Inconclusive(err);
+                }
 				return;
 			}
 
