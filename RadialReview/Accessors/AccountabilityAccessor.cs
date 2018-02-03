@@ -1005,7 +1005,7 @@ namespace RadialReview.Accessors {
 				ExpandNode = parentNodeId
 			});
 			updater.Update(new AngularAccountabilityNode(parentNodeId) {
-				children = AngularList.CreateFrom(AngularListType.Add, new AngularAccountabilityNode(node))
+				children = AngularList.CreateFrom(AngularListType.Add, new AngularAccountabilityNode(node,editable:true))
 			});
 
 			return node;
