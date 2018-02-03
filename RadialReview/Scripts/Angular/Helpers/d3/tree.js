@@ -573,6 +573,8 @@
                     	var dive = function (parent) {
                     		if ($(parent).css("display") == "none")
                     			return;
+                    		if ($(parent).is("md-autocomplete"))
+                    			return;
 
                     		//if ($(parent).prop("tagName").toLowerCase() !== "foreignobject") {
                     		var bb = { width: 0, height: 0 };

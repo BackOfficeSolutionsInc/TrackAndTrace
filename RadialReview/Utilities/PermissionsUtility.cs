@@ -1105,6 +1105,7 @@ namespace RadialReview.Utilities {
                 } catch (PermissionsException) {
                 }
 
+
                 var measurableRecurs = session.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
                         .Where(x => x.DeleteTime == null && x.Measurable.Id == measurableId)
                         .Select(x => x.L10Recurrence.Id)
@@ -1117,7 +1118,13 @@ namespace RadialReview.Utilities {
                     } catch (PermissionsException) {
                     }
                 }
-                throw new PermissionsException("Cannot view measurable");
+				try {
+					CanAdminMeetingWithUser(m.AccountableUserId, onError: new PermissionsException().Message);
+					return this;
+				} catch (PermissionsException) {
+				}
+
+				throw new PermissionsException("Cannot view measurable");
             });
         }
         public PermissionsUtility EditMeasurable(long measurableId) {
@@ -1191,7 +1198,7 @@ namespace RadialReview.Utilities {
         }
 
 		public PermissionsUtility CreateMeasurableForUser(long userId,long? recurrenceId=null) {
-			return Or(x=>x.EditUserDetails(userId), x => x.CreateMeetingItemForUser(userId,recurrenceId, "Cannot create measurable"));
+			return Or(x=>x.EditUserDetails(userId), x => x.CanAdminMeetingWithUser(userId,recurrenceId, "Cannot create measurable"));
 		}
 
 		#endregion
@@ -1253,7 +1260,7 @@ namespace RadialReview.Utilities {
 		/// <param name="optionalRecurrenceId"></param>
 		/// <param name="onError"></param>
 		/// <returns></returns>
-		private PermissionsUtility CreateMeetingItemForUser(long userId,long? optionalRecurrenceId=null,string onError="Cannot create. User is not an attendee of the meeting.") {
+		private PermissionsUtility CanAdminMeetingWithUser(long userId,long? optionalRecurrenceId=null,string onError="Cannot create. User is not an attendee of the meeting.") {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1678,12 +1685,16 @@ namespace RadialReview.Utilities {
 
             if (user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou)
                 return ManagesUserOrganizationOrSelf(userId);
-            throw new PermissionsException();
+
+			return CanAdminMeetingWithUser(userId, onError:new PermissionsException().Message);
+
+
+			//throw new PermissionsException();
         }
 		
 		public PermissionsUtility CreateRocksForUser(long userId,long? recurrenceId=null) {
 
-			return CreateMeetingItemForUser(userId, recurrenceId, "Cannot create rock");
+			return CanAdminMeetingWithUser(userId, recurrenceId, "Cannot create rock");
 			//if (IsRadialAdmin(caller))
 			//	return this;
 

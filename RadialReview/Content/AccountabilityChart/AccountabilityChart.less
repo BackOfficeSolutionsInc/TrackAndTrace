@@ -92,6 +92,15 @@ html, body {
 			width:100px;
 		}*/
 	}
+	
+	input{
+		max-width:200px;
+	}
+	input:focus{
+		margin-left:-150px;
+		margin-right:-150px;
+		max-width:500px;
+	}
 }
 
 &.root-node-link {
@@ -156,154 +165,154 @@ html, body {
             /*stroke: @border-color;
 			stroke-width: 2;
 			fill: @background-color;*/
-            .bottomButton();
-            stroke-dasharray: 5,2;
-            stroke: @border-color;
-            cursor: pointer;
-            pointer-events: all;
-        }
+			.bottomButton();
+			stroke-dasharray: 5,2;
+			stroke: @border-color;
+			cursor: pointer;
+			pointer-events: all;
+		}
 
-        &:hover circle {
-            .bottomButtonHover();
-            stroke-dasharray: none;
-        }
-    }
+		&:hover circle {
+			.bottomButtonHover();
+			stroke-dasharray: none;
+		}
+	}
 
-    .ghost, .activeDrag .ghost {
-        display: none;
-        margin-top: -20px;
-    }
+	.ghost, .activeDrag .ghost {
+		display: none;
+		margin-top: -20px;
+	}
 
-    .link {
-        fill: none;
-        stroke: @border-color;
-        stroke-width: 2px;
-    }
+	.link {
+		fill: none;
+		stroke: @border-color;
+		stroke-width: 2px;
+	}
 
-    .acc-node {
-        fill: none;
-        stroke: black;
-        width: 200px;
-        /*padding: 2px;*/
-        /*position:relative;*/
-        md-autocomplete {
-            background-color: transparent;
-            height: 20px;
+	.acc-node {
+		fill: none;
+		stroke: black;
+		min-width: 200px;
+		/*padding: 2px;*/
+		/*position:relative;*/
+		md-autocomplete {
+			background-color: transparent;
+			height: 20px;
 
-            md-autocomplete-wrap {
-                box-shadow: none;
-                height: 20px;
-            }
+			md-autocomplete-wrap {
+				box-shadow: none;
+				height: 20px;
+			}
 
-            button {
-                display: none;
-            }
+			button {
+				display: none;
+			}
 
-            input {
-                text-align: center;
-                height: 20px;
-                line-height: 20px;
-                padding: 0px;
+			input {
+				text-align: center;
+				height: 20px;
+				line-height: 20px;
+				padding: 0px;
 
-                &:focus {
-                    /*text-align: left !important;*/
-                }
-            }
+				&:focus {
+					/*text-align: left !important;*/
+				}
+			}
 
-            &.no-match input:not(:focus) {
-                font-style: italic;
-                color: #e29d9d;
-                text-shadow: none;
-            }
-        }
+			&.no-match input:not(:focus) {
+				font-style: italic;
+				color: #e29d9d;
+				text-shadow: none;
+			}
+		}
 
-        .move-icon {
-            cursor: move;
-        }
+		.move-icon {
+			cursor: move;
+		}
 
 
-        .acc-buttons {
-            width: 100%;
-            background-color: @border-color;
+		.acc-buttons {
+			width: 100%;
+			background-color: @border-color;
 
-            &.top-bar {
-                height: 10px;
-                font-family: 'Roboto', sans-serif;
-                text-align: center;
-                color: #fff;
-                text-transform: uppercase;
-                /*text-shadow: 0 0 0px #fff;*/
-                font-size: 15px;
-                font-weight: bold;
-            }
+			&.top-bar {
+				height: 10px;
+				font-family: 'Roboto', sans-serif;
+				text-align: center;
+				color: #fff;
+				text-transform: uppercase;
+				/*text-shadow: 0 0 0px #fff;*/
+				font-size: 15px;
+				font-weight: bold;
+			}
 
-            &.bottom-bar {
-                height: 0px;
-            }
+			&.bottom-bar {
+				height: 0px;
+			}
 
-            .button {
-                cursor: pointer;
-                color: rgba(255,255,255,50%);
-                transition: color ease .2s;
+			.button {
+				cursor: pointer;
+				color: rgba(255,255,255,50%);
+				transition: color ease .2s;
 
-                &:hover {
-                    color: rgba(255,255,255,100%);
-                }
-            }
+				&:hover {
+					color: rgba(255,255,255,100%);
+				}
+			}
 
-            .glyphicon {
-                position: inherit;
-            }
+			.glyphicon {
+				position: inherit;
+			}
 
-            .minimize {
-                margin-top: 10px;
-            }
+			.minimize {
+				margin-top: 10px;
+			}
 
-            .button.add,
-            .minimize-icon {
-                padding: 2px 3px;
-            }
+			.button.add,
+			.minimize-icon {
+				padding: 2px 3px;
+			}
 
-            .minimize-icon.glyphicon-chevron-right {
-                color: rgba(255,255,255,100%);
-            }
+			.minimize-icon.glyphicon-chevron-right {
+				color: rgba(255,255,255,100%);
+			}
 
-            .add {
-                float: right;
-            }
-        }
+			.add {
+				float: right;
+			}
+		}
 
-        .acc-position {
-            margin: 3px 0px;
+		.acc-position {
+			margin: 3px 0px;
 
-            input {
-                font-size: 15px;
-                /* font-weight: bold; */
-                text-shadow: 0 0 #000;
-            }
-        }
+			input {
+				font-size: 15px;
+				/* font-weight: bold; */
+				text-shadow: 0 0 #000;
+			}
+		}
 
-        .acc-owner {
-            .name {
-                text-align: center;
-                width: 100%;
-                font-weight: bold;
-                cursor: text;
-            }
-            //cursor: move; /* fallback: no `url()` support or images disabled */
-            //cursor: -webkit-grab; /* Chrome 1-21, Safari 4+ */
-            //cursor: -moz-grab; /* Firefox 1.5-26 */
-            //cursor: grab; /* W3C standards syntax, should come least */
-            //border: 20px solid transparent;
-            margin: 3px 0px;
+		.acc-owner {
+			.name {
+				text-align: center;
+				width: 100%;
+				font-weight: bold;
+				cursor: text;
+			}
+			//cursor: move; /* fallback: no `url()` support or images disabled */
+			//cursor: -webkit-grab; /* Chrome 1-21, Safari 4+ */
+			//cursor: -moz-grab; /* Firefox 1.5-26 */
+			//cursor: grab; /* W3C standards syntax, should come least */
+			//border: 20px solid transparent;
+			margin: 3px 0px;
 
-            &:hover {
-                //border: 20px solid gray;
-            }
+			&:hover {
+				//border: 20px solid gray;
+			}
 
-            .acc-owner-delete {
-                position: absolute;
-                /*float: right;
+			.acc-owner-delete {
+				position: absolute;
+				/*float: right;
                 display: inline-block;
                 height: 0;*/
                 /* -moz-transform: translate(0,-10px);
