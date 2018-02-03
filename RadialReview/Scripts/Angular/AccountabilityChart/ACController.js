@@ -110,7 +110,7 @@ acapp.directive("ttClearNoMatch", function () {
 //	};
 //});
 
-acapp.directive("ttOverflow", function () {
+acapp.directive("ttOverflow", ["$timeout", function ($timeout) {
 	//Maximum number of 'M's to show.
 
 	var letterLengthDictSarif = {
@@ -181,9 +181,10 @@ acapp.directive("ttOverflow", function () {
 						mv = mv.substring(0, length) + "...";
 						//console.log(" - shorten");
 					}
-					ngModel.$viewValue = mv;
-					ngModel.$render();
-
+					$timeout(function () {
+						ngModel.$viewValue = mv;
+						ngModel.$render();
+					},1);
 					return mv;
 				}
 				ngModel.$formatters.push(shorten);
@@ -201,7 +202,7 @@ acapp.directive("ttOverflow", function () {
 			}
 		}
 	};
-});
+}]);
 
 acapp.filter('ttOverflowTxt', function () {
 	return function (value, wordwise, max, tail) {

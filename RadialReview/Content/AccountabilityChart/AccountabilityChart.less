@@ -92,6 +92,15 @@ html, body {
 			width:100px;
 		}*/
 	}
+	
+	input{
+		max-width:200px;
+	}
+	input:focus{
+		margin-left:-150px;
+		margin-right:-150px;
+		max-width:500px;
+	}
 }
 
 &.root-node-link {
@@ -182,7 +191,7 @@ html, body {
 	.acc-node {
 		fill: none;
 		stroke: black;
-		width: 200px;
+		min-width: 200px;
 		/*padding: 2px;*/
 		/*position:relative;*/
 		md-autocomplete {
