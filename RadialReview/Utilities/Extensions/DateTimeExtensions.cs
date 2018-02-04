@@ -9,9 +9,13 @@ namespace RadialReview
 {
     public static class DateTimeExtensions
     {
-       
 
-        public static bool IsAfter(this DateTime self, DateTime other)
+
+		public static bool IsBetween(this DateTime self, DateTime start,DateTime end) {
+			return self.IsAfter(start) && self.IsBefore(end);
+		}
+
+		public static bool IsAfter(this DateTime self, DateTime other)
         {
             return self > other;
         }
@@ -56,6 +60,7 @@ namespace RadialReview
 		    return dt.StartOfWeek(startOfWeek).AddDays(6).Date;
 	    }
 
+		[Obsolete("I dont think this works...")]
 	    public static DateTime SafeSubtract(this DateTime dt, TimeSpan ts)
 	    {
 		    return Math2.Max(dt, new DateTime(ts.Ticks)).Subtract(ts);

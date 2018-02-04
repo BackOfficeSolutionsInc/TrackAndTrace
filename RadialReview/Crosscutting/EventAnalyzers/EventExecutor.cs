@@ -12,49 +12,49 @@ using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Crosscutting.EventAnalyzers {
-	public class EventRegistry {
+	public class EventExecutor {
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		
 
-		private static EventRegistry _Singleton { get; set; }
-		private List<IEventAnalyzer> _EventAnalyzers { get; set; }
-		private static object lck = new object();
+		//private static EventRegistry _Singleton { get; set; }
+		//private List<IEventAnalyzer> _EventAnalyzers { get; set; }
+		//private static object lck = new object();
 
-		private EventRegistry() {
-			lock (lck) {
-				_EventAnalyzers = new List<IEventAnalyzer>();
-			}
-		}
+		//private EventRegistry() {
+		//	lock (lck) {
+		//		_EventAnalyzers = new List<IEventAnalyzer>();
+		//	}
+		//}
 
-		public static void RegisterEventAnalyzer(IEventAnalyzer hook) {
-			var hooks = GetSingleton();
-			lock (lck) {
-				hooks._EventAnalyzers.Add(hook);
-			}
-		}
+		//public static void RegisterEventAnalyzer(IEventAnalyzer hook) {
+		//	var hooks = GetSingleton();
+		//	lock (lck) {
+		//		hooks._EventAnalyzers.Add(hook);
+		//	}
+		//}
 
-		public static List<T> GetEventAnalyzers<T>() where T : IEventAnalyzer {
-			return GetSingleton()._EventAnalyzers.Where(x => x is T).Cast<T>().ToList();
-		}
+		//public static List<T> GetEventAnalyzers<T>() where T : IEventAnalyzer {
+		//	return GetSingleton()._EventAnalyzers.Where(x => x is T).Cast<T>().ToList();
+		//}
 		
-		public static EventRegistry GetSingleton() {
-			if (_Singleton == null)
-				_Singleton = new EventRegistry();
-			return _Singleton;
-		}
+		//public static EventRegistry GetSingleton() {
+		//	if (_Singleton == null)
+		//		_Singleton = new EventRegistry();
+		//	return _Singleton;
+		//}
 
 
-		public static async Task Execute(ISession s) {
-			var analyzers = GetSingleton()._EventAnalyzers;
+		public static async Task Execute(ISession s,long orgId, List<IEventAnalyzer> analyzers) {
+			//var analyzers = GetSingleton()._EventAnalyzers;
 
 			var eventLogs = s.QueryOver<EventLogModel>().Where(x => x.DeleteTime == null).List().ToList();
 
 			var now = DateTime.UtcNow;
 
-			var orgIds = s.QueryOver<OrganizationModel>()
-				.Where(x => x.DeleteTime == null)
-				.Select(x => x.Id)
-				.List<long>().ToList();
+			//var orgIds = s.QueryOver<OrganizationModel>()
+			//	.Where(x => x.DeleteTime == null)
+			//	.Select(x => x.Id)
+			//	.List<long>().ToList();
 
 			foreach (var a in analyzers) {
 				var f = a.GetExecutionFrequency();
@@ -66,17 +66,18 @@ namespace RadialReview.Crosscutting.EventAnalyzers {
 					s.Save(new EventLogModel() {
 						EventAnalyzerName = type,
 						Frequency = f,
-						LastRun = now,
+						RunTime = now,
+						OrgId = orgId,
 					});
 				}
 
-				if (log.LastRun < after) {
+				if (log.RunTime < after) {
 					var anyExecuted = false;
-					foreach (var oId in orgIds) {
-						IEventSettings settings = new BaseEventSettings(s,oId, log.LastRun);
+					//foreach (var oId in orgIds) {
+						IEventSettings settings = new BaseEventSettings(s,orgId, log.RunTime);
 
 						if (a.IsEnabled(settings)) {
-							var shouldTrigger = EventProcessor.ShouldTrigger(settings, a);
+							var shouldTrigger = await EventProcessor.ShouldTrigger(settings, a);
 
                             if (shouldTrigger) {
                                 anyExecuted = true;
@@ -84,15 +85,13 @@ namespace RadialReview.Crosscutting.EventAnalyzers {
                             }
 							//Run the analyzer
 						}
-					}
+					//}
 					if (anyExecuted) {
-						log.LastRun = now;
+						log.RunTime = now;
 						s.Update(log);
 					}
 				}
 			}
 		}
-
-
 	}
 }

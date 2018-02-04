@@ -10,8 +10,8 @@ using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
     public class TodoCompletionConsecutiveWeeks : BaseL10EventAnalyzer {
-        public override List<IEvent> EventsForRecurrence(long recurrenceId, IEventSettings settings) {
-            var l10Meetings = settings.Lookup(new SearchRealL10Meeting(recurrenceId));
+        public override async Task<List<IEvent>> EventsForRecurrence(long recurrenceId, IEventSettings settings) {
+            var l10Meetings = await settings.Lookup(new SearchRealL10Meeting(recurrenceId));
             return EventHelper.ToBinnedEventsFromRatio(EventFrequency.Weekly, l10Meetings, x => x.StartTime,x=>x.TodoCompletion);
 
         }

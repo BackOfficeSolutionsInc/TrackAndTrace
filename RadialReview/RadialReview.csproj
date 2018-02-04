@@ -146,7 +146,6 @@
     <Compile Include="Api\V1\Todo.cs" />
     <Compile Include="Api\V1\Users.cs" />
     <Compile Include="App_Start\DateTimeModelBinder.cs" />
-    <Compile Include="App_Start\EventConfig.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />
@@ -166,6 +165,12 @@
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnaylzerGenerators.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\LTZeroPercentTodoCompletion.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchAllRecentScoresForRecurrence.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchAllTodosForRecurrence.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\_old\SearchTodoCompletionForUserAndMeeting.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\Formula\CascadeScorecardUpdates.cs" />
     <Compile Include="Crosscutting\Hooks\Payment\ExecutePaymentOnCardUpdate.cs" />
     <Compile Include="Crosscutting\Hooks\Payment\FirstPaymentEmail.cs" />
@@ -180,7 +185,7 @@
     <Compile Include="Crosscutting\EventAnalyzers\Events\ConsecutiveLateStarts.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\DaysWithoutL10.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\AverageMeetingRatingBelowForWeeksInARow.cs" />
-    <Compile Include="Crosscutting\EventAnalyzers\Events\MissL10PastQuarter.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\LTMissL10PastQuarter.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\TodoCompletionConsecutiveWeeks.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Models\EventLogModel.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Models\IEventAnalyzer.cs" />

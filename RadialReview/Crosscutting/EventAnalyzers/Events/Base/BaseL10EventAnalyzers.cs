@@ -6,9 +6,10 @@ using System.Web;
 using NHibernate;
 using RadialReview.Models.L10;
 using RadialReview.Crosscutting.EventAnalyzers.Searchers;
+using System.Threading.Tasks;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
-	public abstract class BaseL10EventAnalyzer : IEventAnalyzer {
+	public abstract class BaseL10EventAnalyzer : IEventAnalyzer, IEventAnalyzerGenerator {
 
         public virtual BaseSearch<List<long>> GetRecurrenceIdSearcher() {
             return new SearchL10RecurrenceIds();
@@ -24,18 +25,22 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
 
 		public abstract bool IsEnabled(IEventSettings settings);
 
-		public abstract List<IEvent> EventsForRecurrence(long recurrenceId, IEventSettings settings);
+		public abstract Task<List<IEvent>> EventsForRecurrence(long recurrenceId, IEventSettings settings);
 
-		public IEnumerable<IEvent> GenerateEvents(IEventSettings settings) {
+		public async Task<IEnumerable<IEvent>> GenerateEvents(IEventSettings settings) {
 			var s = settings.Session;
-			var recurIds = settings.DataSearch.Lookup(GetRecurrenceIdSearcher());
+			var recurIds = await settings.DataSearch.Lookup(GetRecurrenceIdSearcher());
 
 			var join = new List<IEvent>();
 			foreach (var r in recurIds) {
-				join.AddRange(EventsForRecurrence(r, settings));
+				join.AddRange(await EventsForRecurrence(r, settings));
 			}
 
 			return join;
+		}
+
+		public virtual async Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings orgId) {
+			return new List<IEventAnalyzer>() { this }; 
 		}
 	}
 
@@ -44,4 +49,5 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
             return new SearchLeadershipL10RecurrenceIds();
         }
     }
+
 }

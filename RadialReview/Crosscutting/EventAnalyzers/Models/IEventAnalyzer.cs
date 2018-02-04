@@ -6,16 +6,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Collections;
+using RadialReview.Utilities;
+using System.Threading.Tasks;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 	public enum EventFrequency {
+		[Obsolete("Hey these are expensive to run")]
 		Minutly = 1,
+		[Obsolete("Hey these are expensive to run")]
 		Hourly = 60,
+		[Obsolete("Hey these are expensive to run")]
 		Daily = 1440,
 		Weekly = 10080,
 		Biweekly = 20160,
 		Monthly = 43800,
+		Quarterly = 131040,
 		Yearly = 525600,
+	}
+	public interface IEventAnalyzerGenerator {
+		Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings settings);
 	}
 
 	public interface IEventAnalyzer {
@@ -26,7 +35,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 
 		IThreshold GetFireThreshold(IEventSettings settings);
 
-		IEnumerable<IEvent> GenerateEvents(IEventSettings settings);
+		Task<IEnumerable<IEvent>> GenerateEvents(IEventSettings settings);
 
 	}
 
@@ -41,22 +50,23 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 	}
 
 	public interface IEventSettings {
+		PermissionsUtility Admin { get; }
 		long OrganizationId { get; }
 		ISession Session { get; }
-		DateTime LastCheck { get; }
+		DateTime RunTime { get; }
 		IDataSource DataSearch { get; }
 
-		T Lookup<T>(BaseSearch<T> search);
+		Task<T> Lookup<T>(BaseSearch<T> search);
         void SetLookup<T>(BaseSearch<T> searcher, IEventSettings settings, T obj);
 
 
     }
 	public interface IDataSource {
-		T Lookup<T>(BaseSearch<T> search);
+		Task<T> Lookup<T>(BaseSearch<T> search);
 		void Set<T>(string key, T obj);
 	}
 	public abstract class BaseSearch<T> {
-		public abstract T PerformSearch(IEventSettings settings);
+		public abstract Task<T> PerformSearch(IEventSettings settings);
         protected abstract IEnumerable<string> UniqueKeys(IEventSettings settings);
         public virtual string GetKey(IEventSettings settings) {
             var uniques = this.UniqueKeys(settings);
@@ -242,10 +252,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 		private Dictionary<string, object> LookupData { get; set; }
 
 
-		public T Lookup<T>(BaseSearch<T> search) {
+		public async Task<T> Lookup<T>(BaseSearch<T> search) {
 			var key = search.GetKey(Settings);
 			if (!LookupData.ContainsKey(key))
-				LookupData[key] = search.PerformSearch(Settings);
+				LookupData[key] = await search.PerformSearch(Settings);
 			return (T)LookupData[key];
 		}
 
@@ -256,19 +266,22 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 
 	public class BaseEventSettings : IEventSettings {
 		public BaseEventSettings(ISession session, long organizationId, DateTime lastCheck) {
-			LastCheck = lastCheck;
+			RunTime = lastCheck;
 			OrganizationId = organizationId;
 			Session = session;
 			DataSearch = new BaseEventDataSource(this);
+			Admin= PermissionsUtility.CreateAdmin(Session);
 		}
 
 		public IDataSource DataSearch { get; private set; }
-		public DateTime LastCheck { get; private set; }
+		public DateTime RunTime { get; private set; }
 		public long OrganizationId { get; private set; }
 		public ISession Session { get; private set; }
 
-		public T Lookup<T>(BaseSearch<T> search) {
-			return DataSearch.Lookup(search);
+		public PermissionsUtility Admin { get; private set; }
+
+		public async Task<T> Lookup<T>(BaseSearch<T> search) {
+			return await DataSearch.Lookup(search);
 		}
 
 		public void SetLookup<T>(BaseSearch<T> searcher,IEventSettings settings, T obj) {
@@ -330,8 +343,8 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 			return trigger;
 		}
 
-		public static bool ShouldTrigger(IEventSettings settings, IEventAnalyzer analyzer) {
-			return ShouldTrigger(analyzer.GenerateEvents(settings), analyzer.GetFireThreshold(settings), analyzer.GetNumberOfPassesToReset(settings), analyzer.GetNumberOfFailsToTrigger(settings), settings.LastCheck);
+		public static async Task<bool> ShouldTrigger(IEventSettings settings, IEventAnalyzer analyzer) {
+			return ShouldTrigger(await analyzer.GenerateEvents(settings), analyzer.GetFireThreshold(settings), analyzer.GetNumberOfPassesToReset(settings), analyzer.GetNumberOfFailsToTrigger(settings), settings.RunTime);
 		}
 	}
 }

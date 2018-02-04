@@ -405,11 +405,10 @@ namespace RadialReview.Utilities {
 			}
 			return weeks;
 		}
-		public static DateRange GetRange(OrganizationModel org, DateTime forWeek) {
-			var settings = org.NotNull(x => x.Settings) ?? new OrganizationModel.OrganizationSettings();
-
-			return GetLocalRange(settings.WeekStart, settings.GetTimezoneOffset(),
-				forWeek, settings.ScorecardPeriod, settings.YearStart);
+		public static DateRange GetRange(TimeSettings ts, DateTime forWeek) {
+			ts = ts ?? new OrganizationModel.OrganizationSettings();
+			var settings = ts.GetTimeSettings();
+			return GetLocalRange(settings.WeekStart, settings.TimezoneOffset, forWeek, settings.Period, settings.YearStart);
 		}
 
 		public static DateRange GetLocalRange(DayOfWeek weekStart, int timezoneOffset, DateTime date, ScorecardPeriod scorecardPeriod, YearStart yearStart) {

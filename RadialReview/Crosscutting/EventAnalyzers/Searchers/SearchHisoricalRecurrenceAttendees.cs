@@ -14,7 +14,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Searchers {
             RecurrenceId = recurrenceId;
         }
 
-        public override List<L10Recurrence.L10Recurrence_Attendee> PerformSearch(IEventSettings settings) {
+        public override async Task<List<L10Recurrence.L10Recurrence_Attendee>> PerformSearch(IEventSettings settings) {
             return settings.Session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
                                     .Where(x=>x.L10Recurrence.Id==RecurrenceId)
                                     .List().ToList();

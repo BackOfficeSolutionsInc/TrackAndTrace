@@ -7,6 +7,7 @@ using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
+using System.Threading.Tasks;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
     public class AverageMeetingRatingBelowForWeeksInARow : BaseL10EventAnalyzer {
@@ -31,8 +32,8 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
             return 1;
         }
 
-        public override List<IEvent> EventsForRecurrence(long recurrenceId, IEventSettings settings) {
-            var meetings = settings.Lookup(new Searchers.SearchRealL10Meeting(recurrenceId));
+        public override async Task<List<IEvent>> EventsForRecurrence(long recurrenceId, IEventSettings settings) {
+            var meetings = await settings.Lookup(new Searchers.SearchRealL10Meeting(recurrenceId));
             return EventHelper.ToBinnedEventsFromRatio(EventFrequency.Weekly, meetings, x => x.StartTime, x => x.AverageMeetingRating);
 
             //var bins = EventHelper.ToBins(EventFrequency.Weekly, meetings, x => x.StartTime, x=>x.AverageMeetingRating);

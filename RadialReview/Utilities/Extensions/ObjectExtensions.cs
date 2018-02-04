@@ -63,7 +63,7 @@ namespace RadialReview {
 				if (obj != null) {
 					try {
 						return f(obj);
-					} catch (NullReferenceException ) {
+					} catch (NullReferenceException) {
 						return default(R);
 					}
 				} else {
@@ -131,11 +131,7 @@ namespace RadialReview {
 			return DateTime.ParseExact(s, format, provider).AddHours(offset);
 		}
 
-		public static bool Alive(this object obj) {
-			if (obj is IDeletable)
-				return ((IDeletable)obj).DeleteTime == null;
-			return true;
-		}
+
 
 		public static T Touch<T>(this T self) where T : IEnumerable {
 			foreach (var o in self) {
@@ -144,8 +140,18 @@ namespace RadialReview {
 				}
 			}
 			return self;
-		}		
-		
+		}
+
+	}
+}
+
+namespace RadialReview.AliveExtensions {
+	public static class ObjectExtensions {
+		public static bool Alive(this object obj) {
+			if (obj is IDeletable)
+				return ((IDeletable)obj).DeleteTime == null;
+			return true;
+		}
 	}
 }
 
