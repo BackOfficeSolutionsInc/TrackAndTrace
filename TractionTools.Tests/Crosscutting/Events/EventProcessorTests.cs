@@ -8,6 +8,7 @@ using RadialReview.Crosscutting.EventAnalyzers.Events;
 using RadialReview.Crosscutting.EventAnalyzers.Searchers;
 using RadialReview.Models.L10;
 using RadialReview.Utilities.DataTypes;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.Crosscutting.Events {
 
@@ -156,42 +157,42 @@ namespace TractionTools.Tests.Crosscutting.Events {
         }
 
 
-        [TestMethod]
-        public void TestDaysWithoutL10() {
+		[TestMethod]
+		public async Task TestDaysWithoutL10() {
 
-            var evtGen = new DaysWithoutL10();
+			var evtGen = new DaysWithoutL10(1);
 
-            Assert.AreEqual(15, evtGen.GetNumberOfFailsToTrigger(null));
-            Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
-            Assert.IsTrue(evtGen.IsEnabled(null));
-            Assert.AreEqual(1, evtGen.GetFireThreshold(null).Threshold);
-            Assert.AreEqual(LessGreater.LessThan, evtGen.GetFireThreshold(null).Direction);
+			Assert.AreEqual(15, evtGen.GetNumberOfFailsToTrigger(null));
+			Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
+			Assert.IsTrue(evtGen.IsEnabled(null));
+			Assert.AreEqual(1, evtGen.GetFireThreshold(null).Threshold);
+			Assert.AreEqual(LessGreater.LessThan, evtGen.GetFireThreshold(null).Direction);
 
-            var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
-            var meetings = new List<L10Meeting>() {
-                new L10Meeting() { StartTime = new DateTime(2017,1,1) },
-                new L10Meeting() { StartTime = new DateTime(2017,1,2) },
-                new L10Meeting() { StartTime = new DateTime(2017,1,8) },
-                new L10Meeting() { StartTime = new DateTime(2017,1,15) },
-                new L10Meeting() { StartTime = new DateTime(2017,2,15) },
-            };
-            settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-            settings.SetLookup(new SearchLeadershipL10RecurrenceIds(), settings, new List<long> { 0 });
-
-
-            Assert.IsTrue(EventProcessor.ShouldTrigger(settings, evtGen));
-
-            settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
-            settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-            settings.SetLookup(new SearchLeadershipL10RecurrenceIds(), settings, new List<long> { 0 });
-            Assert.IsFalse(EventProcessor.ShouldTrigger(settings, evtGen));
-        }
+			var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
+			var meetings = new List<L10Meeting>() {
+				new L10Meeting() { StartTime = new DateTime(2017,1,1) },
+				new L10Meeting() { StartTime = new DateTime(2017,1,2) },
+				new L10Meeting() { StartTime = new DateTime(2017,1,8) },
+				new L10Meeting() { StartTime = new DateTime(2017,1,15) },
+				new L10Meeting() { StartTime = new DateTime(2017,2,15) },
+			};
+			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+			settings.SetLookup(new SearchLeadershipL10RecurrenceIds(), settings, new List<long> { 0 });
 
 
+			Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
-        [TestMethod]
-        public void TestAverageMeetingRatingBelowForWeeksInARow() {
-            var evtGen = new AverageMeetingRatingBelowForWeeksInARow();
+			settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
+			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+			settings.SetLookup(new SearchLeadershipL10RecurrenceIds(), settings, new List<long> { 0 });
+			Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
+		}
+
+
+
+		[TestMethod]
+        public async Task TestAverageMeetingRatingBelowForWeeksInARow() {
+            var evtGen = new AverageMeetingRatingBelowForWeeksInARow(1);
 
             Assert.AreEqual(2, evtGen.GetNumberOfFailsToTrigger(null));
             Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
@@ -211,17 +212,17 @@ namespace TractionTools.Tests.Crosscutting.Events {
             settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 
 
-            Assert.IsTrue(EventProcessor.ShouldTrigger(settings, evtGen));
+            Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
             settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
             settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
             settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
-            Assert.IsFalse(EventProcessor.ShouldTrigger(settings, evtGen));
+            Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
         }
 
         [TestMethod]
-        public void TestTodoCompletionConsecutiveWeeks() {
-            var evtGen = new TodoCompletionConsecutiveWeeks();
+        public async Task TestTodoCompletionConsecutiveWeeks() {
+            var evtGen = new TodoCompletionConsecutiveWeeks(1);
 
             Assert.AreEqual(2, evtGen.GetNumberOfFailsToTrigger(null));
             Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
@@ -241,17 +242,17 @@ namespace TractionTools.Tests.Crosscutting.Events {
             settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 
 
-            Assert.IsTrue(EventProcessor.ShouldTrigger(settings, evtGen));
+            Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
             settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
             settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
             settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
-            Assert.IsFalse(EventProcessor.ShouldTrigger(settings, evtGen));
+            Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
         }
 
         [TestMethod]
-        public void TestConsecutiveLateStarts() {
-            var evtGen = new ConsecutiveLateStarts();
+        public async Task TestConsecutiveLateStarts() {
+            var evtGen = new ConsecutiveLateStarts(1);
 
             Assert.AreEqual(2, evtGen.GetNumberOfFailsToTrigger(null));
             Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
@@ -270,17 +271,17 @@ namespace TractionTools.Tests.Crosscutting.Events {
             settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
             settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 
-            Assert.IsTrue(EventProcessor.ShouldTrigger(settings, evtGen));
+            Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
             settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
             settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
             settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
-            Assert.IsFalse(EventProcessor.ShouldTrigger(settings, evtGen));
+            Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
         }
 
         [TestMethod]
-        public void TestConsecutiveLateEnds() {
-            var evtGen = new ConsecutiveLateEnds();
+        public async Task TestConsecutiveLateEnds() {
+            var evtGen = new ConsecutiveLateEnds(1);
 
             Assert.AreEqual(2, evtGen.GetNumberOfFailsToTrigger(null));
             Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
@@ -305,7 +306,7 @@ namespace TractionTools.Tests.Crosscutting.Events {
                 }
             });
 
-            Assert.IsTrue(EventProcessor.ShouldTrigger(settings, evtGen));
+            Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
             settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
             settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
@@ -316,7 +317,7 @@ namespace TractionTools.Tests.Crosscutting.Events {
                 }
             });
 
-            Assert.IsFalse(EventProcessor.ShouldTrigger(settings, evtGen));
+            Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
         }
 
     }

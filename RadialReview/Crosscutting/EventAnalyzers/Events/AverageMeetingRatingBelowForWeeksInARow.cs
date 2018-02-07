@@ -8,58 +8,101 @@ using RadialReview.Models.Enums;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using System.Threading.Tasks;
+using RadialReview.Crosscutting.EventAnalyzers.Searchers;
+using RadialReview.Models.Frontend;
+using RadialReview.Accessors;
+using System.ComponentModel.DataAnnotations;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
-    public class AverageMeetingRatingBelowForWeeksInARow : BaseL10EventAnalyzer {
+	public class AverageMeetingRatingBelowForWeeksInARow : IEventAnalyzer, IEventAnalyzerGenerator, IRecurrenceEventAnalyerGenerator {
 
-        public override bool IsEnabled(IEventSettings settings) {
-            return true;
-        }
+		[Display(Name = "Meeting")]
+		public long RecurrenceId { get; set; }
+		[Display(Prompt = "Enter threshold")]
+		public decimal RatingTheshold { get; set; }
+		[Display(Description = "Number of weeks in a row before firing")]
+		public int WeeksInARow { get; set; }
+		public LessGreater Direction { get; set; }
 
-        public override IThreshold GetFireThreshold(IEventSettings settings) {
-            return new EventThreshold(LessGreater.LessThanOrEqual, 7);
-        }
+		public string EventType { get { return "AverageMeetingRatingBelowForWeeksInARow"; } }
 
-        public override EventFrequency GetExecutionFrequency() {
-            return EventFrequency.Weekly;
-        }
-
-        public override int GetNumberOfFailsToTrigger(IEventSettings settings) {
-            return 2;
-        }
-
-        public override int GetNumberOfPassesToReset(IEventSettings settings) {
-            return 1;
-        }
-
-        public override async Task<List<IEvent>> EventsForRecurrence(long recurrenceId, IEventSettings settings) {
-            var meetings = await settings.Lookup(new Searchers.SearchRealL10Meeting(recurrenceId));
-            return EventHelper.ToBinnedEventsFromRatio(EventFrequency.Weekly, meetings, x => x.StartTime, x => x.AverageMeetingRating);
-
-            //var bins = EventHelper.ToBins(EventFrequency.Weekly, meetings, x => x.StartTime, x=>x.AverageMeetingRating);
-            
-            //var events = bins.Select(x => {
-            //    var ratio = x.Aggregate(new Ratio(), (i, r) => i.Add(r));
-            //    if (!ratio.IsValid())
-            //        return null;
-            //    return (IEvent) new BaseEvent(ratio.GetValue(null), x.Date);
-            //}).Where(x=>x!=null).ToList();
-
-            //return events;
-            //var byWeeks = meetings.Where(x => x.StartTime.HasValue && x.AverageMeetingRating!=null).GroupBy(x => TimingUtility.GetWeekSinceEpoch(x.StartTime.Value));
-
-            //var weekRatings = new List<Ratio>();
-            //foreach(var w in byWeeks) {
-            //    var num = w.Sum(x => x.AverageMeetingRating.Numerator);
-            //    var den = w.Sum(x => x.AverageMeetingRating.Denominator);
-            //    weekRatings.Add(new Ratio(num,den));
-            //}
-            ////var weekRatings = byWeeks.Select(x=>x.)
+		public AverageMeetingRatingBelowForWeeksInARow(long recurrenceId) {
+			RecurrenceId = recurrenceId;
+			RatingTheshold = 7;
+			WeeksInARow = 2;
+			Direction = LessGreater.LessThanOrEqual;
+		}
 
 
-          //  return meetings.Select(x=>x.AverageMeetingRating.GetValue(null)).Where(x=>x!=null)
+		public bool IsEnabled(IEventSettings settings) {
+			return true;
+		}
 
-        }
+		public IThreshold GetFireThreshold(IEventSettings settings) {
+			return new EventThreshold(Direction, RatingTheshold);
+		}
 
-    }
+		public EventFrequency GetExecutionFrequency() {
+			return EventFrequency.Weekly;
+		}
+
+		public int GetNumberOfFailsToTrigger(IEventSettings settings) {
+			return WeeksInARow;
+		}
+
+		public int GetNumberOfPassesToReset(IEventSettings settings) {
+			return 1;
+		}
+
+		public async Task<IEnumerable<IEvent>> GenerateEvents(IEventSettings settings) {
+			var meetings = await settings.Lookup(new SearchRealL10Meeting(RecurrenceId));
+			return EventHelper.ToBinnedEventsFromRatio(EventFrequency.Weekly, meetings, x => x.StartTime, x => x.AverageMeetingRating);
+		}
+
+		public async Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings settings) {
+			return new[] { this };
+		}
+
+		public async Task<IEnumerable<EditorField>> GetSettingsFields(IEventGeneratorSettings settings) {
+			return new[] {
+				EditorField.DropdownFromProperty(this,x=>x.RecurrenceId,settings.VisibleRecurrences),
+				EditorField.FromProperty(this,x=>x.RatingTheshold),
+				EditorField.FromProperty(this,x=>x.Direction),
+				EditorField.FromProperty(this,x=>x.WeeksInARow),
+			};
+		}
+
+		public string GetFriendlyName() {
+			return "Average consecutive meeting rating";
+		}
+
+		//public override async Task<List<IEvent>> EventsForRecurrence(long recurrenceId, IEventSettings settings) {
+
+		//    //var bins = EventHelper.ToBins(EventFrequency.Weekly, meetings, x => x.StartTime, x=>x.AverageMeetingRating);
+
+		//    //var events = bins.Select(x => {
+		//    //    var ratio = x.Aggregate(new Ratio(), (i, r) => i.Add(r));
+		//    //    if (!ratio.IsValid())
+		//    //        return null;
+		//    //    return (IEvent) new BaseEvent(ratio.GetValue(null), x.Date);
+		//    //}).Where(x=>x!=null).ToList();
+
+		//    //return events;
+		//    //var byWeeks = meetings.Where(x => x.StartTime.HasValue && x.AverageMeetingRating!=null).GroupBy(x => TimingUtility.GetWeekSinceEpoch(x.StartTime.Value));
+
+		//    //var weekRatings = new List<Ratio>();
+		//    //foreach(var w in byWeeks) {
+		//    //    var num = w.Sum(x => x.AverageMeetingRating.Numerator);
+		//    //    var den = w.Sum(x => x.AverageMeetingRating.Denominator);
+		//    //    weekRatings.Add(new Ratio(num,den));
+		//    //}
+		//    ////var weekRatings = byWeeks.Select(x=>x.)
+
+
+		//  //  return meetings.Select(x=>x.AverageMeetingRating.GetValue(null)).Where(x=>x!=null)
+
+		//}
+
+
+	}
 }

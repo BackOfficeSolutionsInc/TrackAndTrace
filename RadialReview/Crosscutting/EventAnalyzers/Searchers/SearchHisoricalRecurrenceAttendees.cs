@@ -3,11 +3,12 @@ using RadialReview.Models.L10;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Searchers {
     
-    public class SearchHisoricalRecurrenceAttendees: BaseSearch<List<L10Recurrence.L10Recurrence_Attendee >> {
+    public class SearchHisoricalRecurrenceAttendees: BaseSearch<List<L10Recurrence.L10Recurrence_Attendee>> {
         public long RecurrenceId { get; set; }
 
         public SearchHisoricalRecurrenceAttendees(long recurrenceId) {

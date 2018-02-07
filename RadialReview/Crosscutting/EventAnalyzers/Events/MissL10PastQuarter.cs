@@ -9,30 +9,49 @@ using RadialReview.Crosscutting.EventAnalyzers.Searchers;
 using RadialReview.Models.Interfaces;
 using RadialReview.Utilities.DataTypes;
 using System.Threading.Tasks;
+using RadialReview.Models.Frontend;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 
 
-	public class LTMissL10PastQuarterGenerator : BaseL10EventAnaylzerGenerators {
-		public LTMissL10PastQuarterGenerator() : base(true,true) {}
+	public class MissL10PastQuarterGenerator : BaseL10EventAnaylzerGenerators {
+		public MissL10PastQuarterGenerator(long recurrenceId) : base(recurrenceId,true) {
+			NumberMissed = 3;
+		}
+		
+		public override string EventType { get { return "MissL10PastQuarter"; } }
+
+		public int NumberMissed { get; set; }
 
 		public override IEventAnalyzer EventAnalyzerConstructor(long recurrenceId, IHistoricalImpl attendee) {
-			return new LTMissL10PastQuarter(IHistoricalImpl.From(attendee), recurrenceId);
+			return new MissL10PastQuarter(IHistoricalImpl.From(attendee), recurrenceId, NumberMissed);
+		}
+
+		public override string GetFriendlyName() {
+			return "Level 10's missed last quarter";
+		}
+
+		public override async Task<IEnumerable<EditorField>> GetSettingsFields(IEventGeneratorSettings settings) {
+			//todo EditorField
+			return new[] {
+				EditorField.DropdownFromProperty(this,x=>x.RecurrenceId,settings.VisibleRecurrences),
+				EditorField.FromProperty(this,x=>x.NumberMissed),
+			};
 		}
 	}
 
-	public class LTMissL10PastQuarter : IEventAnalyzer {
+	public class MissL10PastQuarter : IEventAnalyzer {
 
 		public IHistoricalImpl AttendeeUser { get; set; }
 		public long RecurrenceId { get; set; }
 		public TimeSpan Range { get; set; }
 		public int NumberMissed { get; set; }
 
-		public LTMissL10PastQuarter(IHistoricalImpl attendeeUser,long recurrenceId) :base() {
+		public MissL10PastQuarter(IHistoricalImpl attendeeUser,long recurrenceId,int numberMissed) :base() {
 			AttendeeUser = attendeeUser;
 			RecurrenceId = recurrenceId;
 			Range = TimeSpan.FromDays(13 * 7);
-			NumberMissed = 3;
+			NumberMissed = numberMissed;
 		}
 
         public EventFrequency GetExecutionFrequency() {
@@ -67,5 +86,19 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 
 			return new[] { new BaseEvent(meetings.Count() - meetingsAttended.Count(), settings.RunTime) };
 		}
+
+
+		//public async Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings settings) {
+		//	return new[] { this };
+		//}
+
+		//public async Task<IEnumerable<EditorField>> GetSettingsFields(IEventGeneratorSettings settings) {
+		//	//todo EditorField
+		//	throw new NotImplementedException();
+		//}
+
+		//public string GetFriendlyName() {
+
+		//}
 	}
 }

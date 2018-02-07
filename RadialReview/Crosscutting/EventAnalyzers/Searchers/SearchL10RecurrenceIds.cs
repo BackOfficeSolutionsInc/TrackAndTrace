@@ -3,6 +3,7 @@ using RadialReview.Models.L10;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Searchers {

@@ -1,0 +1,37 @@
+﻿@model List<RadialReview.Crosscutting.EventAnalyzers.Models.EventSubscription>
+@{
+    ViewBag.Title = "Index";
+}
+
+@section top{
+	<div class="jumbotron">
+		<h1>Subscriptions</h1>
+	</div>
+}
+
+
+
+
+<div id="table"></div>
+
+@using (Html.BeginScripts()) {
+<script>
+	var data = @Html.ArrayToString(Model);
+	DataTable({
+		container: "#table",
+		data: data,
+		addButton:{text : "New Subscription"},
+		clickAdd:"/Events/Create",
+		clickEdit:"/Events/Edit/{0}",
+		cells:[
+			{contents:function(d){return JSON.parse(d.EventSettings).RecurrenceId;}},	
+			{contents:function(d){return d.EventType;},classes:"fullWidth"},			
+			{edit:true},
+			{remove:true},
+		],
+		nodata:"No subscriptions"
+	});
+
+</script>
+}
+

@@ -99,6 +99,7 @@
     <Compile Include="Accessors\DeepAccessor.cs" />
     <Compile Include="Accessors\DeepSubordianteAccessor.cs" />
     <Compile Include="Accessors\Emailer.cs" />
+    <Compile Include="Accessors\EventAccessor.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
     <Compile Include="Accessors\ForModelAccessor.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
@@ -164,10 +165,13 @@
     <None Include="Content\Chart\metric-graphics.less" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
+    <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnaylzerGenerators.cs" />
-    <Compile Include="Crosscutting\EventAnalyzers\Events\LTZeroPercentTodoCompletion.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\MissL10PastQuarter.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\MemberwiseTodoCompletion.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Models\EventSubscription.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchAllRecentScoresForRecurrence.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchAllTodosForRecurrence.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Searchers\_old\SearchTodoCompletionForUserAndMeeting.cs" />
@@ -185,7 +189,6 @@
     <Compile Include="Crosscutting\EventAnalyzers\Events\ConsecutiveLateStarts.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\DaysWithoutL10.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\AverageMeetingRatingBelowForWeeksInARow.cs" />
-    <Compile Include="Crosscutting\EventAnalyzers\Events\LTMissL10PastQuarter.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\TodoCompletionConsecutiveWeeks.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Models\EventLogModel.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Models\IEventAnalyzer.cs" />
@@ -228,6 +231,7 @@
     <Compile Include="Models\Charts\MetricGraphic.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
+    <Compile Include="Models\Frontend\EditorModels.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
     <Compile Include="Models\Notifications\NotificationModel.cs" />
     <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
@@ -1832,6 +1836,7 @@
     <Content Include="Views\ClientSuccess\Close.cshtml" />
     <Content Include="Views\Data\Dashboard.cshtml" />
     <Content Include="Views\Admin\EmployeeCount.cshtml" />
+    <Content Include="Views\Events\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -2548,6 +2553,7 @@
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
+    <Folder Include="Models\Frontend\ViewModels\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Scripts\Models\" />
     <Folder Include="Scripts\typings\d3\plugins\" />

@@ -6,23 +6,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using RadialReview.Models.Frontend;
+using System.ComponentModel.DataAnnotations;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
-	public abstract class BaseL10EventAnaylzerGenerators : IEventAnalyzerGenerator {
+	public abstract class BaseL10EventAnaylzerGenerators : IEventAnalyzerGenerator, IRecurrenceEventAnalyerGenerator {
 
-		protected bool LeadershipTeamOnly { get; set; }
 		protected bool IncludeHistoricalMembers { get; set; }
 
-		public BaseL10EventAnaylzerGenerators(bool leadershipTeamOnly, bool includeHistoricalMembers) {
-			LeadershipTeamOnly = leadershipTeamOnly;
-			IncludeHistoricalMembers = includeHistoricalMembers;
-		}
+		[Display(Name = "Meeting")]
+		public long RecurrenceId { get; private set; }
 
-		public virtual BaseSearch<List<long>> GetRecurrenceIdSearcher() {
-			if (LeadershipTeamOnly)
-				return new SearchLeadershipL10RecurrenceIds();
-			else
-				return new SearchL10RecurrenceIds();
+		public BaseL10EventAnaylzerGenerators(long recurrenceId, bool includeHistoricalMembers) {
+			IncludeHistoricalMembers = includeHistoricalMembers;
+			RecurrenceId = recurrenceId;
 		}
 
 		//public virtual BaseSearch<List<IHistoricalImpl>> GetAttendeeSearcher(long recurrenceId) {
@@ -33,15 +30,23 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
 		public async Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings settings) {
 
 			var results = new List<IEventAnalyzer>();
-			var ltRecurrences = await settings.Lookup(GetRecurrenceIdSearcher());
-			foreach (var rid in ltRecurrences) {
-				var recurrenceAttendees = await settings.Lookup(new SearchHisoricalRecurrenceAttendees(rid));
-				foreach (var attendee in recurrenceAttendees.Where(x=>IncludeHistoricalMembers || x.DeleteTime ==null)) {
-					results.Add(EventAnalyzerConstructor(rid,IHistoricalImpl.From(attendee)));
-				}
+			//var ltRecurrences = await settings.Lookup(GetRecurrenceIdSearcher());
+			//foreach (var rid in ltRecurrences) {
+			var rid = RecurrenceId;
+			var recurrenceAttendees = await settings.Lookup(new SearchHisoricalRecurrenceAttendees(rid));
+			foreach (var attendee in recurrenceAttendees.Where(x => IncludeHistoricalMembers || x.DeleteTime == null)) {
+				results.Add(EventAnalyzerConstructor(rid, IHistoricalImpl.From(attendee)));
 			}
+			//}
 			return results;
 		}
 		public abstract IEventAnalyzer EventAnalyzerConstructor(long recurrenceId, IHistoricalImpl attendee);
+
+		public abstract Task<IEnumerable<EditorField>> GetSettingsFields(IEventGeneratorSettings settings);
+
+		public abstract string GetFriendlyName();
+
+		public abstract string EventType { get; }
+		
 	}
 }

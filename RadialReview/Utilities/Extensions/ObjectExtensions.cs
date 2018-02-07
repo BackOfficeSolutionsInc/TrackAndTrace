@@ -15,6 +15,30 @@ using System.Text;
 
 namespace RadialReview {
 	public static class ObjectExtensions {
+		public static bool Delete(this IDeletable self, ISession s, DateTime? now = null) {
+			return DeleteOrUndelete(self, s, true, now);
+		}
+		public static bool Undelete(this IDeletable self, ISession s, DateTime? now = null) {
+			return DeleteOrUndelete(self, s, false, now);
+		}
+
+		public static bool DeleteOrUndelete(this IDeletable self, ISession s, bool delete, DateTime? now= null) {
+			if (delete) {
+				if (self.DeleteTime == null) {
+					self.DeleteTime = now ?? DateTime.UtcNow;
+					s.Update(self);
+					return true;
+				}
+				return false;
+			} else {
+				if (self.DeleteTime != null) {
+					self.DeleteTime = null;
+					s.Update(self);
+					return true;
+				}
+				return false;
+			}
+		}
 
 		public static DateTime? TryParseDateTime(this string str) {
 			DateTime o;
