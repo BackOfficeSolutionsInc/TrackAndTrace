@@ -1,0 +1,65 @@
+.inject-fixed{
+	position:absolute;
+	top : 0;
+	right : 0;
+	z-index: 100000000;
+    color: #ef7622;
+    background-color: white;
+    padding: 0px 5px;
+	font-weight:bold;
+	opacity:.5;
+	text-align:right;
+	pointer-events:none;
+}
+
+.inject-debug{
+	/*display:none*/
+}
+
+.inject.info-box{
+	padding:12px;
+	border: 2px solid #ef7622;
+	max-height:200px;
+	overflow:auto;
+}
+
+.inject-user-details table{
+	float:left;
+	width:auto;
+	border:1px solid gray;
+	padding:2px;
+	margin:2px;
+	background-color:white;
+}
+.inject-user-details table td{
+	padding:0px;
+}
+
+.inject-error{
+	color:red;
+}
+
+.inject-resize-ticket-list .ticket-box{
+	margin-top: -5px !important;
+}
+
+.inject-resize-ticket-list .ticket-box_actions-row_element{
+	height:20px;
+}
+
+.inject-resize-ticket-list .ticket-action{
+	height:20px;
+}
+
+.inject-resize-ticket-list .ticket-action_value{
+	margin-top:7px;
+}
+
+.inject-resize-ticket-list .ticket-action_label{
+	display:none;
+}
+
+.inject-resize-ticket-list .ticket-box_main{
+	margin-top:0px;
+	margin-bottom:0px;
+}

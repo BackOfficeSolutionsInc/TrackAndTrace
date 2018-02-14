@@ -226,6 +226,7 @@
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Angular\LocalDateTime.cs" />
     <Compile Include="Models\Angular\Notifications\AngularAppNotification.cs" />
+    <Compile Include="Models\Angular\Organization\AngularOrganizationUnsafe.cs" />
     <Compile Include="Models\Angular\Users\AngularUserRole.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\Charts\MetricGraphic.cs" />
