@@ -7,9 +7,11 @@
 // });
 chrome.tabs.onUpdated.addListener(function (tabId , info) {
   chrome.browserAction.setIcon({path:"gray.png"});
-  if (info.status === 'complete') {	  
-	chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {	  
+  if (info.status === 'complete') {
+	//console.log("completed update");
+	chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {		
 		var config = {url: tabs[0].url};
+		//console.log("setting config.",config);	  
 		chrome.tabs.executeScript(tabId,{
 			code: "var config = "+JSON.stringify(config)+";"			
 		},function() {
@@ -20,8 +22,9 @@ chrome.tabs.onUpdated.addListener(function (tabId , info) {
   }
 });
 
-chrome.browserAction.onClicked.addListener(function(tab) { 
+chrome.browserAction.onClicked.addListener(function(tab) {   
+	var config = {url: tab.url};
 	chrome.tabs.executeScript(tab.id,{
-		code: "inject_setup()",
+		code: "config = "+JSON.stringify(config)+";inject_setup();",
 	});
 });

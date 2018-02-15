@@ -1,13 +1,13 @@
 .inject-fixed{
 	position:absolute;
 	top : 0;
-	right : 0;
+	right : 130px;
 	z-index: 100000000;
     color: #ef7622;
     background-color: white;
     padding: 0px 5px;
 	font-weight:bold;
-	opacity:.5;
+	opacity:.75;
 	text-align:right;
 	pointer-events:none;
 }
@@ -32,7 +32,7 @@
 	background-color:white;
 }
 .inject-user-details table td{
-	padding:0px;
+	padding: 0px 3px;
 }
 
 .inject-error{
@@ -62,4 +62,14 @@
 .inject-resize-ticket-list .ticket-box_main{
 	margin-top:0px;
 	margin-bottom:0px;
+}
+
+.inject-reply-all{
+	padding: 7px;
+    color: #ef7622;
+    border: 1px solid #ef7622;
+    margin: 7px;
+	background-color:white;
+	position:absolute;
+	right:80px;
 }
