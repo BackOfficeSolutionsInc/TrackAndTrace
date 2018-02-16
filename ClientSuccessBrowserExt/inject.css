@@ -17,10 +17,13 @@
 }
 
 .inject.info-box{
-	padding:12px;
-	border: 2px solid #ef7622;
-	max-height:200px;
-	overflow:auto;
+	padding: 12px;
+    border: 2px solid #ef7622;
+    max-height: 200px;
+    overflow: auto;
+    margin: -2px -3px 7px 7px;
+    background-color: #ffe5b5;
+    border-radius: 3px;
 }
 
 .inject-user-details table{
@@ -28,15 +31,47 @@
 	width:auto;
 	border:1px solid gray;
 	padding:2px;
-	margin:2px;
+	margin:3px;
 	background-color:white;
 }
 .inject-user-details table td{
 	padding: 0px 3px;
 }
+.inject-user-details table img{
+	padding-top:3px;
+}
+
+.inject-company{
+	background-color:goldenrod;
+	color:white;
+	display:block;
+	padding:0px 2px;
+	margin-top:1px;
+}
+.inject-company-status{
+	background-color:#6060ff;
+	color:white;
+	display:block;
+	padding:0px 2px;
+	margin-top:1px;
+}
+.inject-user-position{
+	background-color:#5da25d;
+	color:white;
+	display:block;
+	padding:0px 2px;
+	margin-top:1px;
+}
 
 .inject-error{
 	color:red;
+}
+
+.inject-highlight{
+	background-color:yellow;
+}
+.inject-highlight:hover{
+	background-color:#eada11 !important;
 }
 
 .inject-resize-ticket-list .ticket-box{
@@ -72,4 +107,99 @@
 	background-color:white;
 	position:absolute;
 	right:80px;
+}
+
+.inject-waiting{
+	background: repeating-linear-gradient(       
+					45deg,       
+					#ffd78d,       
+					#ffd78d 10px,       
+					#ffe8c5 10px,       
+					#ffe8c5 20px     
+				) !important
+}
+
+.inject-view-window{
+	position: absolute;
+    top: 40px;
+    left: 0;
+    width: 300px;
+	padding:10px;
+	padding-top:0px;
+    min-height: 100px;
+	padding-bottom:10px;
+    z-index: 10000;
+	background-color:#ef7622;
+}
+
+
+.inject-view-window label{
+	padding-top: 15px;
+    display: block;
+}
+
+.inject-view-window input:not([type='button']){
+	width:280px;
+	display:block;
+	padding:2px;
+	margin:2px;
+}
+
+.inject-view-window iframe{
+	width:100%;
+	height:100%;
+}
+
+.inject-category-container{
+	max-width:400px;
+	overflow:auto;
+	max-height:300px;
+	border:1px solid #333;
+	padding:3px;
+	background-color:white;
+}
+
+.inject-category-container .inject-leaf-cat{
+	font-weight:bold;
+	cursor:pointer;
+}
+
+.inject-category-container .inject-has-child-cat{	
+	position:relative;
+	cursor:pointer;
+}
+
+.inject-category-container .inject-has-child-cat:after{	
+	content: "►";
+    position: absolute;
+    right: -2px;
+    /* border-right: 2px solid red; */
+    cursor: pointer;
+    font-size: 6px;
+    top: 4px;
+    color: gray;
+}
+
+.inject-category-container .inject-tlc-cats{
+	display:inline-block;
+	float: left;
+    padding: 2px 4px;
+	min-width: 90px;
+    max-width: 90px;
+	border-right:1px solid #ccc;
+	white-space:nowrap;
+}
+.inject-category-container .inject-tlc-cats .inject-cat{
+	text-overflow:ellipsis;
+	overflow:hidden;	
+	margin-bottom:2px;
+}
+.inject-category-container .inject-tlc-cats .inject-cat:hover{
+	background-color:lightgray;
+}
+.inject-category-container .inject-child-cats{
+	display:inline-block;
+	white-space:pre;
+	text-overflow:ellipsis;
+	float: left;
 }

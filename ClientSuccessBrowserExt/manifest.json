@@ -15,15 +15,14 @@
    "default_title": "Traction Tools Client Success"
   }, 
   "permissions": [
-   "activeTab",
-   "https://*/*",
-   "http://*/*",
-   "tabs"
+    "activeTab",
+    "https://*/*",
+    "http://*/*",
+    "tabs",   
+    "nativeMessaging"
    ],
    "web_accessible_resources": [
         "inject.css",		
         "jquery.js"
-    ]
-
-  
+    ]  
 }

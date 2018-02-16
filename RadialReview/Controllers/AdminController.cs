@@ -120,31 +120,6 @@ namespace RadialReview.Controllers {
 			return Content("done " + DateTime.UtcNow.ToJsMs());
 		}
 
-		[Access(AccessLevel.Radial)]
-		public async Task<JsonResult> HFUserInfo(string search) {
-
-			var results = SearchAccessor.AdminSearchAllUsers(GetUser(), search).Where(x=>x.ResultType ==RGMType.User).ToList();
-			//var found = results.SingleOrDefault(x => x.Email == search);
-			//if (found == null)
-			//	return Json(ResultObject.CreateError("no user"), JsonRequestBehavior.AllowGet);
-
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var orgs = s.QueryOver<OrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(results.Select(x => x.OrganizationId).Distinct().ToList()).List().ToDictionary(x => x.Id, x => x);
-					var users = s.QueryOver<UserOrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(results.Select(x => x.Id).Distinct().ToList()).List().ToDictionary(x => x.Id, x => x);
-
-					var output = results.Select(x=>new {
-						deleted = orgs[x.OrganizationId].DeleteTime != null || users[x.Id].DeleteTime != null,
-						org = new AngularOrganizationUnsafe(orgs[x.OrganizationId]),
-						user = AngularUser.CreateUser(users[x.Id]),
-						position = users[x.Id].Cache.Positions,
-						search = x,
-					}).ToList();
-					return Json(ResultObject.Create(output), JsonRequestBehavior.AllowGet);
-				}
-			}
-
-		}
 
 		[Access(AccessLevel.Radial)]
 		public ActionResult Signups(int days = 14) {
