@@ -246,7 +246,12 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Radial)]
 		public async Task<ActionResult> HFCategories() {
-			return View();
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var cats = s.QueryOver<HFCategory>().List().ToList();
+					return View(cats);
+				}
+			}
 		}
 
 		[HttpPost]
