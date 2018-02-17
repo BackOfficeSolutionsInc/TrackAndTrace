@@ -121,9 +121,9 @@
 
 .inject-view-window{
 	position: absolute;
-    top: 40px;
+    top: 43px;
     left: 0;
-    width: 300px;
+    width: 600px;
 	padding:10px;
 	padding-top:0px;
     min-height: 100px;
@@ -132,14 +132,66 @@
 	background-color:#ef7622;
 }
 
+.inject-view-window h2{
+	color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
 .inject-view-window label{
 	padding-top: 15px;
     display: block;
 }
+.inject-view-window button{
+	margin-top: 10px;
+}
 
-.inject-view-window input:not([type='button']){
-	width:280px;
+.inject-view-window .inject-close-btn{
+	position: absolute;
+    right: 6px;
+    top: 2px;
+    color: white;
+    font-size: 16px;
+    font-family: monospace;
+	cursor:pointer;
+}
+
+.inject-view-window .inject-alt-btn{
+	float: right;
+    padding-top: 14px;
+	padding-left: 6px;
+	margin-left: 6px;
+	cursor:pointer;
+	color:white;
+}
+.inject-view-window .inject-alt-btn:hover{
+	text-shadow: 0 0 1px white;
+}
+
+.inject-view-window .inject-disabled-btn{
+	opacity:.5;
+	text-shadow:none !important;
+	cursor:disabled;
+}
+
+.inject-view-window .inject-instructions{
+	padding: 3px 5px;
+	border-radius: 7px;
+	background-color: #ffe5b5;
+	margin-top: 10px;
+}
+
+
+.inject-view-window textarea{
+	width:100%;
+	resize:vertical;
+	height:200px;
+	color:darkgray;
+}
+
+.inject-view-window input:not([type='button']):not([type='checkbox']){
+	width:100%;
 	display:block;
 	padding:2px;
 	margin:2px;
@@ -151,17 +203,21 @@
 }
 
 .inject-category-container{
-	max-width:400px;
+	/* max-width:400px; */
 	overflow:auto;
+	min-height:70px;
 	max-height:300px;
 	border:1px solid #333;
 	padding:3px;
 	background-color:white;
+	position:relative;
+	clear:both;
 }
 
 .inject-category-container .inject-leaf-cat{
 	font-weight:bold;
 	cursor:pointer;
+	text-decoration:underline;
 }
 
 .inject-category-container .inject-has-child-cat{	
@@ -180,6 +236,17 @@
     color: gray;
 }
 
+.inject-category-parent-container{
+	padding-top:5px;
+}
+
+.inject-category-parent-container .inject-cat-btn{
+	float:left;
+	padding-right: 6px;
+	margin-right: 6px;
+	cursor:pointer;
+}
+
 .inject-category-container .inject-tlc-cats{
 	display:inline-block;
 	float: left;
@@ -196,6 +263,9 @@
 }
 .inject-category-container .inject-tlc-cats .inject-cat:hover{
 	background-color:lightgray;
+}
+.inject-category-container .inject-tlc-cats .inject-leaf-cat:hover{
+	background-color:#ffe5b5;
 }
 .inject-category-container .inject-child-cats{
 	display:inline-block;

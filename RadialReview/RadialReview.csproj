@@ -1838,6 +1838,7 @@
     <Content Include="Views\Data\Dashboard.cshtml" />
     <Content Include="Views\Admin\EmployeeCount.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
+    <Content Include="Views\ClientSuccess\HFCategories.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

@@ -94,60 +94,343 @@ function inject_setup() {
 		})();		
 	}	
 	
-	function setup_categories(){		
+	var currentSelectionHtml = "";	
+	var currentSelectionRange = null;
+	function setup_categories(){
+		$(".inject-category-parent-container").remove();		
 		loadData(TT_URL+"/clientsuccess/HFGetCategories",function(data){
 			allCategory = data;
+			var parentHolder = $("<div>").addClass("inject-category-parent-container");
+			$("[data-test-id=details-scrollable-pane]").prepend(parentHolder);
+			//Add Category
+			var addCatDom = $("<div title='Add category' >Add</div>").addClass("inject-cat-btn");
+			parentHolder.append(addCatDom);
+			//Edit category
+			var editCatDom = $("<div title='Edit category' >Edit</div>").addClass("inject-cat-btn");
+			parentHolder.append(editCatDom);
+			
+			//List categories
 			var holder = $("<div>").addClass("inject-category-container");
-			$("[data-test-id=details-scrollable-pane]").prepend(holder);
+			parentHolder.append(holder);
+			
 			categoryBuilder(holder,allCategory,function(c){	
 				if (c._Children.length==0){	
 					executeCategory(c);
 				}
 			},true);
-			var addCatDom = $("<div title='Add category' >Add...</div>").addClass("inject-cat inject-add-cat");
 			addCatDom.on("click",function(){
 				addCategory();
+			});		
+			
+			editCatDom.on("click",function(){
+				editCategory();
+			});		
+			
+			
+			//Store selections for use later
+			$("body").on("mouseup",'.update-box_body > div',function(e) {
+				var select = getSelectionHTML();
+				console.info("select",select);
+				currentSelectionHtml = select;
 			});
-			holder.append(addCatDom);
+			
+			$("body").on("blur",".cke_wysiwyg_div",function(){		
+				var select = getSelectionHTML(true);				
+				console.info("select",select);
+				currentSelectionHtml = select;
+			});
+			
 		},function(e){
 			appendErr("Category err");
 		});	
 	}
+	
+	async function injectEmailContents(html,replace){
+		debugger;
+		$(".cke_wysiwyg_div").addClass("inject-waiting");
+		var currentRange = currentSelectionRange;
+		if ($("[data-test-id='add-update-editor']").length == 0) {
+			click(".floating-editor [data-test-id='reply-link']");
+			await sleep(100);
+			$(".cke_wysiwyg_div").addClass("inject-waiting");
+			await sleep(300);
+		}else{
+			while((!$(".cke_wysiwyg_div").is(":focus"))){
+				sendTextRaw("{Tab}");
+				await sleep(100);
+			}
+			console.log($(":focus"));
+		}
+		
+		if (replace==true){
+			await sleep(1);
+			console.log("select all");
+			sendTextRaw(" ^{a}{Backspace}");
+			await sleep(100);
+		}
+		
+		
+		//INJECT THE CONTENTS
+		var sel, range;
+		if (window.getSelection) {
+			// IE9 and non-IE
+			sel = window.getSelection();
+			if (sel.getRangeAt && sel.rangeCount) {
+				range = sel.getRangeAt(0);
+				range.deleteContents();
 
-	function addCategory(){
-		var categoryWindow=$("<div>").addClass("inject-view-window");
+				// Range.createContextualFragment() would be useful here but is
+				// only relatively recently standardized and is not supported in
+				// some browsers (IE9, for one)
+				var el = document.createElement("div");
+				el.innerHTML = html;
+				var frag = document.createDocumentFragment(), node, lastNode;
+				while ( (node = el.firstChild) ) {
+					lastNode = frag.appendChild(node);
+				}
+				range.insertNode(frag);
+
+				// Preserve the selection
+				if (lastNode) {
+					range = range.cloneRange();
+					range.setStartAfter(lastNode);
+					range.collapse(true);
+					sel.removeAllRanges();
+					sel.addRange(range);
+				}
+			}
+		} else if (document.selection && document.selection.type != "Control") {
+			// IE < 9
+			document.selection.createRange().pasteHTML(html);
+		}
+		
+		await sleep(400);
+		sendTextRaw(" {Backspace}");
+		$(".cke_wysiwyg_div").removeClass("inject-waiting");
+		//sendTextRaw(text);
+	}
+	
+	function flattenCategories(cats){
+		var output = [];
+		for(var i =0;i<cats.length;i++){
+			var cat = cats[i];
+			output.push(cat);
+			var childs = flattenCategories(cat._Children);
+			for(var j=0;j<childs.length;j++)
+				output.push(childs[j]);
+		}
+		return output;
+	}
+	
+	function editCategory(){
+		$(".inject-view-window").remove();
+		var categoryWindow=$("<div>").addClass("inject-view-window");		
+		categoryWindow.append($("<h2>Edit Category</h2>"));
+
+		categoryWindow.css("padding-top","12px");
 		var parentSelector = $("<div>").addClass("inject-category-container");
-		categoryWindow.append($("<label>Select the parent category</label>"));
+		var close = $("<div>x</div>");
+		close.addClass("inject-close-btn")
+			 .on("click",function(){
+				categoryWindow.remove();
+		});
+		categoryWindow.append($("<label>Which category do you want to edit?</label>"));
+		categoryWindow.append(close);
 		categoryWindow.append(parentSelector);
 
+		var editBtn = $("<button>Edit</button>").addClass("inject-disabled-btn");		
+	
+		var selectedCategory = null;
+		categoryBuilder(parentSelector,allCategory,function(c,dom){
+			editBtn.removeClass("inject-disabled-btn");
+			$(".inject-highlight").removeClass("inject-highlight");
+			$(dom).addClass("inject-highlight");
+			selectedCategory=c;
+			
+		});
+		editBtn.on("click",function(){
+			$(".inject-view-window").remove();
+			setTimeout(function(){
+				addCategory(selectedCategory);
+			},500);
+		});
+		categoryWindow.append(editBtn);
+		
+		$("body").append(categoryWindow);
+	}
 
+	async function addCategory(existingCat){
+		$(".inject-view-window").remove();
+		var categoryWindow=$("<div>").addClass("inject-view-window");
+		categoryWindow.css("padding-top","12px");
+		if (typeof(existingCat)==="undefined"){
+			categoryWindow.append($("<h2>Add Category</h2>"));
+		}else{
+			categoryWindow.append($("<h2>Edit Category</h2>"));
+		}
+		
+		var parentSelector = $("<div>").addClass("inject-category-container");
+		categoryWindow.append(parentSelector);
+
+		var close = $("<div>x</div>");
+		close.addClass("inject-close-btn")
+			 .on("click",function(){
+				categoryWindow.remove();
+			});
+
+		var selectedParent = 0;
+		var removeParent =$("<span>Currently Top Level</span>").addClass("inject-alt-btn inject-disabled-btn");
+		removeParent.on("click",function(){
+			selectedParent = 0;
+			$(".inject-highlight").removeClass("inject-highlight");	
+			$(removeParent).addClass("inject-disabled-btn");
+			$(removeParent).html("Currently Top Level");
+		});
+		categoryWindow.append(removeParent);
+		categoryWindow.append($("<label>Select the parent category</label>"));
+		categoryWindow.append(close);
+		categoryWindow.append(parentSelector);
+		
 		categoryBuilder(parentSelector,allCategory,function(c,dom){
 			$(".inject-highlight").removeClass("inject-highlight");
 			$(dom).addClass("inject-highlight");
+			selectedParent=c.Id;
+			$(removeParent).removeClass("inject-disabled-btn")			
+			$(removeParent).html("Make Top Level");
 		});
 
-
 		categoryWindow.append($("<label>Set the category name</label>"));
-		categoryWindow.append($("<input type='text' name='catname'/>"));
+		var catNameInput = $("<input type='text' name='catname'/>");
+		categoryWindow.append(catNameInput);
 
-		var refresh = $("<div>refresh</div>");
-		refresh.css("float","right");
-		categoryWindow.append(refresh);
-		categoryWindow.append($("<label>Set template body</label>"));
+		var pull = $("<div  title='You can create a template from the existing email body. Click 'pull', either the whole body or your current selection will be copied. '>pull <span>(?)</span></div>");
+		pull.addClass("inject-alt-btn");		
+		categoryWindow.append(pull);
+		
+		var injectHtml = $("<div title='You can inject this into the body at the cursor or over the selection.'>inject <span>(?)</span></div>");
+		injectHtml.addClass("inject-alt-btn");
+		categoryWindow.append(injectHtml);
+		
+		
+		var replaceHtml = $("<div title='You can replace the entire body.'>replace body<span>(?)</span></div>");
+		replaceHtml.addClass("inject-alt-btn");
+		categoryWindow.append(replaceHtml);
+		
+		categoryWindow.append($("<label title='Use the reply editor to create the template, then use \"pull\" to generate the HTML' >Set template body in HTML (?)</label>"));
 		var templatebody = $("<textarea name='templatebody'/>");
-
+		
 		function loadHtml(){
 			if ($("[data-test-id='add-update-editor']").length == 0) {
 				click(".floating-editor [data-test-id='reply-link']");
-			}			
-			var template = $(".cke_wysiwyg_div").html();
-			templatebody.html(template);
+			}
+			waitFor(".cke_wysiwyg_div",function(){
+				var template = currentSelectionHtml;			
+				if (currentSelectionHtml.trim()==""){
+					template =  $(".cke_wysiwyg_div").html();
+				}			
+				templatebody.val(template);
+			});
 		}
-		loadHtml();
-		refresh.on("click",loadHtml)
+		
+		pull.on("click",loadHtml)
+
+		injectHtml.on("click",function(){
+			injectEmailContents(templatebody.val());
+		});		
+		
+		replaceHtml.on("click",function(){
+			injectEmailContents(templatebody.val(),true);
+		})
+		
+		var dbId = null;
+		
+		var saveUrl = TT_URL+"/clientsuccess/HFAddCategory";
+		var save = $("<button>save</button>");
+		save.on("click",function(){
+			var name = $(categoryWindow).find("[name='catname']").val().trim();
+			if (name==""){
+				alert("Name was missing");
+				return;
+			}
+			
+			var tags = $(categoryWindow).find("[name='addltags']").val().replace(",","~");
+			
+			var data = {
+				parent : selectedParent,
+				name : name,
+				"delete" : $(categoryWindow).find("[name='deleteBtn']").is(":checked"),
+				template : templatebody.val(),
+				tags : tags,
+				id: dbId
+			};
+			
+			loadData(saveUrl,data,function(data){				
+				$(".inject-view-window").remove();
+				setup_categories();
+			},function(e){
+				appendErr("Category err");
+			});	
+			
+		});
+		
 
 		categoryWindow.append(templatebody);
+		categoryWindow.append($("<label>Additional Tags (comma separated)</label>"));
+		var tagsInput = $("<input type='text' name='addltags'/>");
+		categoryWindow.append(tagsInput);
+		var instruction = $("<div>").addClass("inject-instructions");
+		instruction.append("<div>Make sure you test your template by either <u>Injecting</u> it into the body, or by <u>Replacing</u> the body.</div>");
+		instruction.append("<div>Do not include a greeting or closing, those are automatically added.</div>");
+		categoryWindow.append(instruction);
+		categoryWindow.append(save);
+		
 		$("body").append(categoryWindow);
+		
+		if (typeof(existingCat)!="undefined"){
+			//For editing a category...
+			saveUrl =TT_URL+"/clientsuccess/HFEditCategory";
+			dbId = existingCat.Id;
+			catNameInput.val(existingCat.Name);
+			templatebody.val(existingCat.EmailTemplate);
+			tagsInput.val(existingCat.AdditionalTags.join(','));
+			var p =existingCat.ParentId;
+			var parents = [p];
+			var flat = flattenCategories(allCategory);
+			while (p!=0){
+				try{
+					p = flat.find(function(a){ return a.Id == p;}).ParentId;
+					parents.unshift(p);
+				}catch(e){
+					console.error(e);
+					break;
+				}
+			}			
+			for(var i = 0;i<parents.length;i+=1){
+				var id = parents[i];
+				$(".inject-category-container [data-id="+id+"]").click();
+				//await sleep(200);
+			}
+			
+			var deleteBtn = $("<input type=checkbox name='deleteBtn'>");
+			
+			$(deleteBtn).on("click",function(){
+				if ($(this).is(":checked") && existingCat._Children.length>0){
+					if (!confirm("This will also remove child categories")){
+						$(this).prop("checked",false);
+					}
+				}
+			});
+			
+			
+			$(categoryWindow).append($("<div>Delete?</div>").append(deleteBtn).css({"float": "right","padding": "15px 17px 0px"}));
+			
+			$(save).html("Save updates");
+			
+		}else{
+			//For adding new category
+			loadHtml();
+		}
+		
 	}
 
 	async function executeCategory(cat){
@@ -171,18 +454,42 @@ function inject_setup() {
 			return;
 		}
 		await sleep(200);
-		for(var i=0;i<cat.AllTags.length;i++){
-			sendLine(cat.AllTags[i]);
-			await sleep(100);
-		}		
-		await sleep(500);
-		click($("[data-test-id='save-tags']"));		
-		$("[data-test-id='add-update-editor']").removeClass("inject-waiting");
+		var existingTags =[];
+		var anyNew = false;
+		$(".mod-tags li.ember-power-select-multiple-option").each(function(){
+			var t = $(this).text().replace("×","").trim();
+			existingTags.push(t);
+		});
+		
+		for(var i=0;i<cat.AllTags.length;i++){			
+			var t = cat.AllTags[i].trim();	
+			if (existingTags.indexOf(t)==-1){
+				anyNew = true;
+			}
+		}
+		
+		if (!anyNew){
+			click($("[data-test-id='cancel-add/edit-tags']"));				
+		}else{
+			for(var i=0;i<cat.AllTags.length;i++){			
+				var t = cat.AllTags[i].trim();
+				if (existingTags.indexOf(t)==-1){
+					var before = $(".mod-tags li.ember-power-select-multiple-option").length;
+					sendLine(t);
+					while($(".mod-tags li.ember-power-select-multiple-option").length==before){
+						await sleep(100);
+						
+					}
+				}
+			}		
+			await sleep(500);
+			click($("[data-test-id='save-tags']"));		
+		}
+		$("[data-test-id='add-update-editor']").removeClass("inject-waiting");		
 	}
 
-	
-
-	async function executeCategoryEmail(cat){		
+	async function executeCategoryEmail(cat){
+		debugger;
 		if ($("[data-test-id='add-update-editor']").length == 0) {
 			click(".floating-editor [data-test-id='reply-link']");
 		}else{
@@ -190,20 +497,12 @@ function inject_setup() {
 				sendTextRaw("{Tab}");
 				await sleep(100);
 			}
-			console.log($(":focus"));
-			/*console.log("opened");
-			await sleep(7000);
-			click($("[data-test-id='floating-editor-toggle']"));
-			await sleep(700);
-			console.log("opening");
-			click(".floating-editor [data-test-id='reply-link']");*/
-			
+			console.log($(":focus"));			
 		}
-		await sleep(700);
-		
-		await tryAddGreeting()
-
-		sendText(cat.EmailTemplate);
+		await sleep(700);		
+		await tryAddGreeting();
+		await sleep(300);
+		injectEmailContents(cat.EmailTemplate);		
 		await sleep(700);
 	}
 
@@ -487,7 +786,18 @@ function inject_setup() {
 	}
 	output.login = showUserPassModal;
 
-	function loadData(url, success, error) {
+	function loadData(url,postData, success, error) {
+		var isPost=false;
+		if (typeof(postData)==="function"){
+			var tempS = postData;
+			var tempE = success;
+			success = tempS;
+			error = tempE;
+		}else{
+			isPost=true;
+		}
+			
+		
 		var onException = function (e, data) {
 			if (typeof(data) === "string" && (data.indexOf("window.UserId = -1;") != -1 || data.indexOf('class="error-message"') != -1)) {
 				showUserPassModal();
@@ -503,7 +813,7 @@ function inject_setup() {
 			headers["authorization"] = "Bearer " + localStorage.getItem('tt-token');
 		}
 
-		$.ajax({
+		var settings = {
 			url : url,
 			headers : headers,
 			success : function (data) {
@@ -523,7 +833,12 @@ function inject_setup() {
 					onException(e, data);
 				}
 			}
-		});
+		};
+		if (isPost){
+			settings.method="post",
+			settings.data = postData;
+		}
+		$.ajax(settings);
 
 	}
 
@@ -581,6 +896,39 @@ function inject_setup() {
 		link.rel = "stylesheet";
 		document.getElementsByTagName("head")[0].appendChild(link);
 	}
+	
+	function getSelectionHTML(setGlobalRange) {
+      var userSelection;
+      if (window.getSelection) {
+        // W3C Ranges
+        userSelection = window.getSelection();
+        // Get the range:
+        if (userSelection.getRangeAt)
+          var range = userSelection.getRangeAt (0);
+        else {
+          var range = document.createRange ();
+          range.setStart (userSelection.anchorNode, userSelection.anchorOffset);
+          range.setEnd (userSelection.focusNode, userSelection.focusOffset);
+        }
+		if (setGlobalRange){
+			currentSelectionRange = range;
+		}else{
+			currentSelectionRange = null;
+		}
+		
+        // And the HTML:
+        var clonedSelection = range.cloneContents ();
+        var div = document.createElement ('div');
+        div.appendChild (clonedSelection);
+        return div.innerHTML;
+      } else if (document.selection) {
+        // Explorer selection, return the HTML
+        userSelection = document.selection.createRange ();
+        return userSelection.htmlText;
+      } else {
+        return '';
+      }
+    };
 
 	function waitFor(selector, callback, count) {
 		var s = $(selector);

@@ -217,43 +217,7 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-		[HttpPost]
-		[ValidateInput(false)]
-		[Access(AccessLevel.Radial)]
-		public async Task<JsonResult> HFAddCategory(long parent, string name, string template,long categoryId) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var c = new HFCategory() {
-						Name = name,
-						ParentId = parent,
-						EmailTemplate = template,
-						CreatorId = GetUser().Id,
-						CategoryId = categoryId
-					};
-					s.Save(c);
-					tx.Commit();
-					s.Flush();
-					return Json(c);
-				}
-			}
-		}
-		[HttpPost]
-		[ValidateInput(false)]
-		[Access(AccessLevel.Radial)]
-		public async Task<JsonResult> HFDeleteCategory(long id) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var c = s.Get<HFCategory>(id);
-					c.DeleteTime = DateTime.UtcNow;
-					s.Update(c);
-					tx.Commit();
-					s.Flush();
-				}
-			}
-			return Json(true);
-		}
-
-		private void Recurse(HFCategory parent, List<HFCategory> children,List<string> parentNames) {			
+		private void Recurse(HFCategory parent, List<HFCategory> children, List<string> parentNames) {
 			var parents = children.Where(x => x.ParentId == parent.Id).ToList();
 			var output = new List<HFCategory>();
 			var myCat = parentNames.ToList();
@@ -279,6 +243,72 @@ namespace RadialReview.Controllers {
 				}
 			}
 		}
+
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> HFCategories() {
+			return View();
+		}
+
+		[HttpPost]
+		[ValidateInput(false)]
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> HFAddCategory(long parent, string name, string template,string tags=null,long? categoryId=null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var c = new HFCategory() {
+						Name = name,
+						ParentId = parent,
+						EmailTemplate = template,
+						CreatorId = GetUser().Id,
+						CategoryId = categoryId,
+						_AdditionalTags = tags
+					};
+					s.Save(c);
+					tx.Commit();
+					s.Flush();
+					return Json(c);
+				}
+			}
+		}
+		[HttpPost]
+		[ValidateInput(false)]
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> HFEditCategory(long id,bool? delete=null, long? parent=null, string name=null, string template = null, string tags = null, long? categoryId = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var c = s.Get<HFCategory>(id);
+					if (delete != null)
+						c.DeleteOrUndelete(s, delete.Value);
+					c.ParentId = parent ?? c.ParentId;
+					c.Name = name ?? c.Name;
+					c.EmailTemplate = template ?? c.EmailTemplate;
+					c._AdditionalTags = tags ?? c._AdditionalTags;
+					c.CategoryId = categoryId ?? c.CategoryId;
+					
+					s.Update(c);
+					tx.Commit();
+					s.Flush();
+					return Json(c);
+				}
+			}
+		}
+
+		[HttpPost]
+		[ValidateInput(false)]
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> HFDeleteCategory(long id) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var c = s.Get<HFCategory>(id);
+					c.DeleteTime = DateTime.UtcNow;
+					s.Update(c);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return Json(true);
+		}
+
 
 		[Access(AccessLevel.Radial)]
 		public async Task<JsonResult> HFUserInfo(string search) {
