@@ -65,7 +65,7 @@ namespace RadialReview.Accessors {
 						var fields = (await generator.GetSettingsFields(settings)).ToList();
 						var name = generator.EventType;
 						fields.Add(EditorField.Hidden("eag", name));
-						subform.AddSubForm(generator.GetFriendlyName(), name, fields);
+						subform.AddSubForm(generator.Name, name, fields);
 					}
 
 					return new EditorForm() {
@@ -89,42 +89,51 @@ namespace RadialReview.Accessors {
 			return generators;
 		}
 
-		public static async Task<EventSubscription> SubscribeToEvent(UserOrganizationModel caller, long subscriberUserId, IEventAnalyzerGenerator analyzer) {
+		public static async Task<EventSubscription> SubscribeToEvent(UserOrganizationModel caller,long subscriberUserId, IEventAnalyzerGenerator analyzer) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					var permChecked = false;
-
-					perms.Self(subscriberUserId);
+					perms.SubscribeToEvent(subscriberUserId,analyzer);
 
 					var subscriber = s.Get<UserOrganizationModel>(subscriberUserId);
-
-					if (analyzer is IEventAnalyzerGenerator) {
-						perms.ViewL10Recurrence(((IRecurrenceEventAnalyerGenerator)analyzer).RecurrenceId);
-						permChecked = true;
-					}
-
-
-					if (permChecked == false)
-						throw new PermissionsException("no permissions were checked");
-
+					await analyzer.PreSaveOrUpdate(s);
 					var settings = JsonConvert.SerializeObject(analyzer);
 
-					var sub = new EventSubscription() {
+					EventSubscription evt = new EventSubscription() {
 						EventSettings = settings,
 						EventType = analyzer.EventType,
 						OrgId = subscriber.Organization.Id,
 						SubscriberId = subscriber.Id,
 					};
+					s.Save(evt);
+					tx.Commit();
+					s.Flush();
+					return evt;
+				}
+			}
+		}
 
-					s.Save(sub);
+		public static async Task<EventSubscription> EditEvent(UserOrganizationModel caller, long id, IEventAnalyzerGenerator analyzer) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.ViewEvent(id, analyzer);
+
+					var evt  = s.Get<EventSubscription>(id);
+					await analyzer.PreSaveOrUpdate(s);
+					var settings = JsonConvert.SerializeObject(analyzer);
+
+					evt.EventSettings = settings;
+					evt.EventType = analyzer.EventType;
+
+					s.Update(evt);
 
 					tx.Commit();
 					s.Flush();
-
-					return sub;
+					return evt;
 				}
 			}
+
 		}
 
 		public static async Task<List<EventSubscription>> GetEventSubscriptions(UserOrganizationModel caller, long subscriberId) {

@@ -12,9 +12,12 @@ using RadialReview.Crosscutting.EventAnalyzers.Searchers;
 using RadialReview.Models.Frontend;
 using RadialReview.Accessors;
 using System.ComponentModel.DataAnnotations;
+using NHibernate;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 	public class AverageMeetingRatingBelowForWeeksInARow : IEventAnalyzer, IEventAnalyzerGenerator, IRecurrenceEventAnalyerGenerator {
+
 
 		[Display(Name = "Meeting")]
 		public long RecurrenceId { get; set; }
@@ -72,8 +75,23 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 			};
 		}
 
-		public string GetFriendlyName() {
-			return "Average consecutive meeting rating";
+		private string _MeetingName { get; set; }
+		public async Task PreSaveOrUpdate(ISession s) {
+			_MeetingName= s.Get<L10Recurrence>(RecurrenceId).Name;
+		}
+		/*
+		  _MeetingName.NotNull(x=>" for "+x)??"");
+		 */
+
+		public string Name {
+			get {
+				return "Average consecutive meeting rating";
+			}
+		}
+		public string Description {
+			get {
+				return string.Format("{0} for {1} weeks in a row{2}", Direction.ToDescription(RatingTheshold), WeeksInARow, _MeetingName.NotNull(x=>" for "+x)??"");
+			}
 		}
 
 		//public override async Task<List<IEvent>> EventsForRecurrence(long recurrenceId, IEventSettings settings) {

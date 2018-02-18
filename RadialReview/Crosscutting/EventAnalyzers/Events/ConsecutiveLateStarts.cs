@@ -9,6 +9,8 @@ using RadialReview.Crosscutting.EventAnalyzers.Searchers;
 using System.Threading.Tasks;
 using RadialReview.Models.Frontend;
 using System.ComponentModel.DataAnnotations;
+using NHibernate;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 	public class ConsecutiveLateStarts : IEventAnalyzer,IEventAnalyzerGenerator, IRecurrenceEventAnalyerGenerator {
@@ -86,9 +88,20 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 				EditorField.FromProperty(this,x=>x.WeeksInARow),
 			};
 		}
+		private string _MeetingName { get; set; }
+		public async Task PreSaveOrUpdate(ISession s) {
+			_MeetingName = s.Get<L10Recurrence>(RecurrenceId).Name;
+		}
 
-		public string GetFriendlyName() {
-			return "Consecutive late meeting starts";
+		public string Name {
+			get {
+				return "Consecutive late meeting starts";
+			}
+		}
+		public string Description {
+			get {
+				return string.Format("{0} minutes for {1} weeks in a row{2}", LessGreater.GreaterThan.ToDescription(MinutesLate), WeeksInARow,_MeetingName.NotNull(x=>" for "+x)??"");
+			}
 		}
 	}
 }

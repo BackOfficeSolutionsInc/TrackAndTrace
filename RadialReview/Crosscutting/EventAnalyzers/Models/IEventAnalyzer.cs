@@ -28,10 +28,12 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 
 
 	public interface IEventAnalyzerGenerator {
-		string GetFriendlyName();
 		Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings settings);
 		Task<IEnumerable<EditorField>> GetSettingsFields(IEventGeneratorSettings settings);
 		string EventType { get; }
+		string Name { get; }
+		string Description { get; }
+		Task PreSaveOrUpdate(ISession s);
 	}
 
 	public interface IEventAnalyzer {

@@ -65,9 +65,22 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 				EditorField.FromProperty(this,x=>x.Days)
 			};
 		}
-
-		public string GetFriendlyName() {
-			return "Days without a Level 10";
+		private string _MeetingName { get; set; }
+		public async Task PreSaveOrUpdate(ISession s) {
+			_MeetingName = s.Get<L10Recurrence>(RecurrenceId).Name;
+		}
+		/*
+		  
+		 */
+		public string Name {
+			get {
+				return "Days without a Level 10";
+			}
+		}
+		public string Description {
+			get {
+				return string.Format("{0} days without a Level 10{1}", Days,_MeetingName.NotNull(x=>" for "+x)??"");
+			}
 		}
 	}
 }

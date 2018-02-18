@@ -10,6 +10,8 @@ using RadialReview.Utilities.DataTypes;
 using System.Threading.Tasks;
 using RadialReview.Models.Frontend;
 using System.ComponentModel.DataAnnotations;
+using NHibernate;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 
@@ -73,9 +75,22 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 				EditorField.FromProperty(this,x=>x.WeeksInARow),
 			};
 		}
+		
+		private string _MeetingName { get; set; }
+		public async Task PreSaveOrUpdate(ISession s) {
+			_MeetingName = s.Get<L10Recurrence>(RecurrenceId).Name;
+		}
 
-		public string GetFriendlyName() {
-			return "Aggregate to-do completion percentage";
+		public string Name {
+			get {
+				return "Aggregate to-do completion percentage";
+			}
+		}
+
+		public string Description {
+			get {
+				return string.Format("{0} for {1} weeks in a row{2}",Direction.ToDescription(Percentage),WeeksInARow,_MeetingName.NotNull(x=>" for "+x)??"");
+			}
 		}
 	}
 }
