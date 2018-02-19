@@ -379,8 +379,8 @@ namespace RadialReview.Accessors {
 			var foundEventFrequency = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == EVENT_FREQUENCY_TASK).List().ToList();
 			foreach (var ii in Enum.GetValues(typeof(EventFrequency))) {
 				var i = (EventFrequency)ii;
-				var url = "/Scheduler/ExecuteEvents?currentTime=" + i;
-				var count = found.Count(x => x.Url == url);
+				var url = "/Scheduler/ExecuteEvents?frequency=" + i;
+				var count = foundEventFrequency.Count(x => x.Url == url);
 				if (count == 0) {
 					var b = DateTime.UtcNow.Date;
 					var task = new ScheduledTask() {
@@ -390,6 +390,7 @@ namespace RadialReview.Accessors {
 						Fire = b,
 						FirstFire = b,
 						TaskName = EVENT_FREQUENCY_TASK,
+						EmailOnException = true
 
 					};
 					s.Save(task);
