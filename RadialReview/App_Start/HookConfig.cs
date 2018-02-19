@@ -59,6 +59,7 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new CreateFinancialPermItems());
 
 			HooksRegistry.RegisterHook(new UpdatePlaceholder());
+			HooksRegistry.RegisterHook(new RealTime_L10_Milestone());
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
     }

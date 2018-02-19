@@ -37,30 +37,30 @@ namespace RadialReview.Controllers {
 		}
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult EditModal(Milestone model) {
-			RockAccessor.EditMilestone(GetUser(),model.Id,model.Name );
+		public async Task<JsonResult> EditModal(Milestone model) {
+			await RockAccessor.EditMilestone(GetUser(), model.Id, model.Name);
 			return Json(ResultObject.SilentSuccess());
 		}
 
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult Add(DateTime dueDate, string milestone, long rockId) {
-			RockAccessor.AddMilestone(GetUser(), rockId, milestone, dueDate);
+		public async Task<JsonResult> Add(DateTime dueDate, string milestone, long rockId) {
+			await RockAccessor.AddMilestone(GetUser(), rockId, milestone, dueDate);
 			return Json(ResultObject.SilentSuccess());
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult Edit(Milestone milestone) {
-			RockAccessor.EditMilestone(GetUser(), milestone.Id, milestone.Name, milestone.DueDate, milestone.Required, milestone.Status);
+		public async Task<JsonResult> Edit(Milestone milestone) {
+			await RockAccessor.EditMilestone(GetUser(), milestone.Id, milestone.Name, milestone.DueDate, milestone.Required, milestone.Status);
 			return Json(ResultObject.SilentSuccess());
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Delete(long id) {
-			RockAccessor.DeleteMilestone(GetUser(), id);
-			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+		public async Task<JsonResult> Delete(long id) {
+			await RockAccessor.DeleteMilestone(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 	}
