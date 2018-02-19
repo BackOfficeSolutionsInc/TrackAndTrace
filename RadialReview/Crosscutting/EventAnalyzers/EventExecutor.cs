@@ -5,6 +5,7 @@ using RadialReview.Crosscutting.EventAnalyzers.Models;
 using RadialReview.Crosscutting.Hooks.Interfaces;
 using RadialReview.Hooks;
 using RadialReview.Models;
+using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ using System.Web;
 namespace RadialReview.Crosscutting.EventAnalyzers {
 	public class EventExecutor {
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-		
+
 
 		//private static EventRegistry _Singleton { get; set; }
 		//private List<IEventAnalyzer> _EventAnalyzers { get; set; }
@@ -36,12 +37,32 @@ namespace RadialReview.Crosscutting.EventAnalyzers {
 		//public static List<T> GetEventAnalyzers<T>() where T : IEventAnalyzer {
 		//	return GetSingleton()._EventAnalyzers.Where(x => x is T).Cast<T>().ToList();
 		//}
-		
+
 		//public static EventRegistry GetSingleton() {
 		//	if (_Singleton == null)
 		//		_Singleton = new EventRegistry();
 		//	return _Singleton;
 		//}
+
+		public static async Task ExecuteAll(EventFrequency frequency) {
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					UserOrganizationModel subA = null;
+					OrganizationModel orgA = null;
+					var subs = s.QueryOver<EventSubscription>()
+						.JoinAlias(x => x.Subscriber, () => subA)
+						.JoinAlias(x => x.Org, () => orgA)
+						.Where(x => x.Frequency == frequency && x.DeleteTime == null && subA.DeleteTime == null && orgA.DeleteTime == null)
+						.List().ToList();
+
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+		}
 
 
 		public static async Task Execute(ISession s,long orgId, List<IEventAnalyzer> analyzers) {

@@ -13,8 +13,8 @@ using RadialReview.Models;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 	public enum EventFrequency {
-		[Obsolete("Hey these are expensive to run")]
-		Minutly = 1,
+		//[Obsolete("Hey these are expensive to run")]
+		//Minutly = 1,
 		[Obsolete("Hey these are expensive to run")]
 		Hourly = 60,
 		[Obsolete("Hey these are expensive to run")]
@@ -34,10 +34,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 		string Name { get; }
 		string Description { get; }
 		Task PreSaveOrUpdate(ISession s);
+		EventFrequency GetExecutionFrequency();
 	}
 
 	public interface IEventAnalyzer {
-		EventFrequency GetExecutionFrequency();
 		int GetNumberOfPassesToReset(IEventSettings settings);
 		int GetNumberOfFailsToTrigger(IEventSettings settings);
 		bool IsEnabled(IEventSettings settings);

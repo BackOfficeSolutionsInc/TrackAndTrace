@@ -104,6 +104,7 @@ namespace RadialReview.Accessors {
 						EventType = analyzer.EventType,
 						OrgId = subscriber.Organization.Id,
 						SubscriberId = subscriber.Id,
+						Frequency = analyzer.fre
 					};
 					s.Save(evt);
 					tx.Commit();
