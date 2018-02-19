@@ -52,6 +52,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 				EditorField.FromProperty(this,x=>x.NumberMissed),
 			};
 		}
+
+		public override EventFrequency GetExecutionFrequency() {
+			return EventFrequency.Quarterly;
+		}
 	}
 
 	public class MissL10PastQuarter : IEventAnalyzer {

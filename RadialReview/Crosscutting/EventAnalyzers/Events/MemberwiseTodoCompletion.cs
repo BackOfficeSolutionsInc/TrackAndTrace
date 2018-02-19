@@ -57,6 +57,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 			};
 		}
 
+		public override EventFrequency GetExecutionFrequency() {
+			return EventFrequency.Weekly;
+		}
+
 		public override string EventType { get { return "MemberwiseTodoCompletion"; } }
 	}
 

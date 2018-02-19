@@ -328,11 +328,16 @@ namespace RadialReview.Controllers {
         }
 
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="frequency"></param>
+		/// <returns></returns>
 		[Access(AccessLevel.Any)]
-		public async Task<bool> ExecuteEvents(EventFrequency frequency) {
-
-			await EventExecutor.ExecuteAll(frequency);
-
+		//DO NOT RENAME
+		[AsyncTimeout(60 * 60 * 1000)]
+		public async Task<bool> ExecuteEvents(EventFrequency frequency,long taskId) {
+			await EventAccessor.ExecuteAll(frequency, taskId, DateTime.UtcNow);
 			return true;
 		}
 
@@ -438,7 +443,6 @@ namespace RadialReview.Controllers {
 			//System.Web.HttpContext.Current.GetType().GetField("_timeoutState", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(System.Web.HttpContext.Current, 1);
 
 			var res = await TaskAccessor.ExecuteTasks();
-			await Minutely();
 
             return Json(res, JsonRequestBehavior.AllowGet);
         }

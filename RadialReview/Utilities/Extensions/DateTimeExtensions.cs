@@ -26,7 +26,7 @@ namespace RadialReview
 
         public static DateTime StartOfPeriod(this DateTime dt, EventFrequency period) {
             switch (period) {
-                case EventFrequency.Minutly:    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0);
+            //    case EventFrequency.Minutly:    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0);
                 case EventFrequency.Hourly:     return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, 0, 0);
                 case EventFrequency.Daily:      return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0);
                 case EventFrequency.Weekly:     return StartOfWeek(dt, DayOfWeek.Sunday);

@@ -52,6 +52,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
 		public abstract string EventType { get; }
 
 		public abstract Task PreSaveOrUpdate(ISession s);
-		
+
+		public abstract EventFrequency GetExecutionFrequency();
 	}
 }

@@ -19,6 +19,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Models {
 		public virtual long SubscriberId { get; set; }
 		public virtual UserOrganizationModel Subscriber { get; set; }
 		public virtual EventFrequency Frequency { get; set; }
+		public virtual DateTime? LastExecution { get; set; }
 
 		
 		public EventSubscription() {
@@ -35,11 +36,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Models {
 				Map(x => x.OrgId);
 				References(x => x.Org).ReadOnly().LazyLoad().Column("OrgId");
 				Map(x => x.SubscriberId);
+				Map(x => x.LastExecution);
 				References(x => x.Subscriber).ReadOnly().LazyLoad().Column("SubscriberId");
 				Map(x => x.Frequency).CustomType<EventFrequency>();
 			}
-
 		}
-
 	}
 }

@@ -28,7 +28,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 
 
 	public interface IEventAnalyzerGenerator {
-		Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings settings);
+		Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings orgSettings);
 		Task<IEnumerable<EditorField>> GetSettingsFields(IEventGeneratorSettings settings);
 		string EventType { get; }
 		string Name { get; }
@@ -301,8 +301,8 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 	}
 
 	public class BaseEventSettings : IEventSettings {
-		public BaseEventSettings(ISession session, long organizationId, DateTime lastCheck) {
-			RunTime = lastCheck;
+		public BaseEventSettings(ISession session, long organizationId, DateTime runTime) {
+			RunTime = runTime;
 			OrganizationId = organizationId;
 			Session = session;
 			DataSearch = new BaseEventDataSource(this);

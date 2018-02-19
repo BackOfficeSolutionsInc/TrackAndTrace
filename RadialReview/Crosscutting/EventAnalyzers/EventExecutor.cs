@@ -1,5 +1,6 @@
 ﻿using log4net;
 using NHibernate;
+using RadialReview.Accessors;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Crosscutting.EventAnalyzers.Models;
 using RadialReview.Crosscutting.Hooks.Interfaces;
@@ -44,75 +45,57 @@ namespace RadialReview.Crosscutting.EventAnalyzers {
 		//	return _Singleton;
 		//}
 
-		public static async Task ExecuteAll(EventFrequency frequency) {
-
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					UserOrganizationModel subA = null;
-					OrganizationModel orgA = null;
-					var subs = s.QueryOver<EventSubscription>()
-						.JoinAlias(x => x.Subscriber, () => subA)
-						.JoinAlias(x => x.Org, () => orgA)
-						.Where(x => x.Frequency == frequency && x.DeleteTime == null && subA.DeleteTime == null && orgA.DeleteTime == null)
-						.List().ToList();
+		
 
 
-					tx.Commit();
-					s.Flush();
-				}
-			}
+		//public static async Task Execute(ISession s,long orgId, List<IEventAnalyzer> analyzers) {
+		//	//var analyzers = GetSingleton()._EventAnalyzers;
 
-		}
+		//	var eventLogs = s.QueryOver<EventLogModel>().Where(x => x.DeleteTime == null).List().ToList();
 
+		//	var now = DateTime.UtcNow;
 
-		public static async Task Execute(ISession s,long orgId, List<IEventAnalyzer> analyzers) {
-			//var analyzers = GetSingleton()._EventAnalyzers;
+		//	//var orgIds = s.QueryOver<OrganizationModel>()
+		//	//	.Where(x => x.DeleteTime == null)
+		//	//	.Select(x => x.Id)
+		//	//	.List<long>().ToList();
 
-			var eventLogs = s.QueryOver<EventLogModel>().Where(x => x.DeleteTime == null).List().ToList();
+		//	foreach (var a in analyzers) {
+		//		var f = a.GetExecutionFrequency();
+		//		var after = now.Subtract(f);
+		//		var type = ForModel.GetModelType(a.GetType());
 
-			var now = DateTime.UtcNow;
+		//		var log = eventLogs.SingleOrDefault(x => x.EventAnalyzerName == type);
+		//		if (log == null) {
+		//			s.Save(new EventLogModel() {
+		//				EventAnalyzerName = type,
+		//				Frequency = f,
+		//				RunTime = now,
+		//				OrgId = orgId,
+		//			});
+		//		}
 
-			//var orgIds = s.QueryOver<OrganizationModel>()
-			//	.Where(x => x.DeleteTime == null)
-			//	.Select(x => x.Id)
-			//	.List<long>().ToList();
+		//		if (log.RunTime < after) {
+		//			var anyExecuted = false;
+		//			//foreach (var oId in orgIds) {
+		//				IEventSettings settings = new BaseEventSettings(s,orgId, log.RunTime);
 
-			foreach (var a in analyzers) {
-				var f = a.GetExecutionFrequency();
-				var after = now.Subtract(f);
-				var type = ForModel.GetModelType(a.GetType());
+		//				if (a.IsEnabled(settings)) {
+		//					var shouldTrigger = await EventProcessor.ShouldTrigger(settings, a);
 
-				var log = eventLogs.SingleOrDefault(x => x.EventAnalyzerName == type);
-				if (log == null) {
-					s.Save(new EventLogModel() {
-						EventAnalyzerName = type,
-						Frequency = f,
-						RunTime = now,
-						OrgId = orgId,
-					});
-				}
-
-				if (log.RunTime < after) {
-					var anyExecuted = false;
-					//foreach (var oId in orgIds) {
-						IEventSettings settings = new BaseEventSettings(s,orgId, log.RunTime);
-
-						if (a.IsEnabled(settings)) {
-							var shouldTrigger = await EventProcessor.ShouldTrigger(settings, a);
-
-                            if (shouldTrigger) {
-                                anyExecuted = true;
-                                await HooksRegistry.Each<IEventHook>((ses, x) => x.HandleEventTriggered(ses, a, settings));
-                            }
-							//Run the analyzer
-						}
-					//}
-					if (anyExecuted) {
-						log.RunTime = now;
-						s.Update(log);
-					}
-				}
-			}
-		}
+  //                          if (shouldTrigger) {
+  //                              anyExecuted = true;
+  //                              await HooksRegistry.Each<IEventHook>((ses, x) => x.HandleEventTriggered(ses, a, settings));
+  //                          }
+		//					//Run the analyzer
+		//				}
+		//			//}
+		//			if (anyExecuted) {
+		//				log.RunTime = now;
+		//				s.Update(log);
+		//			}
+		//		}
+		//	}
+		//}
 	}
 }

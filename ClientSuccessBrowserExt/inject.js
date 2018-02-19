@@ -99,8 +99,10 @@ function inject_setup() {
 	function setup_categories(){
 		$(".inject-category-parent-container").remove();		
 		loadData(TT_URL+"/clientsuccess/HFGetCategories",function(data){
-			allCategory = data;
+			allCategory = data;			
 			var parentHolder = $("<div>").addClass("inject-category-parent-container");
+			var placeholder = $("<div>").css("height","200px");
+			$("[data-test-id=details-scrollable-pane]").prepend(placeholder);
 			$("[data-test-id=details-scrollable-pane]").prepend(parentHolder);
 			//Add Category
 			var addCatDom = $("<div title='Add category' >Add</div>").addClass("inject-cat-btn");
@@ -108,6 +110,12 @@ function inject_setup() {
 			//Edit category
 			var editCatDom = $("<div title='Edit category' >Edit</div>").addClass("inject-cat-btn");
 			parentHolder.append(editCatDom);
+			var hideCatDom = $("<div title='Hide' ></div>").addClass("inject-hide-btn");
+			$(hideCatDom).on("click",function(){
+				parentHolder.toggleClass("inject-hide");
+			});
+			
+			parentHolder.append(hideCatDom);
 			
 			//List categories
 			var holder = $("<div>").addClass("inject-category-container");

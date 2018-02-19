@@ -205,13 +205,18 @@
 .inject-category-container{
 	/* max-width:400px; */
 	overflow:auto;
+	min-width:300px;
+	width:calc(100vw - 477px);
+	height:150px;
 	min-height:70px;
-	max-height:300px;
+	max-height:50vh;
+	max-width:calc(100vw - 447px);
 	border:1px solid #333;
 	padding:3px;
 	background-color:white;
 	position:relative;
 	clear:both;
+	resize: both;
 }
 
 .inject-category-container .inject-leaf-cat{
@@ -238,6 +243,22 @@
 
 .inject-category-parent-container{
 	padding-top:5px;
+	position:fixed;
+	z-index:10000;
+	background-color:#ef7622;
+	padding:15px;
+	left:0px;
+	border-bottom-right-radius: 12px;
+}
+.inject-category-parent-container:after{
+	content:"Select category";
+    position: absolute;
+    right: 35px;
+    top: 10px;
+	color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .inject-category-parent-container .inject-cat-btn{
@@ -246,13 +267,35 @@
 	margin-right: 6px;
 	cursor:pointer;
 }
+.inject-category-parent-container .inject-hide-btn{
+	float: right;
+    margin-right: -15px;
+    margin-top: -15px;
+    cursor: pointer;
+    color: white;
+	padding: 7px 11px;
+    background-color: rgba(255,255,255,.25);
+}
+.inject-category-parent-container .inject-hide-btn:after{
+	content: "\2212";
+
+}
+.inject-category-parent-container.inject-hide .inject-hide-btn:after{
+	content:"+";
+}
+.inject-category-parent-container.inject-hide *:not(.inject-hide-btn){
+	display:none;
+}
+.inject-category-parent-container.inject-hide:after{
+	content:"";
+}
 
 .inject-category-container .inject-tlc-cats{
 	display:inline-block;
 	float: left;
     padding: 2px 4px;
 	min-width: 90px;
-    max-width: 90px;
+    max-width: 170px;
 	border-right:1px solid #ccc;
 	white-space:nowrap;
 }
