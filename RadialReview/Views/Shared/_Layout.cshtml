@@ -125,7 +125,7 @@
 		window.ConvertFromServerTime=function(serverTime){return serverTime -window.ServerTimeDiff;}
 		window.ConvertToServerTime = function (clientTime){return clientTime + window.ServerTimeDiff;}
 		window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
-
+		window.Config = {};
 		window.Products = {
 			L10 : @(l10Enabled?"true":"false"),
 			Review : @(reviewEnabled?"true":"false"),
@@ -434,7 +434,13 @@
 		<!-- Google Analytics -->
 		<script>
 			window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-			ga('create', 'UA-XXXXX-Y', 'auto');
+			ga('create', 'UA-68333423-1',{'userId':@(ViewBag.UserId??-1L)});
+			ga('set', 'dimension1', @(ViewBag.UserId??-1L));
+			try{
+				ga('set', 'dimension2', window.Config.ServerType);
+			}catch(e){
+				console.warn(e);
+			}
 			ga('send', 'pageview');
 		</script>
 		<script async src='https://www.google-analytics.com/analytics.js'></script>
