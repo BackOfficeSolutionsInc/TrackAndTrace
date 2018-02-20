@@ -224,7 +224,7 @@
                         <div class="navbar-collapse collapse">
                             <ul class="nav navbar-nav">
                                 @if (Request.IsAuthenticated) {
-                                    if (((int?)ViewBag.Organizations ?? 0) == 0) {
+                                    if (((int?)ViewBag.Organizations ?? 0) == 0 && !(ViewBag.NoAccessCode ?? false)) {
                                         <li>
                                             <a href="@Url.Action("Index", "Home", new { area = "" })" class="@(ViewBag.TaskCount == 0?"":"flashing")">
                                                 Access Code
