@@ -1278,6 +1278,7 @@
     <Compile Include="Crosscutting\Hooks\Interfaces\IPaymentHook.cs" />
     <Compile Include="Crosscutting\Hooks\Realtime\L10\RealTime_L10_Headline.cs" />
     <Content Include="Content\Inputs\TagInput.less" />
+    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Headline.cs" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1824,6 +1825,7 @@
     <Content Include="Views\ClientSuccess\Close.cshtml" />
     <Content Include="Views\Data\Dashboard.cshtml" />
     <Content Include="Views\Admin\EmployeeCount.cshtml" />
+    <Content Include="Views\L10\Delete.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -2535,11 +2537,13 @@
     <Content Include="Views\TileData\L10Issues.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Areas\CoreProcess\CamundaFiles\" />
     <Folder Include="Areas\People\Engines\Surveys\Abstract\" />
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
+    <Folder Include="Models\Notifications\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Scripts\Models\" />
     <Folder Include="Scripts\typings\d3\plugins\" />
@@ -2547,6 +2551,7 @@
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />
     <Folder Include="Views\Console\" />
+    <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\HealthCheck\" />
     <Folder Include="Views\Img\" />
@@ -2645,6 +2650,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Scripts\d3\Charts.ts" />
+    <TypeScriptCompile Include="Scripts\Models\Charts.ts" />
+    <TypeScriptCompile Include="Scripts\typings\d3\d3.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\d3\plugins\d3.superformula.d.ts" />
     <Content Include="SoftwareUpdates\20151217.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -2746,7 +2755,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:44302</IISUrl>
+          <IISUrl>http://localhost:44301</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>
