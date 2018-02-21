@@ -6,30 +6,34 @@
 	
 // });
 chrome.tabs.onUpdated.addListener(function (tabId , info) {
-  chrome.browserAction.setIcon({path:"gray.png"});
   if (info.status === 'complete') {
-	//console.log("completed update");
-	chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
-		if (tabs.length>0){
-			var config = {url: tabs[0].url};
-			//console.log("setting config.",config);	  
-			try{
-				chrome.tabs.executeScript(tabId,{
-					code: "var config = "+JSON.stringify(config)+";"			
-				},function() {
-					try{	
-						chrome.tabs.executeScript(tabId, {file: 'inject.js'});
-						chrome.browserAction.setIcon({path:"icon.png"});
-						
-					}catch(e){
-						console.warn(e);
+	chrome.browserAction.setIcon({path:"gray.png"});
+	try{
+		chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
+			if (tabs.length>0){
+				var config = {url: tabs[0].url};
+				//console.log("setting config.",config);	  
+				try{
+					if (config.url.indexOf("chrome://extensions")==-1 && config.url.indexOf("chrome://newtab/")==-1){					
+						chrome.tabs.executeScript(tabId,{
+							code: "var config = "+JSON.stringify(config)+";"			
+						},function() {
+							try{	
+								chrome.tabs.executeScript(tabId, {file: 'inject.js'});
+								
+							}catch(e){
+								console.warn(e);
+							}
+						});
 					}
-				});
-			}catch(e){
-				console.warn(e);
+				}catch(e){
+					console.warn(e);
+				}
 			}
-		}
-	});
+		});
+	}catch(e){
+		console.warn(e);
+	}
   }
 });
 
@@ -69,6 +73,9 @@ chrome.runtime.onMessage.addListener(
 		}catch(e){
 			sendResponse({error:e});
 		}
+	}
+	if (request.method == "setIcon"){
+		chrome.browserAction.setIcon({path:request.icon});
 	}
 });
 

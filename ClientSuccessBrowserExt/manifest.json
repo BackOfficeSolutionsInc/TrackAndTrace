@@ -14,15 +14,25 @@
    "default_icon": "gray.png",
    "default_title": "Traction Tools Client Success"
   }, 
+  "options_ui": {
+    // Required.
+    "page": "options.html",
+    // Recommended.
+    "chrome_style": true
+  },
   "permissions": [
     "activeTab",
     "https://*/*",
     "http://*/*",
-    "tabs",   
-    "nativeMessaging"
+    "tabs",  
+	"storage",
+    "nativeMessaging",
+	"background"
    ],
    "web_accessible_resources": [
         "inject.css",		
-        "jquery.js"
+        "jquery.js",
+		"options.js",
+		"options.html"
     ]  
 }

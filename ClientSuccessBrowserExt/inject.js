@@ -3,8 +3,18 @@
 
 function inject_setup() {
 	console.log("inject_setup");
+	var options ={};
+	chrome.storage.sync.get({
+		TT_URL: 'https://tractiontoolsalpha.com',
+		DEBUG_INFO:false
+	}, function(items) {
+		options.TT_URL = items.TT_URL;
+		options.DEBUG_INFO = items.DEBUG_INFO;
+	
+
 	/*Constants*/
-	var TT_URL = "http://localhost:44302";
+	var TT_URL = options.TT_URL || "https://tractiontoolsalpha.com";
+	debugger;
 	var HAPPYFOX_URL = "tractiontools.happyfox.com/staff/";
 	var HAPPYFOX_TICKET_URL = "tractiontools.happyfox.com/staff/ticket/";
 	var HAPPYFOX_TICKET_LIST_URL = ["tractiontools.happyfox.com/staff/tickets/", "tractiontools.happyfox.com/staff/tickets?"];
@@ -18,10 +28,17 @@ function inject_setup() {
 		onMatch(HAPPYFOX_URL, function () {
 			loadScripts();
 			$(".injected-debug").remove();
-			var div = document.createElement('div');
-			$(div).addClass("inject inject-fixed injected-debug");
-			$(div).html('<div>TT</div>');
-			document.body.appendChild(div);
+				var div = document.createElement('div');
+				$(div).addClass("inject inject-fixed injected-err");
+				$(div).html('<div>TT</div>');
+				document.body.appendChild(div);
+			if (options.DEBUG_INFO){
+				div.addClass("injected-debug");
+			}
+
+			setIcon("icon.png");
+
+			
 		});
 
 		//Tickets Page
@@ -45,7 +62,7 @@ function inject_setup() {
 			waitFor(".ticket-box:not(.mod-dummy)", function () {
 				$(".ticket-box").closest("section").addClass("inject-resize-ticket-list");
 			});
-		});
+		});  
 		/*onMatch("/account/login?browserExt=true",function(){
 		$(".navbar").remove();
 		});
@@ -97,11 +114,12 @@ function inject_setup() {
 	var currentSelectionHtml = "";	
 	var currentSelectionRange = null;
 	function setup_categories(){
-		$(".inject-category-parent-container").remove();		
+		$(".inject-category-parent-container").remove();	
+		$(".inject-category-holder").remove();		
 		loadData(TT_URL+"/clientsuccess/HFGetCategories",function(data){
 			allCategory = data;			
 			var parentHolder = $("<div>").addClass("inject-category-parent-container");
-			var placeholder = $("<div>").css("height","200px");
+			var placeholder = $("<div>").css("height","200px").addClass("inject-category-holder");
 			$("[data-test-id=details-scrollable-pane]").prepend(placeholder);
 			$("[data-test-id=details-scrollable-pane]").prepend(parentHolder);
 			//Add Category
@@ -678,6 +696,9 @@ function inject_setup() {
 
 	function displayTicketInfo(email, prependTo) {
 		appendDebug(email);
+
+		$(".inject-user-details").remove();
+
 		var detailsBox = $("<div>");
 		detailsBox.addClass("info-box inject inject-user-details");
 
@@ -810,6 +831,7 @@ function inject_setup() {
 			if (typeof(data) === "string" && (data.indexOf("window.UserId = -1;") != -1 || data.indexOf('class="error-message"') != -1)) {
 				showUserPassModal();
 			} else {
+				appendErr("url error: "+options.TT_URL);
 				console.warn(data);
 			}
 			console.warn("loadData", url, e);
@@ -989,6 +1011,17 @@ function inject_setup() {
 		}
 	}
 
+	function setIcon(icon){
+		chrome.runtime.sendMessage({
+			method : "setIcon",
+			icon : icon
+		}, function (response) {
+			if (response != "ok") {
+				console.error("setIcon error:", response, icon);
+			}
+		});
+	}
+
 	function sendTextRaw(text){
 		chrome.runtime.sendMessage({
 			method : "sendKeys",
@@ -1043,7 +1076,7 @@ function inject_setup() {
 	}
 
 	function appendErr(str) {
-		var x = $(".injected-debug");
+		var x = $(".injected-err");
 		var d = $("<div>").addClass("inject-error");
 		d.append(str);
 		x.append(d);
@@ -1056,5 +1089,7 @@ function inject_setup() {
 		x.append(d);
 	}
 	return output;
+
+	});
 }
 inject_setup();
