@@ -16,6 +16,14 @@
 	/*display:none*/
 }
 
+.inject-focus-box{
+	font-size:1px;
+	padding:0;
+	margin:0;
+    position: absolute;
+    border: 0px;
+}
+
 .inject.info-box{
 	padding: 12px;
     border: 2px solid #ef7622;

@@ -14,16 +14,18 @@ function inject_setup() {
 
 	/*Constants*/
 	var TT_URL = options.TT_URL || "https://tractiontoolsalpha.com";
-	debugger;
 	var HAPPYFOX_URL = "tractiontools.happyfox.com/staff/";
 	var HAPPYFOX_TICKET_URL = "tractiontools.happyfox.com/staff/ticket/";
 	var HAPPYFOX_TICKET_LIST_URL = ["tractiontools.happyfox.com/staff/tickets/", "tractiontools.happyfox.com/staff/tickets?"];
 
+	//var tabInputBox = ;
+	
 	var output = {};
 	var timers = {};
 
 	/* On Startup */
 	function startup() {
+		
 		console.log("inject_startup");
 		onMatch(HAPPYFOX_URL, function () {
 			loadScripts();
@@ -44,6 +46,8 @@ function inject_setup() {
 		//Tickets Page
 		onMatch(HAPPYFOX_TICKET_URL, function () {
 			waitFor(".card_content_contact-info-item", function () {
+				
+				
 				var userEmail = $(".card_content_contact-info-item").filter(function () {
 						return $(this).text().indexOf("@") != -1;
 					}).text().trim();
@@ -54,6 +58,16 @@ function inject_setup() {
 				clearInterval(timers["reply-all"]);
 				timers["reply-all"]=setInterval(function(){addReplyAlls();},2500);
 				setup_categories();
+				
+				waitFor(".floating-editor",function(){				
+					if ($(".inject-focus-box").length==0){
+						setTimeout(function(){
+							tabInputBox = $("<input class='inject-focus-box'>");
+							$(".floating-editor").prepend(tabInputBox);
+						},1);
+					}
+					setTimeout(function(){tabInputBox.focus();},1);
+				});
 			});
 		});
 
@@ -171,8 +185,38 @@ function inject_setup() {
 		});	
 	}
 	
+	async function tabToReply(){
+		$(".cke_wysiwyg_div").addClass("inject-waiting");
+		
+		var i =0;		
+		//$("input").focus();
+		while((!$(".cke_wysiwyg_div").is(":focus"))){
+					
+			
+			sendTextRaw("{Tab}");
+			await sleep(100);
+			i+=1;
+			if (i % 31 == 30){
+				appendErr("<span class='inject-tab-err'>Hey! Click the where you want the text entered.</span>");
+			}else if( i % 31 ==6){
+				//debugger;
+				//click($(".inject-focus-box"));
+				if (tabInputBox){
+					tabInputBox.focus();
+				}
+				//$(".inject-focus-box").focus();	
+			}
+			
+			// if (($("[data-test-id='add-update-editor']").length == 0)){
+				// click(".floating-editor [data-test-id='reply-link']");
+			// }	
+		}
+		$(".inject-tab-err").remove();
+		console.log($(":focus"));
+		$(".cke_wysiwyg_div").removeClass("inject-waiting");
+	}
+	
 	async function injectEmailContents(html,replace){
-		debugger;
 		$(".cke_wysiwyg_div").addClass("inject-waiting");
 		var currentRange = currentSelectionRange;
 		if ($("[data-test-id='add-update-editor']").length == 0) {
@@ -181,11 +225,7 @@ function inject_setup() {
 			$(".cke_wysiwyg_div").addClass("inject-waiting");
 			await sleep(300);
 		}else{
-			while((!$(".cke_wysiwyg_div").is(":focus"))){
-				sendTextRaw("{Tab}");
-				await sleep(100);
-			}
-			console.log($(":focus"));
+			await tabToReply();			
 		}
 		
 		if (replace==true){
@@ -467,6 +507,16 @@ function inject_setup() {
 		$(".cke_wysiwyg_div").removeClass("inject-waiting");
 	}
 	async function executeCategoryTags(cat){
+		async function clickSave(){
+			await sleep(500);
+			while($("[data-test-id='save-tags']").length>0){
+				console.log("Saving tags..");
+				click($("[data-test-id='save-tags']"));
+				await sleep(500);	
+			}			
+		}
+		
+		
 		var add = $("[data-test-id='add-tags']");
 		var edit = $('[data-test-id="edit-tags"]');
 		if (add.length>0){
@@ -474,7 +524,9 @@ function inject_setup() {
 		}else if (edit.length>0){
 			click(edit);
 		}else{
-			click($("[data-test-id='save-tags']"));
+			//await sleep(500);
+			//click($("[data-test-id='save-tags']"));
+			await clickSave();
 			await sleep(1000);
 			executeCategoryTags(cat);
 			return;
@@ -509,23 +561,19 @@ function inject_setup() {
 				}
 			}		
 			await sleep(500);
-			click($("[data-test-id='save-tags']"));		
+			//click($("[data-test-id='save-tags']"));		
+			await clickSave();
 		}
 		$("[data-test-id='add-update-editor']").removeClass("inject-waiting");		
 	}
 
 	async function executeCategoryEmail(cat){
-		debugger;
 		if ($("[data-test-id='add-update-editor']").length == 0) {
 			click(".floating-editor [data-test-id='reply-link']");
+			await sleep(700);		
 		}else{
-			while((!$(".cke_wysiwyg_div").is(":focus"))){
-				sendTextRaw("{Tab}");
-				await sleep(100);
-			}
-			console.log($(":focus"));			
+			await tabToReply();		
 		}
-		await sleep(700);		
 		await tryAddGreeting();
 		await sleep(300);
 		injectEmailContents(cat.EmailTemplate);		
@@ -547,6 +595,7 @@ function inject_setup() {
 				sendLine("Have a great day!");							
 				sendLine(2);
 				sendLine("Best,");
+				await sleep(100);
 				try{
 					var name = JSON.parse(localStorage["hf-staff-meta-data"]).accountInfo.profile.first_name;
 					sendLine(name);	
@@ -555,10 +604,11 @@ function inject_setup() {
 					console.warn(e);
 				}
 				sendLine();
+				await sleep(500);
 				var b = "";
 				for(var i=0;i<ups;i++){
 					b+="{Up}";
-				}								
+				}		
 				sendTextRaw(b);
 				wysiwyg.removeClass("inject-waiting");
 				console.log("Done adding greeting");
@@ -647,7 +697,6 @@ function inject_setup() {
 				var bcc = [];
 				var article=$(this).closest("article");
 				if(article.find(".update-box_body").length==0){
-					//debugger;
 					click(article.find("header"));
 					console.log("click header");
 
