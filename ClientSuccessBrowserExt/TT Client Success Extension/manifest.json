@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "TT Client Success",
   "description": "Client success plugin for Traction Tools",
-  "version": "1.0",
+  "version": "1.1",
   "background": {
     "scripts": [
       "background.js"
