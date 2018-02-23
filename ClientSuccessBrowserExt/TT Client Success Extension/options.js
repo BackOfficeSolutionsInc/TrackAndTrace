@@ -1,16 +1,22 @@
 // Saves options to chrome.storage
 var defaults = {
     TT_URL: 'https://tractiontoolsalpha.com',
-	DEBUG_INFO:false
+	DEBUG_INFO:false,
+	OPENER: "Hi {0},",
+	CLOSER: "Have a great day!{Enter}{Enter}{Enter}Best,{Enter}{1}",
 }
 
 
 function save_options() {
   var TT_URL = document.getElementById('TT_URL').value;
   var DEBUG_INFO = document.getElementById('DEBUG_INFO').checked;
+  var OPENER = document.getElementById('OPENER').value;
+  var CLOSER = document.getElementById('CLOSER').value;
   chrome.storage.sync.set({
     TT_URL: TT_URL,
     DEBUG_INFO: DEBUG_INFO,
+    OPENER: OPENER,
+    CLOSER: CLOSER,
   }, function() {	
 		window.close();  
   });
@@ -29,6 +35,8 @@ function restore_options() {
   chrome.storage.sync.get(defaults, function(items) {
     document.getElementById('TT_URL').value = items.TT_URL;
 	document.getElementById('DEBUG_INFO').checked = items.DEBUG_INFO;
+    document.getElementById('OPENER').value = items.OPENER;
+    document.getElementById('CLOSER').value = items.CLOSER;
 	
   });
 }

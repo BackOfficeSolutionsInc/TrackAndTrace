@@ -41,24 +41,36 @@ chrome.tabs.onUpdated.addListener(function (tabId , info) {
 chrome.browserAction.onClicked.addListener(function(tab) {   
 	var config = {url: tab.url};
 	
-	setTimeout(function(){
-		//var builder = [{type: "keydown", requestId: "d"+(new Date()), key: "Tab", code: "Tab"},{type: "keyup", requestId: "u"+(new Date()), key: "Tab", code: "Tab"}];
-		
-		for(var i =0;i<5;i++){
-		
+	/*setTimeout(function(){
+		//var builder = [{type: "keydown", requestId: "d"+(new Date()), key: "Tab", code: "Tab"},{type: "keyup", requestId: "u"+(new Date()), key: "Tab", code: "Tab"}];		
+		for(var i =0;i<5;i++){		
 			var builder = [
 				//{type: "keydown", requestId: "d"+(new Date()), key: " ", code: "Space"},{type: "keyup", requestId: "u"+(new Date()), key: " ", code: "Space"},
 				{type: "keydown", requestId: "d"+(new Date()), key: "Tab", code: "Tab"},{type: "keyup", requestId: "u"+(new Date()), key: "Tab", code: "Tab"}
-			];
-			
+			];			
 			chrome.input.ime.sendKeyEvents({contextID:0,keyData:builder},function(e){
 				if(chrome.runtime.lastError) {
 					console.warn("Whoops.. " + chrome.runtime.lastError.message);
 				}
 			});	
-		}
+		}		
+	},1000);	
+	setTimeout(function(){
+		var btns = [
+			//{type: "keydown", requestId: "d26", key: "a", code: "a", ctrlKey:true},
+			{type: "keydown", requestId: "d15193", key: "Control", code: "ControlRight"},
+			{type: "keydown", requestId: "d"+(+new Date()), key: "a", code: "a", ctrlKey:true},
+			{type: "keyup", requestId: "u"+(+new Date()), key: "a", code: "a", ctrlKey:true},
+			{type: "keyup", requestId: "u151937", key: "Control", code: "ControlRight"}
+		];
 		
-	},1000);
+		console.log("sending",btns);
+		chrome.input.ime.sendKeyEvents({contextID:0,keyData:btns},function(e){
+			if(chrome.runtime.lastError) {
+				console.warn("Whoops.. " + chrome.runtime.lastError.message);
+			}
+		});	
+	},2000);*/
 	
 	chrome.tabs.executeScript(tab.id,{
 		code: "config = "+JSON.stringify(config)+";inject_setup();",
@@ -130,6 +142,14 @@ function sendKeysInternal(text, sendResponse){
 	
 	var open=false;
 	var openTxt = "";
+	var ctrl=false;	
+	var reset = function(){
+		openTxt="";
+		open=false;
+		ctrl=false;
+	}	
+	reset();
+	
 	for(var ci in text){
 		var c= text[ci];		
 		if (!open){
@@ -139,12 +159,18 @@ function sendKeysInternal(text, sendResponse){
 				addChar(c);
 			}
 		}else{
-			if (c=="}"){
-				open=false;
-				var openTxtTransform =transform(openTxt);
-				
+			if (c=="^"){
+				ctrl=true;
+			} else if (c=="}"){
+				var openTxtTransform =transform(openTxt);				
+				// if (ctrl){
+					// builder.push({type:"keydown",requestId: "d"+(+new Date()),key:"Control",code:"ControlLeft"});
+				// }				
 				addKey(openTxtTransform,openTxtTransform);
-				openTxt="";
+				// if (ctrl){					
+					// builder.push({type:"keyup",requestId: "u"+(+new Date()),key:"Control",code:"ControlLeft"});
+				// }
+				reset();
 			}else{
 				openTxt+=c;
 			}

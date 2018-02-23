@@ -6,10 +6,15 @@ function inject_setup() {
 	var options ={};
 	chrome.storage.sync.get({
 		TT_URL: 'https://tractiontoolsalpha.com',
-		DEBUG_INFO:false
+		DEBUG_INFO:false,
+		OPENER: "Hi {0},",
+		CLOSER: "Have a great day!{Enter}{Enter}{Enter}Best,{Enter}{1}",
 	}, function(items) {
-		options.TT_URL = items.TT_URL;
-		options.DEBUG_INFO = items.DEBUG_INFO;
+	options.TT_URL = items.TT_URL;
+	options.DEBUG_INFO = items.DEBUG_INFO;
+	
+	options.OPENER = items.OPENER;
+	options.CLOSER = items.CLOSER;
 	
 
 	/*Constants*/
@@ -37,27 +42,26 @@ function inject_setup() {
 			if (options.DEBUG_INFO){
 				div.addClass("injected-debug");
 			}
-
-			setIcon("icon.png");
-
-			
+			setIcon("icon.png");			
 		});
 
 		//Tickets Page
 		onMatch(HAPPYFOX_TICKET_URL, function () {
 			waitFor(".card_content_contact-info-item", function () {
-				
-				
 				var userEmail = $(".card_content_contact-info-item").filter(function () {
 						return $(this).text().indexOf("@") != -1;
 					}).text().trim();
 				//var userEmail = $(".ticket-box_contact-link").text().trim();// $(".raised-by").closest(".section").find("a[href^='/staff/contact/']").html();
+				
+				$(".details-side-pane").addClass("inject-contact-details-panel");
+				
 				var prependTo = $("[data-test-id='contact-info'] .card_content");//$(".details-main");
 				displayTicketInfo(userEmail, prependTo);
 				addReplyAlls();
 				clearInterval(timers["reply-all"]);
 				timers["reply-all"]=setInterval(function(){addReplyAlls();},2500);
 				setup_categories();
+				
 				
 				waitFor(".floating-editor",function(){				
 					if ($(".inject-focus-box").length==0){
@@ -76,15 +80,35 @@ function inject_setup() {
 			waitFor(".ticket-box:not(.mod-dummy)", function () {
 				$(".ticket-box").closest("section").addClass("inject-resize-ticket-list");
 			});
-		});  
-		/*onMatch("/account/login?browserExt=true",function(){
-		$(".navbar").remove();
 		});
-		 */
 	}
+	
 	setTimeout(function () {
 		startup();
 	}, 100);
+	
+	function add_fix_name(n){
+		waitFor("[data-test-id='ticket-side-pane-contact-name']",function(){
+			$(".inject-fix-contact-name").remove();
+			
+			var parent = $("[data-test-id='ticket-side-pane-contact-name']").closest(".card_content_contact-info-item");
+			//debugger;
+			if(parent.text().trim()!=n.trim()){
+			
+				var fix = $("<span class='inject-fix-btn inject-fix-contact-name'>(fix)</span>");
+				parent.append(fix);
+				var name = n;
+				fix.on("click",function(){
+					var dat = {"custom_fields":{},"name":name};
+					sendHfField(dat,function(data){
+						$("[data-test-id='ticket-box_raised-by']").text(name);
+						$('[data-test-id="ticket-side-pane-contact-name"]').text(name);
+						fix.remove();
+					});		
+				});
+			}
+		});
+	}
 
 	var allCategory = null;
 	function categoryBuilder(parent,categories,onclick,showAdd){
@@ -133,7 +157,7 @@ function inject_setup() {
 		loadData(TT_URL+"/clientsuccess/HFGetCategories",function(data){
 			allCategory = data;			
 			var parentHolder = $("<div>").addClass("inject-category-parent-container");
-			var placeholder = $("<div>").css("height","200px").addClass("inject-category-holder");
+			var placeholder = $("<div>").css("height","calc(16vh + 40px)").addClass("inject-category-holder");
 			$("[data-test-id=details-scrollable-pane]").prepend(placeholder);
 			$("[data-test-id=details-scrollable-pane]").prepend(parentHolder);
 			//Add Category
@@ -199,7 +223,6 @@ function inject_setup() {
 			if (i % 31 == 30){
 				appendErr("<span class='inject-tab-err'>Hey! Click the where you want the text entered.</span>");
 			}else if( i % 31 ==6){
-				//debugger;
 				//click($(".inject-focus-box"));
 				if (tabInputBox){
 					tabInputBox.focus();
@@ -229,9 +252,8 @@ function inject_setup() {
 		}
 		
 		if (replace==true){
-			await sleep(1);
-			console.log("select all");
-			sendTextRaw(" ^{a}{Backspace}");
+			await sleep(100);
+			click($(".floating-editor_reset"));			
 			await sleep(100);
 		}
 		
@@ -585,24 +607,44 @@ function inject_setup() {
 		try{
 			if (wysiwyg.text().trim()==""){
 				wysiwyg.addClass("inject-waiting");
-				//await sleep(3000);
 				console.log("Adding greeting");
-				var greeting =  $("[data-test-id=ticket-side-pane-contact-name]").text().trim().split(" ")[0];
-				var ups = 7;
-				//sendTextRaw("{^Home}");
-				sendLine("Hi "+greeting+",");
-				sendLine(3);
-				sendLine("Have a great day!");							
-				sendLine(2);
-				sendLine("Best,");
-				await sleep(100);
+				var csName ="Traction Tools";
+				var greeting = "there";
 				try{
-					var name = JSON.parse(localStorage["hf-staff-meta-data"]).accountInfo.profile.first_name;
-					sendLine(name);	
-					ups+=1;								
+					csName = JSON.parse(localStorage["hf-staff-meta-data"]).accountInfo.profile.first_name;
 				}catch(e){
 					console.warn(e);
-				}
+				}	
+				try{
+					greeting =  $("[data-test-id=ticket-side-pane-contact-name]").text().trim().split(" ")[0];
+					greeting = options.Name.trim()
+					greeting = greeting.split(" ")[0];
+				}catch(e){
+					console.warn(e);
+				}				
+				var ups = 3;
+				
+				var opener = options.OPENER.replace("{0}", greeting);
+				var closer = options.CLOSER.replace("{1}",csName || "Traction Tools");
+
+				ups += (closer.match(/\{Enter\}/g) || []).length;
+								
+				sendTextRaw(opener);
+				sendLine(4);
+				sendTextRaw(closer);
+				await sleep(100);
+				//sendLine("Hi "+greeting+",");
+				//sendLine(3);
+				//sendLine("Have a great day!");							
+				//sendLine(2);
+				//sendLine("Best,");
+				// try{
+					// var name = JSON.parse(localStorage["hf-staff-meta-data"]).accountInfo.profile.first_name;
+					// sendLine(name);	
+					// ups+=1;								
+				// }catch(e){
+					// console.warn(e);
+				// }
 				sendLine();
 				await sleep(500);
 				var b = "";
@@ -799,6 +841,11 @@ function inject_setup() {
 					updateHfDataField("Is an EOSI",2);
 				*/
 			});
+			if (f.length > 0) {
+				var name =f[0].user.Name;
+				add_fix_name(name);
+				options.Name = name;
+			}
 		},
 			function (err) {
 			detailsBox.html("user details err");
@@ -925,7 +972,6 @@ function inject_setup() {
 		console.log(row);
 		updateHfDataField("Company Name", row.org.Name);
 		updateHfDataField("Title", row.position);
-
 	}
 
 	async function updateHfDataField(fieldName, value) {
@@ -942,30 +988,28 @@ function inject_setup() {
 			await sleep(400);
 			click(input.closest(".custom-field-inline-save").find(".custom-field-inline-save"));*/
 			
-			var href = $("[data-test-id='ticket-side-pane-contact-name']").attr("href");
-			var contactId = afterLast(href, "/");
 			var dat = {"custom_fields":{}};
 			dat.custom_fields[""+fieldId]=value;
-			
-			$.ajax({
-				url : "https://tractiontools.happyfox.com/api/v2/contacts/" + contactId + "/",
-				method : "patch",
-				beforeSend : function (request) {
-					request.setRequestHeader("Authorization", "Token " + window.localStorage["hf-staff-auth-token"]);
-					request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
-				},				
-				data : JSON.stringify(dat),
-				success : function (data) {
-					appendDebug("set "+fieldName);
-					input.val(value);
-				}
-			});
+			sendHfField(dat,function(data){
+				appendDebug("set "+fieldName);
+				input.val(value);
+			});			
 		}
-
-		// var data = $(".custom-field_label-container:contains('"+fieldName+"')").closest(".custom-field").find(".custom-field_value").data();
-		// var fieldId = afterLast(data.testId,"-");
-		// var href = $("[data-test-id='ticket-side-pane-contact-name']").attr("href");
-		// var contactId = afterLast(href,"/");
+	}
+	
+	function sendHfField(dat,callback){	
+		var href = $("[data-test-id='ticket-side-pane-contact-name']").attr("href");
+		var contactId = afterLast(href, "/");
+		$.ajax({
+			url : "https://tractiontools.happyfox.com/api/v2/contacts/" + contactId + "/",
+			method : "patch",
+			beforeSend : function (request) {
+				request.setRequestHeader("Authorization", "Token " + window.localStorage["hf-staff-auth-token"]);
+				request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+			},				
+			data : JSON.stringify(dat),
+			success : callback
+		});
 	}
 
 	function loadScripts() {
