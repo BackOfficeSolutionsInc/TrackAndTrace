@@ -182,3 +182,13 @@ function isSafari() {
 	return false;
 }
 
+
+function setFormula(measurableId) {
+    var id = measurableId;
+    showModal("Edit formula", "/scorecard/formulapartial/" + id, "/scorecard/setformula?id=" + id, null, function () {
+        showAlert("Updating formula...");
+    }, function (d) {
+        clearAlerts();
+        showAlert("Formula updated!");
+    });
+}

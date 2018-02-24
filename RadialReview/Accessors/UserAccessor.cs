@@ -1048,7 +1048,7 @@ namespace RadialReview.Accessors {
 				managerNodeId = node == null ? (long?)null : node.Id;
 			}
 
-			if (!caller.Organization.Settings.EnableReview) {
+			if (!caller.Organization.Settings.EnableReview && !caller.Organization.Settings.EnablePeople) {
 				hideEvalOnly = true;
 			}
 

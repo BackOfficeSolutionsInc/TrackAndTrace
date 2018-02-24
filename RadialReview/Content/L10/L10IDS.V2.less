@@ -5,255 +5,262 @@
 }
 
 .ids {
-	.page-header {
-		margin-top: 0px;
-		margin: 0px 0;
-	}
+    .page-header {
+        margin-top: 0px;
+        margin: 0px 0;
+    }
 
-	.page-header.listing {
-		margin-top: -28px;
-		padding-top: 26px;
-		/*background-color: #F7F7F7;*/
-		background-color: #eee;
-		box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
-		z-index: 100;
-	}
+    .page-header.listing {
+        margin-top: -28px;
+        padding-top: 26px;
+        /*background-color: #F7F7F7;*/
+        background-color: #eee;
+        box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
+        z-index: 100;
+    }
 
-	.notesButton {
-		z-index: 11;
-	}
+    .notesButton {
+        z-index: 11;
+    }
 
-	.number-priority {
-		top: 1px;
-		width: 31px;
-		position: relative;
-		display: inline-block;
-	}
+    .number-priority {
+        top: 1px;
+        width: 31px;
+        position: relative;
+        display: inline-block;
+    }
 
-	.issues-container.column .number-priority {
-		float: left;
-	}
+    .issues-container.column .number-priority {
+        float: left;
+    }
 
-	.issues-container .issue-row .issue-row .number-priority {
-		display: none;
-	}
+    .issues-container .issue-row .issue-row .number-priority {
+        display: none;
+    }
 
-	.number {
-		width: 31px;
-		height: 14px;
-		display: inline-block;
-		/*top: -12px;*/
-		position: relative;
-		left: -16px;
-		text-align: center;
-		font-weight: bold;
-		font-size: 16px;
-		color: #666;
-		float: right;
-	}
+    .number {
+        width: 31px;
+        height: 14px;
+        display: inline-block;
+        /*top: -12px;*/
+        position: relative;
+        left: -16px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
+        color: #666;
+        float: right;
+    }
 
-	.priority {
-		width: 31px;
-		height: 14px;
-		display: inline-block;
-		/*top: 10px;*/
-		position: relative;
-		left: -16px;
-		text-align: center;
-		font-weight: bold;
-		font-size: 16px;
-		color: #666;
-		float: left;
-		cursor: pointer;
-		-webkit-touch-callout: none;
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-		cursor: copy;
-		top: -8px;
-		font-size: 9px;
-	}
+    .priority {
+        width: 31px;
+        height: 14px;
+        display: inline-block;
+        /*top: 10px;*/
+        position: relative;
+        left: -16px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
+        color: #666;
+        float: left;
+        cursor: pointer;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: copy;
+        top: -8px;
+        font-size: 9px;
+    }
 
-	.priority .hoverable {
-		opacity: .5;
-	}
+    .priority .hoverable {
+        opacity: .5;
+    }
 
-	.priority:hover .hoverable {
-		opacity: 1;
-		font-weight: bold;
-	}
+    .priority:hover .hoverable {
+        opacity: 1;
+        font-weight: bold;
+    }
 
-	.issues-list li {
-		line-height: 14px;
-	}
+    .issues-list li {
+        line-height: 14px;
+    }
 
-	&.prioritization-Priority .issues-list > .issue-row.prioritize,
-	&.prioritization-Invalid .issues-list > .issue-row.prioritize {
-		background-color: rgb(247, 239, 213);
-		border-color: rgb(207, 200, 156);
-	}
+    &.prioritization-Priority .issues-list > .issue-row.prioritize,
+    &.prioritization-Invalid .issues-list > .issue-row.prioritize {
+        background-color: rgb(247, 239, 213);
+        border-color: rgb(207, 200, 156);
+    }
 
-	&.prioritization-Priority .issues-list > .issue-row.prioritize.selected,
-	&.prioritization-Invalid .issues-list > .issue-row.prioritize.selected {
-		background-color: rgb(249, 235, 190);
-	}
+    &.prioritization-Priority .issues-list > .issue-row.prioritize.selected,
+    &.prioritization-Invalid .issues-list > .issue-row.prioritize.selected {
+        background-color: rgb(249, 235, 190);
+    }
 
-	&.prioritization-Priority .issues-list > .issue-row.prioritize > .move-icon,
-	&.prioritization-Invalid .issues-list > .issue-row.prioritize > .move-icon {
-		color: rgb(168, 157, 92) !important;
-	}
+    &.prioritization-Priority .issues-list > .issue-row.prioritize > .move-icon,
+    &.prioritization-Invalid .issues-list > .issue-row.prioritize > .move-icon {
+        color: rgb(168, 157, 92) !important;
+    }
 
-	&.prioritization-Priority .issues-list > .issue-row.prioritize.selected > .message,
-	&.prioritization-Priority .issues-list > .prioritize.selected > .move-icon,
-	&.prioritization-Priority .issues-list > .prioritize.selected > .number-priority > .number,
-	&.prioritization-Invalid .issues-list > .issue-row.prioritize.selected > .message,
-	&.prioritization-Invalid .issues-list > .prioritize.selected > .move-icon,
-	&.prioritization-Invalid .issues-list > .prioritize.selected > .number-priority > .number, {
-		color: rgb(137, 112, 0) !important;
-	}
+    &.prioritization-Priority .issues-list > .issue-row.prioritize.selected > .message,
+    &.prioritization-Priority .issues-list > .prioritize.selected > .move-icon,
+    &.prioritization-Priority .issues-list > .prioritize.selected > .number-priority > .number,
+    &.prioritization-Invalid .issues-list > .issue-row.prioritize.selected > .message,
+    &.prioritization-Invalid .issues-list > .prioritize.selected > .move-icon,
+    &.prioritization-Invalid .issues-list > .prioritize.selected > .number-priority > .number, {
+        color: rgb(137, 112, 0) !important;
+    }
 
-	&.prioritization-Priority .priority .icon,
-	&.prioritization-Invalid .priority .icon {
-		font-size: 11px;
-		line-height: 10px;
-		color: rgb(205, 140, 0);
-	}
+    &.prioritization-Priority .priority .icon,
+    &.prioritization-Invalid .priority .icon {
+        font-size: 11px;
+        line-height: 10px;
+        color: rgb(205, 140, 0);
+    }
 
-	&.prioritization-Priority .priority.none .icon,
-	&.prioritization-Invalid .priority.none .icon {
-		color: gray;
-	}
+    &.prioritization-Priority .priority.none .icon,
+    &.prioritization-Invalid .priority.none .icon {
+        color: gray;
+    }
 
-	.priority.single-3 .icon {
-		font-size: 10px;
-	}
+    .priority.single-3 .icon {
+        font-size: 10px;
+    }
 
-	.issue-row {
-		max-height: 100px;
-	}
+    .issue-row {
+        max-height: 100px;
+    }
 
-	.issue-row[data-checked="True"],
-	.issue-row[data-checked="true"] {
-		max-height: 0px;
-		overflow: hidden;
-		border-width: 0px !important;
-		margin-top: 0;
-		margin-bottom: 0;
-		padding: 0px !important;
-		-moz-transition: max-height ease .5s,border-width ease .5s,margin-top ease .5s,margin-bottom ease .5s;
-		-o-transition: max-height ease .5s,border-width ease .5s,margin-top ease .5s,margin-bottom ease .5s;
-		-webkit-transition: max-height ease .5s,border-width ease .5s,margin-top ease .5s,margin-bottom ease .5s;
-		transition: max-height ease .5s,border-width ease .5s,margin-top ease .5s,margin-bottom ease .5s;
-	}
+    .issue-row[data-checked="True"],
+    .issue-row[data-checked="true"] {
+        max-height: 0px;
+        overflow: hidden;
+        border-width: 0px !important;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding: 0px !important;
+        -moz-transition: max-height ease .5s,border-width ease .5s,margin-top ease .5s,margin-bottom ease .5s;
+        -o-transition: max-height ease .5s,border-width ease .5s,margin-top ease .5s,margin-bottom ease .5s;
+        -webkit-transition: max-height ease .5s,border-width ease .5s,margin-top ease .5s,margin-bottom ease .5s;
+        transition: max-height ease .5s,border-width ease .5s,margin-top ease .5s,margin-bottom ease .5s;
+    }
 
-	.issue-row[data-checked="True"] .picture-container,
-	.issue-row[data-checked="true"] .picture-container {
-		border-width: 0px;
-		padding: 0px;
-		-moz-transition: padding ease .15s, border-width ease .15s;
-		-o-transition: padding ease .15s, border-width ease .15s;
-		-webkit-transition: padding ease .15s, border-width ease .15s;
-		transition: padding ease .15s, border-width ease .15s;
-	}
-
-
-	h2 {
-		margin-top: 0px;
-		margin-bottom: 0px;
-	}
-
-	h4 {
-		margin-top: 13px;
-		margin-bottom: 0px;
-	}
-
-	.profile-image {
-		position: relative;
-	}
-
-	.picture-container {
-		position: relative;
-		top: 0px;
-		left: -20px;
-		width: 32px;
-		height: 32px;
-		border: 1px solid #DDD;
-		padding: 1px;
-		background-color: #FFF;
-		line-height: 21px;
-	}
-
-	.picture {
-		display: inline-block;
-	}
-
-	.fixed-pos {
-		position: relative;
-		width: 100%;
-	}
+    .issue-row[data-checked="True"] .picture-container,
+    .issue-row[data-checked="true"] .picture-container {
+        border-width: 0px;
+        padding: 0px;
+        -moz-transition: padding ease .15s, border-width ease .15s;
+        -o-transition: padding ease .15s, border-width ease .15s;
+        -webkit-transition: padding ease .15s, border-width ease .15s;
+        transition: padding ease .15s, border-width ease .15s;
+    }
 
 
-	[data-awaitingsolve='true'],
-	[data-awaitingsolve='True'] {
-		line-height: 12px !important;
+    h2 {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
 
-		.todoButton,
-		.vtoButton,
-		.number-priority,
-		.profile-picture {
-			display: none !important;
-		}
+    h4 {
+        margin-top: 13px;
+        margin-bottom: 0px;
+    }
 
-		.message {
-			font-size: 13px;
-			padding-top: 0px;
-			padding-left: 70px;
-			color: #aaa;
-			min-height: 13px;
-		}
+    .profile-image {
+        position: relative;
+    }
 
-		&[data-markedforclose='true'],
-		&[data-markedforclose='True'] {
-			&:not([data-checked="true"]):not([data-checked="True"]):before {
-				content: "SOLVED";
-				background-color: fade(@brand-success,50%);
-			}
-		}
+    .picture-container {
+        position: relative;
+        top: 0px;
+        left: -20px;
+        width: 32px;
+        height: 32px;
+        border: 1px solid #DDD;
+        padding: 1px;
+        background-color: #FFF;
+        line-height: 21px;
+    }
 
-		&:not([data-checked="true"]):not([data-checked="True"]):before {
-			content: "MOVED";
-			position: absolute;
-			font-weight: bold;
-			left: 40px;
-			width: 60px;
-			height: 14px;
-			background-color: fade(@traction-orange,50%);
-			padding: 1px 0px;
-			text-align: center;
-			font-size: 10px;
-			color: white;
-			margin-top: 3px;
-			border-radius: 10px;
-		}
+    .picture {
+        display: inline-block;
+    }
 
-		.issue-checkbox {
-			top: 0px !important;
-		}
+    .fixed-pos {
+        position: relative;
+        width: 100%;
+    }
 
-		.btn-group {
-			padding-top: 1px !important;
-		}
 
-		.issuesModal:before {
-			color: @traction-orange;
-		}
+    [data-awaitingsolve='true'],
+    [data-awaitingsolve='True'] {
+        line-height: 12px !important;
 
-		.issuesModal {
-			pointer-events: none !important;
-		}
-	}
+        .todoButton,
+        .vtoButton,
+        .number-priority,
+        .profile-picture {
+            display: none !important;
+        }
+
+        .message {
+            font-size: 13px;
+            padding-top: 0px;
+            padding-left: 70px;
+            color: #aaa;
+            min-height: 13px;
+        }
+
+        &[data-markedforclose='true'],
+        &[data-markedforclose='True'] {
+            &:not([data-checked="true"]):not([data-checked="True"]):before {
+                content: "SOLVED";
+                background-color: fade(@brand-success,50%);
+            }
+        }
+
+
+
+
+        &:not([data-checked="true"]):not([data-checked="True"]):before {
+            content: "MOVED";
+            position: absolute;
+            font-weight: bold;
+            left: 40px;
+            width: 60px;
+            height: 14px;
+            background-color: fade(@traction-orange,50%);
+            padding: 1px 0px;
+            text-align: center;
+            font-size: 10px;
+            color: white;
+            margin-top: 3px;
+            border-radius: 10px;
+        }
+
+        .issue-checkbox {
+            top: 0px !important;
+        }
+
+        .btn-group {
+            padding-top: 1px !important;
+        }
+
+        .issuesModal:before {
+            color: @traction-orange;
+        }
+
+        .issuesModal {
+            pointer-events: none !important;
+        }
+
+        .issuesModal_move {
+            pointer-events: none !important;
+        }
+    }
 }
 
 .sortable {

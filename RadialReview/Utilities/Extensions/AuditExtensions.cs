@@ -95,7 +95,8 @@ namespace RadialReview.Utilities.Extensions {
 			if (additional.Any()) {
 				revisionIds.Add(additional.Max());
 			}
-
+            if (!revisionIds.Any())
+                return new List<Revision<T>>();
 			var low = revisionIds.Min();
 			var high = revisionIds.Max();
 

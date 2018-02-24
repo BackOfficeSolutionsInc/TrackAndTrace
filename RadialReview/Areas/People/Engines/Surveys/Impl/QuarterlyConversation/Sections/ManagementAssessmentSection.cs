@@ -96,11 +96,16 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 			if (SelfAssessment) {
 				throw new NotImplementedException();
 			} else {
-				var sun = (data.About as SurveyUserNode);
-				if (sun != null && sun._Relationship != null && sun._Relationship[data.By.ToKey()].HasFlag(AboutType.Self))
-                    return GetItemBuildersSupervisorSelfAssessment(data);
-                return GetItemBuildersSupervisorSelfAssessment(data);//return GetItemBuildersSupervisorAssessment(data);
-			}
+
+                if (data.FirstSeenByAbout()) {
+                    var sun = (data.About as SurveyUserNode);
+                    if (sun != null && sun._Relationship != null && sun._Relationship[data.By.ToKey()].HasFlag(AboutType.Self))
+                        return GetItemBuildersSupervisorSelfAssessment(data);
+                    return GetItemBuildersSupervisorSelfAssessment(data);//return GetItemBuildersSupervisorAssessment(data);
+                }
+                return new List<IItemInitializer>();
+
+            }
 		}
 
         public ISection InitializeSection(ISectionInitializerData data) {

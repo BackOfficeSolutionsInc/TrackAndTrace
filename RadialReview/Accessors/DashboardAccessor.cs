@@ -112,6 +112,8 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var dash = s.Get<Dashboard>(dashboardId);
+                    if (dash == null)
+                        return null;
 					PermissionsUtility.Create(s, caller).ViewDashboardForUser(dash.ForUser.Id);
 					return dash;
 				}

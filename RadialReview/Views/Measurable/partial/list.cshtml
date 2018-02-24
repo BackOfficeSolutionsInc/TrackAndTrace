@@ -99,6 +99,7 @@
                                             <span ng-class="{'inlineEdit': measurable.Disabled!=true}">
                                                 <input ng-disabled="measurable.Disabled" placeholder="Enter measurable here" class="blend" ng-model-options="{ debounce: 250 }" ng-model="measurable.Name" @(elastic) ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
                                             </span>
+                                            <span class="shift-visible edit-formula" title="Edit Formula" ng-click="showFormula(measurable.Id)"></span>
                                         </td>
 										<td class="delete-column-alt button-column">
 											<span class="delete-row" ng-click="functions.removeRow($event,measurable)"></span>
@@ -204,6 +205,7 @@
                                         <span ng-class="{'inlineEdit': measurable.Disabled!=true}">
                                             <input ng-disabled="measurable.Disabled" class="blend" @(elastic) ng-model="measurable.Name" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
                                         </span>
+                                        <span class="shift-visible edit-formula" title="Edit Formula" ng-click="functions.showFormula(measurable.Id)"></span>
                                     </td>
 									<td class="delete-column-alt button-column">
 										<span class="delete-row" title="Remove Measurable" ng-click="functions.removeRow($event,measurable)"></span>

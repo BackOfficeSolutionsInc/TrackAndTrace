@@ -12,28 +12,37 @@
         <tr>
             <th>Name</th>
             <th>User Details</th>
-            <th>Reviews</th>
+            @if (ViewBag.ShowReview) {
+                <th>Reviews</th>
+            }
+            @if (ViewBag.ShowPeople) {
+                <th>QCs</th>
+            }
             <th>Deleted</th>
         </tr>
     </thead>
     <tbody>
-    @foreach (var user in Model)
-    {
-        <tr id="r_@user.Id">
-            <td>@user.GetName()</td>
-            <td><a href="/User/Details/@user.Id">User Details</a></td>
-            <td><a href="/User/Reviews/@user.Id">Reviews</a></td>
-            <td>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",user.DeleteTime.Value)</td>
-            <td><a href="#r_@user.Id" onclick="$.ajax({url:'/user/undelete/@(user.Id)',success:function(){$('#r_@(user.Id)').remove();}})">Undelete</a></td>
-        </tr>
-    }
+        @foreach (var user in Model.OrderByDescending(x=>x.DeleteTime)) {
+            <tr id="r_@user.Id">
+                <td>@user.GetName()</td>
+                <td><a href="/User/Details/@user.Id">User Details</a></td>
+                @if (ViewBag.ShowReview) {
+                    <td><a href="/User/Reviews/@user.Id">Reviews</a></td>
+                }
+                @if (ViewBag.ShowPeople) {
+                    <td><a href="/people/quarterlyconversation/surveys/@user.Id">QCs</a></td>
+                }
+                <td>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", user.DeleteTime.Value)</td>
+                <td><a href="#r_@user.Id" onclick="$.ajax({url:'/user/undelete/@(user.Id)',success:function(){$('#r_@(user.Id)').remove();}})">Undelete</a></td>
+            </tr>
+        }
     </tbody>
 </table>
-@using (Html.BeginScripts()) { 
-<script>
-    $("table").tablesorter({
-        // sortForce: [[0, 1]],
-        sortStable: true,
-    });
-</script>
+@using (Html.BeginScripts()) {
+    <script>
+        $("table").tablesorter({
+            // sortForce: [[0, 1]],
+            sortStable: true,
+        });
+    </script>
 }

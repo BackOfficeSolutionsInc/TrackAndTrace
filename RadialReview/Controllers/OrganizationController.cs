@@ -461,9 +461,31 @@ namespace RadialReview.Controllers {
 			return PartialView(found.TempUser);
 		}
 
+        [Access(AccessLevel.Manager)]
+		public ActionResult ResendJoinEmailManual(long id) {
+			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
+
+			if (found.TempUser == null)
+				throw new PermissionsException("User is already a part of the organization");
+
+			if (found.IsPlaceholder) {
+				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(found.Organization.Id)))
+					return Content("You're not permitted to upgrade placeholders to paid accounts.");
+			}
+
+            //var id = found.TempUser.Guid;
+            var url = "Account/Register?returnUrl=%2FOrganization%2FJoin%2F" + found.TempUser.Guid;
+            url = Config.BaseUrl(GetUser().Organization) + url;
+            var productName = Config.ProductName(GetUser().Organization);
+            found.TempUser.EmailTemplate = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, new String[] { found.TempUser.FirstName, GetUser().Organization.Name.Translate(), url, url, productName, found.TempUser.Guid.ToUpper() });
+
+
+            return PartialView(found.TempUser);
+		}
+
 		[Access(AccessLevel.Manager)]
 		[HttpPost]
-		public async Task<JsonResult> ResendJoin(long id, TempUserModel model, long TempId) {
+		public async Task<JsonResult> ResendJoin(long id, TempUserModel model, long TempId, bool resendEmail) {
 			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
@@ -481,14 +503,18 @@ namespace RadialReview.Controllers {
 
 			_UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email, DateTime.UtcNow);
 			model.Id = TempId;
-			var result = await Emailer.SendEmail(JoinOrganizationAccessor.CreateJoinEmailToGuid(GetUser(), model));
-			var prefix = "Resent";
-			if (model.LastSent == null)
-				prefix = "Sent";
-			var o = result.ToResults(prefix + " invite to " + model.Name() + ".");
-			o.Object = model;
+            if (resendEmail) {
+                var result = await Emailer.SendEmail(JoinOrganizationAccessor.CreateJoinEmailToGuid(GetUser(), model));
+                var prefix = "Resent";
+                if (model.LastSent == null)
+                    prefix = "Sent";
+                var o = result.ToResults(prefix + " invite to " + model.Name() + ".");
+                o.Object = model;
 
-			return Json(o);
+                return Json(o);
+            }else {
+                return Json(ResultObject.SilentSuccess(model));
+            }
 		}
 
 

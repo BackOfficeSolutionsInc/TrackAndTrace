@@ -6,6 +6,7 @@ using System.Web.Http;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using System.Web.Http.Description;
+using RadialReview.Models.Angular.Users;
 
 #region DO NOT EDIT, V0
 namespace RadialReview.Api.V0
@@ -24,8 +25,7 @@ namespace RadialReview.Api.V0
 				throw new PermissionsException();
 
 			return ApplicationAccessor.Stats();
-
 		}
-	}
+    }
 }
 #endregion

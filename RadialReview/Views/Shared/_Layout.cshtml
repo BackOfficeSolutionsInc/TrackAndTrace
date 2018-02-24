@@ -3,33 +3,33 @@
 @using RadialReview
 
 @{
-	var limitFiveState = ViewBag.LimitFiveState ?? true;
-	var l10Enabled = false;
-	var reviewEnabled = false;
-	var acEnabled = false;
-	var surveyEnabled = false;
-	var peopleEnabled = false;
-	var coreProcessEnabled = false;
-	if (((int?)ViewBag.Organizations ?? 0) > 0) {
-		if (ViewBag.ShowL10) {
-			l10Enabled = true;
-		}
-		if (ViewBag.ShowReview) {
-			reviewEnabled = true;
-		}
-		if (ViewBag.ShowAC) {
-			acEnabled = true;
-		}
-		if (ViewBag.ShowSurvey) {
-			surveyEnabled = true;
-		}
-		if (ViewBag.ShowPeople) {
-			peopleEnabled = true;
-		}
-		if (ViewBag.ShowCoreProcess) {
-			coreProcessEnabled = true;
-		}
-	}
+    var limitFiveState = ViewBag.LimitFiveState ?? true;
+    var l10Enabled = false;
+    var reviewEnabled = false;
+    var acEnabled = false;
+    var surveyEnabled = false;
+    var peopleEnabled = false;
+    var coreProcessEnabled = false;
+    if (((int?)ViewBag.Organizations ?? 0) > 0) {
+        if (ViewBag.ShowL10) {
+            l10Enabled = true;
+        }
+        if (ViewBag.ShowReview) {
+            reviewEnabled = true;
+        }
+        if (ViewBag.ShowAC) {
+            acEnabled = true;
+        }
+        if (ViewBag.ShowSurvey) {
+            surveyEnabled = true;
+        }
+        if (ViewBag.ShowPeople) {
+            peopleEnabled = true;
+        }
+        if (ViewBag.ShowCoreProcess) {
+            coreProcessEnabled = true;
+        }
+    }
 }
 
 <!DOCTYPE html>
@@ -57,49 +57,47 @@
 	<meta name="msapplication-square150x150logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-152x152.png" @*content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/mediumtile.png"*@ />
 	@*<meta name="msapplication-square310x310logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/largetile.png" />*@
 
-	@if (ViewBag.IsLocal ?? false) {
-		<link rel="SHORTCUT ICON" href="/content/favicon-local.ico?v=4" />
-	} else {
-		<link rel="SHORTCUT ICON" href="/content/favicon.ico?v=3" />
-	}
+    @if (ViewBag.IsLocal ?? false) {
+        <link rel="SHORTCUT ICON" href="/content/favicon-local.ico?v=4" />
+    } else {
+        <link rel="SHORTCUT ICON" href="/content/favicon.ico?v=3" />
+    }
 
-	<style>
-		[ng\:cloak], [ng-cloak], .ng-cloak {
-			display: none !important;
-		}
+    <style>
+        [ng\:cloak], [ng-cloak], .ng-cloak {
+            display: none !important;
+        }
 
-		.debuginfo, .debug-info {
-			display: none;
-			color: gray;
-			border: 1px solid red;
-			padding: 4px;
-			margin: 4px;
-			white-space: pre;
-		}
+        .debuginfo, .debug-info {
+            display: none;
+            color: gray;
+            border-left: 2px solid red;
+            padding: 4px;
+            margin: 4px;
+            white-space: pre;
+            background-color: #ff000014;
+        }
 
-		.show-debug .debug-info,
-		.show-debug .debuginfo,
-		.showdebug .debug-info,
-		.showdebug .debuginfo {
-			display: block;
-		}
-	</style>
+        .show-debug .debug-info, .show-debug .debuginfo, .showdebug .debug-info, .showdebug .debuginfo {
+            display: block;
+        }
+    </style>
 
 
-	<link href='https://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
-	@if (ViewBag.Title == null) {
-		<title>@Html.ProductName()</title>
-	} else {
-		<title>@ViewBag.Title - @Html.ProductName()</title>
-	}
-	@Styles.Render("~/Content/css")
-	@RenderSection("styles", required: false)
-	@Html.PageStyles()
-	@if (ViewBag.VideoChatRoom != null) {
-		<link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
-	}
-	<!--User Styles-->
-	<style>
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
+    @if (ViewBag.Title == null) {
+        <title>@Html.ProductName()</title>
+    } else {
+        <title>@ViewBag.Title - @Html.ProductName()</title>
+    }
+    @Styles.Render("~/Content/css")
+    @RenderSection("styles", required: false)
+    @Html.PageStyles()
+    @if (ViewBag.VideoChatRoom != null) {
+        <link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
+    }
+    <!--User Styles-->
+    <style>
 		@{
 			try {
 				Html.RenderAction("Styles", "User", new { area = "" });
@@ -107,12 +105,12 @@
 				@: .style-render-error{ /*@(e!=null?e.ToString():"null") */}
 			}
 		}
-	</style>
-	@*<link href="/User/styles" rel="stylesheet" type="text/css" async/>*@
-	<!--End User Styles-->
+    </style>
+    @*<link href="/User/styles" rel="stylesheet" type="text/css" async/>*@
+    <!--End User Styles-->
 </head>
 @if (ViewBag.HasBaseController == null) {
-	throw new Exception("You must extend from the base controller.");
+    throw new Exception("You must extend from the base controller.");
 }
 <body id="body" class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width")  @(ViewBag.LayoutClass??"")  @(limitFiveState?"fivestate-limit-true":"")">
 	@Scripts.Render("~/bundles/compatability")
@@ -151,16 +149,16 @@
 			return date;
 		}
 
-		//Date Formatting
-		function getFormattedDate(date,format,onUnknown) {
-			date = getParsedDate(date,onUnknown);
+        //Date Formatting
+        function getFormattedDate(date,format,onUnknown) {
+            date = getParsedDate(date,onUnknown);
 
-			if (typeof(format)==="undefined" || format===null) { format = window.dateFormat; }
+            if (typeof(format)==="undefined" || format===null) { format = window.dateFormat; }
 
-			var _d = date.getDate(),dd = _d > 9 ? _d : '0' + _d,_M = date.getMonth() + 1,MM = _M > 9 ? _M : '0' + _M,yyyy = date.getFullYear(),formatted = MM + '-' + dd + '-' + (yyyy),
+            var _d = date.getDate(),dd = _d > 9 ? _d : '0' + _d,_M = date.getMonth() + 1,MM = _M > 9 ? _M : '0' + _M,yyyy = date.getFullYear(),formatted = MM + '-' + dd + '-' + (yyyy),
 				H = date.getHours(),HH =H > 9 ? H : '0' + H,  h = H%12||12; hh =h > 9 ? h : '0' + h,m = date.getMinutes(),mm =m > 9 ? m : '0' + m,s = date.getSeconds(),ss =s > 9 ? s : '0' + s, t = H>=12?"p":"a", tt = t+"m";
 
-			var _userFormat = format.replace(/MM/g, MM).replace(/M/g, _M).replace(/dd/g, dd).replace(/d/g, _d).replace(/yyyy/g, yyyy).replace(/yy/g, (yyyy - 2000))
+            var _userFormat = format.replace(/MM/g, MM).replace(/M/g, _M).replace(/dd/g, dd).replace(/d/g, _d).replace(/yyyy/g, yyyy).replace(/yy/g, (yyyy - 2000))
 				.replace(/HH/g, HH).replace(/H/g, H).replace(/hh/g, hh).replace(/h/g, h).replace(/mm/g, mm).replace(/m/g, m).replace(/ss/g, ss).replace(/s/g, s).replace(/tt/g, tt).replace(/t/g, t);
             return _userFormat;
         }
@@ -209,7 +207,7 @@
                                     </div>
                                 </div>
                             }
-							<span class="beta-only beta-label">beta</span>
+                            <span class="beta-only beta-label">beta</span>
                             <span class="pull-right navbar-icon-container visible-xs">
                                 @if (((int?)ViewBag.Organizations ?? 0) > 0) {
                                     if (ViewBag.ShowL10) {
@@ -294,9 +292,9 @@
                             @if (!(ViewBag.IsLogin ?? false)) {
                                 Html.RenderPartial("_LoginPartial", (string)ViewBag.ReturnUrl);
                             }
-                             <div class="beta-only">
-                                 <a href="/redirect/feedback" target="_blank"><span class="feedback-smile" title="Send us feedback!"></span></a>
-                             </div>
+                            <div class="beta-only">
+                                <a href="/redirect/feedback" target="_blank"><span class="feedback-smile" title="Send us feedback!"></span></a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -330,36 +328,36 @@
         @{Html.RenderPartial("Partial/_Modal");}
         @using (var s = Html.BeginScripts()) {
 				<!--script src="~/Scripts/Main/radial.js"></script-->
-			<script>
-				$(function () {
-					//qtip();
-					$('[data-toggle="tooltip"]').tooltip();
-					ForceUnhide();
-					@if (ViewBag.Alert!=null){
+            <script>
+                $(function () {
+                    //qtip();
+                    $('[data-toggle="tooltip"]').tooltip();
+                    ForceUnhide();
+                    @if (ViewBag.Alert!=null){
 							@:showAlert("@ViewBag.Alert");
-																																					                                                                                                    																																														                                        }
-					@if(ViewBag.Success!=null){
+                                        																																					                                                                                                    																																														                                        }
+                    @if(ViewBag.Success!=null){
                       @: showAlert("@ViewBag.Success", "alert-success" , "Success!" );
 
                     }
-					@if(ViewBag.InfoAlert!=null){
+                    @if(ViewBag.InfoAlert!=null){
                         @: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" );
-																																					                                                                                                    																																														                                        }
-					UnstoreJsonAlert();
+                                        																																					                                                                                                    																																														                                        }
+                    UnstoreJsonAlert();
 
-					try{
-						if (typeof(window.meetingId)!=="undefined"){
-							$(".populateMeetingData").attr("data-meetingId",window.meetingId);
-						}
-						if (typeof(window.recurrenceId)!=="undefined"){
-							$(".populateMeetingData").attr("data-recurrenceId",window.recurrenceId);
-						}
-					}catch(e){
-						console.error(e);
-					}
+                    try{
+                        if (typeof(window.meetingId)!=="undefined"){
+                            $(".populateMeetingData").attr("data-meetingId",window.meetingId);
+                        }
+                        if (typeof(window.recurrenceId)!=="undefined"){
+                            $(".populateMeetingData").attr("data-recurrenceId",window.recurrenceId);
+                        }
+                    }catch(e){
+                        console.error(e);
+                    }
 
-				});  var statusTimeout;
-				@{
+                });  var statusTimeout;
+                @{
                     var tooltips = new MvcHtmlString("[]");
                     try {
                         tooltips = new MvcHtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Tooltips));
@@ -379,6 +377,7 @@
 					}
 	@RenderSection("bottomSection", required: false)
 	<div class="scripts-container">
+        <div class="main-script-container">
 		<script src="https://cdn.polyfill.io/v2/polyfill.js?features=CustomEvent"></script>
 		@Scripts.Render("~/bundles/jquery")
 		@if (RadialReview.Utilities.Config.GetEnv() == RadialReview.Models.Enums.Env.local_test_sqlite) {
@@ -425,12 +424,13 @@
 		@RenderSection("scripts", required: false) @RenderSection("modals", required: false)
 		<!--Begin Main Scripts-->
 		@Scripts.Render("~/bundles/main")
-		<script async src="~/signalr/hubs"></script>
+            <script src="~/signalr/hubs"></script>
 		<!--End Main Scripts-->
+        </div>
+        <div class="page-script-container">
 		@Html.PageScripts()
-		@*<script>
-				(function (i, s, o, g, r, a, m) { i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () { (i[r].q = i[r].q || []).push(arguments) }, i[r].l = 1 * new Date(); a = s.createElement(o), m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m) })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga'); ga('create', 'UA-68333423-1',{'userId':@(ViewBag.UserId??-1L)}); ga('set', 'dimension1', @(ViewBag.UserId??-1L)); ga('send', 'pageview');
-			</script>*@
+        </div>
+        <div class="ga-script-container">
 		<!-- Google Analytics -->
 		<script>
 			window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
@@ -445,6 +445,31 @@
 		</script>
 		<script async src='https://www.google-analytics.com/analytics.js'></script>
 		<!-- End Google Analytics -->
+        </div>
+        <div class="fb-script-container">
+            <!-- Facebook Pixel Code -->
+            @if (ViewBag.UserId != -1) {
+            <script>
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                    n.queue=[];t=b.createElement(e);t.async=!0;
+                    t.src=v;s=b.getElementsByTagName(e)[0];
+                    s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', '798215043695500');
+                fbq('track', 'PageView');
+            </script>
+            <noscript>
+                <img height="1" width="1" style="display:none"
+                     src="https://www.facebook.com/tr?id=798215043695500&ev=PageView&noscript=1" />
+            </noscript>
+            }else {
+                <script>/*not logged in*/</script>
+            }
+            <!-- End Facebook Pixel Code -->
+        </div>
 	</div>
 	<div class="copyrightPrintFooter">© 2003 - @DateTime.UtcNow.Year EOS. All Rights Reserved</div>
 </body>
@@ -454,5 +479,5 @@
 </html>
 
 @{
-	RadialReview.Utilities.Productivity.ChromeExtensionComms.SendCommand("pageLoad");
+    RadialReview.Utilities.Productivity.ChromeExtensionComms.SendCommand("pageLoad");
 }

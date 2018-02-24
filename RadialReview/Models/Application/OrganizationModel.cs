@@ -167,6 +167,9 @@ namespace RadialReview.Models {
 			public virtual bool ManagersCanEditSelf { get; set; }
 			public virtual bool EmployeesCanEditSelf { get; set; }
 			public virtual bool OnlySeeRocksAndScorecardBelowYou { get; set; }
+
+            public virtual bool AllowAddClient { get; set; }
+
 			
 			public virtual bool EnableL10 { get; set; }
 			public virtual bool EnableReview { get; set; }
@@ -245,6 +248,8 @@ namespace RadialReview.Models {
 
 					Map(x => x.ManagersCanEditSelf);
 					Map(x => x.EmployeesCanEditSelf);
+
+                    Map(x => x.AllowAddClient);
 
 					Map(x => x.EmployeesCanCreateSurvey);
 					Map(x => x.ManagersCanCreateSurvey);
