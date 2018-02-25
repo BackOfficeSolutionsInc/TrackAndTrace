@@ -322,6 +322,8 @@ namespace RadialReview.Accessors {
 				todoCompletion = GetAllTodosForRecurrence(s, perm, recurrenceId);
 
 				var periods = TimingUtility.GetPeriods(ts, now1, currentTime, true);
+				//Hides the todo completion % if we're not in this week. Purely asthetic since the calculation is indeed correct.
+				var hideCompletion = new Func<DateTime, bool>(weekStart => currentTime < weekStart);
 
 				if (getScores && (recur.IncludeAggregateTodoCompletion || forceIncludeTodoCompletion)) {
 					var todoScores = periods.Select(x => x.ForWeek).SelectMany(w => {
@@ -332,6 +334,10 @@ namespace RadialReview.Accessors {
 							if (ss.IsValid()) {
 								percent = Math.Round(ss.GetValue(0) * 100m, 1);
 							}
+							if (hideCompletion(rangeTodos.StartTime)) {
+								percent = null;
+							}
+
 							return new ScoreModel() {
 								_Editable = false,
 								AccountableUserId = -1,
@@ -359,6 +365,9 @@ namespace RadialReview.Accessors {
 								decimal? percent = null;
 								if (ss.IsValid()) {
 									percent = Math.Round(ss.GetValue(0) * 100m, 1);
+								}
+								if (hideCompletion(rangeTodos.StartTime)) {
+									percent = null;
 								}
 								var mm = GenerateTodoMeasureable(a);
 								return new ScoreModel() {

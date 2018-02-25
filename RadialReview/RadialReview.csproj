@@ -1278,7 +1278,6 @@
     <Compile Include="Crosscutting\Hooks\Interfaces\IPaymentHook.cs" />
     <Compile Include="Crosscutting\Hooks\Realtime\L10\RealTime_L10_Headline.cs" />
     <Content Include="Content\Inputs\TagInput.less" />
-    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Headline.cs" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -2543,15 +2542,11 @@
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
-    <Folder Include="Models\Notifications\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
-    <Folder Include="Scripts\Models\" />
-    <Folder Include="Scripts\typings\d3\plugins\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />
     <Folder Include="Views\Console\" />
-    <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\HealthCheck\" />
     <Folder Include="Views\Img\" />
