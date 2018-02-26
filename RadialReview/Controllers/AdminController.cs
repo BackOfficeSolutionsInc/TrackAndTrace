@@ -623,6 +623,8 @@ namespace RadialReview.Controllers {
 			public string AccountType { get; set; }
 			public DateTime? OrgCreateTime { get; set; }
 			public DateTime? LastLogin { get; set; }
+			public bool IsAdmin { get; set; }
+			public bool IsManager { get; set; }
 			//public bool Blacklist { get; set; }
 		}
 		[Access(AccessLevel.Radial)]
@@ -751,6 +753,8 @@ namespace RadialReview.Controllers {
 							UserCreateTime = x.CreateTime,
 							UserDeleteTime = x.DeleteTime,
 							LastLogin = x.LastLogin,
+							IsAdmin = x.IsAdmin,
+							IsManager = x.IsManager
 
 							//Deleted = x.DeleteTime!=null  || org.DeleteTime !=null || org.AccountType == AccountType.Cancelled
 						};
@@ -826,6 +830,8 @@ namespace RadialReview.Controllers {
 						csv.Add("" + o.UserId, "OrgFlags", string.Join("|", of));
 						csv.Add("" + o.UserId, "UserFlags", string.Join("|", uf));
 						csv.Add("" + o.UserId, "TT_Blacklist", "" + uf.Any(x => x == UserRoleType.EmailBlackList));
+						csv.Add("" + o.UserId, "IsAdmin", "" + o.IsAdmin);
+						csv.Add("" + o.UserId, "IsManager", "" + o.IsManager);
 
 
 					}
