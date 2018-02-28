@@ -306,9 +306,10 @@ namespace RadialReview.Accessors {
 
 		//[Untested("Vto_Rocks",/* "Is the rock correctly removed in real-time from L10",/* "Is the rock correctly removed in real-time from VTO",*/ "Is rock correctly archived when existing in no meetings?")]
 		public static async Task UnarchiveRock(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long rockId) {
-			perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+			//perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+            perm.AdminL10Recurrence(recurrenceId).EditRock_UnArchive(rockId);
 
-			await RockAccessor.UnArchiveRock(s, perm, rockId);
+            await RockAccessor.UnArchiveRock(s, perm, rockId);
 
 			// attach rock
 			await AttachRock(s, perm, recurrenceId, rockId, false);

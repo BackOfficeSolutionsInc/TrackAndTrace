@@ -595,8 +595,9 @@ namespace RadialReview.Accessors {
 		}
 
 		public static async Task UnArchiveRock(ISession s, PermissionsUtility perm, long rockId) {
-			perm.EditRock(rockId);
-			var rock = s.Get<RockModel>(rockId);
+			//perm.EditRock(rockId);
+            perm.EditRock_UnArchive(rockId);
+            var rock = s.Get<RockModel>(rockId);
 			rock.Archived = false;
 			rock.DeleteTime = null;
 			s.Update(rock);
