@@ -902,15 +902,27 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			var mid = $scope.recurrenceId;
 			if (mid <= 0)
 				mid = event.source.itemScope.measurable.RecurrenceId;
+			
+
+			//Adj order
+			var ordered = $scope.model.Scorecard.Measurables.slice().sort(function (a, b) { return a.Ordering - b.Ordering; })
+			var adjArr = [];
+			var adj = 0;
+			for (var i = 0; i < ordered.length; i++) {
+				var o = ordered[i];
+				adjArr.push(adj);
+				if (o.Id < 0 && !o.IsDivider)
+					adj += 1;
+			}
 
 
 			var dat = {
 				id: event.source.itemScope.measurable.Id,
 				recurrence: mid,
-				oldOrder: event.source.index,
-				newOrder: event.dest.index,
+				oldOrder: event.source.index - adjArr[event.source.index],
+				newOrder: event.dest.index - adjArr[event.dest.index],
 			}
-			event.source.itemScope.measurable.Ordering = event.dest.index;
+			//event.source.itemScope.measurable.Ordering = event.dest.index;
 			var url = Time.addTimestamp("/L10/OrderAngularMeasurable");
 
 			$http.post(url, dat).then(function () { }, showAngularError);
