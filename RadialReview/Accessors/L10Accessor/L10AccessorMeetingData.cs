@@ -304,7 +304,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static List<L10Meeting> GetL10Meetings(UserOrganizationModel caller, long recurrenceId, bool load = false) {
+		public static List<L10Meeting> GetL10Meetings(UserOrganizationModel caller, long recurrenceId, bool load = false,bool excludePreviewMeeting=false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
@@ -312,6 +312,10 @@ namespace RadialReview.Accessors {
 					var o = s.QueryOver<L10Meeting>()
 						.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
 						.List().ToList();
+
+                    if (excludePreviewMeeting)
+                        o = o.Where(x => x.Preview == false).ToList();
+
 					if (load)
 						_LoadMeetings(s, true, true, true, o.ToArray());
 

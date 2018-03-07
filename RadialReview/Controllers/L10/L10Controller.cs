@@ -330,7 +330,7 @@ namespace RadialReview.Controllers {
 			var recurrence = id;
 			var audits = L10Accessor.GetL10Audit(GetUser(), recurrence);
 			var transcripts = TranscriptAccessor.GetRecurrenceTranscript(GetUser(), recurrence);
-			var meetings = L10Accessor.GetL10Meetings(GetUser(), id, false);
+			var meetings = L10Accessor.GetL10Meetings(GetUser(), id, false,true);
 			var list = new List<MeetingTimeline>();
 			var user = GetUser();
 			foreach (var m in meetings) {
