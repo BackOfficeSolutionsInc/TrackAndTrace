@@ -1211,13 +1211,26 @@ body.resizing .notes-tile:after,
 }
 .dashboard .scorecard table .edit-formula {
   float: right;
+  right: 14px;
+  position: relative;
+  background-color: white;
+  width: 16px;
+  height: 16px;
+  margin-top: 7px;
+  border-radius: 11px;
+  border: 1px solid lightgray;
+  margin-right: -16px;
+  outline: none;
 }
 .dashboard .scorecard table .edit-formula:after {
-  content: "(f)";
+  content: "f";
   color: lightgray;
   position: absolute;
-  margin-top: 7px;
+  margin-top: 1px;
   font-size: 80%;
+  text-align: center;
+  /* color: white; */
+  padding-left: 5px;
 }
 .dashboard .scorecard table .score input {
   padding-left: 0px !important;

@@ -110,24 +110,39 @@
                 emptyEditor.focusEnd();
             }, 100);
             // debugger;
-            //$("#modalForm")
-            emptyEditor.on("blur",function(){
-                var json=emptyEditor.toJSON()[0];
-                var builder = "";
-                // debugger;
-                if(typeof(json)!=="undefined"){
-                    for(var i = 0;i<json.length;i++){
-                        var a = json[i];
-                        if (typeof(a)==="string"){
-                            builder+=a;
-                        }else{
-                            builder+="["+a.attrs.id+"("+a.attrs.offset+")]";
-                        }
-                    }
-                }
+        	//$("#modalForm")
 
-                $("#val-@guid").val(builder);
-            });
+            var updateFormula = function(){
+            	if ($("#val-@guid").length=0){
+            		clearInterval(formulaInterval);
+            		console.log("clearing formula interval");
+					return;
+            	}
+            	var json=emptyEditor.toJSON()[0];
+            	var builder = "";
+            	// debugger;
+            	if(typeof(json)!=="undefined"){
+            		for(var i = 0;i<json.length;i++){
+            			var a = json[i];
+            			if (typeof(a)==="string"){
+            				builder+=a;
+            			}else{
+            				builder+="["+a.attrs.id+"("+a.attrs.offset+")]";
+            			}
+            		}
+            	}
+
+            	if ($("#val-@guid").val()!=builder){
+            		$("#val-@guid").val(builder);
+            		console.log("updated formula to:"+builder);
+            	}
+            };
+
+        	var formulaInterval = setInterval(function(){
+        		updateFormula();
+        	},100);
+
+            emptyEditor.on("blur",updateFormula);
 
             $("#@guid").on("click",".token",function(e){
                 if (($(this).width() - e.offsetX)<12){
