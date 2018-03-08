@@ -208,7 +208,7 @@ namespace RadialReview.Accessors {
 						group.addMeasurable(first, second);
 					}
 					var scorecard = new AngularScorecard(recurrenceId);
-					scorecard.Measurables = new List<AngularMeasurable>() { AngularMeasurable.CreateDivider(divider._Ordering, divider.Id) };
+					scorecard.Measurables = new List<AngularMeasurable>() { AngularMeasurable.CreateDivider(divider) };
 					scorecard.Scores = new List<AngularScore>();
 
 					group.update(new AngularUpdate() { scorecard });
@@ -526,7 +526,7 @@ namespace RadialReview.Accessors {
                 var updates = new AngularUpdate();
                 foreach (var x in recurMeasurables) {
                     if (x.IsDivider) {
-                        updates.Add(AngularMeasurable.CreateDivider(x._Ordering, x.Id));
+                        updates.Add(AngularMeasurable.CreateDivider(x));
                     } else {
                         updates.Add(new AngularMeasurable(x.Measurable) { Ordering = x._Ordering });
                     }
@@ -643,7 +643,7 @@ namespace RadialReview.Accessors {
                 var updates = new AngularUpdate();
                 foreach (var x in recurMeasurables) {
                     if (x.IsDivider) {
-                        updates.Add(AngularMeasurable.CreateDivider(x._Ordering, x.Id));
+                        updates.Add(AngularMeasurable.CreateDivider(x));
                     } else {
                         updates.Add(new AngularMeasurable(x.Measurable) { Ordering = x._Ordering });
                     }
