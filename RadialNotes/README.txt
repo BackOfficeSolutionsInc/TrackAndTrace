@@ -11,6 +11,8 @@
 	- /var/log/nginx/
 4. The AWS File Upload extension is in the "custom" folder.
 5. Etherpad lite requires node 4.8.7
+6. Do not do a log pull. It doesn't work.
+7. Do not Rebuild Environment. It fails because security groups cannot be deleted.
 
  
 ===========INSTALL NEW SERVER===========
@@ -52,4 +54,25 @@
 	- This is a phantum server, it runs on port 9001, it exists because etherpad has a non-typical start process
 	- Extensive attempts were made to get ELB to play nice, it could not be accomplished.
 
+
+ 
+===========ELB Settings===========
+
+Add the servers security group to the database security group.
+
+Software
+	- Proxy Server:	Nginx
+	- Node version:	4.8.7	
+	- Node command:	<empty>
 	
+Capacity
+	- Environment:	Load Balanced
+	- Instances: 	min 1, max 1
+	
+	
+Security:
+	- Service role: aws-elasticbeanstalk-service-role
+	- EC2 key pair: radial-east
+	- IAM instance profile: aws-elasticbeanstalk-ec2-role
+	
+
