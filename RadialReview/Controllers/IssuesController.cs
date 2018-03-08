@@ -200,7 +200,7 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CreateIssue(long recurrence, long meeting = -1, string issue = null, long? modelId = null, string modelType = null)
+        public PartialViewResult CreateIssue(long recurrence, long meeting = -1, string issue = null, long? modelId = null, string modelType = null,bool showUsers=true)
         {
             if (meeting != -1)
                 _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
@@ -223,6 +223,7 @@ namespace RadialReview.Controllers {
                 showPriority = true;
 
 
+
             var model = new IssueVM() {
                 Message = issue,
                 ByUserId = GetUser().Id,
@@ -232,9 +233,10 @@ namespace RadialReview.Controllers {
                 OwnerId = GetUser().Id,
                 ForModelId = modelId,
                 ForModelType = modelType,
-                ShowPriority = showPriority
+                ShowPriority = showPriority,
+				HideUsers = !showUsers
             };
-            return PartialView("CreateIssueModal", model);
+			return PartialView("CreateIssueModal", model);
         }
 
         public class MeetingVm {
