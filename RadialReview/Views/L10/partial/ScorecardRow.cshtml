@@ -81,12 +81,12 @@
 				<span class="newLine gray @inlineEdit adminSelection" data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-type="select" data-name="admin" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" title="@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName()) ?? "Auto-Generated")">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetInitials()) ?? "Auto")</span>
 			</td>
 		}
-        <td class="measurable first1 header-cell" title="@Model.MeetingMeasurable.Measurable.Title">
-            <span class="@inlineEdit" data-placement='right' data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span>
-            <span class="pull-right" style="position:absolute;">
-                <span class="shift-visible gray clickable" style="background-color:white" onclick="setFormula(@Model.MeetingMeasurable.Measurable.Id)">(f)</span>
-            </span>
-        </td>
+		<td class="measurable first1 header-cell" title="@Model.MeetingMeasurable.Measurable.Title">
+			<span class="edit-formula shift-visible clickable" onclick="setFormula(@Model.MeetingMeasurable.Measurable.Id)">
+				<span class="gray">f</span>
+			</span>
+			<span class="@inlineEdit" data-placement='right' data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span>
+		</td>
 		<td class="target direction header-cell" data-measurable="@Model.MeetingMeasurable.Id"><span class="@inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" @*data-title="Select goal direction"*@ data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>
 		<td class="target value header-cell" data-measurable="@Model.MeetingMeasurable.Id">
 			<span class="@inlineEdit numeric target-value" data-type="text" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.#####")</span>

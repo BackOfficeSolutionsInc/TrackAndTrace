@@ -772,7 +772,8 @@ function addScChart(id) {
             }
         }*/
     });
-    var name = row.find(".measurable").first().text();
+   // $("td.measurable").first()
+    var name = row.find(".measurable").first().clone().children().filter(function () { return !$(this).is(".edit-formula"); }).text();
     if (typeof (addScChart.chart) === "undefined")
         addScChart.chart = {};
     addScChart.chart[id] = { data: datas, legend: name };

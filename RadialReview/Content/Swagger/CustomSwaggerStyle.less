@@ -1,5 +1,236 @@
 ﻿@import "../bootstrap/variables";
 
+.instructions {
+	.monospace {
+		font-family: monospace;
+	}
+
+	pre {
+		overflow-x: auto;
+		word-wrap: normal;
+		display: block;
+		padding: 9.5px;
+		margin: 0 0 10px;
+		font-size: 13px;
+		line-height: 1.42857143;
+		word-break: break-all;
+		word-wrap: break-word;
+		color: #333333;
+		background-color: #f5f5f5;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+
+	}
+
+	.table {
+		margin-bottom: 0px;
+	}
+
+	h1[id]:before,
+	h2[id]:before,
+	h3[id]:before,
+	h4[id]:before,
+	h5[id]:before,
+	h6[id]:before {
+		display: block;
+		content: " ";
+		margin-top: -55px;
+		height: 55px;
+		visibility: hidden;
+	}
+
+	h1 {
+		margin-left: -60px;
+		margin-right: -20px;
+		padding-bottom: 6px;
+		font-weight: bold;
+		background-color: #ef7622;
+		color: #FFF;
+		padding-left: 15px;
+		padding-top: 10px;
+		text-transform: uppercase;
+	}
+
+	h2 {
+		font-size: 30px !important;
+	}
+
+	h3 {
+		margin: 0px;
+		margin-bottom: 5px;
+		font-size: 18px !important;
+	}
+
+	code {
+		background-color: rgb(249, 242, 244);
+		border-bottom-left-radius: 4px;
+		border-bottom-right-radius: 4px;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+		box-sizing: border-box;
+		color: rgb(199, 37, 78);
+		display: inline;
+		font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+		font-size: 12.6px;
+		font-weight: 400;
+		height: auto;
+		line-height: 18px;
+		padding-bottom: 2px;
+		padding-left: 4px;
+		padding-right: 4px;
+		padding-top: 2px;
+		text-size-adjust: 100%;
+		width: auto;
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+
+
+	.panel {
+		margin-bottom: 20px;
+		background-color: #fff;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+		box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+	}
+
+	.panel-default > .panel-heading {
+		color: #333333;
+		background-color: #f5f5f5;
+		border-color: #ddd;
+	}
+	.panel-default {
+		border-color: #ddd !important;
+	}
+
+	.panel-heading {
+		padding: 10px 15px;
+		border-bottom: 1px solid transparent;
+		border-top-right-radius: 3px;
+		border-top-left-radius: 3px;
+	}
+
+	.panel-body {
+		padding: 15px;
+	}
+
+
+	h3 code {
+		color: #424242;
+		background-color: transparent;
+	}
+
+	p {
+		box-sizing: border-box;
+		color: rgb(51, 51, 51);
+		display: block;
+		font-family: Lato, sans-serif;
+		font-size: 14px;
+		font-weight: 400;
+		height: 20px;
+		line-height: 20px;
+		margin-bottom: 10px;
+		margin-left: 0px;
+		margin-right: 0px;
+		margin-top: 0px;
+		text-size-adjust: 100%;
+		-webkit-margin-after: 10px;
+		-webkit-margin-before: 0px;
+		-webkit-margin-end: 0px;
+		-webkit-margin-start: 0px;
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+
+	.doc-section > h3:last-of-type {
+		margin-bottom: 20px;
+	}
+
+	.doc-section {
+		margin-bottom: 40px;
+		border: 1px solid #E4E4E4;
+		padding: 5px 20px;
+		border-radius: 7px;
+		background-color: #fff;
+	}
+
+	.doc-sidenav {
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+
+	.highlight {
+		padding: 9px 14px;
+		margin-bottom: 14px;
+		background-color: #f7f7f9;
+		border: 1px solid #e1e1e8;
+		border-radius: 4px;
+	}
+
+	.doc-sidebar .nav > .active > ul {
+		display: block;
+	}
+
+	.doc-sidebar .nav .nav {
+		display: none;
+		padding-bottom: 10px;
+	}
+
+	.doc-sidebar .nav > li > a {
+		display: block;
+		padding: 4px 20px;
+		font-size: 13px;
+		font-weight: 500;
+		color: #767676;
+	}
+
+	.doc-sidebar .nav .nav > li > a:focus,
+	.doc-sidebar .nav .nav > li > a:hover {
+		padding-left: 29px;
+	}
+
+	.doc-sidebar .nav > li > a {
+		display: block;
+		padding: 4px 20px;
+		font-size: 13px;
+		font-weight: 500;
+		color: #767676;
+	}
+
+	.doc-sidebar .nav .nav > li > a {
+		padding-top: 1px;
+		padding-bottom: 1px;
+		padding-left: 30px;
+		font-size: 12px;
+		font-weight: 400;
+	}
+
+	.doc-sidebar .nav .nav > .active:focus > a,
+	.doc-sidebar .nav .nav > .active:hover > a,
+	.doc-sidebar .nav .nav > .active > a {
+		padding-left: 28px;
+		font-weight: 500;
+	}
+
+	.doc-sidebar .nav > li > a:focus,
+	.doc-sidebar .nav > li > a:hover {
+		padding-left: 19px;
+		color: #EF7622;
+		text-decoration: none;
+		background-color: rgba(0, 0, 0, 0);
+		border-left: 1px solid #EF7622;
+	}
+
+	.doc-sidebar .nav > .active:focus > a,
+	.doc-sidebar .nav > .active:hover > a,
+	.doc-sidebar .nav > .active > a {
+		padding-left: 18px;
+		font-weight: 700;
+		color: #EF7622;
+		background-color: rgba(0, 0, 0, 0);
+		border-left: 2px solid #EF7622;
+	}
+}
+
 .swagger-section {
 	background-color: #eee;
 	font-family: 'Lato', sans-serif;

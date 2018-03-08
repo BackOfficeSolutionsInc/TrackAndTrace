@@ -1548,7 +1548,7 @@
 
                     // no selection after telling to focus? then the editor is not in the DOM
                     if (sel.type == 'None') {
-                    	console.log("short-circuit");
+                    	//console.log("short-circuit");
                         this.el.appendChild(document.createElement('br'))
                         return;
                     }
@@ -1556,7 +1556,7 @@
                     var range = sel.getRangeAt(0);
                     var frag = document.createDocumentFragment()
                     var br = frag.appendChild(document.createElement('br'));
-                    console.log("adding-br");
+                    //console.log("adding-br");
 
                     //document.execCommand('insertHTML', false, frag);
                     this.el.appendChild(frag)
@@ -1568,8 +1568,8 @@
                 		range.collapse(true);
                 		sel.removeAllRanges();
                 		sel.addRange(range);
-                		var innerText = $(this.el).clone().children().each(function () { return $(this).html("|"); }).end().text();
-						console.log(innerText);
+                		//var innerText = $(this.el).clone().children().each(function () { return $(this).html("|"); }).end().text();
+						//console.log(innerText);
 
                 	} catch (e) {
                 		console.error(e);
@@ -1588,7 +1588,7 @@
 					//	console.log("br-adj");
 					//}
 
-                	console.log("br-exists");
+                	//console.log("br-exists");
                 	//var selection = window.getSelection();
                 	//var selection = window.getSelection();
                 	//if (selection.rangeCount > 0) {
