@@ -415,6 +415,7 @@ namespace RadialReview.Accessors {
 				added = false;
 			} else if (!complete && issue.CloseTime != null) {
 				issue.CloseTime = null;
+				issue.MarkedForClose = false;
 				added = true;
 			}
 
