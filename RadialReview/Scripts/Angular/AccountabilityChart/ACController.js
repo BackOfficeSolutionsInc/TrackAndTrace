@@ -700,7 +700,8 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
             var _clientTimestamp = new Date().getTime();
 
             fixNodeRecurse(dat);
-            r.updater.convertDatesForServer(dat, Time.tzoffset());
+            //r.updater.convertDatesForServer(dat, Time.tzoffset());
+            console.warn("Dates were not converted, this needs to be confirmed");
 
             var url = Time.addTimestamp("/Accountability/Update" + self.Type + "?connectionId=" + $scope.connectionId);
 
