@@ -138,6 +138,11 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
+		private void AddUnstored(long recurrenceId, L10EditVM model) {
+			ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), recurrenceId);
+
+		}
+
 		private L10EditVM AddExtras(long recurrenceId, L10EditVM model) {
 			var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
@@ -168,8 +173,7 @@ namespace RadialReview.Controllers {
 				model.SelectedMembers = model.SelectedMembers ?? new long[0];
 				model.SelectedRocks = model.SelectedRocks ?? new long[0];
 			}
-
-			ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), recurrenceId);
+			AddUnstored(recurrenceId, model);
 			return model;
 		}
 
@@ -303,7 +307,9 @@ namespace RadialReview.Controllers {
 			model.PossibleMembers = allMembers;
 			model.PossibleMeasurables = allMeasurables.Where(x => x != null).ToList();
 
-
+			if (model.Recurrence.Id != 0) {
+				AddUnstored(model.Recurrence.Id, model);
+			}
 			//model.SelectedRocks = model.SelectedRocks ?? new long[0];
 			//model.SelectedMembers = model.SelectedMembers ?? new long[0];
 			//model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
