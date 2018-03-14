@@ -13,6 +13,10 @@ var collapseAll = function () {
 	});
 }
 
+var managePosition = function () {
+    window.open("/manage/positions", '_blank');
+}
+
 function generateAccNodes() {
 	var data = angular.element("[ng-controller]").scope().model.data.Root;
 	var copy = {};
