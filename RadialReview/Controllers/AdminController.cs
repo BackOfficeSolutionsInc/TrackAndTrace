@@ -37,653 +37,658 @@ using NHibernate.Criterion;
 using static RadialReview.Controllers.AbstractController.BaseExpensiveController;
 using RadialReview.Controllers.AbstractController;
 using RadialReview.Crosscutting.Flags;
+using RadialReview.Models.Angular.Users;
+using RadialReview.Models.Angular.Organization;
 
 namespace RadialReview.Controllers {
 
-    public class AdminController : BaseExpensiveController {
+	public class AdminController : BaseExpensiveController {
 
-        #region Implementers
-        [Access(AccessLevel.Radial)]
-        public ActionResult Implementers() {
-            return View(ApplicationAccessor.GetCoaches(GetUser()));
-        }
-        [Access(AccessLevel.Radial)]
-        public PartialViewResult EditImplementers(long id = 0) {
-            return PartialView(ApplicationAccessor.GetCoach(GetUser(), id));
-        }
-        [Access(AccessLevel.Radial)]
-        [HttpPost]
-        public JsonResult EditImplementers(Coach model) {
-            ApplicationAccessor.EditCoach(GetUser(), model);
-            return Json(ResultObject.SilentSuccess(model));
-        }
-        [Access(AccessLevel.Radial)]
-        [HttpPost]
-        public JsonResult DeleteImplementers(long id) {
-            var model = ApplicationAccessor.GetCoach(GetUser(), id);
-            model.DeleteTime = DateTime.UtcNow;
-            ApplicationAccessor.EditCoach(GetUser(), model);
-            return Json(ResultObject.SilentSuccess(model));
-        }
-        [Access(AccessLevel.Radial)]
-        public ActionResult SupportMembers() {
-            return View(ApplicationAccessor.GetSupportMembers(GetUser()));
-        }
-        [Access(AccessLevel.Radial)]
-        public PartialViewResult EditSupportMember(long id = 0) {
-            return PartialView(ApplicationAccessor.GetSupportMember(GetUser(), id));
-        }
-        [Access(AccessLevel.Radial)]
-        [HttpPost]
-        public JsonResult EditSupportMember(SupportMember model) {
-            ApplicationAccessor.EditSupportMember(GetUser(), model);
-            return Json(ResultObject.SilentSuccess(model));
-        }
-        [Access(AccessLevel.Radial)]
-        [HttpPost]
-        public JsonResult DeleteSupportMember(long id) {
-            var model = ApplicationAccessor.GetSupportMember(GetUser(), id);
-            model.DeleteTime = DateTime.UtcNow;
-            ApplicationAccessor.EditSupportMember(GetUser(), model);
-            return Json(ResultObject.SilentSuccess(model));
-        }
-        [Access(AccessLevel.Radial)]
-        public ActionResult Campaigns() {
-            return View(ApplicationAccessor.GetCampaigns(GetUser(), false));
-        }
-        [Access(AccessLevel.Radial)]
-        public PartialViewResult EditCampaign(long id = 0) {
-            return PartialView(ApplicationAccessor.GetCampaign(GetUser(), id));
-        }
-        [Access(AccessLevel.Radial)]
-        [HttpPost]
-        public JsonResult EditCampaign(Campaign model) {
-            ApplicationAccessor.EditCampaign(GetUser(), model);
-            return Json(ResultObject.SilentSuccess(model));
-        }
-        [Access(AccessLevel.Radial)]
-        [HttpPost]
-        public JsonResult DeleteCampaign(long id) {
-            var model = ApplicationAccessor.GetCampaign(GetUser(), id);
-            model.DeleteTime = DateTime.UtcNow;
-            ApplicationAccessor.EditCampaign(GetUser(), model);
-            return Json(ResultObject.SilentSuccess(model));
-        }
-        #endregion
+		#region Implementers
+		[Access(AccessLevel.Radial)]
+		public ActionResult Implementers() {
+			return View(ApplicationAccessor.GetCoaches(GetUser()));
+		}
+		[Access(AccessLevel.Radial)]
+		public PartialViewResult EditImplementers(long id = 0) {
+			return PartialView(ApplicationAccessor.GetCoach(GetUser(), id));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult EditImplementers(Coach model) {
+			ApplicationAccessor.EditCoach(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult DeleteImplementers(long id) {
+			var model = ApplicationAccessor.GetCoach(GetUser(), id);
+			model.DeleteTime = DateTime.UtcNow;
+			ApplicationAccessor.EditCoach(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		[Access(AccessLevel.Radial)]
+		public ActionResult SupportMembers() {
+			return View(ApplicationAccessor.GetSupportMembers(GetUser()));
+		}
+		[Access(AccessLevel.Radial)]
+		public PartialViewResult EditSupportMember(long id = 0) {
+			return PartialView(ApplicationAccessor.GetSupportMember(GetUser(), id));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult EditSupportMember(SupportMember model) {
+			ApplicationAccessor.EditSupportMember(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult DeleteSupportMember(long id) {
+			var model = ApplicationAccessor.GetSupportMember(GetUser(), id);
+			model.DeleteTime = DateTime.UtcNow;
+			ApplicationAccessor.EditSupportMember(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		[Access(AccessLevel.Radial)]
+		public ActionResult Campaigns() {
+			return View(ApplicationAccessor.GetCampaigns(GetUser(), false));
+		}
+		[Access(AccessLevel.Radial)]
+		public PartialViewResult EditCampaign(long id = 0) {
+			return PartialView(ApplicationAccessor.GetCampaign(GetUser(), id));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult EditCampaign(Campaign model) {
+			ApplicationAccessor.EditCampaign(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult DeleteCampaign(long id) {
+			var model = ApplicationAccessor.GetCampaign(GetUser(), id);
+			model.DeleteTime = DateTime.UtcNow;
+			ApplicationAccessor.EditCampaign(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		#endregion
 
-        [Access(AccessLevel.Radial)]
-        [AsyncTimeout(5000)]
-        public async Task<ActionResult> Wait(CancellationToken ct, int seconds = 10, int timeout = 5) {
-            await Task.Delay((int)(seconds * 1000));
-            return Content("done " + DateTime.UtcNow.ToJsMs());
-        }
+		[Access(AccessLevel.Radial)]
+		[AsyncTimeout(5000)]
+		public async Task<ActionResult> Wait(CancellationToken ct, int seconds = 10, int timeout = 5) {
+			await Task.Delay((int)(seconds * 1000));
+			return Content("done " + DateTime.UtcNow.ToJsMs());
+		}
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult Signups(int days = 14) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var notRecent = DateTime.UtcNow.AddDays(-days);
-                    //var  = DateTime.UtcNow.AddDays(-1);
-                    var users = s.QueryOver<OnboardingUser>().OrderBy(x => x.StartTime).Desc.Where(x => x.StartTime > notRecent).List().ToList();
-                    return View(users);
-                }
-            }
-        }
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult UserInfo(long id = 0) {
+		[Access(AccessLevel.Radial)]
+		public ActionResult Signups(int days = 14) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var notRecent = DateTime.UtcNow.AddDays(-days);
+					//var  = DateTime.UtcNow.AddDays(-1);
+					var users = s.QueryOver<OnboardingUser>().OrderBy(x => x.StartTime).Desc.Where(x => x.StartTime > notRecent).List().ToList();
+					return View(users);
+				}
+			}
+		}
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult UserInfo(long id = 0) {
 #pragma warning disable CS0618 // Type or member is obsolete
-            return View(_UserAccessor.GetUserOrganizationUnsafe(id));
+			return View(_UserAccessor.GetUserOrganizationUnsafe(id));
 #pragma warning restore CS0618 // Type or member is obsolete
-        }
+		}
 
-        public class EmpCount {
-            public long Id { get; set; }
-            public MetricGraphic chart { get; set; }
-            public string Name { get;  set; }
-        }
+		public class EmpCount {
+			public long Id { get; set; }
+			public MetricGraphic chart { get; set; }
+			public string Name { get; set; }
+		}
 
-        [Access(AccessLevel.Radial)]
-        public async Task<ActionResult> EmployeeCount(CancellationToken token,Divisor divisor = null) {
-            divisor = divisor ?? new Divisor();
-            ViewBag.Divisor = divisor;  
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    LocalizedStringModel alias=null;
-                    var orgIds = s.QueryOver<OrganizationModel>()
-                                    .JoinAlias(x=>x.Name,()=>alias)
-                                    .Where(x => x.AccountType != AccountType.Cancelled)
-                                    .Where(Mod<OrganizationModel>(x => x.Id, divisor))
-                                    .Select(x => x.Id,x=>alias.Standard)                                    
-                                    .List<object[]>()
-                                    .Select(x=>new { Id = (long)x[0],Name = (string)x[1] })
-                                    .ToList();
-                    var burndowns = orgIds.Select(i => {
-                        return new EmpCount{
-                            Id = i.Id,
-                            Name = i.Name,
-                            chart = StatsAccessor.GetOrganizationMemberBurndown(s, PermissionsUtility.CreateAdmin(s), i.Id)
-                        };
-                    }).ToList();
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> EmployeeCount(CancellationToken token, Divisor divisor = null) {
+			divisor = divisor ?? new Divisor();
+			ViewBag.Divisor = divisor;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					LocalizedStringModel alias = null;
+					var orgIds = s.QueryOver<OrganizationModel>()
+									.JoinAlias(x => x.Name, () => alias)
+									.Where(x => x.AccountType != AccountType.Cancelled)
+									.Where(Mod<OrganizationModel>(x => x.Id, divisor))
+									.Select(x => x.Id, x => alias.Standard)
+									.List<object[]>()
+									.Select(x => new { Id = (long)x[0], Name = (string)x[1] })
+									.ToList();
+					var burndowns = orgIds.Select(i => {
+						return new EmpCount {
+							Id = i.Id,
+							Name = i.Name,
+							chart = StatsAccessor.GetOrganizationMemberBurndown(s, PermissionsUtility.CreateAdmin(s), i.Id)
+						};
+					}).ToList();
 
-                    return View(burndowns);
-                }
-            }
-            // return View();
-        }
-
-
-        [Access(AccessLevel.Radial)]
-        public ActionResult Meetings(int minutes = 120) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var recent = DateTime.UtcNow.AddMinutes(-minutes);
-                    var notRecent = DateTime.UtcNow.AddDays(-1);
-                    var measurables = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && (x.CompleteTime == null || x.CompleteTime >= recent) && x.CreateTime > notRecent).List().ToList();
-                    return View(measurables);
-                }
-            }
-        }
-        public class MergeAcc {
-            public UserOrganizationModel Main { get; set; }
-            public UserOrganizationModel ToMerge { get; set; }
-        }
-        [Access(AccessLevel.Radial)]
-        public ActionResult MergeAccounts(long? id = null) {
-            var model = new MergeAcc {
-                Main = GetUser()
-            };
-            if (id != null) {
-                using (var s = HibernateSession.GetCurrentSession()) {
-                    using (var tx = s.BeginTransaction()) {
-
-                        var other = s.Get<UserOrganizationModel>(id);
-                        model.ToMerge = other;
-                    }
-                }
-            }
-            return View(model);
-        }
-        [Access(AccessLevel.Radial)]
-        public ActionResult PerformMergeAccounts(long mainId, long mergeId) {
-            UserOrganizationModel main;
-            UserOrganizationModel merge;
-            UserOrganizationModel originalMerg;
-            string email;
-
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    main = s.Get<UserOrganizationModel>(mainId);
-                    merge = s.Get<UserOrganizationModel>(mergeId);
-
-                    if (main.TempUser != null)
-                        throw new PermissionsException("Cannot combine users: Main user has not registered");
-
-                    if (main.DeleteTime != null)
-                        throw new PermissionsException("Cannot combine users: Main user was deleted");
-                    if (merge.DeleteTime != null)
-                        throw new PermissionsException("Cannot combine users: Merge user was deleted");
-
-                    if (main.Organization.DeleteTime != null)
-                        throw new PermissionsException("Cannot combine users: Main Organization was deleted");
-                    if (merge.Organization.DeleteTime != null)
-                        throw new PermissionsException("Cannot combine users: Merge Organization was deleted");
-
-                    email = main.User.UserName;
-                    var newIds = main.User.UserOrganizationIds.ToList();
-                    newIds.Add(mergeId);
-                    newIds = newIds.Distinct().ToList();
+					return View(burndowns);
+				}
+			}
+			// return View();
+		}
 
 
-                    main.User.UserOrganizationIds = newIds.ToArray();
-                    main.User.UserOrganizationCount = newIds.Count();
-                    main.User.UserOrganization.Add(merge);
+		[Access(AccessLevel.Radial)]
+		public ActionResult Meetings(int minutes = 120) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var recent = DateTime.UtcNow.AddMinutes(-minutes);
+					var notRecent = DateTime.UtcNow.AddDays(-1);
+					var measurables = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && (x.CompleteTime == null || x.CompleteTime >= recent) && x.CreateTime > notRecent).List().ToList();
+					return View(measurables);
+				}
+			}
+		}
+		public class MergeAcc {
+			public UserOrganizationModel Main { get; set; }
+			public UserOrganizationModel ToMerge { get; set; }
+		}
+		[Access(AccessLevel.Radial)]
+		public ActionResult MergeAccounts(long? id = null) {
+			var model = new MergeAcc {
+				Main = GetUser()
+			};
+			if (id != null) {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
 
-                    //if (merge.TempUser != null && merge.User.Id != main.User.Id) {
-                    //	merge.User.UserOrganization = merge.User.UserOrganization.Where(x => x.Id != mergeId).ToArray();
-                    //	s.Update(merge.User);
-                    //}
+						var other = s.Get<UserOrganizationModel>(id);
+						model.ToMerge = other;
+					}
+				}
+			}
+			return View(model);
+		}
+		[Access(AccessLevel.Radial)]
+		public ActionResult PerformMergeAccounts(long mainId, long mergeId) {
+			UserOrganizationModel main;
+			UserOrganizationModel merge;
+			UserOrganizationModel originalMerg;
+			string email;
 
-                    s.Update(main.User);
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					main = s.Get<UserOrganizationModel>(mainId);
+					merge = s.Get<UserOrganizationModel>(mergeId);
 
-                    //	tx.Commit();
-                    //}
+					if (main.TempUser != null)
+						throw new PermissionsException("Cannot combine users: Main user has not registered");
 
-                    //using (var tx = s.BeginTransaction()) {
+					if (main.DeleteTime != null)
+						throw new PermissionsException("Cannot combine users: Main user was deleted");
+					if (merge.DeleteTime != null)
+						throw new PermissionsException("Cannot combine users: Merge user was deleted");
 
-                    merge.EmailAtOrganization = email;
+					if (main.Organization.DeleteTime != null)
+						throw new PermissionsException("Cannot combine users: Main Organization was deleted");
+					if (merge.Organization.DeleteTime != null)
+						throw new PermissionsException("Cannot combine users: Merge Organization was deleted");
 
-                    if (merge.TempUser != null) {
-                        merge.AttachTime = DateTime.UtcNow;
-                        merge.User = main.User;
-                        //merge.Organization = ;
-                        //merge.CurrentRole = userOrgPlaceholder;
-                        s.Delete(merge.TempUser);
-                        merge.TempUser = null;
-                    } else {
-                        if (merge.User.Id != main.User.Id) {
-                            merge.User.UserOrganizationIds = merge.User.UserOrganizationIds.Where(x => x != mergeId).Distinct().ToArray();
-                            merge.User.UserOrganizationCount = merge.User.UserOrganizationIds.Count();
-                            merge.User.CurrentRole = merge.User.UserOrganizationIds.FirstOrDefault();
-                            merge.User.UserOrganization = merge.User.UserOrganization.Where(x => x.Id != mergeId).ToArray();
-
-                            //merge.User.UserName = merge.User.UserName + "_merged";
-                            //s.Update(merge.User);
-                            s.Update(merge.User);
-
-                            merge.User = main.User;
-                        }
-
-                        s.Update(merge.User);
-                    }
-
-                    s.Update(merge);
+					email = main.User.UserName;
+					var newIds = main.User.UserOrganizationIds.ToList();
+					newIds.Add(mergeId);
+					newIds = newIds.Distinct().ToList();
 
 
-                    main.UpdateCache(s);
-                    merge.UpdateCache(s);
+					main.User.UserOrganizationIds = newIds.ToArray();
+					main.User.UserOrganizationCount = newIds.Count();
+					main.User.UserOrganization.Add(merge);
 
-                    tx.Commit();
-                    s.Flush();
+					//if (merge.TempUser != null && merge.User.Id != main.User.Id) {
+					//	merge.User.UserOrganization = merge.User.UserOrganization.Where(x => x.Id != mergeId).ToArray();
+					//	s.Update(merge.User);
+					//}
 
-                }
-            }
-            return Content(
-                @"Merged accounts.<br/>==================================<br/><br/>
+					s.Update(main.User);
+
+					//	tx.Commit();
+					//}
+
+					//using (var tx = s.BeginTransaction()) {
+
+					merge.EmailAtOrganization = email;
+
+					if (merge.TempUser != null) {
+						merge.AttachTime = DateTime.UtcNow;
+						merge.User = main.User;
+						//merge.Organization = ;
+						//merge.CurrentRole = userOrgPlaceholder;
+						s.Delete(merge.TempUser);
+						merge.TempUser = null;
+					} else {
+						if (merge.User.Id != main.User.Id) {
+							merge.User.UserOrganizationIds = merge.User.UserOrganizationIds.Where(x => x != mergeId).Distinct().ToArray();
+							merge.User.UserOrganizationCount = merge.User.UserOrganizationIds.Count();
+							merge.User.CurrentRole = merge.User.UserOrganizationIds.FirstOrDefault();
+							merge.User.UserOrganization = merge.User.UserOrganization.Where(x => x.Id != mergeId).ToArray();
+
+							//merge.User.UserName = merge.User.UserName + "_merged";
+							//s.Update(merge.User);
+							s.Update(merge.User);
+
+							merge.User = main.User;
+						}
+
+						s.Update(merge.User);
+					}
+
+					s.Update(merge);
+
+
+					main.UpdateCache(s);
+					merge.UpdateCache(s);
+
+					tx.Commit();
+					s.Flush();
+
+				}
+			}
+			return Content(
+				@"Merged accounts.<br/>==================================<br/><br/>
 				Hi " + main.GetFirstName() + @",<br/><br/>
 				I've merged your accounts, please use '" + main.User.UserName + @"' to log on from now on to Traction Tools. To switch between accounts, click 'Change Organization' from the dropdown in the top-right.<br/><br/>
 				Thank you,<br/><br/>
 				" + GetUserModel().Name());
-        }
+		}
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult Events(int days = 30, long? orgId = null) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var evtsQ = s.QueryOver<AccountEvent>().Where(x => x.DeleteTime == null && x.CreateTime > DateTime.UtcNow.AddDays(-days));
-                    if (orgId != null) {
-                        evtsQ = evtsQ.Where(x => x.OrgId == orgId.Value);
-                        ViewBag.FixSidebar = false;
-                    }
+		[Access(AccessLevel.Radial)]
+		public ActionResult Events(int days = 30, long? orgId = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var evtsQ = s.QueryOver<AccountEvent>().Where(x => x.DeleteTime == null && x.CreateTime > DateTime.UtcNow.AddDays(-days));
+					if (orgId != null) {
+						evtsQ = evtsQ.Where(x => x.OrgId == orgId.Value);
+						ViewBag.FixSidebar = false;
+					}
 
-                    var evts = evtsQ.List().ToList();
-                    var org = s.QueryOver<OrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(evts.Select(x => x.OrgId).ToArray()).List().ToList();
-                    ViewBag.OrgLookup = new DefaultDictionary<long?, string>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => y.GetName()) ?? "" + x);
-                    ViewBag.OrgStatusLookup = new DefaultDictionary<long?, AccountType>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => (AccountType?)y.AccountType) ?? AccountType.Invalid);
-                    return View(evts);
-                }
-            }
-        }
-        [Access(AccessLevel.Radial)]
-        public ActionResult EventsCsv(int days = 30, long? orgId = null) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var evtsQ = s.QueryOver<AccountEvent>().Where(x => x.DeleteTime == null && x.CreateTime > DateTime.UtcNow.AddDays(-days));
-                    if (orgId != null) {
-                        evtsQ = evtsQ.Where(x => x.OrgId == orgId.Value);
-                        ViewBag.FixSidebar = false;
-                    }
+					var evts = evtsQ.List().ToList();
+					var org = s.QueryOver<OrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(evts.Select(x => x.OrgId).ToArray()).List().ToList();
+					ViewBag.OrgLookup = new DefaultDictionary<long?, string>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => y.GetName()) ?? "" + x);
+					ViewBag.OrgStatusLookup = new DefaultDictionary<long?, AccountType>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => (AccountType?)y.AccountType) ?? AccountType.Invalid);
+					return View(evts);
+				}
+			}
+		}
+		[Access(AccessLevel.Radial)]
+		public ActionResult EventsCsv(int days = 30, long? orgId = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var evtsQ = s.QueryOver<AccountEvent>().Where(x => x.DeleteTime == null && x.CreateTime > DateTime.UtcNow.AddDays(-days));
+					if (orgId != null) {
+						evtsQ = evtsQ.Where(x => x.OrgId == orgId.Value);
+						ViewBag.FixSidebar = false;
+					}
 
-                    var evts = evtsQ.List().ToList();
-                    var org = s.QueryOver<OrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(evts.Select(x => x.OrgId).ToArray()).List().ToList();
-                    var OrgLookup = new DefaultDictionary<long?, string>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => y.GetName()) ?? "" + x);
-                    var OrgStatusLookup = new DefaultDictionary<long?, AccountType>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => (AccountType?)y.AccountType) ?? AccountType.Invalid);
+					var evts = evtsQ.List().ToList();
+					var org = s.QueryOver<OrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(evts.Select(x => x.OrgId).ToArray()).List().ToList();
+					var OrgLookup = new DefaultDictionary<long?, string>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => y.GetName()) ?? "" + x);
+					var OrgStatusLookup = new DefaultDictionary<long?, AccountType>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => (AccountType?)y.AccountType) ?? AccountType.Invalid);
 
-                    var csv = new Csv();
-                    foreach (var evt in evts) {
-                        csv.Add("" + evt.Id, "eid", "" + evt.Id);
-                        csv.Add("" + evt.Id, "CreateTime", "" + evt.CreateTime);
-                        csv.Add("" + evt.Id, "OrgId", "" + evt.OrgId);
-                        csv.Add("" + evt.Id, "Org", "" + OrgLookup[evt.OrgId]);
-                        csv.Add("" + evt.Id, "Status", "" + OrgStatusLookup[evt.OrgId]);
-                        csv.Add("" + evt.Id, "Type", "" + evt.Type.Kind());
-                        csv.Add("" + evt.Id, "Duration", "" + evt.Type.Duration());
-                        csv.Add("" + evt.Id, "ByUser", "" + evt.TriggeredBy);
-                        csv.Add("" + evt.Id, "Arg1", "" + evt.Argument1);
-                    }
+					var csv = new Csv();
+					foreach (var evt in evts) {
+						csv.Add("" + evt.Id, "eid", "" + evt.Id);
+						csv.Add("" + evt.Id, "CreateTime", "" + evt.CreateTime);
+						csv.Add("" + evt.Id, "OrgId", "" + evt.OrgId);
+						csv.Add("" + evt.Id, "Org", "" + OrgLookup[evt.OrgId]);
+						csv.Add("" + evt.Id, "Status", "" + OrgStatusLookup[evt.OrgId]);
+						csv.Add("" + evt.Id, "Type", "" + evt.Type.Kind());
+						csv.Add("" + evt.Id, "Duration", "" + evt.Type.Duration());
+						csv.Add("" + evt.Id, "ByUser", "" + evt.TriggeredBy);
+						csv.Add("" + evt.Id, "Arg1", "" + evt.Argument1);
+					}
 
-                    return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_Events" + orgId.NotNull(x => "_" + x) + ".csv");
-                }
-            }
-        }
+					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_Events" + orgId.NotNull(x => "_" + x) + ".csv");
+				}
+			}
+		}
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult MeetingsTable(int weeks = 3) {
-            ViewBag.Weeks = weeks;
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var recent = DateTime.UtcNow.AddDays(-weeks * 7);
-                    var notRecent = DateTime.UtcNow.AddDays(-weeks * 7 - 1);
-                    var measurables = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && (x.CompleteTime == null || x.CompleteTime >= recent) && x.CreateTime > notRecent)
-                        .List().ToList()
-                        .Where(x => x.Organization.AccountType != AccountType.SwanServices)
-                        .ToList();
-                    return View(measurables);
-                }
-            }
-        }
+		[Access(AccessLevel.Radial)]
+		public ActionResult MeetingsTable(int weeks = 3) {
+			ViewBag.Weeks = weeks;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var recent = DateTime.UtcNow.AddDays(-weeks * 7);
+					var notRecent = DateTime.UtcNow.AddDays(-weeks * 7 - 1);
+					var measurables = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && (x.CompleteTime == null || x.CompleteTime >= recent) && x.CreateTime > notRecent)
+						.List().ToList()
+						.Where(x => x.Organization.AccountType != AccountType.SwanServices)
+						.ToList();
+					return View(measurables);
+				}
+			}
+		}
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult DbTime() {
+		[Access(AccessLevel.Radial)]
+		public ActionResult DbTime() {
 
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    return Content("DbTimestamp:" + HibernateSession.GetDbTime(s));
-                }
-            }
-        }
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					return Content("DbTimestamp:" + HibernateSession.GetDbTime(s));
+				}
+			}
+		}
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult ShiftScorecard(long recurrence = 0, int weeks = 0) {
-            if (recurrence == 0 || weeks == 0)
-                return Content("Requires a recurrence and weeks parameter ?recurrence=&weeks= <br/>Warning: this command will shift the measurable regardless of whether it has been shifted for another meeting.");
-            var messages = new List<string>();
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var measurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
-                        .Fetch(x => x.Measurable).Eager
-                        .Select(x => x.Measurable).List<MeasurableModel>().ToList();
+		[Access(AccessLevel.Radial)]
+		public ActionResult ShiftScorecard(long recurrence = 0, int weeks = 0) {
+			if (recurrence == 0 || weeks == 0)
+				return Content("Requires a recurrence and weeks parameter ?recurrence=&weeks= <br/>Warning: this command will shift the measurable regardless of whether it has been shifted for another meeting.");
+			var messages = new List<string>();
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var measurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
+						.Fetch(x => x.Measurable).Eager
+						.Select(x => x.Measurable).List<MeasurableModel>().ToList();
 
-                    foreach (var measurable in measurables) {
-                        if (measurable != null) {
-                            var message = "Measurable [" + string.Format("{0,-18}", measurable.Id) + "] shifted (" + string.Format("{0,-5}", weeks) + ") weeks.";
-                            messages.Add(message);
-                            log.Info(message);
-                            var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.Measurable.Id == measurable.Id).List().ToList();
-                            foreach (var score in scores) {
-                                score.DateDue = score.DateDue.AddDays(7 * weeks);
-                                score.ForWeek = score.ForWeek.AddDays(7 * weeks);
-                                s.Update(score);
-                            }
-                        }
-                    }
+					foreach (var measurable in measurables) {
+						if (measurable != null) {
+							var message = "Measurable [" + string.Format("{0,-18}", measurable.Id) + "] shifted (" + string.Format("{0,-5}", weeks) + ") weeks.";
+							messages.Add(message);
+							log.Info(message);
+							var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.Measurable.Id == measurable.Id).List().ToList();
+							foreach (var score in scores) {
+								score.DateDue = score.DateDue.AddDays(7 * weeks);
+								score.ForWeek = score.ForWeek.AddDays(7 * weeks);
+								s.Update(score);
+							}
+						}
+					}
 
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-            return Content(string.Join("<br/>", messages));
-        }
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return Content(string.Join("<br/>", messages));
+		}
 
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> ResetSwanServices(long id) {
-            var recurId = id;
-            if (GetUser().Organization.AccountType == AccountType.SwanServices) {
-                //fall through
-            } else {
-                throw new PermissionsException("Must be a Swan Services account");
-            }
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> ResetSwanServices(long id) {
+			var recurId = id;
+			if (GetUser().Organization.AccountType == AccountType.SwanServices) {
+				//fall through
+			} else {
+				throw new PermissionsException("Must be a Swan Services account");
+			}
 
-            var issues = new[] {
-                "Working outside the Core Focus",
-                "Scorecards & Measurables for all",
-                "Marketing Process",
-                "Technical Training",
-                "Revise financial department structure",
-                "Finance Department Level 10 Meeting",
-                "Accounting Software",
-                "Next Generation Technology",
+			var issues = new[] {
+				"Working outside the Core Focus",
+				"Scorecards & Measurables for all",
+				"Marketing Process",
+				"Technical Training",
+				"Revise financial department structure",
+				"Finance Department Level 10 Meeting",
+				"Accounting Software",
+				"Next Generation Technology",
 
-            };
-            var todos = new[] {
-                "Review Sales Process with Sales Team",
-                "Meet with Acme Industries for lunch",
-                "Schedule meeting with Dan",
-                "Send quote to 3 New Prospects",
-                "Find three possible locations for new HQ",
-                "Create Incentive plan for Sales Team (Rough Draft)",
-                "Create and email new clients technology solutions",
-                "Make sure entire team is following Marketing Core Process",
-                "Call Amber to schedule meeting",
-                "Meet with Carol in Finance",
-                "Give credit to Mike Paton",
-            };
-
-
+			};
+			var todos = new[] {
+				"Review Sales Process with Sales Team",
+				"Meet with Acme Industries for lunch",
+				"Schedule meeting with Dan",
+				"Send quote to 3 New Prospects",
+				"Find three possible locations for new HQ",
+				"Create Incentive plan for Sales Team (Rough Draft)",
+				"Create and email new clients technology solutions",
+				"Make sure entire team is following Marketing Core Process",
+				"Call Amber to schedule meeting",
+				"Meet with Carol in Finance",
+				"Give credit to Mike Paton",
+			};
 
 
 
-            //var recurId = 1;
-            var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), recurId);
-            var possibleUsers = recur.Attendees.Select(x => x.Id).ToList();
-            possibleUsers.Add(GetUser().Id);
-
-            var addedTodos = 0;
-            var addedIssues = 0;
-            var addedScores = 0;
-            var deletedTodos = 0;
-            var deletedIssues = 0;
-            var deletedScores = 0;
-            var deletedHeadlines = 0;
-
-            DateTime start = DateTime.UtcNow;
-
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var recur1 = s.Get<L10Recurrence>(recurId);
-
-                    if (recur1.OrganizationId != GetUser().Organization.Id)
-                        throw new PermissionsException("Recurrence not part of organization");
 
 
+			//var recurId = 1;
+			var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), recurId);
+			var possibleUsers = recur.Attendees.Select(x => x.Id).ToList();
+			possibleUsers.Add(GetUser().Id);
 
-                    var r = new Random(22586113);
-                    var u1 = recur.Attendees.ToList()[r.Next(recur.Attendees.Count() - 1)];
-                    var u2 = recur.Attendees.ToList()[r.Next(recur.Attendees.Count() - 1)];
-                    var u3 = recur.Attendees.ToList()[r.Next(recur.Attendees.Count() - 1)];
+			var addedTodos = 0;
+			var addedIssues = 0;
+			var addedScores = 0;
+			var deletedTodos = 0;
+			var deletedIssues = 0;
+			var deletedScores = 0;
+			var deletedHeadlines = 0;
 
-                    var headlines = new[] {
-                        new {Message ="Huge Deal Closed With New Client", AboutId = (long?)u1.Id, AboutName = u1.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u1.Id), Details =(string)null },
-                        new {Message ="Jenny had her Baby!!It's A BOY!!!", AboutId = (long?)u2.Id, AboutName = u2.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u2.Id), Details="Her baby was 17lbs!!! she broke the state record!!"},
-                        new {Message ="8 New Prospects from Business Convention", AboutId = (long?)u3.Id, AboutName = u3.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u3.Id), Details =(string)null},
+			DateTime start = DateTime.UtcNow;
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var recur1 = s.Get<L10Recurrence>(recurId);
+
+					if (recur1.OrganizationId != GetUser().Organization.Id)
+						throw new PermissionsException("Recurrence not part of organization");
+
+
+
+					var r = new Random(22586113);
+					var u1 = recur.Attendees.ToList()[r.Next(recur.Attendees.Count() - 1)];
+					var u2 = recur.Attendees.ToList()[r.Next(recur.Attendees.Count() - 1)];
+					var u3 = recur.Attendees.ToList()[r.Next(recur.Attendees.Count() - 1)];
+
+					var headlines = new[] {
+						new {Message ="Huge Deal Closed With New Client", AboutId = (long?)u1.Id, AboutName = u1.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u1.Id), Details =(string)null },
+						new {Message ="Jenny had her Baby!!It's A BOY!!!", AboutId = (long?)u2.Id, AboutName = u2.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u2.Id), Details="Her baby was 17lbs!!! she broke the state record!!"},
+						new {Message ="8 New Prospects from Business Convention", AboutId = (long?)u3.Id, AboutName = u3.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u3.Id), Details =(string)null},
 						//new {Message ="Team pulled together after a customer shipment was lost", AboutId = (long?)644, AboutName = "Fulfillment Team", About=(ResponsibilityGroupModel)s.Load<OrganizationTeamModel>(644L)}
 					};
 
 
-                    //if (recur1.OrganizationId != 592)
-                    //	throw new Exception("Cannot edit meetings outside of Gart Sports");
-                    var me = GetUser().Organization.Members.FirstOrDefault() ?? GetUser();
-                    var caller = s.Get<UserOrganizationModel>(me.Id);
-                    var perms = PermissionsUtility.Create(s, caller);
+					//if (recur1.OrganizationId != 592)
+					//	throw new Exception("Cannot edit meetings outside of Gart Sports");
+					var me = GetUser().Organization.Members.FirstOrDefault() ?? GetUser();
+					var caller = s.Get<UserOrganizationModel>(me.Id);
+					var perms = PermissionsUtility.Create(s, caller);
 
 
-                    foreach (var at in recur.Todos.Where(x => !x.Complete.Value)) {
-                        var todo = s.Load<TodoModel>(at.Id);
-                        todo.CompleteTime = DateTime.MinValue;
-                        s.Update(todo);
-                        deletedTodos += 1;
-                    }
-                    var createTime = DateTime.UtcNow.AddDays(-5);
-                    foreach (var todo in todos) {
-                        var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
-                        var todoC = TodoCreation.CreateL10Todo(recurId, todo, null, possibleUsers[r.Next(possibleUsers.Count - 1)], DateTime.UtcNow.AddDays(r.Next(1, 2)), now: createTime);
-                        await TodoAccessor.CreateTodo(s, perms, todoC);
+					foreach (var at in recur.Todos.Where(x => !x.Complete.Value)) {
+						var todo = s.Load<TodoModel>(at.Id);
+						todo.CompleteTime = DateTime.MinValue;
+						s.Update(todo);
+						deletedTodos += 1;
+					}
+					var createTime = DateTime.UtcNow.AddDays(-5);
+					foreach (var todo in todos) {
+						var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
+						var todoC = TodoCreation.CreateL10Todo(recurId, todo, null, possibleUsers[r.Next(possibleUsers.Count - 1)], DateTime.UtcNow.AddDays(r.Next(1, 2)), now: createTime);
+						await TodoAccessor.CreateTodo(s, perms, todoC);
 
-                        //await TodoAccessor.CreateTodo(s, perms, recurId, new Models.Todo.TodoModel {
-                        //	AccountableUserId = possibleUsers[r.Next(possibleUsers.Count - 1)],
-                        //	Message = todo,
-                        //	ForRecurrenceId = recurId,
-                        //	DueDate = DateTime.UtcNow.AddDays(r.Next(1, 2)),
-                        //	CompleteTime = complete,
-                        //	CreateTime = createTime,
-                        //	OrganizationId = caller.Organization.Id,
-                        //});
-                        createTime = createTime.AddMinutes(r.Next(3, 8));
-                        addedTodos += 1;
-                    }
-
-
-                    foreach (var at in recur.IssuesList.Issues.Where(x => !x.Complete.Value)) {
-                        var issue = s.Load<IssueModel.IssueModel_Recurrence>(at.Id);
-                        issue.CloseTime = DateTime.MinValue;
-                        s.Update(issue);
-                        deletedIssues += 1;
-                    }
+						//await TodoAccessor.CreateTodo(s, perms, recurId, new Models.Todo.TodoModel {
+						//	AccountableUserId = possibleUsers[r.Next(possibleUsers.Count - 1)],
+						//	Message = todo,
+						//	ForRecurrenceId = recurId,
+						//	DueDate = DateTime.UtcNow.AddDays(r.Next(1, 2)),
+						//	CompleteTime = complete,
+						//	CreateTime = createTime,
+						//	OrganizationId = caller.Organization.Id,
+						//});
+						createTime = createTime.AddMinutes(r.Next(3, 8));
+						addedTodos += 1;
+					}
 
 
-                    foreach (var h in recur.Headlines) {
-                        var headline = s.Load<PeopleHeadline>(h.Id);
-                        headline.CloseTime = DateTime.MinValue;
-                        s.Update(headline);
-                        deletedHeadlines += 1;
-                    }
-
-                    createTime = DateTime.UtcNow.AddDays(-5);
-                    foreach (var issue in issues) {
-                        //var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
-                        var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
-
-                        var creation = IssueCreation.CreateL10Issue(issue, null, owner, recurId, now: createTime);
-                        await IssuesAccessor.CreateIssue(s, perms, creation);
-
-                        createTime = createTime.AddMinutes(r.Next(5, 15));
-                        addedIssues += 1;
-                    }
+					foreach (var at in recur.IssuesList.Issues.Where(x => !x.Complete.Value)) {
+						var issue = s.Load<IssueModel.IssueModel_Recurrence>(at.Id);
+						issue.CloseTime = DateTime.MinValue;
+						s.Update(issue);
+						deletedIssues += 1;
+					}
 
 
+					foreach (var h in recur.Headlines) {
+						var headline = s.Load<PeopleHeadline>(h.Id);
+						headline.CloseTime = DateTime.MinValue;
+						s.Update(headline);
+						deletedHeadlines += 1;
+					}
 
+					createTime = DateTime.UtcNow.AddDays(-5);
+					foreach (var issue in issues) {
+						//var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
+						var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
 
-                    foreach (var h in headlines) {
-                        //var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
-                        var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
-                        await HeadlineAccessor.CreateHeadline(s, perms, new PeopleHeadline {
-                            Message = h.Message,
-                            AboutId = h.AboutId,
-                            AboutName = h.AboutName,
-                            OwnerId = owner,
-                            RecurrenceId = recurId,
-                            About = h.About,
-                            Owner = s.Load<UserOrganizationModel>(owner),
+						var creation = IssueCreation.CreateL10Issue(issue, null, owner, recurId, now: createTime);
+						await IssuesAccessor.CreateIssue(s, perms, creation);
 
-                            _Details = h.Details,
-
-                            OrganizationId = caller.Organization.Id,
-                            CreateTime = createTime,
-                        });
-                        createTime = createTime.AddMinutes(r.Next(5, 15));
-                        addedIssues += 1;
-                    }
+						createTime = createTime.AddMinutes(r.Next(5, 15));
+						addedIssues += 1;
+					}
 
 
 
-                    //var regen = await ScorecardAccessor._GenerateScoreModels_Unsafe(s,recur.Scorecard.Weeks.Select(x=>x.ForWeek), recur.Scorecard.Measurables.Select(x=>x.Id));
 
-                    if (true/*regen*/) {
-                        s.Flush();
-                        recur = await L10Accessor.GetOrGenerateAngularRecurrence(s, perms, recurId);
-                    }
+					foreach (var h in headlines) {
+						//var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
+						var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
+						await HeadlineAccessor.CreateHeadline(s, perms, new PeopleHeadline {
+							Message = h.Message,
+							AboutId = h.AboutId,
+							AboutName = h.AboutName,
+							OwnerId = owner,
+							RecurrenceId = recurId,
+							About = h.About,
+							Owner = s.Load<UserOrganizationModel>(owner),
 
+							_Details = h.Details,
 
-                    var current = recur.Scorecard.Weeks.FirstOrDefault(x => x.IsCurrentWeek).ForWeekNumber;
-                    var emptyMeasurable = recur.Scorecard.Measurables.ElementAtOrDefault(r.Next(recur.Scorecard.Measurables.Count() - 1)).NotNull(x => x.Id);
-
-                    foreach (var angScore in recur.Scorecard.Scores.Where(x => x.ForWeek > current - 13)) {
-                        if (angScore.Id > 0) {
-                            if (angScore.ForWeek == current && angScore.Measurable.Id == emptyMeasurable) {
-                                var score = s.Load<ScoreModel>(angScore.Id);
-                                score.Measured = null;
-                                s.Update(score);
-                                deletedScores += 0;
-
-                            } else if (angScore.Measured == null) {
-                                var score = s.Load<ScoreModel>(angScore.Id);
-                                double stdDev = (double)(angScore.Measurable.Target.Value * (angScore.Measurable.Id.GetHashCode() % 5 * 2 + 1) / 100.0m);
-                                double mean = (double)angScore.Measurable.Target.Value;
-                                score.Measured = (decimal)Math.Floor(100 * r.NextNormal(mean, stdDev)) / 100m;
-                                s.Update(score);
-                                addedScores += 1;
-                            }
-                        }
-
-                    }
-
-                    //Commit is required
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-            var duration = (DateTime.UtcNow - start).TotalSeconds;
-
-            return Content("Todos: +" + addedTodos + "/-" + deletedTodos + " <br/>Issues: +" + addedIssues + "/-" + deletedIssues + " <br/>Scores: +" + addedScores + "/-" + deletedScores + " <br/>Duration: " + duration + "s");
-        }
-
-        public class AllUserEmail {
-            public String UserName { get; set; }
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public String UserEmail { get; set; }
-            public String OrgName { get; set; }
-            public long UserId { get; set; }
-            public long OrgId { get; set; }
-            public DateTime UserCreateTime { get; set; }
-            public DateTime? UserDeleteTime { get; set; }
-            public string AccountType { get; set; }
-            public DateTime? OrgCreateTime { get; set; }
-            public DateTime? LastLogin { get; set; }
-            //public bool Blacklist { get; set; }
-        }
-        [Access(AccessLevel.Radial)]
-        public ActionResult AllUsers(long id) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var org = s.Get<OrganizationModel>(id);
-
-                    var allUsers = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == id).List().ToList();
-
-                    var items = allUsers.Select(x => {
-                        return new AllUserEmail() {
-                            UserName = x.Name,                            
-                            UserEmail = x.Email,
-                            UserId = x.UserId,
-                            OrgId = x.OrganizationId,
-                            OrgName = org.GetName(),
-                            AccountType = "" + org.NotNull(y => y.AccountType),
-                            OrgCreateTime = org.CreationTime,
-                            UserCreateTime = x.CreateTime
-
-                        };
-                    }).ToList();
-
-                    var csv = new Csv();
-                    csv.Title = "UserId";
-                    foreach (var o in items) {
-                        csv.Add("" + o.UserId, "UserName", o.UserName);
-                        csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
-                        csv.Add("" + o.UserId, "OrgName", o.OrgName);
-                        csv.Add("" + o.UserId, "UserId", "" + o.UserId);
-                        csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
-                        csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
-                        csv.Add("" + o.UserId, "AccountType", o.AccountType);
-                        csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
-                    }
-
-                    return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllUsers_" + org.GetName() + ".csv");
+							OrganizationId = caller.Organization.Id,
+							CreateTime = createTime,
+						});
+						createTime = createTime.AddMinutes(r.Next(5, 15));
+						addedIssues += 1;
+					}
 
 
-                }
-            }
-        }
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult AllEmails() {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    UserOrganizationModel userAlias = null;
-                    var allUsersF = s.QueryOver<UserLookup>()
-                        //.JoinAlias(x => x._User, () => userAlias)
-                        .Where(x => x.DeleteTime == null && x.HasJoined)
-                        .Future();
-                        //.Select(x => x.Name, x => x.Email, x => x.UserId, b => b.OrganizationId, x => x.CreateTime,x=>userAlias.)
-                        //.Future<object[]>().Select(x => new {
-                        //    Name = (string)x[0],
-                        //    Email = (string)x[1],
-                        //    UserId = (long)x[2],
-                        //    OrganizationId = (long)x[3],
-                        //    CreateTime = (DateTime)x[4],
-                        //    FirstName = (string)
-                        //});
+					//var regen = await ScorecardAccessor._GenerateScoreModels_Unsafe(s,recur.Scorecard.Weeks.Select(x=>x.ForWeek), recur.Scorecard.Measurables.Select(x=>x.Id));
 
-                    /*
+					if (true/*regen*/) {
+						s.Flush();
+						recur = await L10Accessor.GetOrGenerateAngularRecurrence(s, perms, recurId);
+					}
+
+
+					var current = recur.Scorecard.Weeks.FirstOrDefault(x => x.IsCurrentWeek).ForWeekNumber;
+					var emptyMeasurable = recur.Scorecard.Measurables.ElementAtOrDefault(r.Next(recur.Scorecard.Measurables.Count() - 1)).NotNull(x => x.Id);
+
+					foreach (var angScore in recur.Scorecard.Scores.Where(x => x.ForWeek > current - 13)) {
+						if (angScore.Id > 0) {
+							if (angScore.ForWeek == current && angScore.Measurable.Id == emptyMeasurable) {
+								var score = s.Load<ScoreModel>(angScore.Id);
+								score.Measured = null;
+								s.Update(score);
+								deletedScores += 0;
+
+							} else if (angScore.Measured == null) {
+								var score = s.Load<ScoreModel>(angScore.Id);
+								double stdDev = (double)(angScore.Measurable.Target.Value * (angScore.Measurable.Id.GetHashCode() % 5 * 2 + 1) / 100.0m);
+								double mean = (double)angScore.Measurable.Target.Value;
+								score.Measured = (decimal)Math.Floor(100 * r.NextNormal(mean, stdDev)) / 100m;
+								s.Update(score);
+								addedScores += 1;
+							}
+						}
+
+					}
+
+					//Commit is required
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			var duration = (DateTime.UtcNow - start).TotalSeconds;
+
+			return Content("Todos: +" + addedTodos + "/-" + deletedTodos + " <br/>Issues: +" + addedIssues + "/-" + deletedIssues + " <br/>Scores: +" + addedScores + "/-" + deletedScores + " <br/>Duration: " + duration + "s");
+		}
+
+		public class AllUserEmail {
+			public String UserName { get; set; }
+			public string FirstName { get; set; }
+			public string LastName { get; set; }
+			public String UserEmail { get; set; }
+			public String OrgName { get; set; }
+			public long UserId { get; set; }
+			public long OrgId { get; set; }
+			public DateTime UserCreateTime { get; set; }
+			public DateTime? UserDeleteTime { get; set; }
+			public string AccountType { get; set; }
+			public DateTime? OrgCreateTime { get; set; }
+			public DateTime? LastLogin { get; set; }
+			public bool IsAdmin { get; set; }
+			public bool IsManager { get; set; }
+			//public bool Blacklist { get; set; }
+		}
+		[Access(AccessLevel.Radial)]
+		public ActionResult AllUsers(long id) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var org = s.Get<OrganizationModel>(id);
+
+					var allUsers = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == id).List().ToList();
+
+					var items = allUsers.Select(x => {
+						return new AllUserEmail() {
+							UserName = x.Name,
+							UserEmail = x.Email,
+							UserId = x.UserId,
+							OrgId = x.OrganizationId,
+							OrgName = org.GetName(),
+							AccountType = "" + org.NotNull(y => y.AccountType),
+							OrgCreateTime = org.CreationTime,
+							UserCreateTime = x.CreateTime
+
+						};
+					}).ToList();
+
+					var csv = new Csv();
+					csv.Title = "UserId";
+					foreach (var o in items) {
+						csv.Add("" + o.UserId, "UserName", o.UserName);
+						csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
+						csv.Add("" + o.UserId, "OrgName", o.OrgName);
+						csv.Add("" + o.UserId, "UserId", "" + o.UserId);
+						csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
+						csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
+						csv.Add("" + o.UserId, "AccountType", o.AccountType);
+						csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
+					}
+
+					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllUsers_" + org.GetName() + ".csv");
+
+
+				}
+			}
+		}
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult AllEmails() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					UserOrganizationModel userAlias = null;
+					var allUsersF = s.QueryOver<UserLookup>()
+						//.JoinAlias(x => x._User, () => userAlias)
+						.Where(x => x.DeleteTime == null && x.HasJoined)
+						.Future();
+					//.Select(x => x.Name, x => x.Email, x => x.UserId, b => b.OrganizationId, x => x.CreateTime,x=>userAlias.)
+					//.Future<object[]>().Select(x => new {
+					//    Name = (string)x[0],
+					//    Email = (string)x[1],
+					//    UserId = (long)x[2],
+					//    OrganizationId = (long)x[3],
+					//    CreateTime = (DateTime)x[4],
+					//    FirstName = (string)
+					//});
+
+					/*
                       UserName = x.Name,
                             UserEmail = x.Email,
                             UserId = x.UserId,
@@ -693,141 +698,145 @@ namespace RadialReview.Controllers {
                             OrgCreateTime = org.NotNull(y => y.CreateTime),
                             UserCreateTime = x.CreateTime
                      */
-                    var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
-                    var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
+					var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
+					var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
 
-                    var allUserNames = s.QueryOver<UserModel>()
-                        .Select(x => x.UserName, x => x.FirstName, x => x.LastName, x=>x.DeleteTime)
-                        .Future<object[]>()
-                        .Select(x => new {
-                            Email = (string)x[0],
-                            FN = (string)x[1],
-                            LN = (string)x[2],
-                            Deleted = ((DateTime?)x[3])!=null
-                        });
-
-
-                    var chartsF = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Select(x => x.RootId).Future<long>();
-                    var nodesF = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).Select(
-                        x => x.Id,
-                        x => x.ParentNodeId,
-                        x => x.UserId
-                    ).Future<object[]>();
-                    var orgflagsF = s.QueryOver<OrganizationFlag>().Where(x => x.DeleteTime == null).Future();
-                    var userFlagsF = s.QueryOver<UserRole>().Where(x => x.DeleteTime == null).Future();
-
-                    var allUsers = allUsersF.ToList();
-                    var allLocalizedStrings = localizedStringF.Select(x => new {
-                        Id = (long)x[0],
-                        Name = (string)x[1]
-                    }).ToDictionary(x => x.Id, x => x.Name);
-                    
-                    var allOrgs = allOrgsF.Select(x => new {
-                        Id = (long)x[0],
-                        NameId = (long)x[1],
-                        Name = (string)allLocalizedStrings.GetOrDefault((long)x[1], ""),
-                        DeleteTime = (DateTime?)x[2],
-                        CreateTime = (DateTime)x[3],
-                        AccountType = (AccountType)x[4],
-                        
-                    }).ToDictionary(x => x.Id, x => x);
-
-                    
-                    var items = allUsers.Select(x => {
-                        var org = allOrgs.GetOrDefault(x.OrganizationId, null);
-                        if (org.DeleteTime != null)
-                            return null;
-                        return new AllUserEmail() {
-                            UserName = x.Name,
-                            UserEmail = x.Email,
-                            UserId = x.UserId,
-                            OrgId = x.OrganizationId,
-                            OrgName = org.NotNull(y => y.Name),
-                            AccountType = "" + org.NotNull(y => y.AccountType),
-                            OrgCreateTime = org.NotNull(y => y.CreateTime),
-                            UserCreateTime = x.CreateTime,
-                            UserDeleteTime = x.DeleteTime,
-                            LastLogin = x.LastLogin,
-                            
-                            //Deleted = x.DeleteTime!=null  || org.DeleteTime !=null || org.AccountType == AccountType.Cancelled
-                        };
-                    }).Where(x => x != null).ToList();
-
-                    var charts = chartsF.Select(x => new { RootId = x }).ToList();
-                    var nodes = nodesF.Select(x => new {
-                        Id = (long)x[0],
-                        ParentNodeId = (long?)x[1],
-                        UserId = (long?)x[2]
-                    }).ToList();
-
-                    var leadershipMembers = new DefaultDictionary<long, bool>(x => false);
-                    foreach (var c in charts.ToList()) {
-                        var roots = nodes.Where(x => x.Id == c.RootId).ToList();
-                        if (roots.Any()) {
-                            var visionaryRow = nodes.Where(x => roots.Any(y => x.ParentNodeId == y.Id)).ToList();
-
-                            foreach (var i in roots.Where(x => x.UserId != null).Select(x => x.UserId))
-                                leadershipMembers[i.Value] = true;
-                            foreach (var i in visionaryRow.Where(x => x.UserId != null).Select(x => x.UserId))
-                                leadershipMembers[i.Value] = true;
-
-                            if (visionaryRow.Count <= 3) {
-                                var integratorRow = nodes.Where(x => visionaryRow.Any(y => x.ParentNodeId == y.Id)).ToList();
-                                foreach (var i in integratorRow.Where(x => x.UserId != null).Select(x => x.UserId))
-                                    leadershipMembers[i.Value] = true;
+					var allUserNames = s.QueryOver<UserModel>()
+						.Select(x => x.UserName, x => x.FirstName, x => x.LastName, x => x.DeleteTime)
+						.Future<object[]>()
+						.Select(x => new {
+							Email = (string)x[0],
+							FN = (string)x[1],
+							LN = (string)x[2],
+							Deleted = ((DateTime?)x[3]) != null
+						});
 
 
-                                if (integratorRow.Count == 1) {
-                                    var leadershipTeamRow = nodes.Where(x => integratorRow.Any(y => x.ParentNodeId == y.Id)).ToList();
-                                    foreach (var i in leadershipTeamRow.Where(x => x.UserId != null).Select(x => x.UserId))
-                                        leadershipMembers[i.Value] = true;
-                                }
-                            }
-                        }
-                    }
+					var chartsF = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Select(x => x.RootId).Future<long>();
+					var nodesF = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).Select(
+						x => x.Id,
+						x => x.ParentNodeId,
+						x => x.UserId
+					).Future<object[]>();
+					var orgflagsF = s.QueryOver<OrganizationFlag>().Where(x => x.DeleteTime == null).Future();
+					var userFlagsF = s.QueryOver<UserRole>().Where(x => x.DeleteTime == null).Future();
 
-                    var nameLookup = allUserNames.ToList().Distinct(x => x.Email).ToDictionary(x => x.Email.ToLower(), x => x);
-                    var orgFlags = orgflagsF.GroupBy(x => x.OrganizationId).ToDictionary(x => x.Key, x => x.ToList());
-                    var userFlags = userFlagsF.GroupBy(x => x.UserId).ToDictionary(x => x.Key, x => x.ToList());
+					var allUsers = allUsersF.ToList();
+					var allLocalizedStrings = localizedStringF.Select(x => new {
+						Id = (long)x[0],
+						Name = (string)x[1]
+					}).ToDictionary(x => x.Id, x => x.Name);
 
-                    var csv = new Csv();
-                    csv.Title = "UserId";
-                    foreach (var o in items) {
-                        if (o.UserEmail.ToLower().EndsWith("@mytractiontools.com")) {
-                            continue;
-                        }
-                        var fn = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.FN) ?? o.UserName.NotNull(x => x.SubstringBefore(" ")) ?? o.UserName;
-                        var ln = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.LN) ?? o.UserName.NotNull(x => x.SubstringAfter(" ")) ?? o.UserName;
+					var allOrgs = allOrgsF.Select(x => new {
+						Id = (long)x[0],
+						NameId = (long)x[1],
+						Name = (string)allLocalizedStrings.GetOrDefault((long)x[1], ""),
+						DeleteTime = (DateTime?)x[2],
+						CreateTime = (DateTime)x[3],
+						AccountType = (AccountType)x[4],
 
-                        var of = orgFlags.GetOrAddDefault(o.OrgId, (x) => new List<OrganizationFlag>()).Select(x => x.FlagType).ToArray();
-                        var uf = userFlags.GetOrAddDefault(o.UserId, (x) => new List<UserRole>()).Select(x => x.RoleType).ToArray();
+					}).ToDictionary(x => x.Id, x => x);
 
-                        //csv.Add("" + o.UserId, "UserName", o.UserName);
-                        csv.Add("" + o.UserId, "UserName", o.UserName);
-                        csv.Add("" + o.UserId, "FirstName", fn);
-                        csv.Add("" + o.UserId, "LastName", ln);
-                        csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
-                        csv.Add("" + o.UserId, "OrgName", o.OrgName);
-                        csv.Add("" + o.UserId, "UserId", "" + o.UserId);
-                        csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
-                        csv.Add("" + o.UserId, "LastLogin", "" + o.LastLogin);
-                        csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
-                        csv.Add("" + o.UserId, "UserDeleteTime", "" + o.UserDeleteTime);
-                        csv.Add("" + o.UserId, "AccountType", o.AccountType);
-                        csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
-                        csv.Add("" + o.UserId, "LeadershipTeam_Guess", "" + leadershipMembers[o.UserId]);
-                        csv.Add("" + o.UserId, "LeadershipTeam_ClientMarked", "" + uf.Any(x=>x == UserRoleType.LeadershipTeamMember));
-                        csv.Add("" + o.UserId, "UserType_AccountContact", "" + uf.Any(x=>x == UserRoleType.AccountContact));
-                        csv.Add("" + o.UserId, "UserType_Placeholder", "" + uf.Any(x=>x == UserRoleType.PlaceholderOnly));
-                        csv.Add("" + o.UserId, "Delinquent", "" + of.Any(x => x == OrganizationFlagType.Delinquent));
-                        csv.Add("" + o.UserId, "OrgFlags", string.Join("|", of));
-                        csv.Add("" + o.UserId, "UserFlags", string.Join("|", uf));
-                        csv.Add("" + o.UserId, "TT_Blacklist", "" + uf.Any(x => x == UserRoleType.EmailBlackList ));
-                        
 
-                    }
+					var items = allUsers.Select(x => {
+						var org = allOrgs.GetOrDefault(x.OrganizationId, null);
+						if (org.DeleteTime != null)
+							return null;
+						return new AllUserEmail() {
+							UserName = x.Name,
+							UserEmail = x.Email,
+							UserId = x.UserId,
+							OrgId = x.OrganizationId,
+							OrgName = org.NotNull(y => y.Name),
+							AccountType = "" + org.NotNull(y => y.AccountType),
+							OrgCreateTime = org.NotNull(y => y.CreateTime),
+							UserCreateTime = x.CreateTime,
+							UserDeleteTime = x.DeleteTime,
+							LastLogin = x.LastLogin,
+							IsAdmin = x.IsAdmin,
+							IsManager = x.IsManager
 
-                    /*First Name        
+							//Deleted = x.DeleteTime!=null  || org.DeleteTime !=null || org.AccountType == AccountType.Cancelled
+						};
+					}).Where(x => x != null).ToList();
+
+					var charts = chartsF.Select(x => new { RootId = x }).ToList();
+					var nodes = nodesF.Select(x => new {
+						Id = (long)x[0],
+						ParentNodeId = (long?)x[1],
+						UserId = (long?)x[2]
+					}).ToList();
+
+					var leadershipMembers = new DefaultDictionary<long, bool>(x => false);
+					foreach (var c in charts.ToList()) {
+						var roots = nodes.Where(x => x.Id == c.RootId).ToList();
+						if (roots.Any()) {
+							var visionaryRow = nodes.Where(x => roots.Any(y => x.ParentNodeId == y.Id)).ToList();
+
+							foreach (var i in roots.Where(x => x.UserId != null).Select(x => x.UserId))
+								leadershipMembers[i.Value] = true;
+							foreach (var i in visionaryRow.Where(x => x.UserId != null).Select(x => x.UserId))
+								leadershipMembers[i.Value] = true;
+
+							if (visionaryRow.Count <= 3) {
+								var integratorRow = nodes.Where(x => visionaryRow.Any(y => x.ParentNodeId == y.Id)).ToList();
+								foreach (var i in integratorRow.Where(x => x.UserId != null).Select(x => x.UserId))
+									leadershipMembers[i.Value] = true;
+
+
+								if (integratorRow.Count == 1) {
+									var leadershipTeamRow = nodes.Where(x => integratorRow.Any(y => x.ParentNodeId == y.Id)).ToList();
+									foreach (var i in leadershipTeamRow.Where(x => x.UserId != null).Select(x => x.UserId))
+										leadershipMembers[i.Value] = true;
+								}
+							}
+						}
+					}
+
+					var nameLookup = allUserNames.ToList().Distinct(x => x.Email).ToDictionary(x => x.Email.ToLower(), x => x);
+					var orgFlags = orgflagsF.GroupBy(x => x.OrganizationId).ToDictionary(x => x.Key, x => x.ToList());
+					var userFlags = userFlagsF.GroupBy(x => x.UserId).ToDictionary(x => x.Key, x => x.ToList());
+
+					var csv = new Csv();
+					csv.Title = "UserId";
+					foreach (var o in items) {
+						if (o.UserEmail.ToLower().EndsWith("@mytractiontools.com")) {
+							continue;
+						}
+						var fn = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.FN) ?? o.UserName.NotNull(x => x.SubstringBefore(" ")) ?? o.UserName;
+						var ln = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.LN) ?? o.UserName.NotNull(x => x.SubstringAfter(" ")) ?? o.UserName;
+
+						var of = orgFlags.GetOrAddDefault(o.OrgId, (x) => new List<OrganizationFlag>()).Select(x => x.FlagType).ToArray();
+						var uf = userFlags.GetOrAddDefault(o.UserId, (x) => new List<UserRole>()).Select(x => x.RoleType).ToArray();
+
+						//csv.Add("" + o.UserId, "UserName", o.UserName);
+						csv.Add("" + o.UserId, "UserName", o.UserName);
+						csv.Add("" + o.UserId, "FirstName", fn);
+						csv.Add("" + o.UserId, "LastName", ln);
+						csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
+						csv.Add("" + o.UserId, "OrgName", o.OrgName);
+						csv.Add("" + o.UserId, "UserId", "" + o.UserId);
+						csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
+						csv.Add("" + o.UserId, "LastLogin", "" + o.LastLogin);
+						csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
+						csv.Add("" + o.UserId, "UserDeleteTime", "" + o.UserDeleteTime);
+						csv.Add("" + o.UserId, "AccountType", o.AccountType);
+						csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
+						csv.Add("" + o.UserId, "LeadershipTeam_Guess", "" + leadershipMembers[o.UserId]);
+						csv.Add("" + o.UserId, "LeadershipTeam_ClientMarked", "" + uf.Any(x => x == UserRoleType.LeadershipTeamMember));
+						csv.Add("" + o.UserId, "UserType_AccountContact", "" + uf.Any(x => x == UserRoleType.AccountContact));
+						csv.Add("" + o.UserId, "UserType_Placeholder", "" + uf.Any(x => x == UserRoleType.PlaceholderOnly));
+						csv.Add("" + o.UserId, "Delinquent", "" + of.Any(x => x == OrganizationFlagType.Delinquent));
+						csv.Add("" + o.UserId, "OrgFlags", string.Join("|", of));
+						csv.Add("" + o.UserId, "UserFlags", string.Join("|", uf));
+						csv.Add("" + o.UserId, "TT_Blacklist", "" + uf.Any(x => x == UserRoleType.EmailBlackList));
+						csv.Add("" + o.UserId, "IsAdmin", "" + o.IsAdmin);
+						csv.Add("" + o.UserId, "IsManager", "" + o.IsManager);
+
+
+					}
+
+					/*First Name        
 Last Name        
 Status        
 TT Active Account        
@@ -838,197 +847,197 @@ Flag For Disabled / Blacklisted from TT
 Flag For Disabled / Blacklisted from CS        
 3 Successful Meetings while in Trial (over 30 min)*/
 
-                    return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
+					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
 
 
-                }
-            }
-        }
-
-
-
-        //[Access(AccessLevel.Radial)]
-        //public ActionResult AllLT() {
-        //	using (var s = HibernateSession.GetCurrentSession()) {
-        //		using (var tx = s.BeginTransaction()) {
-
-        //			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
-        //			var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
-        //			var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
-        //			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
-        //			var nodes = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).List().ToList();
-
-        //			var allUsersF = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && x.HasJoined).Future();
-
-        //			var allUsers = allUsersF.ToList();
-        //			var allLocalizedStrings = localizedStringF.Select(x => new {
-        //				Id = (long)x[0],
-        //				Name = (string)x[1]
-        //			}).ToDictionary(x => x.Id, x => x.Name);
-
-
-        //			var allOrgs = allOrgsF.Select(x => new {
-        //				Id = (long)x[0],
-        //				NameId = (long)x[1],
-        //				Name = (string)allLocalizedStrings.GetOrDefault((long)x[1], ""),
-        //				DeleteTime = (DateTime?)x[2],
-        //				CreateTime = (DateTime)x[3],
-        //				AccountType = (AccountType)x[4],
-        //			}).ToDictionary(x => x.Id, x => x);			
-
-        //			var items = allUsers.Select(x => {
-        //				var org = allOrgs.GetOrDefault(x.OrganizationId, null);
-        //				if (org.DeleteTime != null)
-        //					return null;
-        //				return new AllUserEmail() {
-        //					UserName = x.Name,
-        //					UserEmail = x.Email,
-        //					UserId = x.UserId,
-        //					OrgId = x.OrganizationId,
-        //					OrgName = org.NotNull(y => y.Name),
-        //					AccountType = "" + org.NotNull(y => y.AccountType),
-        //					OrgCreateTime = org.NotNull(y => y.CreateTime),
-        //					UserCreateTime = x.CreateTime
-
-        //				};
-        //			}).Where(x => x != null).ToList();
-
-        //			var csv = new Csv();
-        //			csv.Title = "UserId";
-        //			foreach (var o in items) {
-        //				csv.Add("" + o.UserId, "UserName", o.UserName);
-        //				csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
-        //				csv.Add("" + o.UserId, "OrgName", o.OrgName);
-        //				csv.Add("" + o.UserId, "UserId", "" + o.UserId);
-        //				csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
-        //				csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
-        //				csv.Add("" + o.UserId, "AccountType", o.AccountType);
-        //				csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
-        //			}
-
-        //			return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
-
-
-        //		}
-        //	}
-        //}
+				}
+			}
+		}
 
 
 
+		//[Access(AccessLevel.Radial)]
+		//public ActionResult AllLT() {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
 
-        [Access(AccessLevel.Radial)]
-        public async Task<JsonResult> Notify(long userId, string message, string details = null, bool sensitive = true, string imageUrl = null) {
-            var n = await NotificationAccessor.CreateNotification_Unsafe(NotifcationCreation.Build(userId, message, details, sensitive, imageUrl), true);
-            return Json(n, JsonRequestBehavior.AllowGet);
-        }
+		//			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
+		//			var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
+		//			var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
+		//			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
+		//			var nodes = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).List().ToList();
 
+		//			var allUsersF = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && x.HasJoined).Future();
 
-
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> ResetDemo(long recurId = 1) {
-
-            if (GetUser().Id == 600 || GetUser().IsRadialAdmin || GetUser().User.IsRadialAdmin) {
-                //fall through
-            } else {
-                throw new PermissionsException();
-            }
-
-            var issues = new[] { "Board meeting location?", "Bonus allocation", "Equipment leases (current?)", "Sales department working remotely", "sales department morale" };
-            var todos = new[] { "Call Vendors re: outstanding issues", "'Turnover' was not entered.", "call that speech writer back -- 'AthleticBusiness keynote speech'",
-                "Send HR review documents for my team", "call back that canidant -- 'Shipping Errors' goal was missed by 8",
-                "Send Lindsey data in prep for Board meeting",
-                "Prepare meeting agenda for upcoming Board meeting", "Provide job description to HR for new EA", "Pass fitness room lead to sales for follow up",
-                "Call StorEdge re: SEO & loop in Sales Team", "Send project update to Sales Team re: new software", "schedule time ......'AthleticBusiness keynote speech'",
-                 };
+		//			var allUsers = allUsersF.ToList();
+		//			var allLocalizedStrings = localizedStringF.Select(x => new {
+		//				Id = (long)x[0],
+		//				Name = (string)x[1]
+		//			}).ToDictionary(x => x.Id, x => x.Name);
 
 
-            //var recurId = 1;
-            var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), recurId);
-            var possibleUsers = recur.Attendees.Select(x => x.Id).ToList();
-            possibleUsers.Add(600);
+		//			var allOrgs = allOrgsF.Select(x => new {
+		//				Id = (long)x[0],
+		//				NameId = (long)x[1],
+		//				Name = (string)allLocalizedStrings.GetOrDefault((long)x[1], ""),
+		//				DeleteTime = (DateTime?)x[2],
+		//				CreateTime = (DateTime)x[3],
+		//				AccountType = (AccountType)x[4],
+		//			}).ToDictionary(x => x.Id, x => x);			
 
-            var addedTodos = 0;
-            var addedIssues = 0;
-            var addedScores = 0;
-            var deletedTodos = 0;
-            var deletedIssues = 0;
-            var deletedScores = 0;
-            var deletedHeadlines = 0;
+		//			var items = allUsers.Select(x => {
+		//				var org = allOrgs.GetOrDefault(x.OrganizationId, null);
+		//				if (org.DeleteTime != null)
+		//					return null;
+		//				return new AllUserEmail() {
+		//					UserName = x.Name,
+		//					UserEmail = x.Email,
+		//					UserId = x.UserId,
+		//					OrgId = x.OrganizationId,
+		//					OrgName = org.NotNull(y => y.Name),
+		//					AccountType = "" + org.NotNull(y => y.AccountType),
+		//					OrgCreateTime = org.NotNull(y => y.CreateTime),
+		//					UserCreateTime = x.CreateTime
 
-            DateTime start = DateTime.UtcNow;
+		//				};
+		//			}).Where(x => x != null).ToList();
 
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var recur1 = s.Get<L10Recurrence>(recurId);
+		//			var csv = new Csv();
+		//			csv.Title = "UserId";
+		//			foreach (var o in items) {
+		//				csv.Add("" + o.UserId, "UserName", o.UserName);
+		//				csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
+		//				csv.Add("" + o.UserId, "OrgName", o.OrgName);
+		//				csv.Add("" + o.UserId, "UserId", "" + o.UserId);
+		//				csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
+		//				csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
+		//				csv.Add("" + o.UserId, "AccountType", o.AccountType);
+		//				csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
+		//			}
 
-                    if (recur1.OrganizationId != 592)
-                        throw new Exception("Cannot edit meetings outside of Gart Sports");
-
-                    var caller = s.Get<UserOrganizationModel>(600L);
-                    var perms = PermissionsUtility.Create(s, caller);
-
-                    var r = new Random(22586113);
-
-                    foreach (var at in recur.Todos.Where(x => !x.Complete.Value)) {
-                        var todo = s.Load<TodoModel>(at.Id);
-                        todo.CompleteTime = DateTime.MinValue;
-                        s.Update(todo);
-                        deletedTodos += 1;
-                    }
-                    var createTime = DateTime.UtcNow.AddDays(-5);
-                    foreach (var todo in todos) {
-                        var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
-
-                        var todoC = TodoCreation.CreateL10Todo(recurId, todo, null, possibleUsers[r.Next(possibleUsers.Count - 1)], DateTime.UtcNow.AddDays(r.Next(1, 2)), now: createTime);
-                        await TodoAccessor.CreateTodo(s, perms, todoC);
-
-
-                        //await TodoAccessor.CreateTodo(s, perms, recurId, new Models.Todo.TodoModel {
-                        //	AccountableUserId = possibleUsers[r.Next(possibleUsers.Count - 1)],
-                        //	Message = todo,
-                        //	ForRecurrenceId = recurId,
-                        //	DueDate = DateTime.UtcNow.AddDays(r.Next(1, 2)),
-                        //	CompleteTime = complete,
-                        //	CreateTime = createTime,
-                        //	OrganizationId = caller.Organization.Id,
-                        //});
-                        createTime = createTime.AddMinutes(r.Next(3, 8));
-                        addedTodos += 1;
-                    }
+		//			return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
 
 
-                    foreach (var at in recur.IssuesList.Issues.Where(x => !x.Complete.Value)) {
-                        var issue = s.Load<IssueModel.IssueModel_Recurrence>(at.Id);
-                        issue.CloseTime = DateTime.MinValue;
-                        s.Update(issue);
-                        deletedIssues += 1;
-                    }
+		//		}
+		//	}
+		//}
 
 
-                    foreach (var h in recur.Headlines) {
-                        var headline = s.Load<PeopleHeadline>(h.Id);
-                        headline.CloseTime = DateTime.MinValue;
-                        s.Update(headline);
-                        deletedHeadlines += 1;
-                    }
-
-                    createTime = DateTime.UtcNow.AddDays(-5);
-                    foreach (var issue in issues) {
-                        //var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
-                        var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
-                        var creation = IssueCreation.CreateL10Issue(issue, null, owner, recurId, now: createTime);
-                        await IssuesAccessor.CreateIssue(s, perms, creation);
-                        createTime = createTime.AddMinutes(r.Next(5, 15));
-                        addedIssues += 1;
-                    }
 
 
-                    var headlines = new[] {
-                        new {Message ="Just had a baby", AboutId = (long?)604, AboutName = "Irene Bunn", About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(604L), Details="Her baby was 17lbs!!! she broke the state record!!" },
-                        new {Message ="Congratulations on retirement", AboutId = (long?)615, AboutName = "Don Barber", About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(615L), Details=(string)null},
-                        new {Message ="Supplier just raised shipping rates", AboutId = (long?)null, AboutName = "Maurice Sporting Goods", About=(ResponsibilityGroupModel)null, Details=(string)null},
-                        new {Message ="Team pulled together after a customer shipment was lost", AboutId = (long?)644, AboutName = "Fulfillment Team", About=(ResponsibilityGroupModel)s.Load<OrganizationTeamModel>(644L), Details=(string)null}
-                    };
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> Notify(long userId, string message, string details = null, bool sensitive = true, string imageUrl = null) {
+			var n = await NotificationAccessor.CreateNotification_Unsafe(NotifcationCreation.Build(userId, message, details, sensitive, imageUrl), true);
+			return Json(n, JsonRequestBehavior.AllowGet);
+		}
+
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> ResetDemo(long recurId = 1) {
+
+			if (GetUser().Id == 600 || GetUser().IsRadialAdmin || GetUser().User.IsRadialAdmin) {
+				//fall through
+			} else {
+				throw new PermissionsException();
+			}
+
+			var issues = new[] { "Board meeting location?", "Bonus allocation", "Equipment leases (current?)", "Sales department working remotely", "sales department morale" };
+			var todos = new[] { "Call Vendors re: outstanding issues", "'Turnover' was not entered.", "call that speech writer back -- 'AthleticBusiness keynote speech'",
+				"Send HR review documents for my team", "call back that canidant -- 'Shipping Errors' goal was missed by 8",
+				"Send Lindsey data in prep for Board meeting",
+				"Prepare meeting agenda for upcoming Board meeting", "Provide job description to HR for new EA", "Pass fitness room lead to sales for follow up",
+				"Call StorEdge re: SEO & loop in Sales Team", "Send project update to Sales Team re: new software", "schedule time ......'AthleticBusiness keynote speech'",
+				 };
+
+
+			//var recurId = 1;
+			var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), recurId);
+			var possibleUsers = recur.Attendees.Select(x => x.Id).ToList();
+			possibleUsers.Add(600);
+
+			var addedTodos = 0;
+			var addedIssues = 0;
+			var addedScores = 0;
+			var deletedTodos = 0;
+			var deletedIssues = 0;
+			var deletedScores = 0;
+			var deletedHeadlines = 0;
+
+			DateTime start = DateTime.UtcNow;
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var recur1 = s.Get<L10Recurrence>(recurId);
+
+					if (recur1.OrganizationId != 592)
+						throw new Exception("Cannot edit meetings outside of Gart Sports");
+
+					var caller = s.Get<UserOrganizationModel>(600L);
+					var perms = PermissionsUtility.Create(s, caller);
+
+					var r = new Random(22586113);
+
+					foreach (var at in recur.Todos.Where(x => !x.Complete.Value)) {
+						var todo = s.Load<TodoModel>(at.Id);
+						todo.CompleteTime = DateTime.MinValue;
+						s.Update(todo);
+						deletedTodos += 1;
+					}
+					var createTime = DateTime.UtcNow.AddDays(-5);
+					foreach (var todo in todos) {
+						var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
+
+						var todoC = TodoCreation.CreateL10Todo(recurId, todo, null, possibleUsers[r.Next(possibleUsers.Count - 1)], DateTime.UtcNow.AddDays(r.Next(1, 2)), now: createTime);
+						await TodoAccessor.CreateTodo(s, perms, todoC);
+
+
+						//await TodoAccessor.CreateTodo(s, perms, recurId, new Models.Todo.TodoModel {
+						//	AccountableUserId = possibleUsers[r.Next(possibleUsers.Count - 1)],
+						//	Message = todo,
+						//	ForRecurrenceId = recurId,
+						//	DueDate = DateTime.UtcNow.AddDays(r.Next(1, 2)),
+						//	CompleteTime = complete,
+						//	CreateTime = createTime,
+						//	OrganizationId = caller.Organization.Id,
+						//});
+						createTime = createTime.AddMinutes(r.Next(3, 8));
+						addedTodos += 1;
+					}
+
+
+					foreach (var at in recur.IssuesList.Issues.Where(x => !x.Complete.Value)) {
+						var issue = s.Load<IssueModel.IssueModel_Recurrence>(at.Id);
+						issue.CloseTime = DateTime.MinValue;
+						s.Update(issue);
+						deletedIssues += 1;
+					}
+
+
+					foreach (var h in recur.Headlines) {
+						var headline = s.Load<PeopleHeadline>(h.Id);
+						headline.CloseTime = DateTime.MinValue;
+						s.Update(headline);
+						deletedHeadlines += 1;
+					}
+
+					createTime = DateTime.UtcNow.AddDays(-5);
+					foreach (var issue in issues) {
+						//var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
+						var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
+						var creation = IssueCreation.CreateL10Issue(issue, null, owner, recurId, now: createTime);
+						await IssuesAccessor.CreateIssue(s, perms, creation);
+						createTime = createTime.AddMinutes(r.Next(5, 15));
+						addedIssues += 1;
+					}
+
+
+					var headlines = new[] {
+						new {Message ="Just had a baby", AboutId = (long?)604, AboutName = "Irene Bunn", About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(604L), Details="Her baby was 17lbs!!! she broke the state record!!" },
+						new {Message ="Congratulations on retirement", AboutId = (long?)615, AboutName = "Don Barber", About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(615L), Details=(string)null},
+						new {Message ="Supplier just raised shipping rates", AboutId = (long?)null, AboutName = "Maurice Sporting Goods", About=(ResponsibilityGroupModel)null, Details=(string)null},
+						new {Message ="Team pulled together after a customer shipment was lost", AboutId = (long?)644, AboutName = "Fulfillment Team", About=(ResponsibilityGroupModel)s.Load<OrganizationTeamModel>(644L), Details=(string)null}
+					};
 
 
 					foreach (var h in headlines) {
@@ -1146,16 +1155,16 @@ Flag For Disabled / Blacklisted from CS
 			//var server = NetworkAccessor.GetPublicIP();//Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
 			var serverRow = "<tr><td>Amazon Server: </td><td><i>failed</i></td></tr>";
 			try {
-				serverRow = "<tr><td>Amazon Server: </td><td>"+Amazon.EC2.Util.EC2Metadata.InstanceId.ToString()+"</td></tr>";
+				serverRow = "<tr><td>Amazon Server: </td><td>" + Amazon.EC2.Util.EC2Metadata.InstanceId.ToString() + "</td></tr>";
 			} catch (Exception e) {
 
 			}
-            var gitRow = "<tr><td>Git:</td><td><i>failed</i></td></tr>";
-            try {
-                gitRow = "<tr><td>Git:</td><td>" + ThisAssembly.Git.Branch+" </td><td>" +ThisAssembly.Git.Sha+ "</td></tr>";
-            } catch(Exception e) {
+			var gitRow = "<tr><td>Git:</td><td><i>failed</i></td></tr>";
+			try {
+				gitRow = "<tr><td>Git:</td><td>" + ThisAssembly.Git.Branch + " </td><td>" + ThisAssembly.Git.Sha + "</td></tr>";
+			} catch (Exception e) {
 
-            }
+			}
 
 			DateTime? dbTime = null;
 			var now = DateTime.UtcNow;
@@ -1168,21 +1177,21 @@ Flag For Disabled / Blacklisted from CS
 					}
 				}
 				var nowAfter = DateTime.UtcNow;
-				var half = new DateTime((nowAfter.Ticks - now.Ticks) / 2+now.Ticks);
+				var half = new DateTime((nowAfter.Ticks - now.Ticks) / 2 + now.Ticks);
 				diff = (dbTime - half).Value.TotalMilliseconds;
-				dbTimeRow = "<tr><td>DbTime:</td><td>" + dbTime.Value.ToString("U") + " </td><td> [diff: "+diff+ "ms]</td></tr>";
+				dbTimeRow = "<tr><td>DbTime:</td><td>" + dbTime.Value.ToString("U") + " </td><td> [diff: " + diff + "ms]</td></tr>";
 
 			} catch (Exception e) {
 			}
-			var txt	 = "<table>";
-			txt		+= "<tr><td>Server Time:</td><td>" + now.ToString("U") +	  " </td><td> [ticks: "+now.Ticks+"]</td></tr>";
-			txt		+= "<tr><td>Build Date: </td><td>"+ buildDate.ToString("U") + " </td><td> [version: "+ version.ToString() + "]</td></tr>";
-            txt     += gitRow;
-			txt		+= serverRow;
-			txt		+= dbTimeRow;
-			txt		+= "<tr><td>Server Time:</td><td>" + now.ToString("U") +	  " </td><td> [ticks: "+now.Ticks+"]</td></tr>";
-			txt		+= serverRow;
-			txt		+= "</table>";
+			var txt = "<table>";
+			txt += "<tr><td>Server Time:</td><td>" + now.ToString("U") + " </td><td> [ticks: " + now.Ticks + "]</td></tr>";
+			txt += "<tr><td>Build Date: </td><td>" + buildDate.ToString("U") + " </td><td> [version: " + version.ToString() + "]</td></tr>";
+			txt += gitRow;
+			txt += serverRow;
+			txt += dbTimeRow;
+			txt += "<tr><td>Server Time:</td><td>" + now.ToString("U") + " </td><td> [ticks: " + now.Ticks + "]</td></tr>";
+			txt += serverRow;
+			txt += "</table>";
 
 			return Content(txt);
 		}
@@ -1692,39 +1701,39 @@ Flag For Disabled / Blacklisted from CS
 		[Access(AccessLevel.Radial)]
 		public async Task<JsonResult> TestChargeOrg(long id, decimal amt) {
 #pragma warning disable CS0618 // Type or member is obsolete
-            return Json(await PaymentAccessor.ChargeOrganizationAmount(id, amt, true), JsonRequestBehavior.AllowGet);
+			return Json(await PaymentAccessor.ChargeOrganizationAmount(id, amt, true), JsonRequestBehavior.AllowGet);
 #pragma warning restore CS0618 // Type or member is obsolete
-        }
+		}
 
-        [Access(AccessLevel.Radial)]
-        public async Task<JsonResult> TestChargeToken(string token, decimal amt, bool bank = false) {
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> TestChargeToken(string token, decimal amt, bool bank = false) {
 #pragma warning disable CS0618 // Type or member is obsolete
-            var pr = await PaymentSpringUtil.ChargeToken(null, token, amt, true, bank);
-            return Json(pr, JsonRequestBehavior.AllowGet);
+			var pr = await PaymentSpringUtil.ChargeToken(null, token, amt, true, bank);
+			return Json(pr, JsonRequestBehavior.AllowGet);
 #pragma warning restore CS0618 // Type or member is obsolete
-        }
+		}
 
-        [Access(AccessLevel.Radial)]
-        public JsonResult ClearCache() {
-            var urlToRemove = Url.Action("UserScorecard", "TileData");
-            HttpResponse.RemoveOutputCacheItem(urlToRemove);
-            return Json("cleared", JsonRequestBehavior.AllowGet);
-        }
+		[Access(AccessLevel.Radial)]
+		public JsonResult ClearCache() {
+			var urlToRemove = Url.Action("UserScorecard", "TileData");
+			HttpResponse.RemoveOutputCacheItem(urlToRemove);
+			return Json("cleared", JsonRequestBehavior.AllowGet);
+		}
 
-        [Access(AccessLevel.Radial)]
-        public JsonResult CalculateOrganizationCharge(long id) {
+		[Access(AccessLevel.Radial)]
+		public JsonResult CalculateOrganizationCharge(long id) {
 
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var org = s.Get<OrganizationModel>(id);
-                    return Json(PaymentAccessor.CalculateCharge(s, org, org.PaymentPlan, DateTime.UtcNow), JsonRequestBehavior.AllowGet);
-                }
-            }
-        }
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var org = s.Get<OrganizationModel>(id);
+					return Json(PaymentAccessor.CalculateCharge(s, org, org.PaymentPlan, DateTime.UtcNow), JsonRequestBehavior.AllowGet);
+				}
+			}
+		}
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult XLS() {
-            return Xls(CsvUtility.ToXls((List<Csv>)null), "myxml");
-        }
-    }
+		[Access(AccessLevel.Radial)]
+		public ActionResult XLS() {
+			return Xls(CsvUtility.ToXls((List<Csv>)null), "myxml");
+		}
+	}
 }

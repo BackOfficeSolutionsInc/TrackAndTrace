@@ -3,6 +3,7 @@ using RadialReview.Models.L10;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Searchers {
@@ -13,7 +14,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Searchers {
             RecurrenceId = recurrenceId;
         }
 
-        public override List<L10Recurrence.L10Recurrence_Page> PerformSearch(IEventSettings settings) {
+        public override async Task<List<L10Recurrence.L10Recurrence_Page>> PerformSearch(IEventSettings settings) {
             return settings.Session.QueryOver<L10Recurrence.L10Recurrence_Page>()
                 .Where(x => x.DeleteTime == null && x.L10RecurrenceId == RecurrenceId)
                 .List().ToList();
@@ -31,8 +32,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Searchers {
             MeetingId = meetingId;
         }
 
-        public override List<L10Meeting.L10Meeting_Log> PerformSearch(IEventSettings settings) {
-            return settings.Lookup(new SearchAllRecurrencePageTimerActuals(RecurrenceId)).Where(x=>x.L10Meeting.Id == MeetingId).ToList();
+        public override async Task<List<L10Meeting.L10Meeting_Log>> PerformSearch(IEventSettings settings) {
+            return (await settings.Lookup(new SearchAllRecurrencePageTimerActuals(RecurrenceId)))
+						.Where(x=>x.L10Meeting.Id == MeetingId)
+						.ToList();
         }
 
         protected override IEnumerable<string> UniqueKeys(IEventSettings settings) {
@@ -46,7 +49,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Searchers {
             RecurrenceId = recurrenceId;
         }
 
-        public override List<L10Meeting.L10Meeting_Log> PerformSearch(IEventSettings settings) {
+        public override async Task<List<L10Meeting.L10Meeting_Log>> PerformSearch(IEventSettings settings) {
             L10Meeting alias = null;
             return settings.Session.QueryOver<L10Meeting.L10Meeting_Log>()
                 .JoinAlias(x=>x.L10Meeting,()=>alias)

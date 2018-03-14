@@ -339,6 +339,7 @@
     <Compile Include="Controllers\TwilioApi.cs" />
     <Compile Include="Controllers\PasswordTests.cs" />
     <Compile Include="Crosscutting\Events\EventProcessorTests.cs" />
+    <Compile Include="Crosscutting\Events\EventSubscriptionTests.cs" />
     <Compile Include="Engines\SurveyEngineTests.cs" />
     <Compile Include="Crosscutting\Hooks\EnterpriseHookTest.cs" />
     <Compile Include="Crosscutting\Integrations\ActiveCampaignTest.cs" />

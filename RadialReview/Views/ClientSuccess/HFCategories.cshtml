@@ -1,0 +1,135 @@
+﻿@model List<RadialReview.Controllers.ClientSuccessController.HFCategory>
+@{
+	ViewBag.Title = "HFCategories";
+}
+
+<h2>HFCategories</h2>
+
+<div id="table"></div>
+
+<style>
+	.highlight td {
+		background-color: yellow;
+	}
+
+	.startHighlight td {
+		background-color: #519c2a;
+	}
+
+	.templateContainer .btn:after {
+		content: "hide";
+	}
+
+	.templateContainer.hideTemplate .btn:after {
+		content: "show";
+	}
+
+	.templateContainer.hideTemplate .template {
+		display: none;
+	}
+
+	.template {
+		border: 1px solid gray;
+		padding: 5px;
+	}
+
+	.tag {
+		background-color: gray;
+		white-space: nowrap;
+		padding: 1px 6px;
+		border-radius: 8px;
+		margin: 0px;
+		color: white;
+	}
+
+	.bn{
+		color:#ccc !important;
+	}
+
+	tr.deleted-row:nth-of-type(odd){		
+		background-image: repeating-linear-gradient(45deg, transparent, rgba(255,255,255,.5) 0px, rgba(255,255,255,.5) 35px, transparent 35px,transparent  70px);
+	}
+
+	.deleted-row{
+		background-color: #ebebeb !important;
+		background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+	}
+	.deleted-row.parent-delete{		
+		background-color: #ffebeb !important;
+	}
+</style>
+
+@using (Html.BeginScripts()) {
+	<script>
+		var data = @Html.ArrayToString(Model);
+		DataTable({
+			container:"#table",
+			data:data,
+			table:{
+				classes:"table table-striped",
+				rows:{classes:function(x){ return "rid-"+x.Id+" pid-"+x.ParentId+" "+(x.DeleteTime==null?"":"deleted-row parent-delete");}}
+			},
+			cells:[
+				{name:"Id",classes:"idCol",contents:function(x){return "<span id='rid-"+x.Id+"'data-id="+x.Id+">"+x.Id+"</span>";}},
+				{name:"Name",classes:"nowrap",contents:function(x){return x.Name;}},
+				{name:"Tags",contents:function(x){return x.AllTags.map(function(e){return "<span class='tag'>"+e+"</span>";}).join(" ");}},
+				{name:"Body",classes:"fullWidth",contents:function(x){
+					return "<div class='templateContainer hideTemplate'><div class='btn' onclick='showEmail(this)'></div><div class='template'>"+x.EmailTemplate+"</div></div>";}},
+				{name:"Parent",classes:"bn",contents:function(x){return "<a href='#rid-"+x.ParentId+"' onclick='highlight("+x.ParentId+","+x.Id+")'>parent</a>";}},
+				{name:"Children",classes:"bn",contents:function(x){return "<a href='#' onclick='highlightChildren("+x.Id+")'>children</a>";}},
+				{name:"Deleted",classes:"delete-cell",contents:function(x){
+					if (x.DeleteTime!=null)
+						return "<a href='#' onclick='setDelete("+x.Id+",false)'>undelete</a>"
+					else 
+						return "<a href='#' class='bn' onclick='setDelete("+x.Id+",true)'>delete</a>";}}
+
+			]
+		});
+
+		setTimeout(function(){			
+			$(".deleted-row .idCol span").each(function(){
+				renderDeleteChildren($(this).data("id"));
+			});
+		},1);
+
+		function renderDeleteChildren(parentId){
+			var childs = $(".pid-"+parentId);
+			$(".rid-"+parentId).addClass("deleted-row sub");
+			childs.map(function(){
+				renderDeleteChildren($(this).find(".idCol span").data("id"));
+			})
+		}
+
+
+		function setDelete(id,deleted){
+			$.ajax({
+				method:"post",
+				url:"/ClientSuccess/HFEditCategory",
+				data:{id:id,"delete":deleted},
+				success:function(){
+					location.reload();
+					//$(".rid-"+id+" .delete-cell").html("");
+				}
+
+			})
+		}
+
+		function showEmail(self){
+			$(self).closest(".templateContainer").toggleClass("hideTemplate");
+		}
+
+		function highlight(id,selfId){
+			$(".highlight").removeClass("highlight");
+			$(".startHighlight").removeClass("startHighlight");
+			$(".rid-"+id).addClass("highlight");
+			$(".rid-"+selfId).addClass("startHighlight");
+		}
+
+		function highlightChildren(id){
+			$(".highlight").removeClass("highlight");
+			$(".startHighlight").removeClass("startHighlight");
+			$(".pid-"+id).addClass("highlight");
+			$(".rid-"+id).addClass("startHighlight");
+		}
+	</script>
+}

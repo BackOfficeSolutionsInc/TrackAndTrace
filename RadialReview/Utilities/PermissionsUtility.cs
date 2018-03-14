@@ -39,6 +39,8 @@ using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Utilities.CoreProcess;
+using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
+using RadialReview.Crosscutting.EventAnalyzers.Models;
 
 namespace RadialReview.Utilities {
     //[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -2100,9 +2102,28 @@ namespace RadialReview.Utilities {
             throw new PermissionsException();
         }
 
-        #endregion
+		#endregion
 
-        public PermissionsUtility InValidPermission() {
+		#region Events
+		public PermissionsUtility SubscribeToEvent(long subscriberUserId, IEventAnalyzerGenerator analyzer) {
+			var permChecked = false;
+			Self(subscriberUserId);
+			if (analyzer is IEventAnalyzerGenerator) {
+				ViewL10Recurrence(((IRecurrenceEventAnalyerGenerator)analyzer).RecurrenceId);
+				permChecked = true;
+			}
+
+			if (permChecked)
+				return this;
+			throw new PermissionsException("no permissions were checked");
+		}
+		public PermissionsUtility ViewEvent(long eventId, IEventAnalyzerGenerator analyzer) {
+			var evt = session.Get<EventSubscription>(eventId);
+			return SubscribeToEvent(evt.SubscriberId, analyzer);			
+		}
+		#endregion
+
+		public PermissionsUtility InValidPermission() {
             if (Config.IsLocal()) {
                 return this;
             }

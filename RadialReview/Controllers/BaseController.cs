@@ -340,6 +340,12 @@ namespace RadialReview.Controllers {
 		}
 		#endregion
 
+		protected string ReadBody() {
+			Request.InputStream.Position = 0;
+			var body = new StreamReader(Request.InputStream).ReadToEnd();
+			return body;
+		}
+
 		protected void ManagerAndCanEditOrException(UserOrganizationModel user) {
 			if (!user.IsManagerCanEditOrganization())
 				throw new PermissionsException();

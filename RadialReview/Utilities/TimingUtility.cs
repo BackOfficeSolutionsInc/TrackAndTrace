@@ -417,6 +417,7 @@ namespace RadialReview.Utilities {
 				return GetRange(s, week.ForWeek.AddDays(-7));
 			}
 			return GetRange(s, week.ForWeek);
+
 		}
 
 		public static DateRange GetLocalRange(DayOfWeek weekStart, int timezoneOffset, DateTime date, ScorecardPeriod scorecardPeriod, YearStart yearStart) {

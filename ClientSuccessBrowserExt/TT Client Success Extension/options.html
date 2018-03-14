@@ -1,0 +1,28 @@
+<html>
+<head>
+	<title>Options for Color Chooser</title>
+</head>
+<body id="body">
+	<h1>Traction Tools Url</h1>
+	<input id="TT_URL"/>
+	<h1>Debug info</h1>
+	<input type="checkbox" id="DEBUG_INFO"/>
+	<h1>Opener <div class="gray">use {0} for the client's first name</div></h1>
+	<textarea id="OPENER"></textarea>
+	<h1>Closer <div class="gray">use {1} for the your first name, {Enter} for enter key</div></h1>
+	<textarea id="CLOSER"></textarea>
+	<div>&nbsp;</div>
+	<button id="restoreDefaults">Defaults</button>
+	<button id="save" style="float:right">Save</button>
+</body>
+<style>
+	input,textarea{
+		width:100%;
+	}
+	.gray{
+		font-size:small;
+		color:gray;
+	}
+</style>
+<script src="options.js"></script>
+</html>

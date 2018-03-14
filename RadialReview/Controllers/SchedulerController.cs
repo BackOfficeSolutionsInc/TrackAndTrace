@@ -28,6 +28,9 @@ using NHibernate.Impl;
 using System.Threading;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
+using System.Configuration;
+using RadialReview.Crosscutting.EventAnalyzers;
+using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 
 namespace RadialReview.Controllers {
 
@@ -43,10 +46,27 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.Radial)]
-        [AsyncTimeout(5000)]
-        public async Task<ActionResult> Wait(CancellationToken ct, int seconds = 10, int timeout = 5) {
-            await Task.Delay((int)(seconds * 1000));
-            return Content("done " + DateTime.UtcNow.ToJsMs());
+        [AsyncTimeout(130000)]
+        public async Task<ActionResult> Wait(CancellationToken ct,bool with=true) {
+		//	HttpContext.Server.ScriptTimeout = 130;
+			if (with) {
+				//get the Report Generation Timeout
+				//int reportTimeout = Int32.Parse(ConfigurationManager.AppSettings["reportTimeout"]);
+				//
+
+				//if (itemsToShow == null)
+				//	itemsToShow = 5;
+				////var results = _imageReportService.GetAllReports().OrderByDescending(x => x.Id);
+				//var results = _imageReportService.GetLastXReports((int)itemsToShow).OrderByDescending(x => x.Id);
+
+				//var model = _mapper.Map<IEnumerable<ImageReport>, IEnumerable<ImageReportViewModel>>(results);
+				//ViewBag.NumberOfImagesToReport = _imageReportService.GetNumberOfImageItemsAwaitingReporting();
+				//return View(model);
+
+				//System.Web.HttpContext.Current.GetType().GetField("_timeoutState", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(System.Web.HttpContext.Current, 1);
+			}
+			await Task.Delay((int)(120000));
+            return Content("reached " + DateTime.UtcNow.ToJsMs());
         }
 
         /// <summary>
@@ -307,7 +327,23 @@ namespace RadialReview.Controllers {
             }
         }
 
-        [Access(AccessLevel.Any)]
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="frequency"></param>
+		/// <returns></returns>
+		[Access(AccessLevel.Any)]
+		//DO NOT RENAME
+		[AsyncTimeout(60 * 60 * 1000)]
+		public async Task<bool> ExecuteEvents(EventFrequency frequency,long taskId) {
+			await EventAccessor.ExecuteAll(frequency, taskId, DateTime.UtcNow);
+			return true;
+		}
+
+
+
+		[Access(AccessLevel.Any)]
         public async Task<bool> Daily() {
             var any = false;
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -403,8 +439,11 @@ namespace RadialReview.Controllers {
         [Access(AccessLevel.Any)]
         [AsyncTimeout(60000 * 30)]//30 minutes..
         public async Task<JsonResult> Reschedule(CancellationToken ct) {
-            //HttpContext.Server.ScriptTimeout = 20*60; // Twenty minutes..
-            var res = await TaskAccessor.ExecuteTasks();
+			//HttpContext.Server.ScriptTimeout = 20*60; // Twenty minutes..
+			//System.Web.HttpContext.Current.GetType().GetField("_timeoutState", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(System.Web.HttpContext.Current, 1);
+
+			var res = await TaskAccessor.ExecuteTasks();
+
             return Json(res, JsonRequestBehavior.AllowGet);
         }
 
