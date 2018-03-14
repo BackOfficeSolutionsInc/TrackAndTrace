@@ -3,7 +3,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurrenceId, meetingCallback, $compile, $sce, $q, $window, $filter) {
 
 	$scope.trustAsResourceUrl = $sce.trustAsResourceUrl;
-    if (recurrenceId == null)
+	if (recurrenceId == null)
 		throw Error("recurrenceId was empty");
 	$scope.disconnected = false;
 	$scope.recurrenceId = recurrenceId;
@@ -37,7 +37,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		console.log("Updating Scorecard.");
 		$scope.ScoreLookup = $scope.ScoreLookup || {};
 		var luArr = [];
-        if (data.Scorecard != null && data.Scorecard.Scores != null) {
+		if (data.Scorecard != null && data.Scorecard.Scores != null) {
 
 			luArr.push(data.Scorecard.Scores);
 		}
@@ -124,7 +124,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	});
 	var dateToNumber = function (date) {
 		var type = typeof (date);
-        if (type == 'number') {
+		if (type == 'number') {
 			return date;
 		} else if (typeof (date._d) !== 'undefined') {
 			return +date;
@@ -135,7 +135,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	}
 
 	$scope.functions.showFormula = function (id) {
-	    setFormula(id);
+		setFormula(id);
 	};
 
 	$scope.functions.startCoreProcess = function (coreProcess) {
@@ -154,11 +154,11 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
 	$scope.$watch('model.LoadUrls.length', function (newValue, oldValue) {
 		//console.log("watch LoadUrls");
-        if (newValue != 0 && $scope.model && $scope.model.LoadUrls && $scope.model.LoadUrls.length) {
+		if (newValue != 0 && $scope.model && $scope.model.LoadUrls && $scope.model.LoadUrls.length) {
 			var urls = [];
 			for (var u in $scope.model.LoadUrls) {
 				if (arrayHasOwnIndex($scope.model.LoadUrls, u)) {
-                    if ($scope.model.LoadUrls[u].Data != null) {
+					if ($scope.model.LoadUrls[u].Data != null) {
 						urls.push($scope.model.LoadUrls[u].Data);
 					}
 					$scope.model.LoadUrls[u].Data = null;
@@ -293,14 +293,14 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			Time.tzoffset();
 			console.log("Reloading Data.");
 			var url = meetingDataUrlBase;
-            if (meetingDataUrlBase.indexOf("{0}") != -1) {
+			if (meetingDataUrlBase.indexOf("{0}") != -1) {
 				url = url.replace("{0}", $scope.recurrenceId);
 			} else {
 				url = url + $scope.recurrenceId;
 			}
 
 			//var date = Time.getTimestamp();//((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
-            //if (meetingDataUrlBase.indexOf("?") != -1) {
+			//if (meetingDataUrlBase.indexOf("?") != -1) {
 			//    url += "&_clientTimestamp=" + date;
 			//} else {
 			//    url += "?_clientTimestamp=" + date;
@@ -350,7 +350,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
 	$scope.functions.subtractDays = function (date, days, shift) {
 		var d = new Date(date);
-			if (typeof (shift) === "undefined" || shift == true)
+		if (typeof (shift) === "undefined" || shift == true)
 			d = new Date(moment(d).add(new Date().getTimezoneOffset(), "minutes").valueOf())
 		d.setDate(d.getDate() - days);
 		return d;
@@ -387,9 +387,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			return "";
 		} else {
 			var met = metGoal(dir, goal, v, altgoal);
-            if (met == true)
+			if (met == true)
 				return "success";
-            else if (met == false)
+			else if (met == false)
 				return "danger";
 			else
 				return "error";
@@ -404,13 +404,13 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	}
 
 	$scope.functions.getFcsa = function (measurable) {
-        //if (measurable.Modifiers == "Dollar") {
+		//if (measurable.Modifiers == "Dollar") {
 		//    return { prepend: "$" };
-        //} else if (measurable.Modifiers == "Percent") {
+		//} else if (measurable.Modifiers == "Percent") {
 		//    return { append: "%" };
-        //} else if (measurable.Modifiers == "Euros") {
+		//} else if (measurable.Modifiers == "Euros") {
 		//    return { prepend: "€" };
-        //} else if (measurable.Modifiers == "Pound") {
+		//} else if (measurable.Modifiers == "Pound") {
 		//    return { prepend: "£" };
 		//}
 		var builder = {
@@ -418,25 +418,25 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			localization: $scope.localization
 		};
 
-        if (measurable.Modifiers == "Dollar") {
+		if (measurable.Modifiers == "Dollar") {
 			builder = {
 				prepend: "$",
 				resize: true,
 				localization: $scope.localization
 			};
-        } else if (measurable.Modifiers == "Percent") {
+		} else if (measurable.Modifiers == "Percent") {
 			builder = {
 				append: "%",
 				resize: true,
 				localization: $scope.localization
 			};
-        } else if (measurable.Modifiers == "Euros") {
+		} else if (measurable.Modifiers == "Euros") {
 			builder = {
 				prepend: "€",
 				resize: true,
 				localization: $scope.localization
 			};
-        } else if (measurable.Modifiers == "Pound") {
+		} else if (measurable.Modifiers == "Pound") {
 			builder = {
 				prepend: "£",
 				resize: true,
@@ -452,7 +452,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		for (var s in scores) {
 			if (arrayHasOwnIndex(scores, s)) {
 				var score = $scope.model.Lookup[scores[s].Key];
-                if (score.ForWeek == week && score.Measurable.Id == measurableId) {
+				if (score.ForWeek == week && score.Measurable.Id == measurableId) {
 					if (!(week in $scope.ScoreLookup))
 						$scope.ScoreLookup[week] = {};
 					$scope.ScoreLookup[week][measurableId] = scores[s].Key;
@@ -466,7 +466,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	};
 
 	$scope.functions.lookupScore = function (week, measurableId, scorecardKey) {
-        if ($scope.ScoreLookup == null) {
+		if ($scope.ScoreLookup == null) {
 			$scope.ScoreLookup = {};
 			var scorecard = $scope.model.Lookup[scorecardKey];
 			for (var w in scorecard.Weeks) {
@@ -485,7 +485,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
 		if (week in $scope.ScoreLookup && measurableId in $scope.ScoreLookup[week]) {
 			var lu = $scope.model.Lookup[$scope.ScoreLookup[week][measurableId]];
-            if (lu != null)
+			if (lu != null)
 				return lu;
 		}
 
@@ -570,7 +570,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	};
 	$scope.filters.taskFilter = function () {
 		return function (item) {
-            return !(item.Hide == true || item.Complete == true);
+			return !(item.Hide == true || item.Complete == true);
 		};
 	}
 	$scope.filters.byRange = function (fieldName, minValue, maxValue, forceMin, period) {
@@ -583,7 +583,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		}
 
 		if (typeof (period) !== "undefined") {
-            if (period == "Monthly" || period == "Quarterly") {
+			if (period == "Monthly" || period == "Quarterly") {
 				minValue = Math.min(minValue, maxValue - (366) * 24 * 60 * 60 * 1000);
 			}
 		}
@@ -595,10 +595,10 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			if (minValue instanceof Date) minValue = minValue.getTime();
 			if (maxValue instanceof Date) maxValue = maxValue.getTime();
 
-            if (fieldName == "ForWeek")
+			if (fieldName == "ForWeek")
 				d -= 7 * 24 * 60 * 60 * 1000;
 
-            return minValue <= d && d <= maxValue || moment(d).format("MMDDYYYY") == moment(maxValue).format("MMDDYYYY");
+			return minValue <= d && d <= maxValue || moment(d).format("MMDDYYYY") == moment(maxValue).format("MMDDYYYY");
 		};
 	};
 
@@ -641,7 +641,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		var icon = { title: "Update options" };
 
 		var values = ["None", "Dollar", "Percent", "Pound", "Euros"];
-        var unitTypes = values.map(function (x) { return { text: x, value: x, checked: (x == m.Modifiers) } });
+		var unitTypes = values.map(function (x) { return { text: x, value: x, checked: (x == m.Modifiers) } });
 
 		var fields = [{
 			type: "label",
@@ -658,10 +658,10 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			value: self.ShowCumulative || false,
 			type: "yesno",
 			onchange: function () {
-                $("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
+				$("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
 			}
 		}, {
-            classes: self.ShowCumulative == true ? "" : "hidden",
+			classes: self.ShowCumulative == true ? "" : "hidden",
 			name: "cumulativeRange",
 			value: self.CumulativeRange || new Date(),
 			type: "date"
@@ -680,7 +680,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			//	{ text: "Euros", value: "Euros" }
 			//],
 			//onchange: function () {
-            //	$("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
+			//	$("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
 			//}
 		}/*, {
 			type: "label",
@@ -694,192 +694,192 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			}
 		}*/]
 
-    		if (self.Direction == "Between" || self.Direction == -3) {
-    			icon = "info";
-    			//fields.unshift({
-    			//	type: "label",
-    			//	value: "Update historical goals?"
-    			//});
-    			fields.push({
-    				type: "number",
-    				text: "Lower-Boundary",
-    				name: "Lower",
-    				value: self.Target,
-    			});
-    			fields.push({
-    				type: "number",
-    				text: "Upper-Boundary",
-    				name: "Upper",
-    				value: self.AltTarget || self.Target,
-    			});
-    		}
+		if (self.Direction == "Between" || self.Direction == -3) {
+			icon = "info";
+			//fields.unshift({
+			//	type: "label",
+			//	value: "Update historical goals?"
+			//});
+			fields.push({
+				type: "number",
+				text: "Lower-Boundary",
+				name: "Lower",
+				value: self.Target,
+			});
+			fields.push({
+				type: "number",
+				text: "Upper-Boundary",
+				name: "Upper",
+				value: self.AltTarget || self.Target,
+			});
+		}
 
-    		$scope.functions.showModal({
-    			icon: icon,
-    			noCancel: true,
-    			fields: fields,
-    			success: function (model) {
-    				var low = Math.min(+model.Lower, +model.Upper);
-    				var high = Math.max(+model.Lower, +model.Upper);
-    				if (isNaN(low))
-    					low = null;
-    				if (isNaN(high))
-    					high = null;
+		$scope.functions.showModal({
+			icon: icon,
+			noCancel: true,
+			fields: fields,
+			success: function (model) {
+				var low = Math.min(+model.Lower, +model.Upper);
+				var high = Math.max(+model.Lower, +model.Upper);
+				if (isNaN(low))
+					low = null;
+				if (isNaN(high))
+					high = null;
 
-    				$scope.$apply(function () {
-    					m.Modifiers = model.unitType;
-    					//$scope.model.Lookup[m.Key].Modifiers = model.unitType;
+				$scope.$apply(function () {
+					m.Modifiers = model.unitType;
+					//$scope.model.Lookup[m.Key].Modifiers = model.unitType;
 
-    					//debugger;
-    					$scope.functions.sendUpdate(m, {
-    						"historical": model.history,
-    						"Lower": low,
-    						"Upper": high,
-    						"connectionId": null,
-    						"cumulativeStart": model.cumulativeRange,
-    						"enableCumulative": model.showCumulative,
-    						//"Modifier": model.unitType
-    					});
-    				});
-    			},
-    			cancel: function () {
+					//debugger;
+					$scope.functions.sendUpdate(m, {
+						"historical": model.history,
+						"Lower": low,
+						"Upper": high,
+						"connectionId": null,
+						"cumulativeStart": model.cumulativeRange,
+						"enableCumulative": model.showCumulative,
+						//"Modifier": model.unitType
+					});
+				});
+			},
+			cancel: function () {
 
-    			}
+			}
 
-    		});
-    	}
+		});
+	}
 
-    	$scope.functions.removeRow = function (event, self) {
-    		var dat = angular.copy(self);
-    		var _clientTimestamp = new Date().getTime();
-    		//self.Hide = true;
-    		var origArchive = self.Archived;
-    		self.Archived = true;
+	$scope.functions.removeRow = function (event, self) {
+		var dat = angular.copy(self);
+		var _clientTimestamp = new Date().getTime();
+		//self.Hide = true;
+		var origArchive = self.Archived;
+		self.Archived = true;
 
-    		$(".editable-wrap").remove();
+		$(".editable-wrap").remove();
 
-    		var url = Time.addTimestamp("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
+		var url = Time.addTimestamp("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
 
-    		$http.post(url, dat).error(function (data) {
-    			showJsonAlert(data, false, true);
-    			self.Archived = origArchive;
-    			//self.Hide = false;
-    		}).finally(function () {
-    			// reload
-    			$scope.functions.reload(true, $scope.model.dataDateRange, false);
-    		});
-    	};
+		$http.post(url, dat).error(function (data) {
+			showJsonAlert(data, false, true);
+			self.Archived = origArchive;
+			//self.Hide = false;
+		}).finally(function () {
+			// reload
+			$scope.functions.reload(true, $scope.model.dataDateRange, false);
+		});
+	};
 
-    	$scope.functions.unarchiveRow = function (event, self) {
-    		var dat = angular.copy(self);
-    		var _clientTimestamp = new Date().getTime();
-    		var origArchive = self.Archived;
-    		self.Archived = false;
-    		//self.Hide = true;
+	$scope.functions.unarchiveRow = function (event, self) {
+		var dat = angular.copy(self);
+		var _clientTimestamp = new Date().getTime();
+		var origArchive = self.Archived;
+		self.Archived = false;
+		//self.Hide = true;
 
-    		$(".editable-wrap").remove();
+		$(".editable-wrap").remove();
 
-    		var url = Time.addTimestamp("/L10/Unarchive" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
+		var url = Time.addTimestamp("/L10/Unarchive" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
 
-    		$http.post(url, dat).error(function (data) {
-    			showJsonAlert(data, false, true);
-    			//self.Hide = false;
-    			self.Archived = origArchive;
-    		}).finally(function () {
-    			// reload
-    			$scope.functions.reload(true, $scope.model.dataDateRange, false);
-    		});
-    	};
+		$http.post(url, dat).error(function (data) {
+			showJsonAlert(data, false, true);
+			//self.Hide = false;
+			self.Archived = origArchive;
+		}).finally(function () {
+			// reload
+			$scope.functions.reload(true, $scope.model.dataDateRange, false);
+		});
+	};
 
-    	$scope.functions.addRow = function (event, type, args) {
-    		if (!$(event.target).hasClass("disabled")) {
-    			var _clientTimestamp = new Date().getTime();
-    			var controller = angular.element($("[ng-controller]"));
-    			controller.addClass("loading");
-    			$(event.target).addClass("disabled");
+	$scope.functions.addRow = function (event, type, args) {
+		if (!$(event.target).hasClass("disabled")) {
+			var _clientTimestamp = new Date().getTime();
+			var controller = angular.element($("[ng-controller]"));
+			controller.addClass("loading");
+			$(event.target).addClass("disabled");
 
-    			if (typeof (args) === "undefined")
-    				args = "";
+			if (typeof (args) === "undefined")
+				args = "";
 
-    			var url = Time.addTimestamp("/L10/Add" + type + "/" + $scope.recurrenceId + "?connectionId=" + $scope.connectionId);
+			var url = Time.addTimestamp("/L10/Add" + type + "/" + $scope.recurrenceId + "?connectionId=" + $scope.connectionId);
 
-    			$http.get(url + args)
-                    .error(showAngularError)
-                    .finally(function () {
-                    	controller.removeClass("loading");
-                    	$(event.target).removeClass("disabled");
-                    });
-    		}
-    	};
+			$http.get(url + args)
+				.error(showAngularError)
+				.finally(function () {
+					controller.removeClass("loading");
+					$(event.target).removeClass("disabled");
+				});
+		}
+	};
 
-    	$scope.functions.checkAllNotifications = function () {
-    		var items = $scope.model.Notifications;
-    		if (items) {
-    			for (var i in items) {
-    				if (arrayHasOwnIndex(items, i)) {
-    					var item = items[i];
-    					item.Seen = true;
-    					$scope.functions.sendUpdate(item);
-    				}
-    			}
-    		}
-    	};
+	$scope.functions.checkAllNotifications = function () {
+		var items = $scope.model.Notifications;
+		if (items) {
+			for (var i in items) {
+				if (arrayHasOwnIndex(items, i)) {
+					var item = items[i];
+					item.Seen = true;
+					$scope.functions.sendUpdate(item);
+				}
+			}
+		}
+	};
 
-    	$scope.ShowSearch = false;
-    	$scope.functions.showUserSearch = function (event) {
-    		$scope.functions.showModal("Add Attendee", "/L10/AddAttendee?meetingId=" + $scope.recurrenceId, "/L10/AddAttendee");
-    		//$scope.ShowSearch = true;
-    		//$timeout(function () {
-    		//    $(".user-list-container .livesearch-container input").focus();
-    		//}, 1);
-    	};
-    	$scope.functions.showMeasurableSearch = function (event) {
-    		$scope.functions.showModal("Add Measurable", "/L10/AddMeasurableModal?meetingId=" + $scope.recurrenceId, "/L10/AddMeasurableModal");
-    	};
-    	$scope.functions.showRockSearch = function (event) {
-    		$scope.functions.showModal("Add Rock", "/L10/AddRockModal?meetingId=" + $scope.recurrenceId, "/L10/AddRockModal");
-    	};
+	$scope.ShowSearch = false;
+	$scope.functions.showUserSearch = function (event) {
+		$scope.functions.showModal("Add Attendee", "/L10/AddAttendee?meetingId=" + $scope.recurrenceId, "/L10/AddAttendee");
+		//$scope.ShowSearch = true;
+		//$timeout(function () {
+		//    $(".user-list-container .livesearch-container input").focus();
+		//}, 1);
+	};
+	$scope.functions.showMeasurableSearch = function (event) {
+		$scope.functions.showModal("Add Measurable", "/L10/AddMeasurableModal?meetingId=" + $scope.recurrenceId, "/L10/AddMeasurableModal");
+	};
+	$scope.functions.showRockSearch = function (event) {
+		$scope.functions.showModal("Add Rock", "/L10/AddRockModal?meetingId=" + $scope.recurrenceId, "/L10/AddRockModal");
+	};
 
-    	$scope.functions.addAttendee = function (selected) {
-    		var event = { target: $(".user-list-container") };
-    		$scope.functions.addRow(event, "AngularUser", "&userid=" + selected.item.id);
-    	}
+	$scope.functions.addAttendee = function (selected) {
+		var event = { target: $(".user-list-container") };
+		$scope.functions.addRow(event, "AngularUser", "&userid=" + selected.item.id);
+	}
 
-    	$scope.functions.createUser = function () {
-    		$timeout(function () {
-    			$scope.functions.showModal('Add managed user', '/User/AddModal', '/nexus/AddManagedUserToOrganization?meeting=' + $scope.recurrenceId + "&refresh=false");
-    		}, 1);
-    	}
+	$scope.functions.createUser = function () {
+		$timeout(function () {
+			$scope.functions.showModal('Add managed user', '/User/AddModal', '/nexus/AddManagedUserToOrganization?meeting=' + $scope.recurrenceId + "&refresh=false");
+		}, 1);
+	}
 
-    	$scope.functions.goto = function (url) {
-    		$window.location.href = url;
-    	}
+	$scope.functions.goto = function (url) {
+		$window.location.href = url;
+	}
 
-    	$scope.functions.blurSearch = function (self, noHide) {
-    		//$timeout(function () {
-    		angular.element(".searchresultspopup").addClass("ng-hide");
-    		self.visible = false;
-    		$scope.ShowSearch = false;
-    		$scope.model.Search = '';
-    		//}, 300);
-    	}
+	$scope.functions.blurSearch = function (self, noHide) {
+		//$timeout(function () {
+		angular.element(".searchresultspopup").addClass("ng-hide");
+		self.visible = false;
+		$scope.ShowSearch = false;
+		$scope.model.Search = '';
+		//}, 300);
+	}
 
-    	$scope.userSearchCallback = function (params) {
-    		var defer = $q.defer();
-    		var attendees = $scope.model.Attendees || [];
-    		var ids = $.map(attendees, function (item) {
-    			return item.Id;
-    		})
-    		$http.get("/User/Search?q=" + params + "&exclude=" + ids)
-                .then(function (response) {
-                	if (!response.data || !response.data.Object) {
-                		defer.resolve([]);
-                	}
-                	defer.resolve(response.data.Object);
-                })
-                .catch(function (e) {
-                	defer.reject(e);
-                });
+	$scope.userSearchCallback = function (params) {
+		var defer = $q.defer();
+		var attendees = $scope.model.Attendees || [];
+		var ids = $.map(attendees, function (item) {
+			return item.Id;
+		})
+		$http.get("/User/Search?q=" + params + "&exclude=" + ids)
+			.then(function (response) {
+				if (!response.data || !response.data.Object) {
+					defer.resolve([]);
+				}
+				defer.resolve(response.data.Object);
+			})
+			.catch(function (e) {
+				defer.reject(e);
+			});
 
 		return defer.promise;
 	};
@@ -902,7 +902,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			var mid = $scope.recurrenceId;
 			if (mid <= 0)
 				mid = event.source.itemScope.measurable.RecurrenceId;
-			
+
 
 			//Adj order
 			var ordered = $scope.model.Scorecard.Measurables.slice().sort(function (a, b) { return a.Ordering - b.Ordering; })
@@ -933,18 +933,17 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	};
 
 	function decideOnDate(week, selector) {
-    		//console.log(selector.ScorecardWeekDay);
-    		//console.log(week.LocalDate);
-    		//console.log(week.ForWeek);
+		//console.log(selector.ScorecardWeekDay);
+		//console.log(week.LocalDate);
+		//console.log(week.ForWeek);
 
-    		var startOfWeek = selector.startOfWeek; // Monday            
-    		//var dat = week.LocalDate;
-    		//debugger;
-    		var forWeek = week.ForWeek;
-    		//forWeek = forWeek.addDays(-7);
-    		var dat = $scope.functions.startOfWeek(forWeek, selector.ScorecardWeekDay);
+		var forWeek = new Date(70, 0, 4);
+		forWeek.setDate(forWeek.getDate() + 7 * (week.ForWeekNumber - 1));
+		forWeek = new Date(+forWeek - 1);
+		//forWeek = week.ForWeek;
+		var dat = $scope.functions.startOfWeek(forWeek, selector.ScorecardWeekDay);
 
-        if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
+		if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
 			dat = new Date(70, 0, 4);
 			dat.setDate(dat.getDate() + 7 * (week.ForWeekNumber - 1));
 		}
@@ -954,33 +953,33 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	$scope.functions.topDate = function (week, selector) {
 		//debugger;
 		var dat = decideOnDate(week, selector);
-			var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
+		var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, false/* !(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
 		return $filter('date')(date, selector.DateFormat1);
 	};
 	$scope.functions.bottomDate = function (week, selector) {
-    		// debugger;
+		// debugger;
 		var dat = decideOnDate(week, selector);
-			var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
-        if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
-				date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
+		var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6, false/*!(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
+		if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
+			date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0, false/*!(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
 		}
 		return $filter('date')(date, selector.DateFormat2);
 	};
 
-    	$scope.functions.startOfWeek = function (date, startOfWeek) {
-    		var getWeekNumber = moment(date).weekday();
-    		var diff = getWeekNumber - dayOfWeekAsInteger(startOfWeek);
-    		if (diff < 0) {
-    			diff += 7;
-    		}
+	$scope.functions.startOfWeek = function (date, startOfWeek) {
+		var getWeekNumber = moment(date).weekday();
+		var diff = getWeekNumber - dayOfWeekAsInteger(startOfWeek);
+		if (diff < 0) {
+			diff += 7;
+		}
 
-    		var date_new = $scope.functions.subtractDays(date, 1 * diff, false);
-    		return date_new;
-    	}
+		var date_new = $scope.functions.subtractDays(date, 1 * diff, false);
+		return date_new;
+	}
 
-    	function dayOfWeekAsInteger(day) {
-    		return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(day);
-    	}
+	function dayOfWeekAsInteger(day) {
+		return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(day);
+	}
 
 }])
 
