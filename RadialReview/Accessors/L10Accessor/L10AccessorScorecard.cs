@@ -407,13 +407,12 @@ namespace RadialReview.Accessors {
 			};
 		}
 
-		public static IEnumerable<ScoreModel> 
-      (TimeSettings ts, List<TodoModel> allTodos, List<L10MeetingVM.WeekVM> periods, DateTime? currentTime=null) {
-			return periods.Select(x => x.ForWeek).SelectMany(ww => {
+		public static IEnumerable<ScoreModel> CalculateIndividualTodoCompletionScores(TimeSettings ts, List<TodoModel> allTodos, List<L10MeetingVM.WeekVM> periods, DateTime? currentTime=null) {
+			return periods.SelectMany(period => {
 				return allTodos.GroupBy(x => x.AccountableUserId).SelectMany(todos => {
 					var a = todos.First().AccountableUser;
 					try {
-						var rangeTodos = TimingUtility.GetRange(ts, ww.AddDays(-7));
+						var rangeTodos = TimingUtility.GetRange(ts, period);
 						var ss = GetTodoCompletion(todos.ToList(), rangeTodos.StartTime, rangeTodos.EndTime, currentTime);
 						decimal? percent = null;
 						if (ss.IsValid()) {
@@ -423,7 +422,7 @@ namespace RadialReview.Accessors {
 						return new ScoreModel() {
 							_Editable = false,
 							AccountableUserId = a.Id,
-							ForWeek = ww,
+							ForWeek = period.ForWeek,
 							Measurable = mm,
 							Measured = percent,
 							MeasurableId = mm.Id,
@@ -439,9 +438,9 @@ namespace RadialReview.Accessors {
 		}
 
 		public static IEnumerable<ScoreModel> CalculateAggregateTodoCompletionScores(TimeSettings ts, List<TodoModel> allTodos, List<L10MeetingVM.WeekVM> periods, DateTime? currentTime=null) {
-			return periods.Select(x => x.ForWeek).SelectMany(w => {
+			return periods.SelectMany(period=> {
 				try {
-					var rangeTodos = TimingUtility.GetRange(ts, w.AddDays(-7));
+					var rangeTodos = TimingUtility.GetRange(ts, period);
 					var ss = GetTodoCompletion(allTodos, rangeTodos.StartTime, rangeTodos.EndTime, currentTime);
 					decimal? percent = null;
 					if (ss.IsValid()) {
@@ -450,7 +449,7 @@ namespace RadialReview.Accessors {
 					return new ScoreModel() {
 						_Editable = false,
 						AccountableUserId = -1,
-						ForWeek = w,
+						ForWeek = period.ForWeek,
 						Measurable = TodoMeasurable,
 						Measured = percent,
 						MeasurableId = TodoMeasurable.Id,
