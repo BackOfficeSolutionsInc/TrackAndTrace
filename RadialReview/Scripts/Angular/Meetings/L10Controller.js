@@ -149,7 +149,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
 	$scope.functions.adjustToMidnight = function (date) {
 		//adjusts local time to end of day local time
-		return new Date(((+date) + (24 * 60 * 60 * 1000 - 1)));
+		
+		return Time.adjustToMidnight(date);
+
 	}
 
 	$scope.$watch('model.LoadUrls.length', function (newValue, oldValue) {
@@ -613,11 +615,16 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		$scope.options.l10teamtypes = $scope.loadSelectOptions('/dropdown/type/l10teamtype');
 	}, 1);
 
+	/**
+	 * You must format all dates to be server dates before entering this function
+	 */
 	$scope.functions.sendUpdate = function (self, args) {
 		var dat = angular.copy(self);
 		//var _clientTimestamp = new Date().getTime();
 
-		r.updater.convertDatesForServer(dat, Time.tzoffset());
+		//Angular automatically converts dates to UTC from local time zone.
+		//r.updater.convertDatesForServer(dat, Time.tzoffset());
+		console.warn("Dates were not converted for server, please confirm");
 		var builder = "";
 		args = args || {};
 

@@ -143,6 +143,9 @@ namespace RadialReview {
 				//S:\repos\Radial\RadialReview\RadialReview\Scripts\Angular\Helpers\Libraries\angular-material-custom.js
 				"~/Scripts/Angular/Helpers/Libraries/angular-material-custom.js"
 			)));
+			bundles.Add(UpdateMinification(new StyleBundle("~/styles/AngularMaterial").Include(
+				"~/Content/Angular/angular-material.css"
+			)));
 		}
 
 		private static void Angular(BundleCollection bundles) {
