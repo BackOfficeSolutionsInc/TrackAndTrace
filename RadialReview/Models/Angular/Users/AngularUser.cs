@@ -32,8 +32,9 @@ namespace RadialReview.Models.Angular.Users
 				ImageUrl = imageUrl,
 				Initials = initials,
 				Managing = managing,
-				//CreateTime = user.,
-			};
+                //CreateTime = user.,
+                IsManager=false
+            };
 		}
 
 		public static AngularUser CreateUser(UserOrganizationModel user, ImageSize imageSize = ImageSize._64, bool? managing = null)
@@ -91,6 +92,8 @@ namespace RadialReview.Models.Angular.Users
 
         [IgnoreDataMember]
         public DateTime? CreateTime { get;set;}
-	
-	}
+
+        public bool IsManager { get; set; }
+
+    }
 }

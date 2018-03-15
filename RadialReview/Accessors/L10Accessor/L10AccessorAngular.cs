@@ -76,13 +76,23 @@ namespace RadialReview.Accessors {
 
 		#region Angular
 
-		public static async Task<AngularRecurrence> GetOrGenerateAngularRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false, DateRange scorecardRange = null) {
+		public static async Task<AngularRecurrence> GetOrGenerateAngularRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false, DateRange scorecardRange = null,bool checkManageRockAccess=false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					var angular = await GetOrGenerateAngularRecurrence(s, perms, recurrenceId, includeScores, includeHistorical, fullScorecard, range, forceIncludeTodoCompletion, scorecardRange);
 
-					tx.Commit();
+                    if (checkManageRockAccess) {
+                        foreach (var item in angular.Rocks) {
+                            if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
+                                if (perms.IsPermitted(x => x.ManagesUserOrganizationOrSelf(item.Owner.Id)))
+                                item.Owner.IsManager = true;
+                            }
+
+                        }
+                    }
+
+                    tx.Commit();
 					s.Flush();
 
 					return angular;
@@ -104,7 +114,9 @@ namespace RadialReview.Accessors {
 				return au;
 			}).ToList();
 
-			scorecardRange = scorecardRange ?? range;
+           
+
+            scorecardRange = scorecardRange ?? range;
 			bool includeClosedHeadlines = true;
 			DateRange lookupRange = null;
 			if (range != null) {

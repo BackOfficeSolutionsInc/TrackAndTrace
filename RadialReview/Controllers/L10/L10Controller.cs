@@ -455,8 +455,16 @@ namespace RadialReview.Controllers {
 
 			var attendees = L10Accessor.GetAttendees(GetUser(), meetingId);
 
-			var obj = RockAccessor.BuildCreateRockVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id));
-			var settings = SelectExistingOrCreateUtility.Create<CreateRockViewModel>("/Rocks/Search?exclude=" + existingIds, "CreateRockViewModel", obj, true);
+			var obj = RockAccessor.BuildCreateRockVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id),true);
+
+            //foreach (var item in obj) {
+               // if (GetUser().Organization.Settings.OnlySeeRocksAndScorecardBelowYou)
+                 //   PermissionsUtility.isp
+            //}
+            
+                //return ManagesUserOrganizationOrSelf(userId);
+
+            var settings = SelectExistingOrCreateUtility.Create<CreateRockViewModel>("/Rocks/Search?exclude=" + existingIds, "CreateRockViewModel", obj, true);
 			ViewBag.meetingId = meetingId;
 			return PartialView(settings);
 		}
