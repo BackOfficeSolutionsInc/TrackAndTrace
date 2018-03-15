@@ -158,6 +158,8 @@ namespace RadialReview.Accessors {
 
 			if (meetingStart.Value.Date <= d && t.CompleteTime == null)
 				return new Ratio(0, 0);
+			
+			// DueDate < WeekStart < CompleteTime
 			if (d < s && s < c) { // use s for Q=0/1 and use e for Q=0/0
 				if (c < e)
 					return new Ratio(0, 0);
