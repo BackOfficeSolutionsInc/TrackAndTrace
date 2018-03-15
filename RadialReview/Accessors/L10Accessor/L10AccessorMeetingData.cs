@@ -309,18 +309,20 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
 
-					var o = s.QueryOver<L10Meeting>()
-						.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
-						.List().ToList();
+					var o = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId);
+						
 
-                    if (excludePreviewMeeting)
-                        o = o.Where(x => x.Preview == false).ToList();
+					if (excludePreviewMeeting){
+						o = o.Where(x => x.Preview == false);
+					}
+					
+					var oResolved = o.List().ToList();
 
-					if (load)
-						_LoadMeetings(s, true, true, true, o.ToArray());
+					if (load){
+						_LoadMeetings(s, true, true, true, oResolved.ToArray());
+					}
 
-					return o;
-
+					return oResolved;
 				}
 			}
 		}
