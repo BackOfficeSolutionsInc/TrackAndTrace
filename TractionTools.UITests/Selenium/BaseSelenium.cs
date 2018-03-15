@@ -361,7 +361,8 @@ namespace TractionTools.UITests.Selenium {
 
 				if (!currentDriverUser.ContainsKey(ctx) || !currentDriverUser[ctx].Equals(mockUser)) {
 					ctx.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login?ReturnUrl=" + HttpUtility.UrlEncode(url)));
-					ctx.WaitForAlert(2);
+					ctx.WaitForAlert(0.5);
+					//ctx.WaitForAlert(2);
 					ctx.FindElement(By.Name("UserName")).SendKeys(mockUser.Username);
 					ctx.FindElement(By.Name("Password")).SendKeys(mockUser.Password);
 					ctx.FindElement(By.Id("loginForm")).FindElement(By.TagName("form")).Submit();

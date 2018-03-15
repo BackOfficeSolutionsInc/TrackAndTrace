@@ -112,56 +112,57 @@ html, body {
 .acc-chart svg {
 
 
-	.top-bar {
-		color: transparent !important;
-	}
-	.root-node .top-bar {
-		color: white !important;
-	}
+    .top-bar {
+        color: transparent !important;
+    }
 
-	.role-row .role,
-	input {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-		font-family: 'Roboto', sans-serif;
-	}
+    .root-node .top-bar {
+        color: white !important;
+    }
 
-	.role-row div.role {
-		display: inline-block;
-		width: 100%;
-		margin-left: -8px;
-	}
+    .role-row .role,
+    input {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        font-family: 'Roboto', sans-serif;
+    }
 
-	button md-icon {
-		display: none;
-	}
+    .role-row div.role {
+        display: inline-block;
+        width: 100%;
+        margin-left: -8px;
+    }
 
-	md-autocomplete,
-	md-autocomplete *
-	/*md-autocomplete button,
+    button md-icon {
+        display: none;
+    }
+
+    md-autocomplete,
+    md-autocomplete *
+    /*md-autocomplete button,
     md-autocomplete button md-icon*/ {
-		position: inherit;
-	}
+        position: inherit;
+    }
 
-	md-autocomplete[ng-disabled],
-	md-autocomplete[ng-disabled] * {
-		cursor: not-allowed;
-	}
-
-
-	.templink {
-		fill: none;
-		stroke: #ccc;
-		stroke-width: 1.5px;
-	}
-
-	.ghost.showing {
-		display: block;
+    md-autocomplete[ng-disabled],
+    md-autocomplete[ng-disabled] * {
+        cursor: not-allowed;
+    }
 
 
-		circle {
-			/*stroke: @border-color;
+    .templink {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
+    }
+
+    .ghost.showing {
+        display: block;
+
+
+        circle {
+            /*stroke: @border-color;
 			stroke-width: 2;
 			fill: @background-color;*/
 			.bottomButton();
@@ -314,44 +315,44 @@ html, body {
 				/*float: right;
                 display: inline-block;
                 height: 0;*/
-				/* -moz-transform: translate(0,-10px);
+                /* -moz-transform: translate(0,-10px);
                 -ms-transform: translate(0,-10px);
                 -o-transform: translate(0,-10px);
                 -webkit-transform: translate(0,-10px);
                 transform: translate(0,-10px);*/
-			}
-		}
+            }
+        }
 
-		.role-groups {
-			min-height: 14px;
+        .role-groups {
+            min-height: 14px;
 
-			.role-group {
-				margin: 0px 12px;
-				padding-bottom: 6px;
+            .role-group {
+                margin: 0px 12px;
+                padding-bottom: 6px;
 
-				ul {
-					padding-left: 16px;
-					margin-bottom: 0px;
+                ul {
+                    padding-left: 16px;
+                    margin-bottom: 0px;
 
 
-					li.role-row {
-						margin-right: -3px;
+                    li.role-row {
+                        margin-right: -3px;
 
-						.role {
-							text-overflow: ellipsis;
-							font-size: 10px;
-							margin-left: -15px;
+                        .role {
+                            text-overflow: ellipsis;
+                            font-size: 10px;
+                            margin-left: -15px;
 
-							&:before {
-								content: " ";
-								margin-left: 8px;
-							}
-						}
+                            &:before {
+                                content: " ";
+                                margin-left: 8px;
+                            }
+                        }
 
-						input.role {
-							margin-left: -8px;
-						}
-						/*.role-row .role {
+                        input.role {
+                            margin-left: -8px;
+                        }
+                        /*.role-row .role {
 							margin-left: -15px;
 
 							div:before {
@@ -359,127 +360,127 @@ html, body {
 								margin-right: 10px;
 							}
 						}*/
-						.delete-role-row {
-							margin-right: 0px;
-							display: inline-block;
-							width: 0px;
-							.glyphicon();
-							.glyphicon-remove();
-							position: static;
-							font-size: 8px;
-							margin-top: -2px;
-							cursor: pointer;
-							opacity: 0;
-							color: lightgray;
+                        .delete-role-row {
+                            margin-right: 0px;
+                            display: inline-block;
+                            width: 0px;
+                            .glyphicon();
+                            .glyphicon-remove();
+                            position: static;
+                            font-size: 8px;
+                            margin-top: -2px;
+                            cursor: pointer;
+                            opacity: 0;
+                            color: lightgray;
 
-							&:hover {
-								color: #b7b7b7;
-							}
+                            &:hover {
+                                color: #b7b7b7;
+                            }
 
-							&:focus {
-								outline: none;
-							}
-						}
+                            &:focus {
+                                outline: none;
+                            }
+                        }
 
-						&:hover .delete-role-row {
-							opacity: 1;
-						}
-					}
-				}
+                        &:hover .delete-role-row {
+                            opacity: 1;
+                        }
+                    }
+                }
 
-				.no-roles-placeholder {
-					font-family: Roboto, "Helvetica Neue", sans-serif;
-					font-size: 8px;
-					text-align: center;
-					padding-top: 3px;
+                .no-roles-placeholder {
+                    font-family: Roboto, "Helvetica Neue", sans-serif;
+                    font-size: 8px;
+                    text-align: center;
+                    padding-top: 3px;
 
-					.glyphicon-plus-sign {
-						color: fade(@border-color,70%);
-						position: static;
-						font-size: 7px;
-					}
-				}
-
-
-				.role-group-title {
-					border-top: 1px solid @border-color;
-					background-color: @border-color;
-					border-bottom: 1px solid @border-color;
-					font-family: 'Roboto',sans-serif;
-					color: white;
-					font-weight: bold;
-					text-transform: uppercase;
-					text-align: center;
-					font-size: 10px;
-					margin: auto;
+                    .glyphicon-plus-sign {
+                        color: fade(@border-color,70%);
+                        position: static;
+                        font-size: 7px;
+                    }
+                }
 
 
-					.add-role-row {
-						cursor: pointer;
+                .role-group-title {
+                    border-top: 1px solid @border-color;
+                    background-color: @border-color;
+                    border-bottom: 1px solid @border-color;
+                    font-family: 'Roboto',sans-serif;
+                    color: white;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    text-align: center;
+                    font-size: 10px;
+                    margin: auto;
 
-						&.tinyRow .circle {
-							margin-top: -10px;
-						}
 
-						&:focus {
-							outline: none;
-							opacity: 1 !important;
+                    .add-role-row {
+                        cursor: pointer;
 
-							.circle {
-								background-color: lighten(@border-color,30%);
-								opacity: 1 !important;
-							}
-						}
-					}
-					/*.delete-role-row:focus {
+                        &.tinyRow .circle {
+                            margin-top: -10px;
+                        }
+
+                        &:focus {
+                            outline: none;
+                            opacity: 1 !important;
+
+                            .circle {
+                                background-color: lighten(@border-color,30%);
+                                opacity: 1 !important;
+                            }
+                        }
+                    }
+                    /*.delete-role-row:focus {
 						outline: none;
 					}*/
-					.circle {
-						width: 20px;
-						height: 20px;
-						display: inline-block;
-						border-radius: 10px;
-						border: 2px solid @border-color;
-						float: right;
-						margin-top: -16px;
-						margin-right: -22px;
-						text-align: center;
-						color: @border-color;
-						background-color: #fff;
-						padding: 0px 0px;
-						font-size: 14px;
-						line-height: 17px;
-						text-align: center;
-						transition: background-color .2s ease,color .2s ease;
+                    .circle {
+                        width: 20px;
+                        height: 20px;
+                        display: inline-block;
+                        border-radius: 10px;
+                        border: 2px solid @border-color;
+                        float: right;
+                        margin-top: -16px;
+                        margin-right: -22px;
+                        text-align: center;
+                        color: @border-color;
+                        background-color: #fff;
+                        padding: 0px 0px;
+                        font-size: 14px;
+                        line-height: 17px;
+                        text-align: center;
+                        transition: background-color .2s ease,color .2s ease;
 
 
-						&:hover {
-							//margin-top: -12px;
-							//box-shadow: 0px 1px 1px -1px #000 inset;
-							background-color: @border-color;
-							color: white !important;
-						}
-					}
-				}
-			}
-		}
+                        &:hover {
+                            //margin-top: -12px;
+                            //box-shadow: 0px 1px 1px -1px #000 inset;
+                            background-color: @border-color;
+                            color: white !important;
+                        }
+                    }
+                }
+            }
+        }
 
-		.acc-add-role {
-			margin-top: 5px;
+        .acc-add-role {
+            margin-top: 5px;
 
-			&:hover {
-				opacity: 1;
-			}
+            &:hover {
+                opacity: 1;
+            }
 
-			.acc-role-line {
-				/*margin: -6px 0px 0 0px;
+            .acc-role-line {
+                /*margin: -6px 0px 0 0px;
 				height: 20px;
 				background-color: #e6e6e6;
 				border-radius: 10px;*/
-			}
+            }
 
-			.acc-role-circle {
-				/*width: 20px;
+            .acc-role-circle {
+                /*width: 20px;
 				height: 20px;
 				margin-left: auto;
 				margin-top: -20px;
@@ -487,220 +488,226 @@ html, body {
 				border-radius: 10px;
 				border: 2px solid #cacaca;
 				margin-right: 0px;*/
-				width: 20px;
-				height: 20px;
-				margin-left: auto;
-				margin-top: -5px;
-				background-color: #fff;
-				border-radius: 10px;
-				border: 2px solid #cacaca;
-				margin-right: 0px;
-			}
+                width: 20px;
+                height: 20px;
+                margin-left: auto;
+                margin-top: -5px;
+                background-color: #fff;
+                border-radius: 10px;
+                border: 2px solid #cacaca;
+                margin-right: 0px;
+            }
 
-			.acc-plus {
-				background-color: #a9a9a9;
+            .acc-plus {
+                background-color: #a9a9a9;
 
-				&.acc-plus-v1,
-				&.acc-plus-v2 {
-					height: 5px;
-					width: 2px;
-					margin: 3px 7px -1px 7px;
-					float: left;
-				}
+                &.acc-plus-v1,
+                &.acc-plus-v2 {
+                    height: 5px;
+                    width: 2px;
+                    margin: 3px 7px -1px 7px;
+                    float: left;
+                }
 
-				&.acc-plus-v2 {
-					margin: -1px 7px 3px 7px;
-				}
+                &.acc-plus-v2 {
+                    margin: -1px 7px 3px 7px;
+                }
 
-				&.acc-plus-h {
-					width: 10px;
-					height: 2px;
-					margin: 0px 3px;
-					float: left;
-				}
-			}
-		}
+                &.acc-plus-h {
+                    width: 10px;
+                    height: 2px;
+                    margin: 0px 3px;
+                    float: left;
+                }
+            }
+        }
 
-		.acc-roles {
-			padding: 5px 10px;
-		}
-
-
-		input {
-			background-color: transparent;
-			border: none;
-			width: 100%;
-
-			&:focus {
-				outline: none;
-			}
-		}
-	}
-
-	.add-role-row {
-		circle {
-			stroke: @border-color;
-			stroke-width: 1.5px;
-			fill: #fff;
-		}
-
-		.acc-plus {
-			fill: @border-color;
-			height: 0.1px;
-			width: 0.1px;
-			stroke-width: 1px;
-
-			&.acc-plus-v {
-				height: 8px;
-			}
-
-			&.acc-plus-h {
-				width: 8px;
-			}
-		}
-	}
-
-	.node-button {
-		cursor: pointer;
-
-		circle {
-			.bottomButton();
-		}
-
-		&:hover circle {
-			.bottomButtonHover();
-		}
-
-		&:focus {
-			opacity: 1 !important;
-			outline: none;
-
-			circle {
-				fill: darken(@background-color,10%);
-			}
-		}
+        .acc-roles {
+            padding: 5px 10px;
+        }
 
 
-		&.add text {
-			transform: translate(-4.5px,5.3px);
-			font-size: 16px;
-			text-align: left;
-			padding: 12px;
-			fill: gray;
-		}
+        input {
+            background-color: transparent;
+            border: none;
+            width: 100%;
 
-		&.remove text {
-			font-size: 9px;
-			transform: translate(-4.8px, 4.9px);
-			fill: gray;
-		}
+            &:focus {
+                outline: none;
+            }
+        }
+    }
 
-		&.minimize text {
-			font-size: 9px;
-			transform: translate(-4px, 3.8px);
-			//transform: translate(-4.6px, 4.1px);
-			fill: gray;
-		}
-	}
+    .add-role-row {
+        circle {
+            stroke: @border-color;
+            stroke-width: 1.5px;
+            fill: #fff;
+        }
 
-	.is-dragging .bounding-box,
-	.is-dragging .node-button,
-	.is-dragging .node-button * {
-		display: none;
-		pointer-events: none;
-	}
+        .acc-plus {
+            fill: @border-color;
+            height: 0.1px;
+            width: 0.1px;
+            stroke-width: 1px;
 
-	.is-dragging input {
-		pointer-events: none;
-	}
+            &.acc-plus-v {
+                height: 8px;
+            }
 
-	.bounding-box {
-		width: 24px;
-		height: 26px;
-		fill: transparent;
-		stroke: none;
-	}
+            &.acc-plus-h {
+                width: 8px;
+            }
+        }
+    }
 
-	aria-status p {
-		display: none;
-	}
+    .node-button {
+        cursor: pointer;
+
+        circle {
+            .bottomButton();
+        }
+
+        &:hover circle {
+            .bottomButtonHover();
+        }
+
+        &:focus {
+            opacity: 1 !important;
+            outline: none;
+
+            circle {
+                fill: darken(@background-color,10%);
+            }
+        }
 
 
-	.node.collapsed {
+        &.print text {
+            transform: translate(-4.2px,5.3px);
+            font-size: 10px;
+            fill: gray;
+        }
+
+        &.add text {
+            transform: translate(-4.5px,5.3px);
+            font-size: 16px;
+            text-align: left;
+            padding: 12px;
+            fill: gray;
+        }
+
+        &.remove text {
+            font-size: 9px;
+            transform: translate(-4.8px, 4.9px);
+            fill: gray;
+        }
+
+        &.minimize text {
+            font-size: 9px;
+            transform: translate(-4px, 3.8px);
+            //transform: translate(-4.6px, 4.1px);
+            fill: gray;
+        }
+    }
+
+    .is-dragging .bounding-box,
+    .is-dragging .node-button,
+    .is-dragging .node-button * {
+        display: none;
+        pointer-events: none;
+    }
+
+    .is-dragging input {
+        pointer-events: none;
+    }
+
+    .bounding-box {
+        width: 24px;
+        height: 26px;
+        fill: transparent;
+        stroke: none;
+    }
+
+    aria-status p {
+        display: none;
+    }
 
 
-		.ghost.showing {
-			circle {
-				stroke: @collapsed-border-color;
-			}
-		}
+    .node.collapsed {
 
-		.acc-buttons {
-			background-color: @collapsed-border-color;
-		}
 
-		.add-role-row {
-			circle {
-				stroke: @collapsed-border-color;
-			}
+        .ghost.showing {
+            circle {
+                stroke: @collapsed-border-color;
+            }
+        }
 
-			.acc-plus {
-				fill: @collapsed-border-color;
-			}
-		}
-		/*.node-button circle {
+        .acc-buttons {
+            background-color: @collapsed-border-color;
+        }
+
+        .add-role-row {
+            circle {
+                stroke: @collapsed-border-color;
+            }
+
+            .acc-plus {
+                fill: @collapsed-border-color;
+            }
+        }
+        /*.node-button circle {
 			&:focus {
 				fill: lighten(@collapsed-border-color,30%);
 			}
 		}*/
-		.role-group {
-			.role-group-title {
-				border-top: 1px solid @collapsed-border-color;
-				background-color: @collapsed-border-color;
-				border-bottom: 1px solid @collapsed-border-color;
+        .role-group {
+            .role-group-title {
+                border-top: 1px solid @collapsed-border-color;
+                background-color: @collapsed-border-color;
+                border-bottom: 1px solid @collapsed-border-color;
 
 
-				.add-role-row {
-					cursor: pointer;
-				}
+                .add-role-row {
+                    cursor: pointer;
+                }
 
-				.add-role-row:focus {
+                .add-role-row:focus {
 
-					.circle {
-						background-color: lighten(@collapsed-border-color,30%) !important;
-					}
-				}
+                    .circle {
+                        background-color: lighten(@collapsed-border-color,30%) !important;
+                    }
+                }
 
-				.circle {
-					border: 2px solid @collapsed-border-color;
-					color: @collapsed-border-color;
+                .circle {
+                    border: 2px solid @collapsed-border-color;
+                    color: @collapsed-border-color;
 
-					&:hover {
-						background-color: @collapsed-border-color;
-					}
-				}
-			}
+                    &:hover {
+                        background-color: @collapsed-border-color;
+                    }
+                }
+            }
 
-			.no-roles-placeholder {
-				font-family: Roboto, "Helvetica Neue", sans-serif;
-				font-size: 8px;
-				text-align: center;
-				padding-top: 3px;
+            .no-roles-placeholder {
+                font-family: Roboto, "Helvetica Neue", sans-serif;
+                font-size: 8px;
+                text-align: center;
+                padding-top: 3px;
 
-				.glyphicon-plus-sign {
-					color: fade(@collapsed-border-color,70%);
-					position: static;
-					font-size: 7px;
-				}
-			}
-		}
+                .glyphicon-plus-sign {
+                    color: fade(@collapsed-border-color,70%);
+                    position: static;
+                    font-size: 7px;
+                }
+            }
+        }
 
 
-		.node-button.minimize text {
-			//transform: translate(-4.6px, 4.1px);
-			transform: translate(-4px, 5.2px);
-		}
-	}
+        .node-button.minimize text {
+            //transform: translate(-4.6px, 4.1px);
+            transform: translate(-4px, 5.2px);
+        }
+    }
 }
 
 .is-dragging .add-role-row .circle {

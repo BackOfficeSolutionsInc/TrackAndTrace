@@ -887,7 +887,7 @@ namespace RadialReview.Engines
 			if (scores.Any()){
 				var values = scores.OrderBy(x => x.DateDue);
 				var chart = new Line.LineChart(){
-					points = values.Select(x => new Line.LinePoint(){time = x.DateDue.ToJavascriptMilliseconds(),value = x.Measured}).ToList(),
+					values = values.Select(x => new Line.LinePoint(){time = x.DateDue.ToJavascriptMilliseconds(),value = x.Measured}).ToList(),
 					displayName = scores.First().Measurable.Title,
 					name = scores.First().Measurable.Title,
 				};

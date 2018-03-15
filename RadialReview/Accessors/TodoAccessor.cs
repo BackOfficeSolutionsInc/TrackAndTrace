@@ -67,6 +67,21 @@ namespace RadialReview.Accessors {
 		public static TodoCreation CreatePersonalTodo(string message, string details = null, long? accountableUserId = null, DateTime? dueDate = null, DateTime? now = null) {
 			return new TodoCreation(message, details, accountableUserId, dueDate, TodoType.Personal, null, null, "TodoModel", -1, now);
 		}
+		/// <summary>
+		/// Best to pass in the due date as the beginning of the day on the day it is due, converted to server time.
+		/// If todo is due on 2/28/2018, and the client is in Pacific time, pass in "2/28/2018 7:00:00". This method will add 23:59:59 to the date to make it due at end of day.
+		/// In other words, pass in GetUser().GetTimeSettings().ConvertToServer(new Date(2018,2,28,0,0,0))
+		/// </summary>
+		/// <param name="recurrenceId"></param>
+		/// <param name="message"></param>
+		/// <param name="details"></param>
+		/// <param name="accountableUserId"></param>
+		/// <param name="dueDate"></param>
+		/// <param name="createdDuringMeeting"></param>
+		/// <param name="modelType"></param>
+		/// <param name="modelId"></param>
+		/// <param name="now"></param>
+		/// <returns></returns>
 		public static TodoCreation CreateL10Todo(long recurrenceId, string message, string details, long? accountableUserId, DateTime? dueDate, long? createdDuringMeeting = null, string modelType = "TodoModel", long modelId = -1, DateTime? now = null) {
 			return new TodoCreation(message, details, accountableUserId, dueDate, TodoType.Recurrence, recurrenceId, createdDuringMeeting, modelType, modelId, now);
 		}
@@ -84,8 +99,8 @@ namespace RadialReview.Accessors {
 			var dueDate = Now.Value.AddDays(7);
 			if (DueDate != null) {
 				dueDate = DueDate.Value;// creator.GetTimeSettings().ConvertToServerTime(DueDate.Value);
+				dueDate = dueDate.AddDays(1).AddSeconds(-1);
 			}
-			dueDate = dueDate.AddDays(1).AddSeconds(-1);
 
 			return new TodoModel {
 				AccountableUserId = assignTo,

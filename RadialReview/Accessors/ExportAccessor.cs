@@ -234,7 +234,8 @@ namespace RadialReview.Accessors {
 				csv.Add("" + t.Id, "Completed", time);
 
 				csv.Add("" + t.Id, "Status", RockStateExtensions.GetCompletionVal(t.Completion));
-				csv.Add("" + t.Id, "ArchivedTime", "" + t.DeleteTime);
+                csv.Add("" + t.Id, "ArchivedTime", "" + t.DeleteTime);
+
 
 
 				if (includeDetails) {

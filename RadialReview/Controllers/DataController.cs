@@ -12,11 +12,39 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Engines;
 using RadialReview.Utilities;
+using RadialReview.Controllers.AbstractController;
 
 namespace RadialReview.Controllers
 {
     public class DataController : BaseController
     {
+        public class BurnDownData {
+            public MetricGraphic RockCompletion { get; set; }
+            public MetricGraphic Issues { get; set; }
+            public MetricGraphic Todos { get; set; }
+            public MetricGraphic Employees { get; set; }
+        }
+
+
+        [Access(AccessLevel.UserOrganization)]
+        public JsonResult BurnDown() {
+            var rockBD = StatsAccessor.GetOrganizationRockCompletionBurndown(GetUser(), GetUser().Organization.Id);
+            var issueBD = StatsAccessor.GetOrganizationIssueBurndown(GetUser(), GetUser().Organization.Id);
+            var todoBD = StatsAccessor.GetOrganizationTodoBurndown(GetUser(), GetUser().Organization.Id);
+            var employeeBD = StatsAccessor.GetOrganizationMemberBurndown(GetUser(), GetUser().Organization.Id);
+            return Json(new BurnDownData {
+                RockCompletion = rockBD,
+                Issues = issueBD,
+                Todos = todoBD,
+                Employees = employeeBD
+
+            },JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Dashboard() {
+            return View();
+        }
 
 
         [Access(AccessLevel.UserOrganization)]

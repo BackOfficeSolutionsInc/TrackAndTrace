@@ -32,7 +32,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                 $scope.lastValue = $scope.score.Measured;
             }
 
-            var currWeekNumber = getWeekSinceEpoch(new Date().addDays(13));
+            var currWeekNumber = Time.getWeekSinceEpoch(new Date().addDays(13));
 
             var scorecardColor = function (s) {
                 if (!s)
@@ -145,7 +145,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                         var curCol = curRow.find("td").index(curCell);
                         while (true) {
                             curRow = curRow.prev();
-                            if (curRow && !curRow.hasClass("divider")) {
+                            if (curRow && !curRow.hasClass("divider") && !curRow.hasClass("disabled")) {
                                 found = $(curRow.find("td")[curCol]).find("score input");
                                 break;
                             }
@@ -164,7 +164,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                         var curCol = curRow.find("td").index(curCell);
                         while (true) {
                             curRow = curRow.next();
-                            if (curRow && !curRow.hasClass("divider")) {
+                            if (curRow && !curRow.hasClass("divider") && !curRow.hasClass("disabled")) {
                                 found = $(curRow.find("td")[curCol]).find("score input");
                                 break;
                             }

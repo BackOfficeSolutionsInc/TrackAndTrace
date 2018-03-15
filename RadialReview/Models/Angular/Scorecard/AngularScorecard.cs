@@ -59,7 +59,7 @@ namespace RadialReview.Models.Angular.Scorecard {
         public static AngularScorecard Create(long id, TimeSettings settings, IEnumerable<L10Recurrence_Measurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null, bool reverseScorecard = false) {
             var ms = measurables.Select(x => {
                 if (x.IsDivider) {
-                    var m = AngularMeasurable.CreateDivider(x._Ordering, x.Id);
+                    var m = AngularMeasurable.CreateDivider(x);
                     m.RecurrenceId = x.L10Recurrence.Id;
                     return m;
                 } else {

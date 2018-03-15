@@ -241,7 +241,7 @@ namespace TractionTools.Tests.Utilities {
                     var j = i;
                     list.Add(Task.Run(() => {
                         org.Manager.IncrementClientTimestamp();
-                        return SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateScore(id), async s => { await Task.Delay(0); },
+                        return SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateScore(id,DateTime.MinValue,0), async s => { await Task.Delay(0); },
                             noSyncException:true);
                     }));
                 }
@@ -259,7 +259,7 @@ namespace TractionTools.Tests.Utilities {
                 org.Manager.IncrementClientTimestamp();
                 for (var i = 0; i < 100; i++) {
                     var j = i;
-                    list.Add(Task.Run(()=>SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateScore(1 + j), async s => { await Task.Delay(0); })));
+                    list.Add(Task.Run(()=>SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateScore(1 + j, DateTime.MinValue, 0), async s => { await Task.Delay(0); })));
                 }
 
                 await Task.WhenAll(list);

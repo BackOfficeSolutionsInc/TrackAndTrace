@@ -45,8 +45,12 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public async Task<JsonResult> Add(DateTime dueDate, string milestone, long rockId) {
-			await RockAccessor.AddMilestone(GetUser(), rockId, milestone, dueDate);
+		public async Task<JsonResult> Add(DateTime dueDate, string milestone, long rockId) {  
+			var d = GetUser().GetTimeSettings().ConvertFromServerTime(dueDate);
+			d = d.Date.AddDays(1).AddMilliseconds(-1);
+			d = GetUser().GetTimeSettings().ConvertToServerTime(d);
+  
+			await RockAccessor.AddMilestone(GetUser(), rockId, milestone, d);
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -62,6 +66,5 @@ namespace RadialReview.Controllers {
 			await RockAccessor.DeleteMilestone(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
-
 	}
 }

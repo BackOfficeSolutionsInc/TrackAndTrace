@@ -143,15 +143,9 @@ namespace RadialReview.Models {
 	public class OrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable, TimeSettings {
 		[Obsolete("Use the user if possible.")]
 		public virtual TimeData GetTimeSettings() {
-			return new TimeData() {
-				Now = DateTime.UtcNow,
-				Period = Settings.ScorecardPeriod,
-				TimezoneOffset = Settings.GetTimezoneOffset(),
-				WeekStart = Settings.WeekStart,
-				YearStart = Settings.YearStart,
-			};
+			return Settings.GetTimeSettings();
 		}
-		public class OrganizationSettings {
+		public class OrganizationSettings : TimeSettings {
 			public virtual DayOfWeek WeekStart { get; set; }
 			public virtual ScorecardPeriod ScorecardPeriod { get; set; }
 			public virtual BrandingType Branding { get; set; }
@@ -167,6 +161,9 @@ namespace RadialReview.Models {
 			public virtual bool ManagersCanEditSelf { get; set; }
 			public virtual bool EmployeesCanEditSelf { get; set; }
 			public virtual bool OnlySeeRocksAndScorecardBelowYou { get; set; }
+
+            public virtual bool AllowAddClient { get; set; }
+
 			
 			public virtual bool EnableL10 { get; set; }
 			public virtual bool EnableReview { get; set; }
@@ -246,6 +243,8 @@ namespace RadialReview.Models {
 					Map(x => x.ManagersCanEditSelf);
 					Map(x => x.EmployeesCanEditSelf);
 
+                    Map(x => x.AllowAddClient);
+
 					Map(x => x.EmployeesCanCreateSurvey);
 					Map(x => x.ManagersCanCreateSurvey);
 
@@ -290,6 +289,16 @@ namespace RadialReview.Models {
 
 			public virtual String GetDateFormat() {
 				return DateFormat ?? "MM-dd-yyyy";
+			}
+
+			public TimeData GetTimeSettings() {
+				return new TimeData() {
+					Now = DateTime.UtcNow,
+					Period = ScorecardPeriod,
+					TimezoneOffset = GetTimezoneOffset(),
+					WeekStart = WeekStart,
+					YearStart = YearStart,
+				};
 			}
 		}
 

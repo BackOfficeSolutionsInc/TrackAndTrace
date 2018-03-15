@@ -67,6 +67,16 @@ $(".resource > .heading a").each(function () {
 	$(this).text(s);
 });
 
+var tokenInstruction = $("<div class='token-instructions instructions'></div>");
+
+$.ajax({
+	url: "/faq/GenerateTokenInstruction",
+	success: function (data) {
+		tokenInstruction.append(data);
+	}
+});
+
+$("#resources_container").prepend(tokenInstruction);
 
 /**
  * jquery.json-view - jQuery collapsible JSON plugin

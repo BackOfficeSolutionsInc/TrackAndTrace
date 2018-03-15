@@ -43,6 +43,7 @@ namespace RadialReview.Accessors {
 			public bool ApplyReorder(ISession s) {
 				return ApplyReorder(null, s, null);
 			}
+			/// <summary>
 			/// </summary>
 			/// <param name="rt"></param>
 			/// <param name="s"></param>
