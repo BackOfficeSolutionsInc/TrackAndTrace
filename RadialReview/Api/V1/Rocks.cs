@@ -56,8 +56,9 @@ namespace RadialReview.Api.V1 {
 		/// <returns></returns>
 		[Route("rocks/{ROCK_ID}/milestones")]
 		[HttpPost]
-		public AngularMilestone AddRocksMilestones(long ROCK_ID, [FromBody]CreateMilestoneModel body) {
-			return new Models.Angular.Rocks.AngularMilestone(RockAccessor.AddMilestone(GetUser(), ROCK_ID, body.title, body.dueDate));
+		public async Task<AngularMilestone> AddRocksMilestones(long ROCK_ID, [FromBody]CreateMilestoneModel body) {
+			var milestone = await RockAccessor.AddMilestone(GetUser(), ROCK_ID, body.title, body.dueDate);
+			return new Models.Angular.Rocks.AngularMilestone(milestone);
 		}
 
 		public class CreateRockModel {
@@ -119,7 +120,7 @@ namespace RadialReview.Api.V1 {
 		[Route("rocks/{ROCK_ID}")]
 		[HttpDelete]
 		public async Task DeleteRocks(long ROCK_ID) {
-			await RockAccessor.ArchiveRock(GetUser(),ROCK_ID);
+			await RockAccessor.ArchiveRock(GetUser(), ROCK_ID);
 		}
 
 		/// <summary>

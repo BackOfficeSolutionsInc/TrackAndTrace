@@ -171,6 +171,7 @@
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnaylzerGenerators.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\MissL10PastQuarter.cs" />
@@ -922,6 +923,8 @@
     <Compile Include="Utilities\FormulaUtility.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\HashUtil.cs" />
+
+    <Compile Include="Utilities\Hooks\IMilestoneHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IAccountEvent.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\ICreateIssue.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IHeadlineHook.cs" />
@@ -937,6 +940,7 @@
     <Compile Include="Crosscutting\Hooks\Interfaces\IUserHooks.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IRolesHook.cs" />
+    
     <Compile Include="Utilities\HtmlUtility.cs" />
     <Compile Include="Utilities\Integrations\ActiveCampaign.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />

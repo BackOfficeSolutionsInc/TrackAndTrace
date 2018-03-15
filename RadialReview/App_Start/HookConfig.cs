@@ -62,13 +62,14 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new CreateFinancialPermItems());
 
 			HooksRegistry.RegisterHook(new UpdatePlaceholder());
+			HooksRegistry.RegisterHook(new RealTime_L10_Milestone());
+			//HooksRegistry.RegisterHook(new TodoEdit())
+      HooksRegistry.RegisterHook(new CascadeScorecardFormulaUpdates());
 
-            HooksRegistry.RegisterHook(new CascadeScorecardFormulaUpdates());
-
-            HooksRegistry.RegisterHook(new ExecutePaymentCardUpdate());
-            HooksRegistry.RegisterHook(new FirstPaymentEmail());
-            HooksRegistry.RegisterHook(new SetDelinquentFlag());
-            //HooksRegistry.RegisterHook(new TodoEdit())
+      HooksRegistry.RegisterHook(new ExecutePaymentCardUpdate());
+      HooksRegistry.RegisterHook(new FirstPaymentEmail());
+      HooksRegistry.RegisterHook(new SetDelinquentFlag());
+      //HooksRegistry.RegisterHook(new TodoEdit())
         }
     }
 }
