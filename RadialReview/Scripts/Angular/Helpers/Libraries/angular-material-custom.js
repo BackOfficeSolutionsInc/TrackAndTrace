@@ -17941,7 +17941,7 @@
 				(ltr ? this.scroller.scrollLeft : this.maxSize - this.scroller.scrollLeft)
 				: this.scroller.scrollTop;
             if (offset === this.scrollOffset || offset > this.scrollSize - this.size) return;
-
+			
             var itemSize = this.repeater.getItemSize();
             if (!itemSize) return;
 

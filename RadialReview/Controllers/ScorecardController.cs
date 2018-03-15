@@ -24,7 +24,7 @@ namespace RadialReview.Controllers {
         [HttpPost]
         public async Task<JsonResult> SetFormula(long id, string formula) {
             if (formula == "-notset-")
-                throw new PermissionsException("Formula was unset");
+                throw new PermissionsException("Formula was empty");
             await ScorecardAccessor.SetFormula(GetUser(), id, formula);
             return Json(ResultObject.SilentSuccess());
         }

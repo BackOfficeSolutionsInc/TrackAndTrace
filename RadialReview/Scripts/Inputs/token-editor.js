@@ -1105,6 +1105,8 @@
                     return false;
                 }
 
+
+
             },
 
             _onKeyup: function (e) {
@@ -1113,6 +1115,7 @@
                     e.stopPropagation()
                     return false;
                 }
+                //this.afterKeySelection = window.getSelection();
             },
 
             selectPrev: function () {
@@ -1130,14 +1133,17 @@
             },
 
             onClick: function (e) {
-                Modal.alert('Use the <u>up</u> and <u>down</u> keys and press <code>enter</code> to select.')
-                /*var el = e.currentTarget;
+                //Modal.alert('Use the <u>up</u> and <u>down</u> keys and press <code>enter</code> to select.')
+            	/*debugger;
+                var el = e.currentTarget;
                 this.selected = Array.prototype.indexOf.call(el.parentNode.childNodes, el);
                 console.log(this.selected, el);
                 this.onSelect();*/
             },
 
             onSelect: function () {
+            	try{console.log("selected " + this.menu[this.selected].label);} catch (e) { }
+
                 this.trigger('select', this.menu[this.selected], this)
             },
 
@@ -1160,7 +1166,24 @@
             },
 
             addMenuItem: function (m, indx) {
-                this.$el.append('<div class="' + (indx == this.selected ? 'selected' : '') + '" data=id="' + m.id + '">' + m.label + '</div>')
+            	var newElement = $('<div class="' + (indx == this.selected ? 'selected' : '') + '" data=id="' + m.id + '">' + m.label + '</div>');
+            	//debugger;
+				var self = this;
+				$(newElement).on("click", function () {
+					console.log("offset",window.afterKeySelection);
+					//$(".token-editor").focus();
+					var range = document.createRange();
+					range.setStart(afterKeySelection.anchorNode, window.afterKeySelection.anchorOffset);
+					range.setEnd(afterKeySelection.focusNode, window.afterKeySelection.focusOffset);
+					var sel = window.getSelection();
+					sel.removeAllRanges();
+					sel.addRange(range);
+
+            		self.selected = indx;
+            		console.log(self.selected, "clicked");
+            		self.onSelect.call(self);
+            	});
+                this.$el.append(newElement)
             },
 
             _score: function (str, term) {
@@ -1228,6 +1251,7 @@
             },
 
             hide: function () {
+            	//debugger;
                 this.isShowing = false;
                 this.el.classList.remove('show')
                 this.unbindKeyboardEvents();
@@ -1366,7 +1390,13 @@
 
             // when clicked somewhere else in the editor, hide auto complete
             onClick: function () { this.subview('auto-complete').hide(); },
-            onBlur: function () { this.subview('auto-complete').hide(); this.trigger('blur', this) },
+            onBlur: function (e, f, g) {
+            	var self = this;
+            	setTimeout(function () {
+            		self.subview('auto-complete').hide();
+            		self.trigger('blur', self);
+            	},500);
+            },
 
             makeToken: function (d) {
                 var node = document.createElement('span');
@@ -1394,8 +1424,7 @@
 
 
                 clearTimeout(this.historyTimeout)
-
-
+				
                 var sel = window.getSelection();
                 var range = sel.getRangeAt(0);
                 var text = range.endContainer.textContent.slice(0, range.endOffset);
@@ -1465,7 +1494,7 @@
 
                     // if at the end of editor, a trailing <br> is needed to make the cursor jump to the next line
                     if (this.getSelection().start >= this.length())
-                        document.execCommand('insertHTML', false, '<br class="newline"><br>');
+                        document.execCommand('insertHTML', false, '<br class="newline">'/*<br>'*/);
                     else
                         document.execCommand('insertHTML', false, '<br class="newline">');
 
@@ -1482,14 +1511,22 @@
                     this.subview('auto-complete').render(this.currentWord())
                 }.bind(this))
 
-                // backspace
-                if (e.which == 8)
-                    this.markHistoryIn(500);
+            	// backspace				
+                if (e.which == 8){
+                	this.markHistoryIn(500);
+                }
 
                 // make sure we end with a `<br>` tag.
                 clearTimeout(this.keyupTimeout)
                 this.keyupTimeout = setTimeout(this.endWithBrTag.bind(this), 300);
 
+                var ws = window.getSelection();
+                window.afterKeySelection = {
+					anchorNode : ws.anchorNode,
+					anchorOffset: ws.anchorOffset,
+					focusNode: ws.focusNode,
+                	focusOffset: ws.focusOffset
+                };
             },
 
             onKeypress: function (e) {
@@ -1497,7 +1534,7 @@
             },
 
             endWithBrTag: function () {
-
+				
                 // dont do this if auto complete showing, cause when calling `replaceWithToken`;
                 // it would replace more than the word if 300ms passed before selecting
                 if (this.subview('auto-complete').isShowing) return;
@@ -1511,6 +1548,7 @@
 
                     // no selection after telling to focus? then the editor is not in the DOM
                     if (sel.type == 'None') {
+                    	//console.log("short-circuit");
                         this.el.appendChild(document.createElement('br'))
                         return;
                     }
@@ -1518,16 +1556,48 @@
                     var range = sel.getRangeAt(0);
                     var frag = document.createDocumentFragment()
                     var br = frag.appendChild(document.createElement('br'));
+                    //console.log("adding-br");
 
                     //document.execCommand('insertHTML', false, frag);
                     this.el.appendChild(frag)
 
-                    // this breaks in Safari....
-                    range = range.cloneRange();
-                    range.setStartBefore(br);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
+                	// this breaks in Safari....
+                	try{
+                		range = range.cloneRange();
+                		range.setStartBefore(br);
+                		range.collapse(true);
+                		sel.removeAllRanges();
+                		sel.addRange(range);
+                		//var innerText = $(this.el).clone().children().each(function () { return $(this).html("|"); }).end().text();
+						//console.log(innerText);
+
+                	} catch (e) {
+                		console.error(e);
+                	}
+                } else {
+                	//var sel = window.getSelection();
+                	//var range = sel.getRangeAt(0);
+                	//var innerText = $(this.el).clone().children().each(function () { return $(this).html("|"); }).end().text();
+                	//var len = innerText.length+1;
+                	//if (range.startOffset == range.endOffset && range.endOffset >= len) {
+                	//	range.setEnd(this.el, len);
+                	//	range.setStart(this.el, len);
+					//	range.collapse(true);
+					//	sel.removeAllRanges();
+					//	sel.addRange(range);
+					//	console.log("br-adj");
+					//}
+
+                	//console.log("br-exists");
+                	//var selection = window.getSelection();
+                	//var selection = window.getSelection();
+                	//if (selection.rangeCount > 0) {
+                	//	range = selection.getRangeAt(0);
+                	//	var clonedSelection = range.cloneContents();
+                	//	var div = document.createElement('div');
+                	//	div.appendChild(clonedSelection);
+                	//	console.log(div.innerHTML)
+                	//}
                 }
 
             },
@@ -1570,7 +1640,8 @@
             },
 
             length: function () {
-                return this.el.innerText.trim().replace(/\n/g, '').length
+            	console.log("lengths", this.el.innerText.trim().length, this.el.innerText.trim().replace(/\n/g, '').length);
+            	return this.el.innerText.trim().replace(/\n/g, '').length;
             },
 
             isInFocus: function () {

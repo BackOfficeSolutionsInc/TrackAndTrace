@@ -59,7 +59,7 @@ namespace RadialReview.Utilities {
                 return string.Join("", Tokenize(replacements));
             }
 
-            public double? Evaluate(Func<string, double?> replacements) {
+            public double? Evaluate(Func<string, double?> replacements,bool nullOnDivideByZero=true) {
                 //StringBuilder sb = new StringBuilder();
                 //foreach (var p in Parts) {
                 //    if (p.StartsWith("[")) {
@@ -73,6 +73,10 @@ namespace RadialReview.Utilities {
                 if (result.IsValid) {
                     return (double)result.Result;
                 }else {
+					if (nullOnDivideByZero && result.ErrorPosition == -1 && Double.IsInfinity(result.Result)) {
+						return (double?)null;
+					}
+
                     var positionError = "Divide by zero";
 
                     if (result.ErrorPosition >= 0)

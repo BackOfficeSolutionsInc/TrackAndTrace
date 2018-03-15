@@ -109,6 +109,10 @@
 }
 .token-editor-auto-complete > div {
   padding: .5em;
+  cursor: pointer;
+}
+.token-editor-auto-complete > div:hover {
+  background: #f5f5f5;
 }
 .token-editor-auto-complete > div.selected {
   background: #f5f5f5;

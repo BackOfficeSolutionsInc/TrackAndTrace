@@ -1,248 +1,274 @@
 @import (reference) "../bootstrap/variables";
 
 .scorecard .component {
-    padding: 0px;
+	padding: 0px;
 }
 
 .scorecard-table {
-    white-space: nowrap;
-    font-size: 17px;
-    border-collapse: separate;
+	white-space: nowrap;
+	font-size: 17px;
+	border-collapse: separate;
 }
 
 .scorecard-table tr.last {
-    height: 100%;
+	height: 100%;
 }
 
 
 .scorecard-table .heading.who {
-    text-align: left;
-    min-width: 25px;
-    width: 1px;
-    font-size: 14px;
+	text-align: left;
+	min-width: 25px;
+	width: 1px;
+	font-size: 14px;
 }
 
 .scorecard-table .heading.who.alignRight {
-    padding-left: 5px;
+	padding-left: 5px;
 }
 
 .scorecard-table .who .newLine {
-    font-size: 58%;
+	font-size: 58%;
 }
 
 .scorecard-table .measurable.heading {
-    padding-left: 5px;
-    min-width: 100px !important;
+	padding-left: 5px;
+	min-width: 100px !important;
 }
 
 .scorecard-table .measurable {
-    padding-left: 5px;
-    padding-right: 2px;
-    max-width: 240px;
-    -ms-text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
-    -moz-text-overflow: ellipsis;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    font-size: 14px;
+	padding-left: 5px;
+	padding-right: 2px;
+	max-width: 240px;
+	-ms-text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
+	-moz-text-overflow: ellipsis;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 14px;
 }
 
 .scorecard-table .target {
-    text-align: left;
-    padding-left: 5px;
-    padding-right: 10px;
-    /*font-size: 14px;*/
+	text-align: left;
+	padding-left: 5px;
+	padding-right: 10px;
+	/*font-size: 14px;*/
 }
 
 .scorecard-table .target.value {
-    text-align: left;
+	text-align: left;
 }
 
 .scorecard-table .target.direction {
-    text-align: center;
-    width: 1px;
-    padding-right: 0px;
-    padding-left: 10px;
+	text-align: center;
+	width: 1px;
+	padding-right: 0px;
+	padding-left: 10px;
 }
 
 .scorecard-table .unit {
-    font-size: 14px;
+	font-size: 14px;
 }
 
 
 .scorecard-table .date {
-    text-align: center;
-    font-weight: normal;
-    min-width: 70px;
-    background-color: white;
+	text-align: center;
+	font-weight: normal;
+	min-width: 70px;
+	background-color: white;
 }
 
 .scorecard-table .date.current {
-    background-color: #2c77ba;
-    color: white;
-    border-color: #2c77ba;
+	background-color: #2c77ba;
+	color: white;
+	border-color: #2c77ba;
 }
 
 
 .scorecard-table .score.current {
-    border-left: 3px solid #2c77ba;
-    border-right: 3px solid #2c77ba;
+	border-left: 3px solid #2c77ba;
+	border-right: 3px solid #2c77ba;
 }
 
 .scorecard-table .date.current {
-    border-left: 3px solid #2c77ba;
-    border-right: 3px solid #2c77ba;
+	border-left: 3px solid #2c77ba;
+	border-right: 3px solid #2c77ba;
 }
 
 .scorecard-table tr:nth-last-child(1) td {
-    border-bottom: 3px solid transparent;
+	border-bottom: 3px solid transparent;
 }
 
 #ScorecardTable.scorecard-table tr:nth-last-child(1) td:not(.current):not(.buttonHolder) {
-    border-bottom: 3px solid #e0e0e0;
+	border-bottom: 3px solid #e0e0e0;
 }
 
 .scorecard-table tr:nth-last-child(1) .score.current {
-    border-bottom: 3px solid #2c77ba;
+	border-bottom: 3px solid #2c77ba;
 }
 
 
 .scorecard-table .buttonHolder {
-    background-color: #2c77ba;
+	background-color: #2c77ba;
 }
 
 .scorecard-table tr:nth-last-child(1) .buttonHolder {
-    border-bottom: 3px solid #2c77ba;
-    padding-right: 4px;
+	border-bottom: 3px solid #2c77ba;
+	padding-right: 4px;
 }
 
+.scorecard-table .edit-formula {
+	float: right;
+	right: 14px;
+	position: relative;
+	background-color: white;
+	width: 16px;
+	height: 16px;
+	margin-top: 2px;
+	border-radius: 11px;
+	border: 1px solid lightgray;
+	margin-right: -16px;
+	outline: none;
+
+	span {
+		color: lightgray;
+		position: absolute;
+		margin-top: 1px;
+		font-size: 80%;
+		text-align: center;
+		/* color: white; */
+		padding-left: 5px;
+		&:hover{
+			color:lightgrey !important;
+		}
+	}
+}
 
 .scorecard-table .heading {
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 14px;
-    height: 25px;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 14px;
+	height: 25px;
 }
 
 .scorecard-table th {
-    border-bottom: 1px solid #E8E8E8;
+	border-bottom: 1px solid #E8E8E8;
 }
 
 
 .scorecard-table .measurable-column input[disabled],
 .scorecard-table .goal-column input[disabled] {
-    background-color: inherit;
-    border: inherit;
+	background-color: inherit;
+	border: inherit;
 }
 
 @media(print) {
-    .scorecard {
-        font-size: 10px;
-    }
+	.scorecard {
+		font-size: 10px;
+	}
 
-    #ScorecardTable_Over {
-        display: none;
-    }
+	#ScorecardTable_Over {
+		display: none;
+	}
 }
 
 .scorecard-table .score {
-    text-align: center;
-    color: #333;
-    padding: 0px;
-    border-left: 1px solid #E0E0E0;
-    border-top: 1px solid #E0E0E0;
+	text-align: center;
+	color: #333;
+	padding: 0px;
+	border-left: 1px solid #E0E0E0;
+	border-top: 1px solid #E0E0E0;
 }
 
 .level-10 .scorecard-table .score:last-of-type:not(.current),
 .level-10 .scorecard-table .date:last-of-type:not(.current) {
-    border-right: 3px solid #E0E0E0;
+	border-right: 3px solid #E0E0E0;
 }
 
 .scorecard-table tr.IsDivider + tr:not(.IsDivider) > .score {
-    border-top: 1px solid transparent;
+	border-top: 1px solid transparent;
 }
 
 .scorecard-table .score form {
-    display: table-cell;
+	display: table-cell;
 }
 
 .scorecard-table .score input::-webkit-input-placeholder {
-    color: #EFEFEF;
+	color: #EFEFEF;
 }
 
 .scorecard-table .score.danger input,
 .scorecard-table .score.danger,
 .scorecard-table .score input.danger {
-    color: #C7254E;
-    background-color: #F9F2F4;
+	color: #C7254E;
+	background-color: #F9F2F4;
 }
 
 .scorecard-table .score.success input,
 .scorecard-table .score input.success,
 .scorecard-table .score.success {
-    color: #468847;
-    background-color: #DFF0D8 !important;
+	color: #468847;
+	background-color: #DFF0D8 !important;
 }
 
 .scorecard-table .score.error input,
 .scorecard-table .score input.error,
 .scorecard-table .score.error {
-    color: #bbbbbb;
+	color: #bbbbbb;
 }
 
 .scorecard-table .score .disabled,
 .scorecard-table .score.disabled {
-    background-color: #ececec !important;
+	background-color: #ececec !important;
 }
 
 .scorecard-table .cumulative-column {
-    font-size: 15px;
-    font-family: 'Roboto',sans-serif;
-    color: rgba(51, 51, 51, 0.5);
-    padding-top: 4px;
+	font-size: 15px;
+	font-family: 'Roboto',sans-serif;
+	color: rgba(51, 51, 51, 0.5);
+	padding-top: 4px;
 }
 
 .scorecard-table {
-    .chart-btn {
-        color: lightgray;
-        cursor: pointer;
+	.chart-btn {
+		color: lightgray;
+		cursor: pointer;
 
-        &.selected {
-            color: @traction-orange;
-        }
+		&.selected {
+			color: @traction-orange;
+		}
 
-        &:hover {
-            color: gray;
-        }
-    }
+		&:hover {
+			color: gray;
+		}
+	}
 }
 
 .sc-chart-container {
-    top: -120px;
-    position: relative;
-    background-color: white;
-    /* padding: 10px; */
-    /* width: 100%; */
-    display: block;
-    border: 1px solid lightgray;
+	top: -120px;
+	position: relative;
+	background-color: white;
+	/* padding: 10px; */
+	/* width: 100%; */
+	display: block;
+	border: 1px solid lightgray;
 
-    &:empty{
-        border:none;
-    }
+	&:empty {
+		border: none;
+	}
 }
 
 
 .dashboard .score.current:before {
-    content: "";
-    width: 3px;
-    height: 1px;
-    background-color: #2c77ba;
-    position: relative;
-    top: -1px;
-    bottom: 0;
-    float: right;
-    right: ~"calc(100% + 24px)";
-    display: block;
+	content: "";
+	width: 3px;
+	height: 1px;
+	background-color: #2c77ba;
+	position: relative;
+	top: -1px;
+	bottom: 0;
+	float: right;
+	right: ~"calc(100% + 24px)";
+	display: block;
 }
 
 /*.dashboard .score.current:after {
@@ -260,39 +286,39 @@
 
 
 .dashboard .score.current score:before {
-    content: "";
-    width: 3px;
-    height: 1px;
-    background-color: #2c77ba;
-    position: relative;
-    top: -1px;
-    bottom: 0;
-    float: right;
-    left: 30px;
-    display: block;
+	content: "";
+	width: 3px;
+	height: 1px;
+	background-color: #2c77ba;
+	position: relative;
+	top: -1px;
+	bottom: 0;
+	float: right;
+	left: 30px;
+	display: block;
 }
 
 .scorecard.meeting-page .score.current .lineCovers {
-    position: relative;
-    z-index: 0;
+	position: relative;
+	z-index: 0;
 }
 
 .scorecard.meeting-page .score.current .lineCoverLeft {
-    position: absolute;
-    width: 2px;
-    height: 1px;
-    background-color: #2c77ba;
-    left: -2px;
-    top: -1px;
+	position: absolute;
+	width: 2px;
+	height: 1px;
+	background-color: #2c77ba;
+	left: -2px;
+	top: -1px;
 }
 
 .scorecard.meeting-page .score.current .lineCoverRight {
-    position: absolute;
-    width: 2px;
-    height: 1px;
-    background-color: #2c77ba;
-    right: -2px;
-    top: -1px;
+	position: absolute;
+	width: 2px;
+	height: 1px;
+	background-color: #2c77ba;
+	right: -2px;
+	top: -1px;
 }
 /*.scorecard.meeting-page .score.current:before {
 	content: "";
@@ -321,391 +347,391 @@
 
 .scorecard-table .IsDivider .score,
 .scorecard-table .divider .score {
-    border-top: 0px solid;
+	border-top: 0px solid;
 }
 
 .scorecard-table .score input {
-    border: none;
-    padding-top: 0px;
-    text-align: center;
-    width: 70px;
-    height: 25px;
-    font-family: monospace;
-    font-size: 13px;
-    top: 0px;
-    position: relative;
-    height: 21px;
+	border: none;
+	padding-top: 0px;
+	text-align: center;
+	width: 70px;
+	height: 25px;
+	font-family: monospace;
+	font-size: 13px;
+	top: 0px;
+	position: relative;
+	height: 21px;
 }
 
 .scorecard .scorecard-table .score input {
-    height: 29px;
+	height: 29px;
 }
 
 /* csslint ignore:start */
 @-moz-document url-prefix() {
-    .scorecard-table .score input {
-        height: 25px;
-        top: 0px;
-        line-height: -1.3px;
-        font-size: 11px;
-        font-family: inherit;
-        padding-top: 6px;
-    }
+	.scorecard-table .score input {
+		height: 25px;
+		top: 0px;
+		line-height: -1.3px;
+		font-size: 11px;
+		font-family: inherit;
+		padding-top: 6px;
+	}
 }
 /* csslint ignore:end */
 
 .scorecard-table .score input:focus, .scorecard-table .score input:not([disabled]):active {
-    outline: #2c77ba auto 2px;
-    outline-offset: -1px;
-    outline-style: solid;
-    background-color: #EFEFEF;
-    background-color: white;
-    z-index: 0;
-    margin-right: -1px;
-    margin-top: 0px;
+	outline: #2c77ba auto 2px;
+	outline-offset: -1px;
+	outline-style: solid;
+	background-color: #EFEFEF;
+	background-color: white;
+	z-index: 0;
+	margin-right: -1px;
+	margin-top: 0px;
 }
 
 .level-10 .scorecard-table .score input:focus,
 .level-10 .scorecard-table .score input:not([disabled]):active {
-    margin-right: 0px;
+	margin-right: 0px;
 }
 
 
 .scorecard-table .score input:focus::-webkit-input-placeholder {
-    color: transparent;
+	color: transparent;
 }
 
 #ScorecardTable {
-    margin-bottom: 0px; /*18px;*/
+	margin-bottom: 0px; /*18px;*/
 }
 
 #ScorecardTable_Over {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    background-color: #FFF;
-    display: block;
-    max-width: 80%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    /*box-shadow: 11px 0px 19px -11px rgba(0, 0, 0, 0.36);
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background-color: #FFF;
+	display: block;
+	max-width: 80%;
+	overflow-x: auto;
+	overflow-y: hidden;
+	/*box-shadow: 11px 0px 19px -11px rgba(0, 0, 0, 0.36);
 	border-bottom: 4px solid #fff;*/
-    box-shadow: 11px 0px 19px -11px rgba(0, 0, 0, 0.36),-5px 7px 34px -11px rgba(249, 249, 249, 1);
-    /*border-bottom: 4px solid #f9f9f9;*/
+	box-shadow: 11px 0px 19px -11px rgba(0, 0, 0, 0.36),-5px 7px 34px -11px rgba(249, 249, 249, 1);
+	/*border-bottom: 4px solid #f9f9f9;*/
 }
 
 #ScorecardTable_Over tr:not(.divider):not(.IsDivider) td {
-    height: 30px;
+	height: 30px;
 }
 
 .direction_1:empty:before,
 .direction_GreaterThan:empty:before {
-    content: "\2265";
+	content: "\2265";
 }
 
 .direction_LessThan:empty:before {
-    content: "<";
+	content: "<";
 }
 
 .direction_LessThanOrEqual:empty:before {
-    content: "\2264";
+	content: "\2264";
 }
 
 .direction_GreaterThanNotEqual:empty:before {
-    content: ">";
+	content: ">";
 }
 
 .direction_EqualTo:empty:before {
-    content: "=";
+	content: "=";
 }
 
 .direction_Between:empty:before {
-    content: "\21D4";
+	content: "\21D4";
 }
 
 .modifiers.Dollar:before,
 .modifiers.dollar:before {
-    content: "$";
+	content: "$";
 }
 
 .modifiers.Percent:after,
 .modifiers.percent:after {
-    content: "%";
+	content: "%";
 }
 
 .scorecard-table .handle {
-    color: #CCC !important;
-    cursor: move;
+	color: #CCC !important;
+	cursor: move;
 }
 
 .scorecard-table .xsortable-placeholder {
-    border: 1px dotted #444;
-    margin: 2px;
+	border: 1px dotted #444;
+	margin: 2px;
 }
 
 
 
 .modifiers-0:before {
-    content: "units";
+	content: "units";
 }
 
 .modifiers-1:after {
-    content: "dollars";
+	content: "dollars";
 }
 
 .modifiers-2:after {
-    content: "%";
+	content: "%";
 }
 
 
 .scorecard-table .score input[disabled] {
-    background-color: #f7f7f7 !important;
-    background-color: #ececec !important;
+	background-color: #f7f7f7 !important;
+	background-color: #ececec !important;
 }
 
 .scorecard-table {
-    font-family: 'Roboto',sans-serif;
+	font-family: 'Roboto',sans-serif;
 }
 
 .scorecard-table .number {
-    text-align: center;
-    font-weight: bold;
+	text-align: center;
+	font-weight: bold;
 }
 
 
 .scorecard-table .target.direction,
 .scorecard-table .target-value {
-    font-size: 15px;
+	font-size: 15px;
 }
 
 
 .scorecard-empty-holder:before {
-    content: "\2190";
-    font-size: 60px;
-    position: absolute;
-    left: 15px;
-    text-align: left;
-    top: 91px;
-    margin-top: 0px;
+	content: "\2190";
+	font-size: 60px;
+	position: absolute;
+	left: 15px;
+	text-align: left;
+	top: 91px;
+	margin-top: 0px;
 }
 
 .scorecard-empty-holder:after {
-    content: "To add a scorecard item, click the settings button";
+	content: "To add a scorecard item, click the settings button";
 }
 
 .scorecard-angular .scorecard-table .score input {
-    font-family: inherit;
-    font-size: 13px;
-    width: 80px;
-    height: ~"calc(100% + 1px)";
+	font-family: inherit;
+	font-size: 13px;
+	width: 80px;
+	height: ~"calc(100% + 1px)";
 }
 
 .scorecard-table .divider td,
 #ScorecardTable_Over .divider .header-cell {
-    height: 8px;
-    position: relative;
-    border-bottom: 0px solid white;
-    top: 0px !important;
-    background-color: #eee;
-    border-top: 2px solid rgba(0,0,0,.12);
-    box-shadow: 0px 2px 6px -5px rgba(0,0,0,0.1) inset;
+	height: 8px;
+	position: relative;
+	border-bottom: 0px solid white;
+	top: 0px !important;
+	background-color: #eee;
+	border-top: 2px solid rgba(0,0,0,.12);
+	box-shadow: 0px 2px 6px -5px rgba(0,0,0,0.1) inset;
 }
 
 .scorecard-table .divider td.current-divider-left,
 .scorecard-table .divider td.current-divider-right {
-    background-color: #2C77BA; /*#E8E8E8;*/
-    border-top: 2px solid #2C77BA;
-    background-color: #eee;
+	background-color: #2C77BA; /*#E8E8E8;*/
+	border-top: 2px solid #2C77BA;
+	background-color: #eee;
 }
 
 .scorecard-table .divider .icon:before,
 .scorecard-table .divider .glyphicon:before {
-    color: #999999;
+	color: #999999;
 }
 
 
 .scorecard-table .deleteDivider {
-    font-size: 10px;
-    top: 0px;
-    left: 5px;
-    margin: -3px;
+	font-size: 10px;
+	top: 0px;
+	left: 5px;
+	margin: -3px;
 }
 
 .scorecard-table .divider .glyphicon {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .scorecard-table .divider .handle {
-    top: 0px;
+	top: 0px;
 }
 
 .meeting-page .scorecard-table .divider .handle {
-    top: 1px;
+	top: 1px;
 }
 
 .scorecard-table .divider .icon,
 .scorecard-table .divider .glyphicon {
-    display: none;
+	display: none;
 }
 
 .scorecard-table .divider td:nth-child(0):hover .icon,
 .scorecard-table .divider td:nth-child(1):hover .icon,
 .scorecard-table .divider td:nth-child(0):hover .glyphicon,
 .scorecard-table .divider td:nth-child(1):hover .glyphicon {
-    opacity: 1;
-    display: block;
+	opacity: 1;
+	display: block;
 }
 
 .scorecard-table td:first-child:hover .divider-icon {
-    border-top: 1px solid red;
+	border-top: 1px solid red;
 }
 
 .scorecard-table .divider.xsortable-placeholder {
-    font-size: 1px;
+	font-size: 1px;
 }
 
 .divider + .divider td {
-    border: none !important;
+	border: none !important;
 }
 
 .scorecard-table .divider .current-divider-left {
-    border-left: 3px solid #2c77ba;
-    border-right: 3px solid #2c77ba;
-    border-left: none;
-    border-right: none;
-    border-top: 2px solid #2c77ba;
+	border-left: 3px solid #2c77ba;
+	border-right: 3px solid #2c77ba;
+	border-left: none;
+	border-right: none;
+	border-top: 2px solid #2c77ba;
 }
 
 .scorecard-table .divider .current-divider-right {
-    border-right: 3px solid #2c77ba;
-    background-color: #2c77ba;
-    border-left: none;
-    border-right: none;
-    background-color: #eee;
-    border-top: 2px solid #2c77ba;
+	border-right: 3px solid #2c77ba;
+	background-color: #2c77ba;
+	border-left: none;
+	border-right: none;
+	background-color: #eee;
+	border-top: 2px solid #2c77ba;
 }
 
 .scorecard-table tr:nth-last-child(1) .current-divider-right,
 .scorecard-table tr:nth-last-child(1) .current-divider-left {
-    background-color: #2c77ba;
+	background-color: #2c77ba;
 }
 
 .scorecard-table .IsDivider td * {
-    display: none;
+	display: none;
 }
 
 .scorecard-table .IsDivider td {
-    margin: 0;
-    padding: 0;
-    background-color: #e2e2e2; /*#E8E8E8;*/
-    cursor: move;
-    height: 4px;
-    top: 0;
+	margin: 0;
+	padding: 0;
+	background-color: #e2e2e2; /*#E8E8E8;*/
+	cursor: move;
+	height: 4px;
+	top: 0;
 }
 
 .scorecard-table .IsDivider td.current {
-    background-color: #2c77ba;
+	background-color: #2c77ba;
 }
 
 
 .scorecard-table .profile-picture,
 .scorecard-table .picture-container {
-    width: 25px;
-    height: 25px;
-    line-height: 22px;
-    position: relative;
-    top: 0px;
-    float: left;
-    font-size: 9px;
+	width: 25px;
+	height: 25px;
+	line-height: 22px;
+	position: relative;
+	top: 0px;
+	float: left;
+	font-size: 9px;
 }
 
 .scorecard profile-image {
-    float: left;
+	float: left;
 }
 
 .scorecard-table .editable-buttons {
-    margin-left: 4px;
+	margin-left: 4px;
 }
 
 .scorecard-table .editable-buttons .btn {
-    padding: 2px 5px 1px 5px;
-    margin-top: 3px;
+	padding: 2px 5px 1px 5px;
+	margin-top: 3px;
 }
 
 .scorecard-table .editable-buttons .editable-cancel {
-    margin-left: 4px;
+	margin-left: 4px;
 }
 
 .scorecard-table .editable-input input {
-    padding: 0;
-    height: 24px;
-    border-radius: 0;
-    border: none;
-    border-bottom: 1px solid #ccc;
-    box-shadow: none;
+	padding: 0;
+	height: 24px;
+	border-radius: 0;
+	border: none;
+	border-bottom: 1px solid #ccc;
+	box-shadow: none;
 }
 
 
 
 .accountable-column profile-image {
-    float: right;
+	float: right;
 }
 
 .scorecard .item-wrapper.place-right form {
-    top: -16px;
+	top: -16px;
 }
 
 .scorecard .goal-column .blend {
-    min-width: 50px !important;
-    font-size: 14px;
+	min-width: 50px !important;
+	font-size: 14px;
 }
 
 .scorecard .measurable-column,
 .scorecard .measurable-column input {
-    min-width: 100px;
-    max-width: 200px;
+	min-width: 100px;
+	max-width: 200px;
 }
 
 .scorecard .page-header.listing {
-    margin-top: -28px;
-    padding-top: 26px;
-    background-color: #eee;
-    z-index: 11;
-    box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
+	margin-top: -28px;
+	padding-top: 26px;
+	background-color: #eee;
+	z-index: 11;
+	box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
 }
 
 .scorecard .fixed-pos {
-    position: relative;
-    width: 100%;
+	position: relative;
+	width: 100%;
 }
 
 .scorecard .page-header {
-    margin-top: 0px;
-    margin: 5px 0;
+	margin-top: 0px;
+	margin: 5px 0;
 }
 
 .divider.ui-sortable-helper {
-    display: none !important;
+	display: none !important;
 }
 
 .input-placeholder input {
-    border-color: transparent;
-    width: 0px;
+	border-color: transparent;
+	width: 0px;
 }
 
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-    .dashboard .scorecard-table .score input {
-        height: 32px !important;
-    }
+	.dashboard .scorecard-table .score input {
+		height: 32px !important;
+	}
 }
 
 #ScorecardTable_Over tr.auto,
 #ScorecardTable tr.auto {
-    height: 25px;
+	height: 25px;
 }
 
 .divider + tr:not(.divider) td {
-    border-top: 2px solid #E0E0E0;
+	border-top: 2px solid #E0E0E0;
 }
 
 
@@ -715,81 +741,81 @@
 
 .divider + tr:not(.divider) td.current,
 .divider + tr:not(.divider) td.buttonHolder {
-    border-top-color: #2c77ba;
+	border-top-color: #2c77ba;
 }
 
 
 /* csslint ignore:start */
 @-moz-document url-prefix() {
-    .divider + tr:not(.divider) .current input {
-        height: 25px;
-        padding-top: 6px;
-    }
+	.divider + tr:not(.divider) .current input {
+		height: 25px;
+		padding-top: 6px;
+	}
 }
 /* csslint ignore:end */
 
 
 
 @media(max-width:767px) {
-    .scorecard .scorecard-table .measurable {
-        max-width: 30vw;
-    }
+	.scorecard .scorecard-table .measurable {
+		max-width: 30vw;
+	}
 
-    .scorecard .scorecard-table .target {
-        max-width: 14vw;
-    }
+	.scorecard .scorecard-table .target {
+		max-width: 14vw;
+	}
 
-    .scorecard .scorecard-table .reorder-icon {
-        display: none;
-    }
+	.scorecard .scorecard-table .reorder-icon {
+		display: none;
+	}
 
-    .scorecard .scorecard-table .accountable.heading {
-        font-size: 1px;
-        color: rgba(0, 0, 0, 0);
-    }
+	.scorecard .scorecard-table .accountable.heading {
+		font-size: 1px;
+		color: rgba(0, 0, 0, 0);
+	}
 
-    .scorecard .l10-page-title {
-        color: rgba(0, 0, 0, 0);
-        height: 15px;
-    }
+	.scorecard .l10-page-title {
+		color: rgba(0, 0, 0, 0);
+		height: 15px;
+	}
 }
 
 .angular-scorecard #ScorecardTable_Over tr:not(.divider):not(.IsDivider) td {
-    height: 32px;
+	height: 32px;
 }
 
 
 
 .scorecard *::-webkit-scrollbar-track {
-    background-color: rgba(0, 0, 0, 0);
-    border: 6px solid transparent;
-    -moz-background-clip: padding-box;
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
+	background-color: rgba(0, 0, 0, 0);
+	border: 6px solid transparent;
+	-moz-background-clip: padding-box;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
 }
 
 .scorecard *::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 9px;
-    border-radius: 9px;
-    background: rgba(0, 0, 0, 0.07);
-    border: 3px solid transparent;
-    background-clip: padding-box;
-    margin: 2px;
-    -webkit-transition: background 0.2s ease-in-out;
+	-webkit-border-radius: 9px;
+	border-radius: 9px;
+	background: rgba(0, 0, 0, 0.07);
+	border: 3px solid transparent;
+	background-clip: padding-box;
+	margin: 2px;
+	-webkit-transition: background 0.2s ease-in-out;
 }
 
 .scorecard *:hover::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    -webkit-border-radius: 9px;
-    border-radius: 9px;
-    border: 3px solid transparent;
-    background-clip: padding-box;
-    margin: 2px;
+	background: rgba(0, 0, 0, 0.2);
+	-webkit-border-radius: 9px;
+	border-radius: 9px;
+	border: 3px solid transparent;
+	background-clip: padding-box;
+	margin: 2px;
 }
 
 .scorecard-tile .measurable-name {
-    font-size: 12px;
-    text-shadow: 0 0 1px rgba(0,0,0,0.2);
+	font-size: 12px;
+	text-shadow: 0 0 1px rgba(0,0,0,0.2);
 }

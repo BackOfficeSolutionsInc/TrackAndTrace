@@ -46,7 +46,13 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public JsonResult Add(DateTime dueDate, string milestone, long rockId) {
-			RockAccessor.AddMilestone(GetUser(), rockId, milestone, dueDate);
+
+			var d = GetUser().GetTimeSettings().ConvertFromServerTime(dueDate);
+			d = d.Date.AddDays(1).AddMilliseconds(-1);
+			d = GetUser().GetTimeSettings().ConvertToServerTime(d);
+
+
+			RockAccessor.AddMilestone(GetUser(), rockId, milestone, d);
 			return Json(ResultObject.SilentSuccess());
 		}
 

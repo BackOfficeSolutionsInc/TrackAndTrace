@@ -32,7 +32,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                 $scope.lastValue = $scope.score.Measured;
             }
 
-            var currWeekNumber = getWeekSinceEpoch(new Date().addDays(13));
+            var currWeekNumber = Time.getWeekSinceEpoch(new Date().addDays(13));
 
             var scorecardColor = function (s) {
                 if (!s)
