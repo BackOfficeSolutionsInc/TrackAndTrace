@@ -1,0 +1,3 @@
+Chrome~Visual_L10_Wizard_Rocks~_l10_wizard_{id}~Rocks-AfterAdd.png
+Chrome~Visual_L10_Wizard_Rocks~_l10_wizard_{id}~Rocks-BeforeAdd.png
+Chrome~Visual_L10_Wizard_Rocks~_l10_wizard_{id}~Rocks-Picture.png
