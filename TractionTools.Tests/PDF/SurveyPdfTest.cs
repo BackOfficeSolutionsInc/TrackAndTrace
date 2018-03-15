@@ -181,10 +181,10 @@ namespace TractionTools.Tests.PDF {
 		//	return container;
 		//}
 
-		private void Save(Document doc,string name) {
+		private void Save(Document doc, string name) {
 			PdfDocumentRenderer renderer = new PdfDocumentRenderer(true);
-			renderer.Document = doc;			
-			renderer.RenderDocument();			
+			renderer.Document = doc;
+			renderer.RenderDocument();
 			renderer.PdfDocument.Save(Path.Combine(GetCurrentPdfFolder(), name));
 			renderer.PdfDocument.Save(Path.Combine(GetPdfFolder(), name));
 		}
@@ -224,12 +224,12 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 
 
 			ConstructSurveyEnv(c.Org);
-			long surveyContainerId=0;
+			long surveyContainerId = 0;
 			DbCommit(s => {
-				var result = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s,c.Middle), "Test", byAbouts, new DateRange(), DateTime.MaxValue, false);
+				var result = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.Middle), "Test", byAbouts, new DateRange(), DateTime.MaxValue, false);
 				surveyContainerId = result.SurveyContainerId;
 			});
-			
+
 
 
 			{
@@ -258,26 +258,30 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 			}
 			{
 				var survey = SurveyAccessor.GetSurvey(c.Middle, c.Middle, e2, surveyContainerId);
-				var rockSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
-				var value1 = rockSection.GetItemContainers().Skip(1).First();
-				SurveyAccessor.UpdateAngularSurveyResponse(c.Middle, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").Last().Key);
+				var rockSection = survey.GetSections().FirstOrDefault(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				Assert.IsTrue(rockSection == null);
+				//var value1 = rockSection.GetItemContainers().Skip(1).First();
+				//SurveyAccessor.UpdateAngularSurveyResponse(c.Middle, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").Last().Key);
 			}
 			{
 				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, e2, surveyContainerId);
-				var rockSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
-				var value1 = rockSection.GetItemContainers().First();
-				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").First().Key);
+				var rockSection = survey.GetSections().FirstOrDefault(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				Assert.IsTrue(rockSection == null);
+				//var value1 = rockSection.GetItemContainers().First();
+				//SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").First().Key);
 			}
 			{
 				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, e2, surveyContainerId);
-				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
-				var value1 = valuesSection.GetItemContainers().Last();
-				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, longText1);
+				var valuesSection = survey.GetSections().FirstOrDefault(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				Assert.IsTrue(valuesSection == null);
+				//Values??
+				//var value1 = valuesSection.GetItemContainers().Last();
+				//SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, longText1);
 			}
 			{
 				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, e2, surveyContainerId);
 				var rolesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Roles);
-				var value1 = rolesSection.GetItemContainers().Where(x=>x.HasResponse()).First();
+				var value1 = rolesSection.GetItemContainers().Where(x => x.HasResponse()).First();
 				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").First().Key);
 			}
 			{
@@ -300,7 +304,7 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 			var doc = SurveyPdfAccessor.CreateDoc(c.Manager, "Generate_Survey_Pdf");
 			var now = c.Middle.GetTimeSettings().ConvertFromServerTime(DateTime.UtcNow);
 			foreach (var survey in surveyContainer.GetSurveys()) {
-				SurveyPdfAccessor.AppendSurveyAbout(doc,surveyContainer.GetName(), now, survey);
+				SurveyPdfAccessor.AppendSurveyAbout(doc, surveyContainer.GetName(), now, survey);
 			}
 			Save(doc, "GenerateSurveyPdf.pdf");
 
@@ -427,12 +431,12 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 
 		//	var compactTS = new TreeSettings() { compact = true };
 		//	var noncompactTS = new TreeSettings() { compact = false };
-			
+
 
 		//	var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, 11, 8.5, false, noncompactTS);
 		//	pdf.Save(Path.Combine(GetCurrentPdfFolder(), "LargeTreeDiagram_multi_noncompact.pdf"));
 		//	pdf.Save(Path.Combine(GetPdfFolder(), "LargeTreeDiagram_multi_noncompact.pdf"));
-			
+
 
 		//}
 

@@ -79,7 +79,7 @@ namespace TractionTools.Tests.Api {
 
             string name = "TestMilestone";
             DateTime date = DateTime.UtcNow.AddDays(7);
-            var addRocksMilestones = rocksController.AddRocksMilestones(getRocks.FirstOrDefault().Id, new RocksController.CreateMilestoneModel {
+            var addRocksMilestones = await rocksController.AddRocksMilestones(getRocks.FirstOrDefault().Id, new RocksController.CreateMilestoneModel {
 				title = name,
 				dueDate = date
 			});

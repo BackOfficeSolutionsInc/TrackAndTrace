@@ -90,7 +90,7 @@ namespace TractionTools.UITests.L10Wizard {
 				//Assert.IsTrue(d.WaitUntil(x => x.Find(".create-user").Displayed));
 				//Assert.IsTrue(d.WaitUntil(x => x.Find(".upload-users").Displayed));
 
-				Assert.IsTrue(d.WaitUntil(10,x => x.Find(".seoc .select2-selection--single",10).Displayed));
+				Assert.IsTrue(d.WaitUntil(10,x => x.Find(".seoc .select2-selection--multiple",10).Displayed));
 
 				d.TestScreenshot("Basics-Select");
             });

@@ -555,20 +555,18 @@ namespace TractionTools.Tests.Engines {
 
 			Assert.AreEqual(1, about.GetSurveys().Count());
 			Assert.AreEqual(6, about.GetSurveys().First().GetSections().Count());
-			{
-				var rockItemContainers = about.GetSurveys().First().GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks).GetItemContainers();
-				Assert.AreEqual(5, rockItemContainers.Count());
-				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -0"));
-				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -1"));
-				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -2"));
-				Assert.IsFalse(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -3"));
-				Assert.IsFalse(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -4"));
-				Assert.IsFalse(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -5"));
-				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -6"));
-				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == RockSection.RockCommentHeading));
-
-
-			}
+			//{
+			//	var rockItemContainers = about.GetSurveys().First().GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks).GetItemContainers();
+			//	Assert.AreEqual(5, rockItemContainers.Count());
+			//	Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -0"));
+			//	Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -1"));
+			//	Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -2"));
+			//	Assert.IsFalse(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -3"));
+			//	Assert.IsFalse(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -4"));
+			//	Assert.IsFalse(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -5"));
+			//	Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -6"));
+			//	Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == RockSection.RockCommentHeading));
+			//}
 			{
 
 				var roleItemContainers = about.GetSurveys().First().GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Roles).GetItemContainers();
