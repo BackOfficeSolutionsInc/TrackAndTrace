@@ -14,7 +14,6 @@ namespace RadialReview.Utilities.Hooks {
 		public bool MessageChanged { get; set; }
 		public bool DueDateChanged { get; set; }
 		public bool CompletionChanged { get; set; }
-		public bool AccountableUserChanged { get; set; }
 		public bool IsDeleted { get; set; }
 	}
 
