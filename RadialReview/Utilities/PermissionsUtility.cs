@@ -1222,10 +1222,10 @@ namespace RadialReview.Utilities {
             if (vto.L10Recurrence.HasValue && vto.L10Recurrence.Value > 0) {
                 var l10 = session.Get<L10Recurrence>(vto.L10Recurrence.Value);
                 if (l10.ShareVto)
-                    return Or(()=>ViewOrganization(l10.OrganizationId).ViewOrganization(vto.Organization.Id),()=> ViewL10Recurrence(vto.L10Recurrence.Value));
-                return ViewL10Recurrence(vto.L10Recurrence.Value);
-                //return CanView(PermItem.ResourceType.L10Recurrence, vto.L10Recurrence.Value);
-            } else {
+					return ViewOrganization(vto.Organization.Id).Or(() => ViewOrganization(l10.OrganizationId), () => ViewL10Recurrence(vto.L10Recurrence.Value));
+				return ViewOrganization(vto.Organization.Id).ViewL10Recurrence(vto.L10Recurrence.Value);
+				//return CanView(PermItem.ResourceType.L10Recurrence, vto.L10Recurrence.Value);
+			} else {
                 return CanView(PermItem.ResourceType.VTO, vtoId, @this => {
                     if (IsManagingOrganization(vto.Organization.Id))
                         return this;
