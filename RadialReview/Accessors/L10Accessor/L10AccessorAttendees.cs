@@ -109,6 +109,10 @@ namespace RadialReview.Accessors {
 										.List().ToList();
 						recurMeasureables = recurMeasureables.Where(x => x.Measurable == null || x.Measurable.DeleteTime == null).ToList();
 
+						if (measurableId < 0) { //Dividers are negative..
+							measurableId = -1 * measurableId;
+						}
+
 						var ctx = Reordering.Create(recurMeasureables, measurableId, recurrenceId, oldOrder, newOrder, x => x._Ordering, x => (x.Measurable == null) ? x.Id : x.Measurable.Id);
 						ctx.ApplyReorder(rt, s, (id, order, item) => AngularMeasurable.Create(item));
 

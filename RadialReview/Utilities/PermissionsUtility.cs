@@ -39,6 +39,8 @@ using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Utilities.CoreProcess;
+using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
+using RadialReview.Crosscutting.EventAnalyzers.Models;
 
 namespace RadialReview.Utilities {
     //[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -1220,10 +1222,10 @@ namespace RadialReview.Utilities {
             if (vto.L10Recurrence.HasValue && vto.L10Recurrence.Value > 0) {
                 var l10 = session.Get<L10Recurrence>(vto.L10Recurrence.Value);
                 if (l10.ShareVto)
-                    return Or(()=>ViewOrganization(l10.OrganizationId).ViewOrganization(vto.Organization.Id),()=> ViewL10Recurrence(vto.L10Recurrence.Value));
-                return ViewL10Recurrence(vto.L10Recurrence.Value);
-                //return CanView(PermItem.ResourceType.L10Recurrence, vto.L10Recurrence.Value);
-            } else {
+					return ViewOrganization(vto.Organization.Id).Or(() => ViewOrganization(l10.OrganizationId), () => ViewL10Recurrence(vto.L10Recurrence.Value));
+				return ViewOrganization(vto.Organization.Id).ViewL10Recurrence(vto.L10Recurrence.Value);
+				//return CanView(PermItem.ResourceType.L10Recurrence, vto.L10Recurrence.Value);
+			} else {
                 return CanView(PermItem.ResourceType.VTO, vtoId, @this => {
                     if (IsManagingOrganization(vto.Organization.Id))
                         return this;
@@ -1773,7 +1775,8 @@ namespace RadialReview.Utilities {
             ViewSurveyContainer(survey.SurveyContainerId);
             return CanView(PermItem.ResourceType.Survey, surveyId);
         }
-        public PermissionsUtility ViewSurveyResultsAbout(IForModel about, long orgId) {
+        public PermissionsUtility ViewSurveyResultsAbout(IForModel about) {
+            var orgId = ForModelAccessor.GetOrganizationId(session,about);
             var allowSelf = (IsManager(orgId));
             return ManagesForModel(about, !allowSelf);
         }
@@ -1808,6 +1811,8 @@ namespace RadialReview.Utilities {
             }
             throw new PermissionsException("Unknown 'by' type");
         }
+
+           
 
         #endregion
 
@@ -2134,9 +2139,28 @@ namespace RadialReview.Utilities {
             throw new PermissionsException();
         }
 
-        #endregion
+		#endregion
 
-        public PermissionsUtility InValidPermission() {
+		#region Events
+		public PermissionsUtility SubscribeToEvent(long subscriberUserId, IEventAnalyzerGenerator analyzer) {
+			var permChecked = false;
+			Self(subscriberUserId);
+			if (analyzer is IEventAnalyzerGenerator) {
+				ViewL10Recurrence(((IRecurrenceEventAnalyerGenerator)analyzer).RecurrenceId);
+				permChecked = true;
+			}
+
+			if (permChecked)
+				return this;
+			throw new PermissionsException("no permissions were checked");
+		}
+		public PermissionsUtility ViewEvent(long eventId, IEventAnalyzerGenerator analyzer) {
+			var evt = session.Get<EventSubscription>(eventId);
+			return SubscribeToEvent(evt.SubscriberId, analyzer);			
+		}
+		#endregion
+
+		public PermissionsUtility InValidPermission() {
             if (Config.IsLocal()) {
                 return this;
             }
@@ -2293,10 +2317,13 @@ namespace RadialReview.Utilities {
             throw new PermissionsException();
         }
 
+        
         public PermissionsUtility Self(long userId) {
             if (IsRadialAdmin(caller))
                 return this;
             if (userId == caller.Id)
+                return this;
+            if (caller.UserIds !=null && caller.UserIds.Any(x => x == userId))
                 return this;
             throw new PermissionsException();
         }

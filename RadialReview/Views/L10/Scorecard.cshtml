@@ -64,8 +64,9 @@
                                     @if (Model.ShowScorecardChart)
                                     {
 									<th>&nbsp;</th>
-									}
-									<th></th>
+                                    }
+                                    <th></th>
+                                    <th></th>
 									@if (i == 0)
 									{
 										foreach (var r in Model.Weeks)
@@ -90,6 +91,7 @@
 									<th class="heading"></th>
 									}
 									<th></th>
+                                    <th></th>
 									@if (i == 0){
 										foreach (var r in Model.Weeks)
 										{
@@ -130,6 +132,7 @@
            
 		</div>
 	</div>
+    <span class="sc-chart-container"></span>
 </div>
 <style>
     td > div.number {

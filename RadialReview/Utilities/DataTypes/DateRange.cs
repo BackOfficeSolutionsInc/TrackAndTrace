@@ -6,6 +6,8 @@ using RadialReview.Models.L10;
 using NHibernate.Criterion;
 using RadialReview.Models.Interfaces;
 using System.Linq.Expressions;
+using NHibernate.Envers.Query.Criteria;
+using NHibernate.Envers.Query;
 
 namespace RadialReview.Utilities.DataTypes
 {
@@ -38,6 +40,13 @@ namespace RadialReview.Utilities.DataTypes
 			return new DateRange(time, time);
 		}
 
+		public TimeSpan ToTimespan() {
+		    return EndTime - StartTime;
+		}
+
+		public static DateRange Full() {
+		    return new DateRange(DateTime.MinValue, DateTime.MaxValue);
+		}
 
 	}
 	public static class DateRangeExtensions {
@@ -57,7 +66,7 @@ namespace RadialReview.Utilities.DataTypes
 		}
 
         /// <summary>
-        /// Filters IHistoricals. Use Filter.Compile() for Linq
+        /// Filters IHistoricals. Use Filter.Compile() for Linq. Was alive any time during this range
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="range"></param>
@@ -68,7 +77,25 @@ namespace RadialReview.Utilities.DataTypes
 				return (T x) => x.DeleteTime == null; /// x => true
 			}
 			return (T x) => x.CreateTime <= range.EndTime && (x.DeleteTime == null || x.DeleteTime >= range.StartTime);
+		}
 
+        public static IAuditCriterion FilterAudit<T>(this DateRange range) where T : class,IHistorical,new() {
+
+            var createProp = AuditEntity.Property(HibernateSession.Names.ColumnName<T>(x => x.CreateTime));
+            var deleteProp = AuditEntity.Property(HibernateSession.Names.ColumnName<T>(x => x.DeleteTime));
+
+            var ands = new AuditConjunction();
+            ands.Add(createProp.Le(range.EndTime));//x.CreateTime <= range.EndTime
+            var ors = new AuditDisjunction();
+            ors.Add(deleteProp.IsNull());
+            ors.Add(deleteProp.Ge(range.StartTime));// (x.DeleteTime == null || x.DeleteTime >= range.StartTime)
+            ands.Add(ors);
+
+            return ands;
+        }
+
+		public static bool AliveAt(this IHistorical historical, DateTime time) {
+			return DateRange.Instant(time).Filter<IHistorical>().Compile()(historical);
 		}
 
 		public static Expression<Func<T, bool>> Filter<T>(this DateRange range, Func<T, DateTime> transform) {

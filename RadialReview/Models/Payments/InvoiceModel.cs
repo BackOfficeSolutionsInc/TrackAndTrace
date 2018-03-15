@@ -21,6 +21,9 @@ namespace RadialReview.Models
         public virtual OrganizationModel Organization { get; set; }
         public virtual IList<InvoiceItemModel> InvoiceItems { get; set; }
 
+        public virtual long? ForgivenBy { get; set; }
+        public virtual long? ManuallyMarkedPaidBy { get; set; }
+
 		[Display(Name = "Date Paid"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
 		public virtual DateTime? PaidTime { get; set; }
 
@@ -36,7 +39,15 @@ namespace RadialReview.Models
 
         public virtual String EmailAddress { get; set; }
 
-	    public InvoiceModel()
+        public virtual bool WasAutomaticallyPaid() {
+            return ManuallyMarkedPaidBy == null && PaidTime != null;
+        }
+        public virtual bool AnythingDue() {
+            return !(PaidTime != null || AmountDue <= 0 || ForgivenBy != null);
+        }
+
+
+        public InvoiceModel()
         {
             InvoiceItems = new List<InvoiceItemModel>();
 	        CreateTime = DateTime.UtcNow;
@@ -74,6 +85,9 @@ namespace RadialReview.Models
 			Map(x => x.CreateTime);
 			Map(x => x.DeleteTime);
 			Map(x => x.TransactionId);
+
+            Map(x => x.ForgivenBy);
+            Map(x => x.ManuallyMarkedPaidBy);
 
             Map(x => x.AmountDue);
 

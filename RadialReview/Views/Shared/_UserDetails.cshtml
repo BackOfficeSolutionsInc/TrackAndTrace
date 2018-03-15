@@ -6,6 +6,7 @@
 			list-style-type: decimal;
 		}
 	</style>
+    @Styles.Render("~/styles/snackbar")
 }
 @{
 	var edit = Model.Editable;//Model.User.GetPersonallyManaging() || Model.ManagingOrganization;
@@ -21,14 +22,15 @@
 			<div class="smallBreak"></div>
 			@if (edit) {
 				<hr />
-				<div class="alignCenter">
+				<div class="alignCenter smallBreak2">
 					<a class="btn btn-link alignCenter" href="/Todo/List/@Model.User.Id">View To-Dos</a>
 				</div>
-				<div class="smallBreak2"></div>
-				<div class="alignCenter">
-					<a class="btn btn-link alignCenter" href="/Rocks/Archive/@Model.User.Id">View Archived Rocks</a>
-				</div>
-				<div class="smallBreak2"></div>
+                <div class="alignCenter smallBreak2">
+                    <a class="btn btn-link alignCenter" href="/Rocks/Archive/@Model.User.Id">View Archived Rocks</a>
+                </div>
+                <div class="alignCenter smallBreak2">
+                    <a class="btn btn-link alignCenter" href="/people/quarterlyconversation/surveys/@Model.User.Id">View Quarterly Conversations</a>
+                </div>
 			}
 		</div>
 		<div class="col-sm-9">
@@ -51,7 +53,7 @@
 							<div class="tab-content">
 								<ul>
 									@foreach (var r in Model.Rocks@*.Where(x => x.Period!=null && x.Period.Id == q.Id)*@) {
-										<li class="rock-item" data-id="@r.Id">
+										<li class="rock-item hoverable" data-id="@r.Id">
 											@r.Rock
 											@if (r.FromTemplateItemId.HasValue) {
 												<span class="icon fontastic-icon-link-2 template-link" title="This was created by a template."></span>
@@ -166,6 +168,7 @@
 										<tr>
 											<th style="width: 40px;"></th>
 											<th>Admin for measurables</th>
+                                            <th></th>
 											<th style="width: 90px;" class="alignCenter">Weekly Goal</th>
 											<th style="width: 160px;" class="alignCenter">Owner</th>
 											<th style="width:20px"></th>
@@ -182,6 +185,8 @@
 														<span class="icon fontastic-icon-link-2 template-link" title="This measurable was created by a template."></span>
 													}
 												</td>
+                                                <td class="shift-hidden"></td>
+                                                <td class="shift-visible gray small nowrap"><span class="clickable" onclick="showFormula(@r.Id)">(edit formula)</span></td>
 												<td class="alignCenter">@r.GoalDirection.GetDisplayName() @r.Goal.ToString("0.#####")</td>
 												<td class="alignCenter"><a href="/Manage/UserDetails/@r.AccountableUserId">@r.AccountableUser.NotNull(x => x.GetName())</a></td>
 												<td>
@@ -219,6 +224,8 @@
 </div>
 
 <script>
+
+    
 	
 	function removeRock(id) {
 		$.ajax("/api/v1/rocks/" + id, {
@@ -259,3 +266,10 @@
 	}
 
 </script>
+
+<style>
+    .hoverable:hover{
+        /*background-color:#fdece0;*/
+        color:#cf5e0f;
+    }
+</style>

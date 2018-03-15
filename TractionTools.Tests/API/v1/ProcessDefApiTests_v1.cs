@@ -66,7 +66,7 @@ namespace TractionTools.Tests.Api {
 
             Server = Process.Start(processInfo);
             Thread.Sleep(10);
-            
+
             ActOnProcessAndChildren(Server, x => MinimizeWindow(x.MainWindowHandle));
             Server.WaitForExit();
             ActOnProcessAndChildren(Server, x => MinimizeWindow(x.MainWindowHandle));
@@ -86,7 +86,7 @@ namespace TractionTools.Tests.Api {
 
                 Thread.Sleep(2000);
             }
-            Console.WriteLine("Deleted after " + (count+1) + " tries.");
+            Console.WriteLine("Deleted after " + (count + 1) + " tries.");
         }
 
         private const int SW_MAXIMIZE = 3;
@@ -101,11 +101,17 @@ namespace TractionTools.Tests.Api {
             ShowWindow(hwnd, SW_MINIMIZE);
         }
 
-        private static void ActOnProcessAndChildren(Process process,Action<Process> action) {
+        private static void ActOnProcessAndChildren(Process process, Action<Process> action) {
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + process.Id);
             ManagementObjectCollection moc = searcher.Get();
             foreach (ManagementObject mo in moc) {
-                ActOnProcessAndChildren(Process.GetProcessById(Convert.ToInt32(mo["ProcessID"])),action);
+                try {
+                    ActOnProcessAndChildren(Process.GetProcessById(Convert.ToInt32(mo["ProcessID"])), action);
+                } catch (ArgumentException) {
+                    // Process already exited.
+                } catch (InvalidOperationException) {
+                    // Process already exited.
+                }
             }
             try {
                 action(process);
@@ -118,7 +124,7 @@ namespace TractionTools.Tests.Api {
 
         [ClassCleanup]
         public static void Cleanup() {
-            ActOnProcessAndChildren(Server,x=>x.Kill());
+            ActOnProcessAndChildren(Server, x => x.Kill());
         }
 
         #endregion
@@ -185,7 +191,7 @@ namespace TractionTools.Tests.Api {
             var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
 
             await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-            var getTask = await pda.GetTaskById_Unsafe( getTaskList[0].Id);
+            var getTask = await pda.GetTaskById_Unsafe(getTaskList[0].Id);
             var getClaim = getTask.Assignee;
             Assert.AreEqual(getClaim, c.E1.Id);
         }
@@ -202,10 +208,10 @@ namespace TractionTools.Tests.Api {
             var getProcessInstance = pda.GetProcessInstanceList(c.E1, getProcessDef);
             var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
             await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-            var getTask = await pda.GetTaskById_Unsafe( getTaskList[0].Id);
+            var getTask = await pda.GetTaskById_Unsafe(getTaskList[0].Id);
             var getClaim = getTask.Assignee;
             await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, false);
-            var getTaskUnClaim = await pda.GetTaskById_Unsafe( getTaskList[0].Id);
+            var getTaskUnClaim = await pda.GetTaskById_Unsafe(getTaskList[0].Id);
             var getClaimUnclaim = getTaskUnClaim.Assignee;
             Assert.AreNotEqual(getClaim, getClaimUnclaim);
         }
@@ -253,7 +259,7 @@ namespace TractionTools.Tests.Api {
                 var getTask = await pda.GetTaskById_Unsafe(getTaskList[0].Id);
                 var getListTaskForUser = await pda.GetTaskListByUserId(c.E1, c.E1.Id);
 
-                Assert.AreEqual(1,getListTaskForUser.Count);
+                Assert.AreEqual(1, getListTaskForUser.Count);
             }
 
             {
@@ -284,7 +290,7 @@ namespace TractionTools.Tests.Api {
 
         private async Task CreateAnotherUserTask(Ctx c) {
             var getProcessDef = await CreateProcess(c.E2);
-            var createTask = await CreateTask(c, c.E2, getProcessDef,name:"Test other task");
+            var createTask = await CreateTask(c, c.E2, getProcessDef, name: "Test other task");
             var publishProcess = await PublishProcess(c.E2, getProcessDef);
             await StartProcess(c.E2, getProcessDef);
             pda = new ProcessDefAccessor();
@@ -293,7 +299,7 @@ namespace TractionTools.Tests.Api {
 
             // claim task
             await pda.TaskClaimOrUnclaim(c.E2, getTaskList[0].Id, c.E2.Id, true);
-            var getTask = await pda.GetTaskById_Unsafe( getTaskList[0].Id);
+            var getTask = await pda.GetTaskById_Unsafe(getTaskList[0].Id);
             var getListTaskForUser = await pda.GetTaskListByUserId(c.E2, c.E2.Id);
         }
 
@@ -306,7 +312,7 @@ namespace TractionTools.Tests.Api {
             var processE1 = await CreateProcess(c.E1);
             var processE5 = await CreateProcess(c.E1);
             var processTeam = await CreateProcess(c.E1);
-            var createTaskE1 = await CreateTask(c, c.E1, processE1, name:"E1Task", groups: c.E1.Id);
+            var createTaskE1 = await CreateTask(c, c.E1, processE1, name: "E1Task", groups: c.E1.Id);
             var createTaskE5 = await CreateTask(c, c.E1, processE5, name: "E5Task", groups: c.E5.Id);
             var createTaskTeam = await CreateTask(c, c.E1, processTeam, groups: c.Org.InterreviewTeam.Id);
             var publishProcessE1 = await PublishProcess(c.E1, processE1);
@@ -360,11 +366,11 @@ namespace TractionTools.Tests.Api {
             var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
 
             await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-            var getTaskforConfirmation = await pda.GetTaskById_Unsafe( getTaskList[0].Id);
+            var getTaskforConfirmation = await pda.GetTaskById_Unsafe(getTaskList[0].Id);
             await pda.TaskComplete(c.E1, getTaskList[0].Id);
 
             //var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
-            await ThrowsAsync<PermissionsException>(async () => await pda.GetTaskById_Unsafe( getTaskList[0].Id));
+            await ThrowsAsync<PermissionsException>(async () => await pda.GetTaskById_Unsafe(getTaskList[0].Id));
             //Assert.IsTrue(string.IsNullOrEmpty(getTask.Id));
         }
 
@@ -374,13 +380,13 @@ namespace TractionTools.Tests.Api {
             return getResult;
         }
 
-        private async Task<TaskViewModel> CreateTask(Ctx ctx, UserOrganizationModel user, long processDefId,string name = null, params long[] groups) {
+        private async Task<TaskViewModel> CreateTask(Ctx ctx, UserOrganizationModel user, long processDefId, string name = null, params long[] groups) {
             pda = new ProcessDefAccessor();
 
             if (groups.Length == 0)
                 groups = new long[] { ctx.E1.Id, ctx.E2.Id, ctx.Manager.Id, ctx.Org.InterreviewTeam.Id };
 
-            TaskViewModel task = new TaskViewModel() { name = name??"Test Task", SelectedMemberId = groups };
+            TaskViewModel task = new TaskViewModel() { name = name ?? "Test Task", SelectedMemberId = groups };
             var createTask = await pda.CreateProcessDefTask(user, processDefId, task);
             return createTask;
         }
@@ -403,11 +409,11 @@ namespace TractionTools.Tests.Api {
             return startProcess;
         }
 
-      
+
 
         [TestMethod]
         [TestCategory("CoreProcess")]
-        public async Task DISABLED_TestWebhook() {
+        public async Task zDISABLED_TestWebhook() {
 
             //var c = await Ctx.Build();
             Assert.Inconclusive("Webhooks not setup");

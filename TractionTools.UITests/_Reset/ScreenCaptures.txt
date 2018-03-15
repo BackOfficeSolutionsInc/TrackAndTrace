@@ -4,3 +4,10 @@
 # Use the hash to ignore a line.
 
 
+Chrome~CreateSupervisor_2~_~Complete.png
+Chrome~CreateSupervisor_2~_~CreateSupervisor_DropdownEmployee.png
+Chrome~CreateSupervisor_3~_~Complete.png
+Chrome~CreateSupervisor~_~Complete.png
+Chrome~CreateSupervisor~_~CreateSupervisor_Dropdown2.png
+Chrome~Visual_CanCreateEval_2~_~Complete.png
+Chrome~Visual_CanCreateEval~_~Complete.png

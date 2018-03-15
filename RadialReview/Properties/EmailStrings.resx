@@ -143,7 +143,7 @@
     <comment>[htmlBody,footer,tableWidth_600]</comment>
   </data>
   <data name="Footer" xml:space="preserve">
-    <value>This message was generated automatically by Traction Tools, a product of {0} 1201 Infinity Ct, Lincoln, NE 68512&lt;br/&gt;If you feel you have received this message in error you can respond to this email.</value>
+    <value>This message was generated automatically by Traction Tools.&lt;br/&gt; 1201 Infinity Ct, Lincoln, NE 68512&lt;br/&gt;If you feel you have received this message in error you can respond to this email.</value>
     <comment>[productName]</comment>
   </data>
   <data name="JoinOrganizationUnderManager_Body" xml:space="preserve">
@@ -362,5 +362,65 @@ The {4} Team</value>
 Sincerely,&lt;br/&gt;
 The {4} Team</value>
     <comment>[receiversName,dueDate,linkUrl,LinkDisplay,ProductName]</comment>
+  </data>
+  <data name="UpdateCard_Body" xml:space="preserve">
+    <value>Hello,
+
+I hope that this email finds you well.
+
+We noticed that your credit card on file is about to expire. Please update your card information within {0}.
+
+If you do need to update your card information in your {0} account please follow the steps below:
+
+1. Log in to your {0} account.
+2. Navigate to "Manage Organization" from the drop down menu by your picture (Upper right corner) then click the "Payment" tab (click this link {1}Manage/Payment)
+3. Click "Add Bank Account" or “Add Credit Card” button in the upper right hand corner.
+4. Enter your bank or debit/credit card information.
+5. Click “Submit.”
+
+Your prompt attention to this matter will be greatly appreciated.
+
+All the best,
+
+{0} Support Team</value>
+    <comment>[ProductName, baseUrl]</comment>
+  </data>
+  <data name="FirstCharge_Body" xml:space="preserve">
+    <value>&lt;p&gt;
+Welcome to the &lt;b&gt;Traction&lt;span style=""line-height: 200%;font-size: 50%;vertical-align: top;""&gt;®&lt;/span&gt; Tools&lt;/b&gt; family!
+&lt;/p&gt;&lt;p&gt;
+Please save this email which has some important next-steps and links.
+&lt;/p&gt;&lt;p&gt;
+&lt;b&gt;What's next?&lt;/b&gt;
+&lt;/p&gt;&lt;p&gt;
+Schedule a quick &lt;a href=""https://www.mytractiontools.com/schedule/optimize/""&gt;&lt;b&gt;15-20 minute Optimizer Call&lt;/b&gt;&lt;/a&gt; to ensure that you are taking advantage of all of the features that Traction Tools has to offer. 
+&lt;/p&gt;&lt;p&gt;
+&lt;b&gt;Get Assistance When you Need it&lt;/b&gt;
+ &lt;/p&gt;&lt;p&gt;
+Helping you is a core value that our Client Success team takes very seriously! 
+&lt;ul&gt;
+&lt;li&gt;Check our new, searchable &lt;a href=""http://www.mytractiontools.com/success/""&gt;&lt;b&gt;knowledgebase&lt;/b&gt;&lt;/a&gt; for quick answers to common questions&lt;/li&gt;
+&lt;li&gt;Schedule a video chat with the first available member of our Client Success team &lt;/li&gt;
+&lt;li&gt;&lt;a href=""http://www.mytractiontools.com/success/new/""&gt;&lt;b&gt;Submit a request&lt;/b&gt;&lt;/a&gt; via our new client success portal&lt;/li&gt;
+&lt;li&gt;Forward / email your request to &lt;a href=""mailto:client-success@mytractiontools.com""&gt;&lt;b&gt;client-success@mytractiontools.com&lt;/b&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Call us at &lt;a href=""tel:1-402-437-0098""&gt;&lt;b&gt;1-402-437-0098&lt;/b&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/p&gt;&lt;p&gt;
+&lt;b&gt;Looking for Receipts?&lt;/b&gt;
+&lt;/p&gt;&lt;p&gt;
+For any purchases or subscription payments, you will receive an emailed receipt after each payment has processed. Our billing cycle is every 30 days.
+&lt;/p&gt;&lt;p&gt;
+&lt;b&gt;Connect With Us&lt;/b&gt;
+&lt;/p&gt;&lt;p&gt;
+Like and Share us on &lt;a href=""https://www.facebook.com/TractionTools/""&gt;&lt;b&gt;Facebook&lt;/b&gt;&lt;/a&gt;.
+&lt;/p&gt;&lt;p&gt;
+Follow us on &lt;a href=""https://www.youtube.com/channel/UCfM_bMyqs66VZo3Hx8uiepQ""&gt;&lt;b&gt;YouTube&lt;/b&gt;&lt;/a&gt;, where we have how-to's and ways to get the most out of Traction Tools.
+&lt;/p&gt;&lt;p&gt;
+&lt;b&gt;Send Us Your Testimonial or Review&lt;/b&gt;
+&lt;/p&gt;&lt;p&gt;
+Traction® Tools is made better by hearing from you. Please send your thoughts to &lt;a href=""client-success@mytractiontools.com""&gt;&lt;b&gt;client-success@mytractiontools.com&lt;/b&gt;&lt;/a&gt; and we may reach out to feature you on our website!
+&lt;/p&gt;&lt;p&gt;
+From all of us at Traction Tools, &lt;b&gt;thank you&lt;/b&gt;.
+&lt;/p&gt;</value>
   </data>
 </root>

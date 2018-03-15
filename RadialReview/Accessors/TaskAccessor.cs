@@ -2,6 +2,7 @@
 using NHibernate.Criterion;
 using NHibernate.Linq;
 using RadialReview.Controllers;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Enums;
@@ -487,6 +488,19 @@ namespace RadialReview.Accessors {
 			//		s.Flush();
 			//	}
 			//}
+		}
+
+		public static void EnsureTaskIsExecuting(ISession s, long taskId) {
+			var task = s.Get<ScheduledTask>(taskId);
+			if (task.Executed != null)
+				throw new PermissionsException("Task was already executed.");
+			if (task.DeleteTime != null)
+				throw new PermissionsException("Task was deleted.");
+
+			if (task.OriginalTaskId == 0)
+				throw new PermissionsException("ScheduledTask OriginalTaskId was 0.");
+			if (task.Started == null)
+				throw new PermissionsException("Task was not started.");
 		}
 	}
 }

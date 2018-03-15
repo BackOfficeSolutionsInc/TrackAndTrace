@@ -61,7 +61,9 @@ namespace RadialReview.Controllers {
 			else
 				dash = DashboardAccessor.GetDashboard(GetUser(), dashboardId.Value);
 
-			var tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
+            List<TileModel> tiles = new List<TileModel>();
+            if (dash!=null)
+                tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
 			ListDataVM output = await GetTileData(GetUser(), id, userId, tiles, completed, name, start, end, fullScorecard);
 
 			return Json(output, JsonRequestBehavior.AllowGet);

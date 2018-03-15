@@ -405,11 +405,19 @@ namespace RadialReview.Utilities {
 			}
 			return weeks;
 		}
-		public static DateRange GetRange(OrganizationModel org, DateTime forWeek) {
-			var settings = org.NotNull(x => x.Settings) ?? new OrganizationModel.OrganizationSettings();
+		private static DateRange GetRange(TimeSettings s, DateTime forWeek) {
+			//var settings = org.NotNull(x => x.Settings) ?? new OrganizationModel.OrganizationSettings();
+			var settings = s.GetTimeSettings();
+			return GetLocalRange(settings.WeekStart, settings.TimezoneOffset, forWeek, settings.Period, settings.YearStart);
+		}
 
-			return GetLocalRange(settings.WeekStart, settings.GetTimezoneOffset(),
-				forWeek, settings.ScorecardPeriod, settings.YearStart);
+		public static DateRange GetRange(TimeSettings s, L10MeetingVM.WeekVM week) {
+			var settings = s.GetTimeSettings();
+			if (settings.Period == ScorecardPeriod.Weekly) {
+				return GetRange(s, week.ForWeek.AddDays(-7));
+			}
+			return GetRange(s, week.ForWeek);
+
 		}
 
 		public static DateRange GetLocalRange(DayOfWeek weekStart, int timezoneOffset, DateTime date, ScorecardPeriod scorecardPeriod, YearStart yearStart) {
@@ -497,7 +505,11 @@ namespace RadialReview.Utilities {
 			return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).StartOfWeek(DayOfWeek.Sunday).AddDays(week * 7);
 		}
 
-		/*
+        public static DateTime ToScorecardDate(DateTime date) {
+            return GetDateSinceEpoch(GetWeekSinceEpoch(date));
+        }
+
+        /*
         public static double? ReviewDuration(List<AnswerModel> answers)
         {
             return answers.Where(x => x.DurationMinutes != null && x.CompleteTime != null).Sum(x => x.DurationMinutes);
@@ -509,7 +521,12 @@ namespace RadialReview.Utilities {
             return sum.TotalMinutes;*
         }*/
 
-		public static DateTime PeriodsAgo(DateTime startTime, int periods, ScorecardPeriod scorecardPeriod) {
+        public static DateTime PeriodsFromNow(DateTime startTime, int periods, ScorecardPeriod scorecardPeriod) {
+            return PeriodsAgo(startTime, -1 * periods, scorecardPeriod);
+        }
+
+
+        public static DateTime PeriodsAgo(DateTime startTime, int periods, ScorecardPeriod scorecardPeriod) {
 			switch (scorecardPeriod) {
 				case ScorecardPeriod.Weekly:
 					return startTime.AddDays(-7 * periods);
