@@ -323,14 +323,17 @@ namespace RadialReview.Accessors {
 				List<TodoModel> todoCompletion = null;
 				todoCompletion = GetAllTodosForRecurrence(s, perm, recurrenceId);
 				var periods = TimingUtility.GetPeriods(ts, now1, currentTime, true);
+				
+				//Hides the todo completion % if we're not in this week. Purely asthetic since the calculation is indeed correct.
+				var hideCompletion = new Func<DateTime, bool>(weekStart => currentTime < weekStart);
 
 				if (getScores && (recur.IncludeAggregateTodoCompletion || forceIncludeTodoCompletion)) {
-					var todoScores = CalculateAggregateTodoCompletionScores(ts, todoCompletion, periods, currentTime);
+					var todoScores = CalculateAggregateTodoCompletionScores(ts, todoCompletion, periods, hideCompletion, currentTime);
 					scoreModels.AddRange(todoScores);
 				}
 
 				if (getScores && (recur.IncludeIndividualTodos || forceIncludeTodoCompletion)) {
-					var individualTodoScores = CalculateIndividualTodoCompletionScores(ts, todoCompletion, periods, currentTime);
+					var individualTodoScores = CalculateIndividualTodoCompletionScores(ts, todoCompletion, periods, hideCompletion, currentTime);
 					scoreModels.AddRange(individualTodoScores);
 				}
 			}
@@ -368,8 +371,9 @@ namespace RadialReview.Accessors {
 								var v1 = a.Measurable.AdminUser.ImageUrl(true);
 							}
 
-                            if (a.Measurable.HasFormula)
-                                a._Editable = false;
+							if (a.Measurable.HasFormula) {
+								a._Editable = false;
+							}
 
 						}
 						if (a.AccountableUser != null) {
@@ -407,7 +411,7 @@ namespace RadialReview.Accessors {
 			};
 		}
 
-		public static IEnumerable<ScoreModel> CalculateIndividualTodoCompletionScores(TimeSettings ts, List<TodoModel> allTodos, List<L10MeetingVM.WeekVM> periods, DateTime? currentTime=null) {
+		public static IEnumerable<ScoreModel> CalculateIndividualTodoCompletionScores(TimeSettings ts, List<TodoModel> allTodos, List<L10MeetingVM.WeekVM> periods, Func<DateTime, bool> hideCompletion, DateTime? currentTime=null) {
 			return periods.SelectMany(period => {
 				return allTodos.GroupBy(x => x.AccountableUserId).SelectMany(todos => {
 					var a = todos.First().AccountableUser;
@@ -418,6 +422,11 @@ namespace RadialReview.Accessors {
 						if (ss.IsValid()) {
 							percent = Math.Round(ss.GetValue(0) * 100m, 1);
 						}
+
+						if (hideCompletion!=null && hideCompletion(rangeTodos.StartTime)) {
+							percent = null;
+						}
+
 						var mm = GenerateTodoMeasureable(a);
 						return new ScoreModel() {
 							_Editable = false,
@@ -437,7 +446,7 @@ namespace RadialReview.Accessors {
 			});
 		}
 
-		public static IEnumerable<ScoreModel> CalculateAggregateTodoCompletionScores(TimeSettings ts, List<TodoModel> allTodos, List<L10MeetingVM.WeekVM> periods, DateTime? currentTime=null) {
+		public static IEnumerable<ScoreModel> CalculateAggregateTodoCompletionScores(TimeSettings ts, List<TodoModel> allTodos, List<L10MeetingVM.WeekVM> periods, Func<DateTime, bool> hideCompletion, DateTime? currentTime=null) {
 			return periods.SelectMany(period=> {
 				try {
 					var rangeTodos = TimingUtility.GetRange(ts, period);
@@ -446,6 +455,10 @@ namespace RadialReview.Accessors {
 					if (ss.IsValid()) {
 						percent = Math.Round(ss.GetValue(0) * 100m, 1);
 					}
+					if (hideCompletion != null && hideCompletion(rangeTodos.StartTime)) {
+						percent = null;
+					}
+
 					return new ScoreModel() {
 						_Editable = false,
 						AccountableUserId = -1,
