@@ -1,4 +1,4 @@
-﻿@using RadialReview.Models
+@using RadialReview.Models
 @model RadialReview.Models.L10.VM.L10EditVM
 @{
     ViewBag.Title = "Edit L10 Meeting";
@@ -27,6 +27,7 @@
         <h3 class="panel-title">Edit L10 Meeting</h3>
     </div>
     <div class="panel-body form-horizontal">
+
 		<form class="" action="/L10/Edit" method="POST">
 			<div class="form-group">
 				<label class="col-sm-2 control-label alignLeft">Meeting Name:</label>
@@ -308,6 +309,7 @@
                                             {name:"Minutes",classes:"width80",contents:function(x){return x.Minutes;}},
                                             {edit:true},
                                             {remove:true},
+
 										],
 										data:@Html.ArrayToString(Model.Recurrence._Pages),
 									});
@@ -424,7 +426,7 @@
 				<div class="pull-right">
 					@if (Model.Recurrence.Id != 0) {
 						<div class="alignCenter">
-							<div class="btn btn-danger" onclick="@Html.ShowModal("Are you sure?", "/L10/Delete/", "/L10/Delete/" + Model.Recurrence.Id, onCompleteFunction: "goL10")">Delete meeting</div>
+                            <div class="btn btn-danger" onclick="@Html.ShowModal("Are you sure?", "/L10/Delete/"+Model.Recurrence.Id, "/L10/Delete/" + Model.Recurrence.Id, onCompleteFunction: "goL10")">Delete meeting</div>
 						</div>
 					}
 				</div>
@@ -538,7 +540,7 @@
                     var selected = +found[i] == selectedTodoList ? "selected" : "";
                     $(".default-todo-list").append("<option value='" + found[i]+ "' " + selected + ">"+text+"</option>");
                 }
-                
+
                 var selected = -1 == selectedTodoList ? "selected" : "";
                 $(".default-todo-list").append("<option value='-1' " + selected + ">Caller</option>");
 

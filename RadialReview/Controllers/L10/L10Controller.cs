@@ -115,8 +115,10 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Delete() {
-			return Content("<span>You are about to delete this meeting.  Are you sure you want to continue?</span>");
+		public async Task<ActionResult> Delete(long id) {
+			//return Content("<span>You are about to delete this meeting.  Are you sure you want to continue?</span>");
+			var getRecurrence = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id);
+			return PartialView(getRecurrence);
 		}
 
 		//[Access(AccessLevel.UserOrganization)]
@@ -127,7 +129,28 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<JsonResult> Delete(long id) {
+		public async Task<JsonResult> Delete(long id, FormCollection model) {
+
+			var rocksKeys = model.AllKeys.Where(x => x.StartsWith("rocks_"));
+			var rocksIds = rocksKeys.Where(x => model[x].ToBooleanJS()).Select(x => long.Parse(x.Replace("rocks_", ""))).ToList();
+
+			var measurableKeys = model.AllKeys.Where(x => x.StartsWith("measurables_"));
+			var measurableIds = measurableKeys.Where(x => model[x].ToBooleanJS()).Select(x => long.Parse(x.Replace("measurables_", ""))).ToList();
+
+			var getRecurrence = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id);
+
+			var rocks = getRecurrence.Rocks.Where(t => rocksIds.Contains(t.Id));
+			//Archive Rocks
+			foreach (var item in rocks) {
+				await L10Accessor.Remove(GetUser(), item, id);
+			}
+
+			var measurables = getRecurrence.Scorecard.Measurables.Where(t => measurableIds.Contains(t.Id));
+			//Archive Measurables
+			foreach (var item in measurables) {
+				await L10Accessor.Remove(GetUser(), item, id);
+			}
+
 			await L10Accessor.DeleteL10Recurrence(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
@@ -180,7 +203,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Edit(long? id = null, string @return = null) {
 			if (id == null)
-				return RedirectToAction("Wizard", new { @return = @return});
+				return RedirectToAction("Wizard", new { @return = @return });
 
 			var recurrenceId = id.Value;
 
@@ -219,8 +242,8 @@ namespace RadialReview.Controllers {
 
 				var now = DateTime.UtcNow.ToJavascriptMilliseconds();
 				try {
-					var initModel = (await DetailsData(id.Value, false, false, now, now, true, removeWeeks:true)).Data;
-					ViewBag.InitialModel =new HtmlString(JsonConvert.SerializeObject(initModel));
+					var initModel = (await DetailsData(id.Value, false, false, now, now, true, removeWeeks: true)).Data;
+					ViewBag.InitialModel = new HtmlString(JsonConvert.SerializeObject(initModel));
 				} catch (Exception e) {
 					int a = 0;
 				}
@@ -394,7 +417,7 @@ namespace RadialReview.Controllers {
 				end = meeting.CompleteTime,
 			}), JsonRequestBehavior.AllowGet);
 		}
-		
+
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> EditVto(long id) {
 			var vtoId = (await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, false, false, false)).VtoId;

@@ -1,0 +1,58 @@
+﻿@model RadialReview.Models.Angular.Meeting.AngularRecurrence
+	@{ 
+		var anyDeletes = Model.Rocks.Any() || Model.Scorecard.Measurables.Any();
+
+	}
+<div class="form-horizontal">
+	<input type="hidden" id="meetingId" value="@Model" />
+	<div class="form-group">
+		<div class="col-sm-12 ">
+			<div>
+				<b>You are about to delete this meeting.</b>
+				@if (anyDeletes) {
+					<div>The following will be deleted from the meeting:</div>
+					<br />
+				}
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		@if (Model.Rocks.Any()) {
+			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+				<div class="heading">Rocks</div>
+				@foreach (var item in Model.Rocks) {
+					<div class="col-sm-4 col-lg-1 col-md-1 col-xs-4">
+						<input type="checkbox" class="checkbox  pull-right" id="rocks_@item.Id" name="rocks_@item.Id" checked />
+					</div>
+					<label for="rocks_@item.Id" class="col-sm-8 col-xs-12 col-lg-11 col-md-11 control-label alignLeft">@item.Name</label>
+				}
+			</div>
+		}
+		@if (Model.Scorecard.Measurables.Any()) {
+			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+				<div class="heading">Measurables</div>
+				@foreach (var item in Model.Scorecard.Measurables) {
+					<div class="col-sm-4  col-lg-1 col-md-1 col-xs-4">
+						<input type="checkbox" class="checkbox  pull-right" id="measurables_@item.Id" name="measurables_@item.Id" checked />
+					</div>
+					<label for="measurables_@item.Id" class="col-sm-8 col-xs-8 col-lg-11 col-md-11 control-label alignLeft">@item.Name</label>
+				}
+			</div>
+		}
+	</div>
+	<div class="row">
+		<div class="col-sm-12 ">
+			@if (anyDeletes) {
+				<br />
+				<br />
+			}
+			<b style="color:darkred">Are you sure you want to continue?</b>
+		</div>
+	</div>
+</div>
+<style>
+	.heading {
+		text-decoration: underline;
+		font-weight: bold;
+	}
+</style>
