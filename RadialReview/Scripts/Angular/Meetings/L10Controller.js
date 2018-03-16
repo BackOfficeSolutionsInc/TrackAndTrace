@@ -526,8 +526,16 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
     	$scope.possibleOwners = {};
     	$scope.loadPossibleOwners = function (id) {
-    		if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.Attendees) !== "undefined") {
-    			$scope.possibleOwners[id] = $scope.model.Attendees;
+            if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.Attendees) !== "undefined") {
+                var attendes = [];
+                for (var i = 0; i < $scope.model.Attendees.length; i++) {
+                    if ($scope.model.Attendees[i].Managing) {
+                        attendes.push($scope.model.Attendees[i]);
+                    }
+
+                }
+    			//$scope.possibleOwners[id] = $scope.model.Attendees;
+                $scope.possibleOwners[id] = attendes;
     			$scope.possibleOwners[id];
     		} else {
     			if (!(id in $scope.possibleOwners)) {

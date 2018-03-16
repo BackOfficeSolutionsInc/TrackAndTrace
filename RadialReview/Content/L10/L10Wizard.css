@@ -1030,6 +1030,9 @@ body,
 .wizard .picture-column {
   padding: 0px !important;
 }
+.wizard .picture-icon-cursor {
+  cursor: pointer;
+}
 .wizard *:focus {
   outline: none;
 }

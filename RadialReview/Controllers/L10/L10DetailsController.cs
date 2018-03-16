@@ -54,7 +54,7 @@ namespace RadialReview.Controllers {
 			var range = new DateRange(startRange, endRange);
 			var scorecardRange = new DateRange(scorecardStart, scorecardEnd);
 
-			var model = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard, range: range, scorecardRange: scorecardRange,checkManageRockAccess:true);
+			var model = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard, range: range, scorecardRange: scorecardRange,populateManaging:true);
 			//model.Name=null;
 
 			if (start != 0 && end != long.MaxValue) {

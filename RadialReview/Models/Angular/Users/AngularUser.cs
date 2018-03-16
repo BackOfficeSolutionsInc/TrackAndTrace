@@ -33,7 +33,6 @@ namespace RadialReview.Models.Angular.Users
 				Initials = initials,
 				Managing = managing,
                 //CreateTime = user.,
-                IsManager=false
             };
 		}
 
@@ -93,7 +92,6 @@ namespace RadialReview.Models.Angular.Users
         [IgnoreDataMember]
         public DateTime? CreateTime { get;set;}
 
-        public bool IsManager { get; set; }
 
     }
 }

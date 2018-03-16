@@ -460,7 +460,7 @@ namespace RadialReview.Accessors {
 			return rock;
 		}
 
-		public static CreateRockViewModel BuildCreateRockVM(UserOrganizationModel caller, dynamic ViewBag, List<SelectListItem> potentialUsers = null,bool CheckForManageRock=false) {
+		public static CreateRockViewModel BuildCreateRockVM(UserOrganizationModel caller, dynamic ViewBag, List<SelectListItem> potentialUsers = null,bool populateManaging=false) {
 			if (potentialUsers == null) {
 				potentialUsers = TinyUserAccessor.GetOrganizationMembers(caller, caller.Organization.Id, false).Select((x, i) => new SelectListItem() {
 					Selected = i == 0 || x.UserOrgId == caller.Id,
@@ -476,14 +476,18 @@ namespace RadialReview.Accessors {
 			if (selected == null)
 				selected = potentialUsers.First();
 
-            if (CheckForManageRock) {
+            if (populateManaging) {
                 using (var s = HibernateSession.GetCurrentSession()) {
                     using (var tx = s.BeginTransaction()) {
                         var perms = PermissionsUtility.Create(s, caller);
                         foreach (var item in potentialUsers) {
                             if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
-                                if (!perms.IsPermitted(x => x.ManagesUserOrganizationOrSelf(Convert.ToInt64(item.Value))))
+                               // perms.IsPermitted(x => x.CanAdminMeetingItemsForUser(item.Owner.Id, recurrenceId))
+
+                                if (!perms.IsPermitted(x => x.ManagesUserOrganizationOrSelf(Convert.ToInt64(item.Value)))) {
                                     item.Disabled = true;
+                                    item.Text = item.Text + "(You do not manage this user)";
+                                }
                             }
 
                         }
