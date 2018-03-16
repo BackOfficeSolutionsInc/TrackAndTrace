@@ -702,7 +702,7 @@ namespace RadialReview.Controllers {
 							OrgId = (long) x[0],
 							MonthExpire = (int)x[1],
 							YearExpire = (int)x[2],
-							TokenType = (PaymentSpringTokenType)x[3],
+							TokenType = x[3]==null?PaymentSpringTokenType.CreditCard:(PaymentSpringTokenType)x[3],
 						});
 
 					var allUserNames = s.QueryOver<UserModel>()
