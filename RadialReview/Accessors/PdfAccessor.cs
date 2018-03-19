@@ -1630,7 +1630,7 @@ namespace RadialReview.Accessors {
                 row.Shading.Color = TableGray;
                 row.Height = Unit.FromInch(0.25);
                 row.VerticalAlignment = VerticalAlignment.Center;
-                var com_h = row.Cells[0].AddParagraph("COMPNAY ROCKS");
+                var com_h = row.Cells[0].AddParagraph("COMPANY ROCKS");
                 com_h.Format.Font.Name = "Arial Narrow";
                 com_h.Format.Font.Size = 10;
                 //com_h.Format.Font.Bold = true;
