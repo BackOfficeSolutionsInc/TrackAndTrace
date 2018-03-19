@@ -113,43 +113,41 @@
     throw new Exception("You must extend from the base controller.");
 }
 <body id="body" class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width")  @(ViewBag.LayoutClass??"")  @(limitFiveState?"fivestate-limit-true":"")">
-    @Scripts.Render("~/bundles/compatability")
-    <script>
-        window.UserId = @(ViewBag.UserId??-1);
-        window.OrgId = @(ViewBag.OrganizationId ?? -1);
-        window.Title = "@(ViewBag.Title ?? "")";
-        window.ServerTime = new Date(@DateTime.UtcNow.ToJavascriptMilliseconds());
-        window.ServerTimeDiff = window.ServerTime - new Date();
-        window.ConvertFromServerTime=function(serverTime){return serverTime -window.ServerTimeDiff;}
-        window.ConvertToServerTime = function (clientTime){return clientTime + window.ServerTimeDiff;}
-        window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
-		
+	@Scripts.Render("~/bundles/compatability")
+	<script>
+		window.UserId = @(ViewBag.UserId??-1);
+		window.OrgId = @(ViewBag.OrganizationId ?? -1);
+		window.Title = "@(ViewBag.Title ?? "")";
+		window.ServerTime = new Date(@DateTime.UtcNow.ToJavascriptMilliseconds());
+		window.ServerTimeDiff = window.ServerTime - new Date();
+		window.ConvertFromServerTime=function(serverTime){return serverTime -window.ServerTimeDiff;}
+		window.ConvertToServerTime = function (clientTime){return clientTime + window.ServerTimeDiff;}
+		window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
 		window.Config = {};
+		window.Products = {
+			L10 : @(l10Enabled?"true":"false"),
+			Review : @(reviewEnabled?"true":"false"),
+			AC : @(acEnabled?"true":"false"),
+			Survey : @(surveyEnabled?"true":"false"),
+			CoreProcess: @(coreProcessEnabled?"true":"false"),
+		};
 
-        window.Products = {
-            L10 : @(l10Enabled?"true":"false"),
-            Review : @(reviewEnabled?"true":"false"),
-            AC : @(acEnabled?"true":"false"),
-            Survey : @(surveyEnabled?"true":"false"),
-            CoreProcess: @(coreProcessEnabled?"true":"false"),
-        };
+		window.LimitFiveState = @((""+limitFiveState).ToLower());
 
-        window.LimitFiveState = @((""+limitFiveState).ToLower());
-
-        function getParsedDate(date){
-            if (typeof (date) === "undefined") {date = new Date();}
-            else if (typeof (date) === "number") {date = new Date(date);}
-            else if (typeof (date) === "string") {
-                var test = "/Date(";
-                if (date.substring(0, test.length) === test){
-                    date = new Date(+date.substring(test.length,date.length-2));
-                }else{
-                    date = new Date(date);
-                    console.warn("potentially unknown format: " + date)
-                }
-            }
-            return date;
-        }
+		function getParsedDate(date){
+			if (typeof (date) === "undefined") {date = new Date();}
+			else if (typeof (date) === "number") {date = new Date(date);}
+			else if (typeof (date) === "string") {
+				var test = "/Date(";
+				if (date.substring(0, test.length) === test){
+					date = new Date(+date.substring(test.length,date.length-2));
+				}else{
+					date = new Date(date);
+					console.warn("potentially unknown format: " + date)
+				}
+			}
+			return date;
+		}
 
         //Date Formatting
         function getFormattedDate(date,format,onUnknown) {
@@ -224,7 +222,7 @@
                         <div class="navbar-collapse collapse">
                             <ul class="nav navbar-nav">
                                 @if (Request.IsAuthenticated) {
-                                    if (((int?)ViewBag.Organizations ?? 0) == 0) {
+                                    if (((int?)ViewBag.Organizations ?? 0) == 0 && !(ViewBag.NoAccessCode ?? false)) {
                                         <li>
                                             <a href="@Url.Action("Index", "Home", new { area = "" })" class="@(ViewBag.TaskCount == 0?"":"flashing")">
                                                 Access Code

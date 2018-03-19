@@ -1825,6 +1825,7 @@
     <Content Include="Views\Data\Dashboard.cshtml" />
     <Content Include="Views\Admin\EmployeeCount.cshtml" />
     <Content Include="Views\Faq\GenerateTokenInstruction.cshtml" />
+    <Content Include="Views\L10\Delete.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

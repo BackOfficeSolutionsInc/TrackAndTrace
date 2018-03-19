@@ -34,5 +34,9 @@ namespace RadialReview.Controllers
 		public JsonResult TestSync() {
 			throw new SyncException(null);
 		}
+
+		//public ActionResult Index(Exception e) {
+		//	return View(e);
+		//}
 	}
 }
