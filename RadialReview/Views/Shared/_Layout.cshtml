@@ -123,6 +123,8 @@
         window.ConvertFromServerTime=function(serverTime){return serverTime -window.ServerTimeDiff;}
         window.ConvertToServerTime = function (clientTime){return clientTime + window.ServerTimeDiff;}
         window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
+		
+		window.Config = {};
 
         window.Products = {
             L10 : @(l10Enabled?"true":"false"),
