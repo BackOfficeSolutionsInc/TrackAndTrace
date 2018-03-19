@@ -2084,14 +2084,30 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null) {
+		public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null,bool isCoreValues=false) {
 			var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, height.Inch), XGraphicsUnit.Inch, XPageDirection.Downwards);
 			var fontSize = maxFontSize ?? Unit.FromPoint(12);
 			var minSize = minFontSize ?? Unit.FromPoint(8);
-			List<DocumentObject> paragraphsToAdd;
+            var row=new Row();
+
+
+            if (isCoreValues)
+                minSize = Unit.FromPoint(7);
+
+            List<DocumentObject> paragraphsToAdd;
 
 			if (!(cell is Cell || cell is Paragraph || cell is Section))
 				throw new Exception("cant handle:" + cell.NotNull(x => x.GetType()));
+
+
+            if(isCoreValues) {
+                var _cell = (Cell)cell;
+                var _tbl = _cell.Elements.AddTable();
+                Column column = _tbl.AddColumn(Unit.FromInch(2.7));
+                column = _tbl.AddColumn(Unit.FromInch(2.7));
+                 row = _tbl.AddRow();
+            }
+
 
 			while (true) {
 				var curHeight = new Unit(0.0);
@@ -2127,7 +2143,13 @@ namespace RadialReview.Accessors {
 				}
 				fontSize -= Unit.FromPoint(1);
 			}
-			AppendAll(cell, paragraphsToAdd);
+
+            if (fontSize == Unit.FromPoint(7) && isCoreValues) {
+                AppendAll(row.Cells[0], paragraphsToAdd.Take(7).ToList());
+                AppendAll(row.Cells[1], paragraphsToAdd.Skip(7).ToList());
+            }
+            else
+            AppendAll(cell, paragraphsToAdd);
 
 			return fontSize;
 		}
@@ -2289,10 +2311,10 @@ namespace RadialReview.Accessors {
 			AddPage_VtoVision(doc, vto, baseHeight, out coreValuesPanel, out coreFocusPanel, out tenYearPanel, out marketingStrategyPanel, out threeYearPanel);
 
 			var values = vto.Values.ToList();
-			ResizeToFitForCoreValues(coreValuesPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
+            ResizeToFit(coreValuesPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
 				var o = new List<Paragraph>();
 				return OrderedList(values.Select(x => x.CompanyValue), ListType.NumberList1);
-			}, maxFontSize: Unit.FromPoint(10));
+			}, maxFontSize: Unit.FromPoint(10),isCoreValues:true);
 
 
 			ResizeToFit(coreFocusPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
@@ -2551,65 +2573,6 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static Unit ResizeToFitForCoreValues(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null) {
-			var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, height.Inch), XGraphicsUnit.Inch, XPageDirection.Downwards);
-			var fontSize = maxFontSize ?? Unit.FromPoint(12);
-			var minSize = minFontSize ?? Unit.FromPoint(7);
-			List<DocumentObject> paragraphsToAdd;
-
-			if (!(cell is Cell || cell is Paragraph || cell is Section))
-				throw new Exception("cant handle:" + cell.NotNull(x => x.GetType()));
-
-			var _cell = (Cell)cell;
-			var _tbl = _cell.Elements.AddTable();
-			Column column = _tbl.AddColumn(Unit.FromInch(2.7));
-			column = _tbl.AddColumn(Unit.FromInch(2.7));
-			var row = _tbl.AddRow();
-
-			while (true) {
-				var curHeight = new Unit(0.0);
-				var curWidth = new Unit(0.0);
-				paragraphsToAdd = paragraphs(cell, fontSize).ToList();
-
-				foreach (var p in paragraphsToAdd) {
-					string family = null;
-					if (p is Paragraph) {
-						((Paragraph)p).Format.Font.Size = fontSize;
-						family = ((Paragraph)p).Format.Font.Name;
-					} else if (p is Table) {
-						var table = (Table)p;
-						table.Format.Font.Size = fontSize;
-						family = table.Format.Font.Name;
-					}
-					if (string.IsNullOrWhiteSpace(family)) {
-						if (cell is Paragraph)
-							family = ((Paragraph)cell).Format.Font.Name;
-						if (cell is Cell)
-							family = ((Cell)cell).Format.Font.Name;
-					}
-					if (string.IsNullOrWhiteSpace(family))
-						family = "Arial Narrow";
-
-					var size = GetSize(ctx, p, family, fontSize, width);
-					curHeight += size.Height;
-					curWidth += size.Width;
-				}
-
-				if (curHeight < height || fontSize <= minSize) {
-					break;
-				}
-				fontSize -= Unit.FromPoint(1);
-			}
-
-			if (fontSize == Unit.FromPoint(7)) {
-				AppendAll(row.Cells[0], paragraphsToAdd.Take(7).ToList());
-				AppendAll(row.Cells[1], paragraphsToAdd.Skip(7).ToList());
-			} else {
-				AppendAll(cell, paragraphsToAdd);
-			}
-
-			return fontSize;
-		}
 
 		private static void AddPage_VtoVision(Document doc, AngularVTO vto, Unit height,
 			out Cell coreValuePanel, out Cell coreFocusPanel, out Cell tenYearPanel, out Cell marketingStrategyPanel, out Cell threeYearPanel,
