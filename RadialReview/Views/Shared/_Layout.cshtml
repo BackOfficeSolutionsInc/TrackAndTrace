@@ -433,8 +433,14 @@
         <div class="ga-script-container">
             <!-- Google Analytics -->
             <script>
-                window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-                ga('create', 'UA-XXXXX-Y', 'auto');
+				window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+				ga('create', 'UA-68333423-1',{'userId':@(ViewBag.UserId??-1L)});
+				ga('set', 'dimension1', @(ViewBag.UserId??-1L));
+				try{
+					ga('set', 'dimension2', window.Config.ServerType);
+				}catch(e){
+					console.warn(e);
+				}
                 ga('send', 'pageview');
             </script>
             <script async src='https://www.google-analytics.com/analytics.js'></script>
