@@ -420,19 +420,19 @@ namespace RadialReview.Accessors {
 
 			if (added != null) {
 				s.Update(issue);
-				var others = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.DeleteTime == null && x.Issue.Id == issue.Issue.Id).List().ToList();
+				/*var others = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.DeleteTime == null && x.Issue.Id == issue.Issue.Id).List().ToList();
 
+				//Not sure what I was thinking here...
 				foreach (var o in others) {
 					if (o.Id != issue.Id) {
 						o.MarkedForClose = complete;
 						s.Update(o);
 					}
 					//rt.UpdateRecurrences(o.Recurrence.Id).AddLowLevelAction(x => x.updateModedIssueSolve(o.Id, complete));
-
 					//var recur = new AngularRecurrence(o.Recurrence.Id);
 					//recur.IssuesList.Issues = AngularList.CreateFrom(added.Value ? AngularListType.Add : AngularListType.Remove, new AngularIssue(issue));
 					//rt.UpdateRecurrences(o.Recurrence.Id).Update(recur);
-				}
+				}*/
 			}
 		}
 
