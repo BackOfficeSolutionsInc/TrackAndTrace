@@ -282,7 +282,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
         template: "<span ng-if='score.hidden' ng-click='score.hidden=false'>hidden</span>" +
                   "<input ng-if='!score.hidden' data-goal='{{score.Target}}' data-alt-goal='{{score.AltTarget}}' data-goal-dir='{{score.Direction}}'" +
                   " data-row='{{$parent.$index}}' data-col='{{$index}}'" +
-                  " type='text' placeholder='' ng1-model-options='{debounce:{\"default\":300,\"blur\":0}}' ng-disabled='measurable.Disabled'" +
+                  " type='text' placeholder='' ng-model-options='{debounce:{\"default\":300,\"blur\":0}}' ng-disabled='measurable.Disabled'" +
                   " ng-model='score.Measured'" +
                   " class='grid rt1 ww_{{::week.ForWeekNumber}} {{scoreColor}} scrollOver'" +
                   " data-scoreid='{{::Id}}' data-measurable='{{::measurable.Id}}' data-week='{{::week.ForWeekNumber}}'" +
