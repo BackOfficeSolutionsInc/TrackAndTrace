@@ -672,7 +672,7 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-		[Access(AccessLevel.Radial)]
+		[Access(AccessLevel.RadialData)]
 		public ActionResult AllEmails() {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -1168,7 +1168,7 @@ Flag For Disabled / Blacklisted from CS
 			return "ok: \"" + id + "\"";
 		}
 
-		[Access(AccessLevel.Radial)]
+		[Access(AccessLevel.RadialData)]
 		public ActionResult Version() {
 
 			var version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -1232,7 +1232,6 @@ Flag For Disabled / Blacklisted from CS
 
 		[Access(AccessLevel.Radial)]
 		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
-
 		public ActionResult FixEmail() {
 			return View();
 		}
@@ -1248,10 +1247,6 @@ Flag For Disabled / Blacklisted from CS
 
 			if (!IsValidEmail(newEmail))
 				throw new PermissionsException("Email invalid.");
-
-
-
-
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -1744,7 +1739,7 @@ Flag For Disabled / Blacklisted from CS
 			return Json("cleared", JsonRequestBehavior.AllowGet);
 		}
 
-		[Access(AccessLevel.Radial)]
+		[Access(AccessLevel.RadialData)]
 		public JsonResult CalculateOrganizationCharge(long id) {
 
 			using (var s = HibernateSession.GetCurrentSession()) {
