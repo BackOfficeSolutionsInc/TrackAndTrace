@@ -84,11 +84,7 @@ namespace RadialReview.Accessors {
 
                     if (populateManaging) {
                         foreach (var item in angular.Rocks) {
-                            item.Owner.Managing = perms.IsPermitted(x => x.CanAdminMeetingItemsForUser(item.Owner.Id, recurrenceId));
-                            //if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
-                            //    if (perms.IsPermitted(x => x.ManagesUserOrganizationOrSelf(item.Owner.Id)))
-                            //        item.Owner.Managing = true;
-                            //}
+                            item.Owner.Managing = perms.IsPermitted(x => x.CanAdminMeetingItemsForUser(item.Owner.Id, recurrenceId));                          
                         }
 
                         tx.Commit();

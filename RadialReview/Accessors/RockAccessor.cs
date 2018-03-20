@@ -460,7 +460,7 @@ namespace RadialReview.Accessors {
 			return rock;
 		}
 
-		public static CreateRockViewModel BuildCreateRockVM(UserOrganizationModel caller, dynamic ViewBag, List<SelectListItem> potentialUsers = null,bool populateManaging=false) {
+		public static CreateRockViewModel BuildCreateRockVM(UserOrganizationModel caller, dynamic ViewBag, List<SelectListItem> potentialUsers = null,bool populateManaging=false, long? recurrenceId = null) {
 			if (potentialUsers == null) {
 				potentialUsers = TinyUserAccessor.GetOrganizationMembers(caller, caller.Organization.Id, false).Select((x, i) => new SelectListItem() {
 					Selected = i == 0 || x.UserOrgId == caller.Id,
@@ -482,9 +482,7 @@ namespace RadialReview.Accessors {
                         var perms = PermissionsUtility.Create(s, caller);
                         foreach (var item in potentialUsers) {
                             if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
-                               // perms.IsPermitted(x => x.CanAdminMeetingItemsForUser(item.Owner.Id, recurrenceId))
-
-                                if (!perms.IsPermitted(x => x.ManagesUserOrganizationOrSelf(Convert.ToInt64(item.Value)))) {
+                                if (!perms.IsPermitted(x => x.CanAdminMeetingItemsForUser(Convert.ToInt64(item.Value), recurrenceId.Value))) {
                                     item.Disabled = true;
                                     item.Text = item.Text + "(You do not manage this user)";
                                 }
