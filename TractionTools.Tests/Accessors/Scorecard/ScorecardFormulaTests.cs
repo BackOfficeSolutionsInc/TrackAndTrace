@@ -24,6 +24,8 @@ namespace TractionTools.Tests.Accessors.Scorecard {
 		public async Task TestSetFormula() {
 			var scores = new decimal?[] { 0.0m, null, 1.0m, 2m, 4m, null, 8m };
 
+			ApplicationAccessor.EnsureApplicationExists();
+
 			var o = await OrgUtil.CreateOrganization();
 			var m = await ScorecardAccessor.CreateMeasurable(o.Manager, MeasurableBuilder.Build("m", o.Employee.Id));
 

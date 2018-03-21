@@ -763,29 +763,45 @@ namespace RadialReview.Accessors {
 			//using (var s = HibernateSession.GetCurrentSession()) {
 			//	using (var tx = s.BeginTransaction()) {
 			ScoreModel score = null;
+
+			if (scoreId <= 0) {
+				//Create score only once...
+				await SyncUtil.Lock(SyncAction.CreateScoreForMeasurable(measurableId).ToString(), 0, async (s, l) => {
+					var perms = PermissionsUtility.Create(s, caller);
+					scoreId = (await GetScore(s, perms, measurableId, week)).Id;
+					//Already called.
+					//s.Transaction.Commit();
+					//s.Flush();
+				});
+			}
+
 			await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateScore(scoreId), async s => {
 				var perms = PermissionsUtility.Create(s, caller);
-				score = await UpdateScore(s, perms, scoreId, measurableId, week, value);
-				//tx.Commit();
-				//s.Flush();
-				//return score;
+				score = await UpdateScore(s, perms, scoreId, value);
 			});
 			return score;
 		}
 		//[Obsolete("Update for StrictlyAfter", true)]
-		[Untested("StrictlyAfter")]
-		public static async Task<ScoreModel> UpdateScore(IOrderedSession s, PermissionsUtility perms, long measurableId, DateTime week, decimal? value) {
-			return await UpdateScore(s, perms, 0, measurableId, week, value);
+		//[Untested("StrictlyAfter")]
+		//private static async Task<ScoreModel> UpdateScore_First(IOrderedSession s, PermissionsUtility perms, long measurableId, DateTime week, decimal? value) {
+		//	return await UpdateScore(s, perms, 0, measurableId, week, value);
+		//}
+
+		#region Unordered
+
+		[Obsolete("Only use when you know you won't be overwritten. Does not ensure 'StrictlyAfter'.")]
+		public static async Task<ScoreModel> UpdateScore_Unordered(ISession s, PermissionsUtility perms, long measurableId, DateTime week, decimal? value) {
+			return await UpdateScore_Unordered(s, perms, 0, measurableId, week, value);
 		}
 
-		//[Obsolete("Update for StrictlyAfter", true)]
-		[Untested("StrictlyAfter")]
-		public static async Task<ScoreModel> UpdateScore(IOrderedSession s, PermissionsUtility perms, long scoreId, long measurableId, DateTime week, decimal? value) {
+		[Obsolete("Only use when you know you won't be overwritten. Does not ensure 'StrictlyAfter'.")]
+		public static async Task<ScoreModel> UpdateScore_Unordered(ISession s, PermissionsUtility perms, long scoreId, long measurableId, DateTime week, decimal? value) {
 			if (scoreId <= 0)
 				scoreId = (await GetScore(s, perms, measurableId, week)).Id;
-			return await UpdateScore(s, perms, scoreId, value);
+			return await UpdateScore(OrderedSession.Indifferent(s), perms, scoreId, value);
 		}
 
+		#endregion
 		/// <summary>
 		/// SyncAction.UpdateScore(scoreId)
 		/// </summary>
@@ -797,6 +813,8 @@ namespace RadialReview.Accessors {
 		//[Obsolete("Update for StrictlyAfter", true)]
 		[Untested("StrictlyAfter")]
 		public static async Task<ScoreModel> UpdateScore(IOrderedSession s, PermissionsUtility perms, long scoreId, decimal? value) {
+			if (scoreId <= 0)
+				throw new PermissionsException("ScoreId was negative");
 			perms.EditScore(scoreId);
 			//SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(scoreId));
 			return await UpdateScore_Unsafe(s, scoreId, value);

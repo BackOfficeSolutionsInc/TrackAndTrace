@@ -15,6 +15,7 @@ using System.Threading;
 using TractionTools.Tests.TestUtils;
 using RadialReview.Exceptions;
 using TractionTools.Tests.Startup;
+using RadialReview.Accessors;
 
 namespace TractionTools.Tests.Utilities {
 	[TestClass]
@@ -234,6 +235,7 @@ namespace TractionTools.Tests.Utilities {
 		[TestMethod]
 		public async Task TestMutlipleSimultaniousAccessSync_SameId() {
 			using (HibernateSession.SetDatabaseEnv_TestOnly(Env.local_mysql)) {
+				ApplicationAccessor.EnsureApplicationExists();
 				var org = await OrgUtil.CreateOrganization();
 				var list = new List<Task<bool>>();
 				var id = DateTime.UtcNow.Ticks;
@@ -254,6 +256,7 @@ namespace TractionTools.Tests.Utilities {
 		[TestMethod]
 		public async Task TestMutlipleSimultaniousAccessSync_DifferentId() {
 			using (HibernateSession.SetDatabaseEnv_TestOnly(Env.local_mysql)) {
+				ApplicationAccessor.EnsureApplicationExists();
 				var org = await OrgUtil.CreateOrganization();
 				var list = new List<Task<bool>>();
 				org.Manager.IncrementClientTimestamp();

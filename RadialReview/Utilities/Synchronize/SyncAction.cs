@@ -20,6 +20,9 @@ namespace RadialReview.Utilities.Synchronize {
 		public static SyncAction UpdateScore(long scoreId) {
 			return new SyncAction("ScVal_" + scoreId);
 		}
+		public static SyncAction CreateScoreForMeasurable(long measurableId) {
+			return new SyncAction("CreateSc_" + measurableId);
+		}
 		public static SyncAction UpdateIssueMessage(long issueId) {
 			return new SyncAction("IsMsg_" + issueId);
 		}
