@@ -52,6 +52,7 @@ using NHibernate.Criterion;
 using NHibernate.Impl;
 using System.Linq.Expressions;
 using log4net;
+using Mapping = NHibernate.Mapping;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -74,13 +75,47 @@ namespace RadialReview.Utilities {
 	}
 
 	public class HibernateSession {
+
+
+		public class RuntimeNames {
+			private Configuration cfg;
+
+			public RuntimeNames(Configuration cfg) {
+				this.cfg = cfg;
+			}
+
+			public string ColumnName<T>(Expression<Func<T, object>> property)
+				where T : class, new() {
+				var accessor = FluentNHibernate.Utils.Reflection
+					.ReflectionHelper.GetAccessor(property);
+
+				var names = accessor.Name.Split('.');
+
+				var classMapping = cfg.GetClassMapping(typeof(T));
+
+				return WalkPropertyChain(classMapping.GetProperty(names.First()), 0, names);
+			}
+
+			private string WalkPropertyChain(Mapping.Property property, int index, string[] names) {
+				if (property.IsComposite)
+					return WalkPropertyChain(((Mapping.Component)property.Value).GetProperty(names[++index]), index, names);
+
+				return property.ColumnIterator.First().Text;
+			}
+
+			public string TableName<T>() where T : class, new() {
+				return cfg.GetClassMapping(typeof(T)).Table.Name;
+			}
+		}
+
+
 		private static Dictionary<Env, ISessionFactory> factories;
 		private static Env? CurrentEnv;
 		private static String DbFile = null;
 		/*public static void SetDbFile(string file)
-        {
-            DbFile = file;
-        }*/
+		{
+			DbFile = file;
+		}*/
 		private static object lck = new object();
 		public static ISession Session { get; set; }
 
@@ -97,6 +132,7 @@ namespace RadialReview.Utilities {
 		static HibernateSession() {
 			factories = new Dictionary<Env, ISessionFactory>();
 		}
+		public static RuntimeNames Names { get; private set; }
 
 		[Obsolete("Run in a using(). Use only in synchronous environments. Built for test purposes.")]
 		public static IDisposable SetDatabaseEnv_TestOnly(Env environmentOverride, Action onDispose = null) {
@@ -114,10 +150,11 @@ namespace RadialReview.Utilities {
 
 		public static ISessionFactory GetDatabaseSessionFactory(Env? environmentOverride_testOnly = null) {
 			lock (lck) {
+				Configuration c;
 				var env = environmentOverride_testOnly ?? CurrentEnv ?? Config.GetEnv();
 				CurrentEnv = env;
 				//if (factories == null)
-				//    factories = new Dictionary<Env, ISessionFactory>();
+				//	factories = new Dictionary<Env, ISessionFactory>();
 				if (!factories.ContainsKey(env)) {
 					ChromeExtensionComms.SendCommand("dbStart");
 					var config = System.Configuration.ConfigurationManager.AppSettings;
@@ -130,7 +167,7 @@ namespace RadialReview.Utilities {
 								var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
 								DbFile = file;
 								try {
-									var c = new Configuration();
+									c = new Configuration();
 									c.SetInterceptor(new NHSQLInterceptor());
 									//SetupAudit(c);
 									factories[env] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
@@ -142,6 +179,7 @@ namespace RadialReview.Utilities {
 										//m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
 									})
+								   .CurrentSessionContext("web")
 								   .ExposeConfiguration(SetupAudit)
 								   .ExposeConfiguration(x => BuildSqliteSchema(x))
 								   .BuildSessionFactory();
@@ -152,7 +190,7 @@ namespace RadialReview.Utilities {
 							}
 						case Env.local_mysql: {
 								try {
-									var c = new Configuration();
+									c = new Configuration();
 									c.SetInterceptor(new NHSQLInterceptor());
 									//SetupAudit(c);
 									factories[env] = Fluently.Configure(c).Database(
@@ -165,6 +203,7 @@ namespace RadialReview.Utilities {
 										   ////m.AutoMappings.Add(CreateAutomappings);
 										   ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 									   })
+									   .CurrentSessionContext("web")
 									   .ExposeConfiguration(SetupAudit)
 									   .ExposeConfiguration(BuildProductionMySqlSchema)
 									   .BuildSessionFactory();
@@ -179,7 +218,7 @@ namespace RadialReview.Utilities {
 								break;
 							}
 						case Env.production: {
-								var c = new Configuration();
+								c = new Configuration();
 								//SetupAudit(c);
 								factories[env] = Fluently.Configure(c).Database(
 											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
@@ -190,6 +229,7 @@ namespace RadialReview.Utilities {
 									   //m.AutoMappings.Add(CreateAutomappings);
 									   //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 								   })
+								   .CurrentSessionContext("web")
 								   .ExposeConfiguration(SetupAudit)
 								   .ExposeConfiguration(BuildProductionMySqlSchema)
 								   .BuildSessionFactory();
@@ -218,7 +258,7 @@ namespace RadialReview.Utilities {
 
 								//var connectionString = "Data Source =" + Path;
 								try {
-									var c = new Configuration();
+									c = new Configuration();
 									c.SetInterceptor(new NHSQLInterceptor());
 									//SetupAudit(c);
 									factories[env] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString).IsolationLevel(System.Data.IsolationLevel.ReadCommitted))
@@ -230,7 +270,7 @@ namespace RadialReview.Utilities {
 										//m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
 									})
-
+									.CurrentSessionContext("web")
 								   .ExposeConfiguration(SetupAudit)
 								   .ExposeConfiguration(x => BuildSqliteSchema(x, forceDbCreate))
 								   .BuildSessionFactory();
@@ -238,40 +278,42 @@ namespace RadialReview.Utilities {
 									throw e;
 								}
 								break;
-								//                                try
-								//                                {
-								//                                    var c = new Configuration();
-								//                                    c.SetProperty("connection.release_mode", "on_close")
-								//                                    .SetProperty("dialect", typeof(SQLiteDialect).AssemblyQualifiedName)
-								//                                    .SetProperty("connection.driver_class", typeof(SQLite20Driver).AssemblyQualifiedName)
-								//                                    ;//.SetProperty("connection.connection_string", "data source=:memory:")
-								////                                    ;//.SetProperty(Environment.ProxyFactoryFactoryClass, typeof(ProxyFactoryFactory).AssemblyQualifiedName);
+								//								try
+								//								{
+								//									var c = new Configuration();
+								//									c.SetProperty("connection.release_mode", "on_close")
+								//									.SetProperty("dialect", typeof(SQLiteDialect).AssemblyQualifiedName)
+								//									.SetProperty("connection.driver_class", typeof(SQLite20Driver).AssemblyQualifiedName)
+								//									;//.SetProperty("connection.connection_string", "data source=:memory:")
+								////									;//.SetProperty(Environment.ProxyFactoryFactoryClass, typeof(ProxyFactoryFactory).AssemblyQualifiedName);
 
-								//                                    //c.SetInterceptor(new NHSQLInterceptor());
-								//                                    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString("Data Source=:memory:;Version=3;New=True;"))
-								//                                    .Mappings(m =>
-								//                                    {
-								//                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-								//                                           .Conventions.Add<StringColumnLengthConvention>();
-								//                                        m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite");
-								//                                        //m.AutoMappings.Add(CreateAutomappings);
-								//                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+								//									//c.SetInterceptor(new NHSQLInterceptor());
+								//									factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString("Data Source=:memory:;Version=3;New=True;"))
+								//									.Mappings(m =>
+								//									{
+								//										m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+								//										   .Conventions.Add<StringColumnLengthConvention>();
+								//										m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite");
+								//										//m.AutoMappings.Add(CreateAutomappings);
+								//										//m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
-								//                                    })
-								//                                   .ExposeConfiguration(SetupAudit)
-								//                                   .ExposeConfiguration(BuildSchema)
-								//                                   .BuildSessionFactory();
-								//                                }catch (Exception e){
-								//                                    throw e;
-								//                                }
+								//									})
+								//								   .ExposeConfiguration(SetupAudit)
+								//								   .ExposeConfiguration(BuildSchema)
+								//								   .BuildSessionFactory();
+								//								}catch (Exception e){
+								//									throw e;
+								//								}
 							}
 						/*case "connectionString":
-                            {
-                                factory = Fluently.Configure().
-                            }*/
+							{
+								factory = Fluently.Configure().
+							}*/
 						default:
 							throw new Exception("No database type");
 					}
+
+					Names = new RuntimeNames(c);
 
 					ChromeExtensionComms.SendCommand("dbComplete");
 
@@ -349,30 +391,30 @@ namespace RadialReview.Utilities {
 			return new SingleRequestSession(GetDatabaseSessionFactory(environmentOverride_TestOnly).OpenSession(), true);
 			//GetDatabaseSessionFactory().OpenSession();
 			/*while(true)
-            {
-                lock (lck)
-                {
-                    if ( Session == null || !Session.IsOpen )
-                    {
-                        Session = GetDatabaseSessionFactory().OpenSession();
-                        return Session;
-                    }
-                }
-                Thread.Sleep(10);
-            }*/
+			{
+				lock (lck)
+				{
+					if ( Session == null || !Session.IsOpen )
+					{
+						Session = GetDatabaseSessionFactory().OpenSession();
+						return Session;
+					}
+				}
+				Thread.Sleep(10);
+			}*/
 		}
 		/*
-        private static AutoPersistenceModel CreateAutomappings()
-        {
-            // This is the actual automapping - use AutoMap to start automapping,
-            // then pick one of the static methods to specify what to map (in this case
-            // all the classes in the assembly that contains Employee), and then either
-            // use the Setup and Where methods to restrict that behaviour, or (preferably)
-            // supply a configuration instance of your definition to control the automapper.
-            return AutoMap
-                .AssemblyOf<UserOrganizationModel>(new AutomappingConfiguration())
-                .Conventions.Add<CascadeConvention>();
-        }*/
+		private static AutoPersistenceModel CreateAutomappings()
+		{
+			// This is the actual automapping - use AutoMap to start automapping,
+			// then pick one of the static methods to specify what to map (in this case
+			// all the classes in the assembly that contains Employee), and then either
+			// use the Setup and Where methods to restrict that behaviour, or (preferably)
+			// supply a configuration instance of your definition to control the automapper.
+			return AutoMap
+				.AssemblyOf<UserOrganizationModel>(new AutomappingConfiguration())
+				.Conventions.Add<CascadeConvention>();
+		}*/
 
 		private static void BuildSqliteSchema(Configuration config, bool forceCreate = false) {
 			// delete the existing db on each run
@@ -474,7 +516,7 @@ namespace RadialReview.Utilities {
 			enversConf.Audit<ResponsibilityModel>();
 			enversConf.Audit<TempUserModel>();
 			//enversConf.Audit<UserLookup>()
-			//    .Exclude(x => x.LastLogin);
+			//	.Exclude(x => x.LastLogin);
 			enversConf.Audit<UserModel>();
 			enversConf.Audit<UserLogin>();
 			enversConf.Audit<UserRoleModel>();
@@ -526,13 +568,13 @@ namespace RadialReview.Utilities {
 			//new SchemaExport(config).Execute(true, true, false);
 			// DELETE THE EXISTING DB ON EACH RUN
 			/*if (!File.Exists(DbFile))
-            {
-                new SchemaExport(config).Create(false, true);
-            }
-            else
-            {
-                new SchemaUpdate(config).Execute(false, true);
-            }*/
+			{
+				new SchemaExport(config).Create(false, true);
+			}
+			else
+			{
+				new SchemaUpdate(config).Execute(false, true);
+			}*/
 
 		}
 

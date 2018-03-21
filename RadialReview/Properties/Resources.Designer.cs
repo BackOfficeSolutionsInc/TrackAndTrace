@@ -61,6 +61,33 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -----BEGIN CERTIFICATE-----
+        ///MIIGZTCCBU2gAwIBAgIIFtzL5iDSegIwDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNV
+        ///BAYTAlVTMRMwEQYDVQQKDApBcHBsZSBJbmMuMSwwKgYDVQQLDCNBcHBsZSBXb3Js
+        ///ZHdpZGUgRGV2ZWxvcGVyIFJlbGF0aW9uczFEMEIGA1UEAww7QXBwbGUgV29ybGR3
+        ///aWRlIERldmVsb3BlciBSZWxhdGlvbnMgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkw
+        ///HhcNMTcxMjA0MDIxMTA4WhcNMTkwMTAzMDIxMTA4WjCBrTExMC8GCgmSJomT8ixk
+        ///AQEMIW9yZy5UcmFjdGlvblRvb2xzLlRyYWN0aW9uVG9vbHNWMTE/MD0GA1UEAww2
+        ///QXBwbGUgUHVzaCBTZXJ2aWNlczogb3JnLlRyYWN0aW9uVG9vbHMuVHJhY3Rpb25U
+        ///b29sc1YxMRMwEQYDVQQLD [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string AppleAPS {
+            get {
+                return ResourceManager.GetString("AppleAPS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] APS {
+            get {
+                object obj = ResourceManager.GetObject("APS", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap Checked {
@@ -81,9 +108,30 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .swagger-section #header {
-        ///    background-color: red;
-        ///}.
+        ///   Looks up a localized string similar to .swagger-section {
+        ///  background-color: #eee;
+        ///  font-family: &apos;Lato&apos;, sans-serif;
+        ///  /*.signature-nav {
+        ///		display: none !important;
+        ///	}*/
+        ///}
+        ///.swagger-section pre {
+        ///  background-color: #efefef !important;
+        ///  border: 1px solid #e4e4e4 !important;
+        ///  resize: vertical;
+        ///  max-height: 300px !important;
+        ///  min-height: 80px;
+        ///}
+        ///.swagger-section #header,
+        ///.swagger-section .footer {
+        ///  display: none;
+        ///}
+        ///.swagger-section .swagger-ui-wrap {
+        ///  line-height: 1;
+        ///  font-family: &apos;Lato&apos;, sans-serif;
+        ///  min-width: 100%;
+        ///  max-width: 100%;
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         public static string CustomSwaggerStyle {
             get {

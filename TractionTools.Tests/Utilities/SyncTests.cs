@@ -119,116 +119,116 @@ namespace TractionTools.Tests.Utilities {
 			}
 
 			/*  public void EnsureAlwaysOrdered() {
-                  var count = 0;
-                  var userId = 1;
+				  var count = 0;
+				  var userId = 1;
 
-                  var requestsOrderedByClientSend = Requests.OrderBy(x => x.ClientTimestamp).Select(x => x.Name).ToList();
-
-
-                  //Server receives requests out of order
-                  var requestOrders = Requests.Permutate().ToList();
-                  var serverSelections = ServerSelections();
-
-                  if (!requestOrders.Any())
-                      Assert.Fail("No request orders. Did you register any requests?");
-                  if (!serverSelections.Any())
-                      Assert.Fail("No server selections. Did you register any servers?");
-
-                  //Try all the different orders that requests could be received...
-                  foreach (var ro in requestOrders) {
-                      var requestOrder = ro.ToList();
-                      //at all the different server end points
-                      foreach (var serverSelection in serverSelections) {
-                          userId += 1;
-                          var remainingRequests = requestsOrderedByClientSend.ToList();
-
-                          using (var s = HibernateSession.GetCurrentSession()) {
-                              using (var tx = s.BeginTransaction()) {
-                                  //Make all requests
-                                  for (var i = 0; i < requestOrder.Count; i++) {
-                                      //Match request with server
-                                      var request = requestOrder[i];
-                                      var server = serverSelection[i];
-                                      var serverTime = request.ClientTimestamp + request.FulfilmentTime + server.OffsetFromClient;
-
-                                      var isAfter = SyncUtil.IsStrictlyAfter(s, "_action_name_", request.ClientTimestamp.ToJavascriptMilliseconds(), userId, serverTime, BufferTime);
-
-                                      if (isAfter == false) {
-                                          if (remainingRequests.Contains(request.Name))
-                                              Assert.Fail("Request should have been allowed. " + MakeError(requestOrder, serverSelection));
-                                      } else {
-                                          if (!remainingRequests.Contains(request.Name))
-                                              Assert.Fail("Request should not have been allowed. " + MakeError(requestOrder, serverSelection));
-                                      }
-
-                                      //remove requests that happened before me...
-                                      var tempRemaining = new List<string>();
-                                      for (var j = remainingRequests.Count - 1; j >= 0; j--) {
-                                          if (remainingRequests[j] == request.Name)
-                                              break;
-                                          tempRemaining.Insert(0, remainingRequests[j]);
-                                      }
-                                      remainingRequests = tempRemaining;
+				  var requestsOrderedByClientSend = Requests.OrderBy(x => x.ClientTimestamp).Select(x => x.Name).ToList();
 
 
-                                  }
-                                  tx.Commit();
-                                  s.Flush();
-                                  count += 1;
+				  //Server receives requests out of order
+				  var requestOrders = Requests.Permutate().ToList();
+				  var serverSelections = ServerSelections();
 
-                              }
-                          }
-                      }
-                  }
+				  if (!requestOrders.Any())
+					  Assert.Fail("No request orders. Did you register any requests?");
+				  if (!serverSelections.Any())
+					  Assert.Fail("No server selections. Did you register any servers?");
 
-                  Console.WriteLine("Number of combinations tested:" + count + "!");
-              }*/
+				  //Try all the different orders that requests could be received...
+				  foreach (var ro in requestOrders) {
+					  var requestOrder = ro.ToList();
+					  //at all the different server end points
+					  foreach (var serverSelection in serverSelections) {
+						  userId += 1;
+						  var remainingRequests = requestsOrderedByClientSend.ToList();
+
+						  using (var s = HibernateSession.GetCurrentSession()) {
+							  using (var tx = s.BeginTransaction()) {
+								  //Make all requests
+								  for (var i = 0; i < requestOrder.Count; i++) {
+									  //Match request with server
+									  var request = requestOrder[i];
+									  var server = serverSelection[i];
+									  var serverTime = request.ClientTimestamp + request.FulfilmentTime + server.OffsetFromClient;
+
+									  var isAfter = SyncUtil.IsStrictlyAfter(s, "_action_name_", request.ClientTimestamp.ToJavascriptMilliseconds(), userId, serverTime, BufferTime);
+
+									  if (isAfter == false) {
+										  if (remainingRequests.Contains(request.Name))
+											  Assert.Fail("Request should have been allowed. " + MakeError(requestOrder, serverSelection));
+									  } else {
+										  if (!remainingRequests.Contains(request.Name))
+											  Assert.Fail("Request should not have been allowed. " + MakeError(requestOrder, serverSelection));
+									  }
+
+									  //remove requests that happened before me...
+									  var tempRemaining = new List<string>();
+									  for (var j = remainingRequests.Count - 1; j >= 0; j--) {
+										  if (remainingRequests[j] == request.Name)
+											  break;
+										  tempRemaining.Insert(0, remainingRequests[j]);
+									  }
+									  remainingRequests = tempRemaining;
+
+
+								  }
+								  tx.Commit();
+								  s.Flush();
+								  count += 1;
+
+							  }
+						  }
+					  }
+				  }
+
+				  Console.WriteLine("Number of combinations tested:" + count + "!");
+			  }*/
 		}
 
 		//[TestMethod]
 		//[TestCategory("Sync")]
 		//public void TryOutPermutator() {
-		//    var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromDays(.1));
-		//    ss.AddServer("A", TimeSpan.FromSeconds(5));
-		//    ss.SendRequest("1", TimeSpan.FromSeconds(.1), TimeSpan.FromSeconds(.1));
-		//    ss.EnsureAlwaysOrdered();
+		//	var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromDays(.1));
+		//	ss.AddServer("A", TimeSpan.FromSeconds(5));
+		//	ss.SendRequest("1", TimeSpan.FromSeconds(.1), TimeSpan.FromSeconds(.1));
+		//	ss.EnsureAlwaysOrdered();
 		//}
 
 
 		//[TestMethod]
 		//[TestCategory("Sync")]
 		//public void ConstantFulfilmentTime() {
-		//    var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromSeconds(40));
-		//    ss.AddServer("A", TimeSpan.FromSeconds(5));
-		//    ss.AddServer("B", TimeSpan.FromSeconds(-5));
-		//    ss.AddServer("C", TimeSpan.FromSeconds(100));
-		//    //ss.AddServer("D", TimeSpan.FromSeconds(-100));
+		//	var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromSeconds(40));
+		//	ss.AddServer("A", TimeSpan.FromSeconds(5));
+		//	ss.AddServer("B", TimeSpan.FromSeconds(-5));
+		//	ss.AddServer("C", TimeSpan.FromSeconds(100));
+		//	//ss.AddServer("D", TimeSpan.FromSeconds(-100));
 
-		//    //Send several requests, constant FulfilmentTime
-		//    ss.SendRequest("1", TimeSpan.FromSeconds(.1), TimeSpan.FromSeconds(.1));
-		//    ss.SendRequest("2", TimeSpan.FromSeconds(.2), TimeSpan.FromSeconds(.1));
-		//    ss.SendRequest("3", TimeSpan.FromSeconds(.3), TimeSpan.FromSeconds(.1));
-		//    ss.SendRequest("4", TimeSpan.FromSeconds(.4), TimeSpan.FromSeconds(.1));
+		//	//Send several requests, constant FulfilmentTime
+		//	ss.SendRequest("1", TimeSpan.FromSeconds(.1), TimeSpan.FromSeconds(.1));
+		//	ss.SendRequest("2", TimeSpan.FromSeconds(.2), TimeSpan.FromSeconds(.1));
+		//	ss.SendRequest("3", TimeSpan.FromSeconds(.3), TimeSpan.FromSeconds(.1));
+		//	ss.SendRequest("4", TimeSpan.FromSeconds(.4), TimeSpan.FromSeconds(.1));
 
-		//    ss.EnsureAlwaysOrdered();
+		//	ss.EnsureAlwaysOrdered();
 		//}
 
 		//[TestMethod]
 		//[TestCategory("Sync")]
 		//public void NonconstantFulfilmentTime() {
-		//    var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromSeconds(40));
-		//    ss.AddServer("A", TimeSpan.FromSeconds(5));
-		//    ss.AddServer("B", TimeSpan.FromSeconds(-5));
-		//    ss.AddServer("C", TimeSpan.FromSeconds(100));
-		//    ss.AddServer("D", TimeSpan.FromSeconds(-100));
+		//	var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromSeconds(40));
+		//	ss.AddServer("A", TimeSpan.FromSeconds(5));
+		//	ss.AddServer("B", TimeSpan.FromSeconds(-5));
+		//	ss.AddServer("C", TimeSpan.FromSeconds(100));
+		//	ss.AddServer("D", TimeSpan.FromSeconds(-100));
 
-		//    //Send several requests, constant FulfilmentTime
-		//    ss.SendRequest("1", TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.1));
-		//    ss.SendRequest("2", TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(50));
-		//    ss.SendRequest("3", TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(20));
-		//    //ss.SendRequest("4", TimeSpan.FromSeconds(.4), TimeSpan.FromSeconds(.1));
+		//	//Send several requests, constant FulfilmentTime
+		//	ss.SendRequest("1", TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.1));
+		//	ss.SendRequest("2", TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(50));
+		//	ss.SendRequest("3", TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(20));
+		//	//ss.SendRequest("4", TimeSpan.FromSeconds(.4), TimeSpan.FromSeconds(.1));
 
-		//    ss.EnsureAlwaysOrdered();
+		//	ss.EnsureAlwaysOrdered();
 		//}
 
 		[TestMethod]
@@ -419,7 +419,7 @@ namespace TractionTools.Tests.Utilities {
 
 
 							//   A ========= B ----------- C ======== D
-							//        E ======== F --- G ====== H
+							//		E ======== F --- G ====== H
 							var syncLockId = "TEST_" + Guid.NewGuid();
 
 							//Remove session factory to ensure mysql db is used.
@@ -456,7 +456,7 @@ namespace TractionTools.Tests.Utilities {
 										}
 									};
 									await SyncUtil.Lock(syncLockId, null, async (s, lck) => {
-										//Database is opened                   
+										//Database is opened				   
 										stepIterator();
 										waitForStep(i, CLOSE_DB);
 
@@ -464,30 +464,30 @@ namespace TractionTools.Tests.Utilities {
 									#region hide
 									//SyncUtil.GenerateSyncLock(syncLockId);
 									//using (var s = HibernateSession.GetCurrentSession()) {
-									//    using (var tx = s.BeginTransaction()) {
+									//	using (var tx = s.BeginTransaction()) {
 
-									//        if (semephoreOpen[(i + 1) % 2]) {
-									//            errors.Add("Error: " + string.Join("", o));
-									//            message.Add("DUEL SEMAPHORES ERROR");
-									//        }
-									//        message.Add("\tSemaphore Start:" + i);
-									//        semephoreOpen[i] = true;
-									//        SyncUtil.Semaphore(s, syncLockId);
+									//		if (semephoreOpen[(i + 1) % 2]) {
+									//			errors.Add("Error: " + string.Join("", o));
+									//			message.Add("DUEL SEMAPHORES ERROR");
+									//		}
+									//		message.Add("\tSemaphore Start:" + i);
+									//		semephoreOpen[i] = true;
+									//		SyncUtil.Semaphore(s, syncLockId);
 
-									//        //Database is opened                   
-									//        stepIterator();
-									//        waitForStep(i, CLOSE_DB);
-									//        //var tempTime = DateTime.UtcNow;
-									//        //while (steps[i] < CLOSE_DB) {
-									//        //    if (DateTime.UtcNow - tempTime > TimeSpan.FromMilliseconds(100)) {
-									//        //        message.Add("Db closed out of requested order.");
-									//        //        break;
-									//        //    }
-									//        //}
-									//        //Database closeing
-									//        tx.Commit();
-									//        s.Flush();
-									//    }
+									//		//Database is opened				   
+									//		stepIterator();
+									//		waitForStep(i, CLOSE_DB);
+									//		//var tempTime = DateTime.UtcNow;
+									//		//while (steps[i] < CLOSE_DB) {
+									//		//	if (DateTime.UtcNow - tempTime > TimeSpan.FromMilliseconds(100)) {
+									//		//		message.Add("Db closed out of requested order.");
+									//		//		break;
+									//		//	}
+									//		//}
+									//		//Database closeing
+									//		tx.Commit();
+									//		s.Flush();
+									//	}
 									//}
 									#endregion
 									//Database is closed

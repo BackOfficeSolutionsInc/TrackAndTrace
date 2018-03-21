@@ -40,6 +40,12 @@ namespace RadialReview.Models {
 		}
 	}
 
+	public enum SchedulePeriodType {
+		Monthly,
+		Quarterly,
+		Annual,
+	}
+
 	public class PaymentPlan_Monthly : PaymentPlanModel {
 		public virtual decimal L10PricePerPerson { get; set; }
 		public virtual decimal ReviewPricePerPerson { get; set; }
@@ -55,8 +61,52 @@ namespace RadialReview.Models {
 		public virtual bool NoChargeForClients { get; set; }
 		public virtual bool NoChargeForUnregisteredUsers { get; set; }
 
+
+		public virtual SchedulePeriodType? SchedulePeriod { get; set; }
+
+		public virtual decimal DurationMultiplier() {
+			if (SchedulePeriod == null)
+				return 1.0m;
+			switch (SchedulePeriod.Value) {
+				case SchedulePeriodType.Monthly:
+					return 1.0m;
+				case SchedulePeriodType.Quarterly:
+					return 3.0m;
+				case SchedulePeriodType.Annual:
+					return 12.0m;
+				default:
+					return 1.0m;
+			}
+		}
+
+		public virtual string MultiplierDesc() {
+			if (SchedulePeriod == null)
+				return "";
+			switch (SchedulePeriod.Value) {
+				case SchedulePeriodType.Monthly:
+					return "";
+				case SchedulePeriodType.Quarterly:
+					return " (Quarterly)";
+				case SchedulePeriodType.Annual:
+					return " (Annually)";
+				default:
+					return "";
+			}
+		}
+
 		public override TimeSpan SchedulerPeriod() {
-			return TimespanExtensions.OneMonth();
+			if (SchedulePeriod == null)
+				return TimespanExtensions.OneMonth();
+			switch (SchedulePeriod.Value) {
+				case SchedulePeriodType.Monthly:
+					return TimespanExtensions.OneMonth();
+				case SchedulePeriodType.Quarterly:
+					return TimeSpan.FromDays(365.25 / 4);
+				case SchedulePeriodType.Annual:
+					return TimeSpan.FromDays(365.25);
+				default:
+					return TimespanExtensions.OneMonth();
+			}
 		}
 
 		public PaymentPlan_Monthly() {
@@ -71,6 +121,7 @@ namespace RadialReview.Models {
 				Map(x => x.OrgId).Column("OrganizationId");
 				Map(x => x.ReviewFreeUntil);
 				Map(x => x.L10FreeUntil);
+				Map(x => x.SchedulePeriod).CustomType<SchedulePeriodType?>();
 				Map(x => x.BaselinePrice);
 				Map(x => x.NoChargeForClients);
 				Map(x => x.NoChargeForUnregisteredUsers);

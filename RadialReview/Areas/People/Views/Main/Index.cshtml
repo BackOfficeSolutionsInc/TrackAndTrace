@@ -17,12 +17,15 @@
 		<div class="flex-item">
 			<a class="tool-button" href="/accountability/chart"><div class="tool"><div class="icon fontastic-icon-sitemap @*-flow-tree*@ tool-icon"></div><div class="tool-text-container"><div class="tool-text noselect">Accountability Chart</div></div></div></a>
 		</div>
-		<div class="flex-item">
-			<a class="tool-button" href="@Url.Action("Index","PeopleAnalyzer")"><div class="tool"><div class="icon fontastic-icon-table tool-icon"></div><div class="tool-text-container"><div class="tool-text noselect">People Analyzer</div></div></div></a>
-		</div>
+		@if (ViewBag.IsManager == true) {
+			<div class="flex-item">
+				<a class="tool-button" href="@Url.Action("Index", "PeopleAnalyzer")"><div class="tool"><div class="icon fontastic-icon-table tool-icon"></div><div class="tool-text-container"><div class="tool-text noselect">People Analyzer</div></div></div></a>
+			</div>
+		}
 		<div class="flex-item">
 			<a class="tool-button" href="@Url.Action("Index","QuarterlyConversation")"><div class="tool"><div class="icon fontastic-icon-comments tool-icon"></div><div class="tool-text-container"><div class="tool-text noselect">Quarterly Conversation</div></div></div></a>
 		</div>
+
 
 		@*<div class="flex-item">
 				<div class="tool-button"><div class="tool"><div class="icon fontastic-icon-thumbnails-large tool-icon"></div><div class="tool-text-container"><div class="tool-text noselect">Delegate and Elevate</div></div></div></div>

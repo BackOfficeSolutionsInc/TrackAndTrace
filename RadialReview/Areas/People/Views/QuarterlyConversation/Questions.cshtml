@@ -17,10 +17,15 @@
 <div ng-app="people" class="people quarterly-conversation ng-cloak">
 	<div class="gray instructions">Your answers are saved automatically.</div>
 	<survey-container survey-container-id="@Model"></survey-container>
-	@using (Html.BeginForm("lockin", "QuarterlyConversation")) {
-		<input type="hidden" name="id" value="@Model" />
-		<button class="btn btn-primary" type="submit">Lock in my answers</button>
-	}
+	<div class="row">
+		<div class="col-md-9 alignCenter">
+			@using (Html.BeginForm("lockin", "QuarterlyConversation")) {
+				<input type="hidden" name="id" value="@Model" />
+				<button class="btn btn-primary" type="submit" style="margin-top:-40px">Lock in my answers</button>
+			}
+
+		</div>
+	</div>
 </div>
 
 

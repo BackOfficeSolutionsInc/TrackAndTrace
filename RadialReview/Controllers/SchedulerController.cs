@@ -26,6 +26,8 @@ using NHibernate.Criterion;
 using System.Linq.Expressions;
 using NHibernate.Impl;
 using System.Threading;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Controllers {
 
@@ -374,6 +376,8 @@ namespace RadialReview.Controllers {
 
 					await EventUtil.GenerateAllDailyEvents(s, DateTime.UtcNow);
 
+					await CheckCardExpirations(s);
+
 					tx.Commit();
 					s.Flush();
 				}
@@ -381,6 +385,20 @@ namespace RadialReview.Controllers {
 			return any;
 		}
 
+		private async Task CheckCardExpirations(ISession s) {
+			var date = DateTime.UtcNow.Date;
+			if (date == new DateTime(date.Year, date.Month, 1) || date == new DateTime(date.Year, date.Month, 15) || date == new DateTime(date.Year, date.Month, 21)) {
+				var expireMonth = date.AddMonths(1);
+				var tokens = s.QueryOver<PaymentSpringsToken>()
+						.Where(x => x.Active && x.DeleteTime == null && x.TokenType == PaymentSpringTokenType.CreditCard && x.MonthExpire == expireMonth.Month && x.YearExpire == expireMonth.Year)
+						.List().ToList();
+
+				var tt = tokens.GroupBy(x => x.OrganizationId).Select(x => x.OrderByDescending(y => y.CreateTime).First());
+				foreach (var t in tt)
+					await HooksRegistry.Each<IPaymentHook>((ses, x) => x.CardExpiresSoon(ses, t));
+
+			}
+		}
 
 		[Access(AccessLevel.Any)]
 		[AsyncTimeout(60000 * 30)]//30 minutes..

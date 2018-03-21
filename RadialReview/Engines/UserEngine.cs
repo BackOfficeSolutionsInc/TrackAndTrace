@@ -27,7 +27,7 @@ namespace RadialReview.Engines {
 					var perms = PermissionsUtility.Create(s, caller);
 					var foundUser = UserAccessor.GetUserOrganization(s, perms, id, false, false);
 
-					foundUser.SetPersonallyManaging(DeepAccessor.Users.ManagesUser(s, perms, caller.Id, id));
+					foundUser.SetPersonallyManaging(DeepAccessor.Users.ManagesUser(s, perms, caller.Id, id, true));
 
 					var responsibilities = new List<String>();
 

@@ -7,10 +7,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
-namespace RadialReview.Models
-{
-    public class InvoiceModel : ILongIdentifiable, IHistorical
-    {
+namespace RadialReview.Models {
+	public class InvoiceModel : ILongIdentifiable, IHistorical {
 		public virtual long Id { get; protected set; }
 		[Display(Name = "Sent"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
 		public virtual DateTime InvoiceSentDate { get; set; }
@@ -18,8 +16,11 @@ namespace RadialReview.Models
 		public virtual DateTime InvoiceDueDate { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
-        public virtual OrganizationModel Organization { get; set; }
-        public virtual IList<InvoiceItemModel> InvoiceItems { get; set; }
+		public virtual OrganizationModel Organization { get; set; }
+		public virtual IList<InvoiceItemModel> InvoiceItems { get; set; }
+
+		public virtual long? ForgivenBy { get; set; }
+		public virtual long? ManuallyMarkedPaidBy { get; set; }
 
 		[Display(Name = "Date Paid"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
 		public virtual DateTime? PaidTime { get; set; }
@@ -29,19 +30,26 @@ namespace RadialReview.Models
 
 		public virtual DateTime ServiceStart { get; set; }
 		[Display(Name = "Service Through"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
-	    public virtual DateTime ServiceEnd { get; set; }
+		public virtual DateTime ServiceEnd { get; set; }
 
 		[Display(Name = "Amount Due"), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
-	    public virtual decimal AmountDue { get; set; }
+		public virtual decimal AmountDue { get; set; }
 
-        public virtual String EmailAddress { get; set; }
+		public virtual String EmailAddress { get; set; }
 
-	    public InvoiceModel()
-        {
-            InvoiceItems = new List<InvoiceItemModel>();
-	        CreateTime = DateTime.UtcNow;
-        }
-        /*
+		public virtual bool WasAutomaticallyPaid() {
+			return ManuallyMarkedPaidBy == null && PaidTime != null;
+		}
+		public virtual bool AnythingDue() {
+			return !(PaidTime != null || AmountDue <= 0 || ForgivenBy != null);
+		}
+
+
+		public InvoiceModel() {
+			InvoiceItems = new List<InvoiceItemModel>();
+			CreateTime = DateTime.UtcNow;
+		}
+		/*
         public override int GetHashCode()
         {
             if (Id != 0)
@@ -61,13 +69,11 @@ namespace RadialReview.Models
             }
             return false;
         }*/
-    }
+	}
 
-    public class InvoiceModelMap : ClassMap<InvoiceModel>
-    {
-        public InvoiceModelMap()
-        {
-            Id(x => x.Id);
+	public class InvoiceModelMap : ClassMap<InvoiceModel> {
+		public InvoiceModelMap() {
+			Id(x => x.Id);
 			Map(x => x.InvoiceSentDate);
 			Map(x => x.InvoiceDueDate);
 			Map(x => x.PaidTime);
@@ -75,18 +81,21 @@ namespace RadialReview.Models
 			Map(x => x.DeleteTime);
 			Map(x => x.TransactionId);
 
-            Map(x => x.AmountDue);
+			Map(x => x.ForgivenBy);
+			Map(x => x.ManuallyMarkedPaidBy);
 
-            Map(x => x.EmailAddress);
+			Map(x => x.AmountDue);
+
+			Map(x => x.EmailAddress);
 
 			Map(x => x.ServiceStart);
 			Map(x => x.ServiceEnd);
 
 			References(x => x.Organization);
-            HasMany(x => x.InvoiceItems)
-                .Table("InvoiceItems")
-                .Cascade.SaveUpdate();
-        }
+			HasMany(x => x.InvoiceItems)
+				.Table("InvoiceItems")
+				.Cascade.SaveUpdate();
+		}
 
-    }
+	}
 }

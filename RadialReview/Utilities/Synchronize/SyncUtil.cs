@@ -455,4 +455,4 @@ namespace RadialReview.Utilities.Synchronize {
 			return existingSyncs.All(x => x.ClientTimestamp - clientTimestamp <= 0);
 		}
 	}
-}
+}

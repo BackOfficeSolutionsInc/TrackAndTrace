@@ -130,12 +130,12 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 				var goingRight = false;
 				$input = $element.find("input");
 				if (window.ScorecardMode == "scan" ||
-                     event.which == 38 ||	//pressing up
-                     event.which == 40 ||	//pressing down
-                     event.which == 13 ||	//pressing enter
-                     ($input[0].selectionStart == 0 && (event.which == 37)) || //all the way left
-                     ($input[0].selectionEnd == $input.val().length && (event.which == 39)) // all the way right
-                 ) {
+					 event.which == 38 ||	//pressing up
+					 event.which == 40 ||	//pressing down
+					 event.which == 13 ||	//pressing enter
+					 ($input[0].selectionStart == 0 && (event.which == 37)) || //all the way left
+					 ($input[0].selectionEnd == $input.val().length && (event.which == 39)) // all the way right
+				 ) {
 					if (event.which == 37) { //left
 						found = $input.closest("score").closest("td").prev().find("score input");
 						goingLeft = true;
@@ -145,7 +145,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 						var curCol = curRow.find("td").index(curCell);
 						while (true) {
 							curRow = curRow.prev();
-							if (curRow && !curRow.hasClass("divider")) {
+							if (curRow && !curRow.hasClass("divider") && !curRow.hasClass("disabled")) {
 								found = $(curRow.find("td")[curCol]).find("score input");
 								break;
 							}
@@ -164,7 +164,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 						var curCol = curRow.find("td").index(curCell);
 						while (true) {
 							curRow = curRow.next();
-							if (curRow && !curRow.hasClass("divider")) {
+							if (curRow && !curRow.hasClass("divider") && !curRow.hasClass("disabled")) {
 								found = $(curRow.find("td")[curCol]).find("score input");
 								break;
 							}
@@ -176,12 +176,12 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 					}
 					var keycode = event.which;
 					var validPrintable =
-                        (keycode > 47 && keycode < 58) || // number keys
-                        keycode == 32 || keycode == 13 || // spacebar & return key(s) (if you want to allow carriage returns)
-                        (keycode > 64 && keycode < 91) || // letter keys
-                        (keycode > 95 && keycode < 112) || // numpad keys
-                        (keycode > 185 && keycode < 193) || // ;=,-./` (in order)
-                        (keycode > 218 && keycode < 223);   // [\]' (in order)
+						(keycode > 47 && keycode < 58) || // number keys
+						keycode == 32 || keycode == 13 || // spacebar & return key(s) (if you want to allow carriage returns)
+						(keycode > 64 && keycode < 91) || // letter keys
+						(keycode > 95 && keycode < 112) || // numpad keys
+						(keycode > 185 && keycode < 193) || // ;=,-./` (in order)
+						(keycode > 218 && keycode < 223);   // [\]' (in order)
 
 					if (validPrintable) {
 						window.ScorecardMode = "type";
@@ -197,9 +197,9 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 				var input = this;
 				var noop = [38, 40, 13, 37, 39];
 				//if (noop.indexOf(event.which) == -1) {
-				//    setTimeout(function () {
-				//        updateScore(input);
-				//    }, 1);
+				//	setTimeout(function () {
+				//		updateScore(input);
+				//	}, 1);
 				//}
 
 				if (found) {
@@ -280,15 +280,15 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 			$scope.fcsa = $scope.getFcsa($scope.measurable);
 		}],
 		template: "<span ng-if='score.hidden' ng-click='score.hidden=false'>hidden</span>" +
-                  "<input ng-if='!score.hidden' data-goal='{{score.Target}}' data-alt-goal='{{score.AltTarget}}' data-goal-dir='{{score.Direction}}'" +
-                  " data-row='{{$parent.$index}}' data-col='{{$index}}'" +
-                  " type='text' placeholder='' ng1-model-options='{debounce:{\"default\":300,\"blur\":0}}' ng-disabled='measurable.Disabled'" +
-                  " ng-model='score.Measured'" +
-                  " class='grid rt1 ww_{{::week.ForWeekNumber}} {{scoreColor}} scrollOver'" +
-                  " data-scoreid='{{::Id}}' data-measurable='{{::measurable.Id}}' data-week='{{::week.ForWeekNumber}}'" +
-                  " fcsa-number='{{fcsa}}'" +
-                  " ng-change='changeFunc(\"change\")'" +
-                  " ng-blur='changeFunc(\"blur\")'" +
-                  " id='{{scoreId}}' />"
+				  "<input ng-if='!score.hidden' data-goal='{{score.Target}}' data-alt-goal='{{score.AltTarget}}' data-goal-dir='{{score.Direction}}'" +
+				  " data-row='{{$parent.$index}}' data-col='{{$index}}'" +
+				  " type='text' placeholder='' ng-model-options='{debounce:{\"default\":300,\"blur\":0}}' ng-disabled='measurable.Disabled'" +
+				  " ng-model='score.Measured'" +
+				  " class='grid rt1 ww_{{::week.ForWeekNumber}} {{scoreColor}} scrollOver'" +
+				  " data-scoreid='{{::Id}}' data-measurable='{{::measurable.Id}}' data-week='{{::week.ForWeekNumber}}'" +
+				  " fcsa-number='{{fcsa}}'" +
+				  " ng-change='changeFunc(\"change\")'" +
+				  " ng-blur='changeFunc(\"blur\")'" +
+				  " id='{{scoreId}}' />"
 	};
 }]);

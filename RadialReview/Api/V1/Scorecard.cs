@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace RadialReview.Api.V1 {
 
 	[RoutePrefix("api/v1")]
-	[SwaggerName(Name ="Week")]
+	[SwaggerName(Name = "Week")]
 	public class Week_Controller : BaseApiController {
 		/// <summary>
 		/// Get the current week
@@ -45,7 +45,7 @@ namespace RadialReview.Api.V1 {
 		[Route("scores/{SCORE_ID}")]
 		[HttpGet]
 		public AngularScore Get(long SCORE_ID) {
-			return new AngularScore(ScorecardAccessor.GetScore(GetUser(), SCORE_ID),null);
+			return new AngularScore(ScorecardAccessor.GetScore(GetUser(), SCORE_ID), null);
 		}
 
 		public class UpdateScoreModel {
@@ -79,6 +79,12 @@ namespace RadialReview.Api.V1 {
 		[HttpGet]
 		public async Task<AngularScorecard> GetMeasureablesForUser(long USER_ID) {
 			return await ScorecardAccessor.GetAngularScorecardForUser(GetUser(), USER_ID, 13);
+		}
+
+		[Route("scorecard/meeting/{MEETING_ID}")]
+		[HttpGet]
+		public async Task<AngularScorecard> GetScorecardForMeeting(long MEETING_ID) {
+			return (await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), MEETING_ID)).Scorecard;
 		}
 
 	}
@@ -118,7 +124,7 @@ namespace RadialReview.Api.V1 {
 		public IEnumerable<AngularScore> GetMeasurableScores(long MEASURABLE_ID) {
 			return ScorecardAccessor.GetMeasurableScores(GetUser(), MEASURABLE_ID)
 									.OrderBy(x => x.DataContract_ForWeek)
-									.Select(x => new AngularScore(x,null));
+									.Select(x => new AngularScore(x, null));
 		}
 
 		/// <summary>
@@ -155,7 +161,7 @@ namespace RadialReview.Api.V1 {
 		/// <param name="WEEK_ID">Week ID</param>
 		// PUT: api/Scores/5
 		[HttpPut]
-		[Route("measurables/{MEASURABLE_ID}/week/{WEEK_ID}")]		
+		[Route("measurables/{MEASURABLE_ID}/week/{WEEK_ID}")]
 		public async Task UpdateScore(long MEASURABLE_ID, long WEEK_ID, [FromBody]Scores_Controller.UpdateScoreModel body) {
 			//await L10Accessor.UpdateScore(GetUser(), MEASURABLE_ID, WEEK_ID, body.value, null, true);
 			await ScorecardAccessor.UpdateScore(GetUser(), MEASURABLE_ID, TimingUtility.GetDateSinceEpoch(WEEK_ID), body.value);

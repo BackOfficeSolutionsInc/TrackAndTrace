@@ -206,22 +206,22 @@
 						$("#submit").html("Submit");
 						$("#submit").attr("disabled", false);
 
-						var builder = [];
-						var selector = [];
-						for (var e in data["errors"]) {
-							var code = data["errors"][e].code;
-							var msg = data["errors"][e].message;
-							if (code in errorResponses) {
-								if (errorResponses[code].message != null) {
-									msg = errorResponses[code].message;
-								}
-								selector.push(errorResponses[code].selector);
-							}
-							builder.push(msg);
-						}
-						clearAlerts();
-						showAlert(builder,null,null,30000);
-						$(selector.join(",")).parent("div").addClass("has-error");
+                        var builder = [];
+                        var selector = [];
+                        for (var e in data["errors"]) {
+                            var code = data["errors"][e].code;
+                            var msg = data["errors"][e].message;
+                            if (code in errorResponses) {
+                                if (errorResponses[code].message != null) {
+                                    msg = errorResponses[code].message;
+                                }
+                                selector.push(errorResponses[code].selector);
+                            }
+                            builder.push(msg);
+                        }
+                        clearAlerts();
+						showAlert(builder,30000);
+                        $(selector.join(",")).parent("div").addClass("has-error");
 
 					} else {
 						$("#submit").html("Validated!");

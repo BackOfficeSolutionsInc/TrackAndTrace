@@ -33,6 +33,7 @@ using System.Threading.Tasks;
 using RadialReview.Areas.People.Accessors;
 using RadialReview.Areas.People.Engines.Surveys.Strategies.Transformers;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 
 namespace TractionTools.Tests.Engines {
 	[TestClass]
@@ -180,7 +181,7 @@ namespace TractionTools.Tests.Engines {
 			//Construct Survey
 			DbCommit(s => {
 				var engine = new SurveyBuilderEngine(
-					new QuarterlyConversationInitializer(ForModel.Create(org.Manager), "TestSurvey", org.Id, DateTime.MaxValue),
+					new QuarterlyConversationInitializer(ForModel.Create(org.Manager), "TestSurvey", org.Id, new DateRange(), DateTime.MaxValue),
 					new SurveyBuilderEventsSaveStrategy(s),
 					new TransformAboutAccountabilityNodes(s)
 				);
@@ -268,7 +269,7 @@ namespace TractionTools.Tests.Engines {
 			outerLookup.GetInnerLookup<RockSection>().AddList(rockData);
 
 			var engine = new SurveyBuilderEngine(
-				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(2), "TestRocksSurvey", 1, DateTime.MaxValue),
+				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(2), "TestRocksSurvey", 1, new DateRange(), DateTime.MaxValue),
 				new SurveyBuilderEventsNoOp(),
 				new TransformByAboutNoop(),
 				outerLookup
@@ -331,7 +332,7 @@ namespace TractionTools.Tests.Engines {
 			outerLookup.GetInnerLookup<ValueSection>().AddList(valueData);
 
 			var engine = new SurveyBuilderEngine(
-				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(2), "TestValueSurvey", 1, DateTime.MaxValue),
+				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(2), "TestValueSurvey", 1, new DateRange(), DateTime.MaxValue),
 				new SurveyBuilderEventsNoOp(),
 				new TransformByAboutNoop(),
 				outerLookup
@@ -425,7 +426,7 @@ namespace TractionTools.Tests.Engines {
 			};
 
 			var engine = new SurveyBuilderEngine(
-				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(U2), "TestRoleSurvey", O1, DateTime.MaxValue),
+				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(U2), "TestRoleSurvey", O1, new DateRange(), DateTime.MaxValue),
 				new SurveyBuilderEventsNoOp(),
 				new TransformByAboutNoop(),// SurveyBuilderEventsSaveStrategy(mockSession.Object)
 				outerLookup
@@ -544,7 +545,7 @@ namespace TractionTools.Tests.Engines {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, org.Manager);
-					var result = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, perms, "TestGetSurveyContainerAbout", byAbout, DateTime.MaxValue, false);
+					var result = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, perms, "TestGetSurveyContainerAbout", byAbout, new DateRange(), DateTime.MaxValue, false);
 					containerId = result.SurveyContainerId;
 					tx.Commit();
 					s.Flush();
@@ -553,7 +554,7 @@ namespace TractionTools.Tests.Engines {
 			var about = SurveyAccessor.GetSurveyContainerAbout(org.Manager, empl, containerId);
 
 			Assert.AreEqual(1, about.GetSurveys().Count());
-			Assert.AreEqual(7, about.GetSurveys().First().GetSections().Count());
+			Assert.AreEqual(6, about.GetSurveys().First().GetSections().Count());
 			{
 				var rockItemContainers = about.GetSurveys().First().GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks).GetItemContainers();
 				Assert.AreEqual(5, rockItemContainers.Count());

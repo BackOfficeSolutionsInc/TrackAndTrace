@@ -280,6 +280,12 @@ function setCurrentPage(pageName, startTime, baseMinutes) {
 
 }
 
+function editRating(id) {
+	//showModal("Edit Rating", "/L10/EditRanting/" + id, null, null, null, null);
+	showModal("Edit Rating", "/l10/EditRanting?recurrenceId=" + id, null, null);
+	//showModal("Edit Rating", "/l10/EditRanting/" + id, null);
+}
+
 function setHash(hash) {
 	//location.hash = $hash;
 	window.location.hash = '#' + hash;

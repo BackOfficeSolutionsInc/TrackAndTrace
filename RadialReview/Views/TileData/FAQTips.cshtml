@@ -1,12 +1,15 @@
 ﻿
 <div class="review smallBreak2 loading tiny faq-tile" style2="min-height:30px;">
 	<div class="faq-heading heading">
-		FAQ Guide<a href="https://tractiontools.happyfox.com/kb/" class=""> (Knowledge Base)</a>
+		FAQ Guide
 	</div><div class="tile">
 	<ul class="scroller">
-		<li><a id="faq_createL10" onclick="startTour('createL10')" href="#">How do I create a meeting?</a></li>
-		<li><a id="faq_startL10" onclick="startTour('startL10')" href="#">How do I start a meeting?</a></li>
-		<li><a id="faq_textTodoIssue" onclick="startTour('textTodoIssue')" href="#">How do I setup Text-a-Todo™ and Text-an-Issue™</a></li>
+		@if (ViewBag.EvalOnly != true) {
+			<li><a id="faq_createL10" onclick="startTour('createL10')" href="#">How do I create a meeting?</a></li>
+			<li><a id="faq_startL10" onclick="startTour('startL10')" href="#">How do I start a meeting?</a></li>
+			<li><a id="faq_textTodoIssue" onclick="startTour('textTodoIssue')" href="#">How do I setup Text-a-Todo™ and Text-an-Issue™</a></li>
+		}
+		<li><a href="@ViewBag.KB">View Knowledge Base</a></li>
 		@*<li><a onclick="startTour('textTodoIssue')" href="#">How do I setup Text-a-Todo™ and Text-an-Issue™</a></li>
 		<li><a onclick="startTour('textTodoIssue')" href="#">How do I setup Text-a-Todo™ and Text-an-Issue™</a></li>
 		<li><a onclick="startTour('textTodoIssue')" href="#">How do I setup Text-a-Todo™ and Text-an-Issue™</a></li>

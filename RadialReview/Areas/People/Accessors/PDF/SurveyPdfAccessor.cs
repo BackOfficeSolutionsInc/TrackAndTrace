@@ -426,7 +426,6 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			});
 
 			var table = PdfTable.Build(usableWidth, valueQuestions, responseBuilder);
-			cell.Elements.Add(table);
 
 			#region Old
 			//var questions = iSection.GetItemContainers();
@@ -502,6 +501,17 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			//	}
 			//}
 			#endregion
+
+
+			if (!valueQuestions.Any()) {
+				var p = cell.AddParagraph("No core values responses.");
+				p.Format.Font.Color = _Gray;
+				p.Format.Font.Italic = true;
+				p.Format.Alignment = ParagraphAlignment.Center;
+				p.Format.SpaceAfter = Unit.FromInch(.45);
+			} else {
+				cell.Elements.Add(table);
+			}
 
 			var questions = iSection.GetItemContainers();
 
@@ -646,10 +656,12 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 				}
 			} else {
 				var row = roleTable.AddRow();
-				var p = row.Cells[1].AddParagraph("No roles.");
+				var p = row.Cells[1].AddParagraph("No roles responses.");
 				p.Format.Font.Color = _Gray;
 				p.Format.Font.Italic = true;
 				p.Format.Alignment = ParagraphAlignment.Center;
+				p.Format.LeftIndent = -10;
+
 			}
 			var spacer = roleTable.AddRow();
 			spacer.Height = BottomPad;
@@ -776,6 +788,14 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 				var p = percentRow.Cells[i + 2].AddParagraph(percentLookup[by.ToKey()].ToPercentage("n/a"));
 				p.Format.Alignment = ParagraphAlignment.Center;
 			}
+
+			if (!rockQuestions.Any()) {
+				var p = cell.AddParagraph("No rocks responses.");
+				p.Format.Font.Color = _Gray;
+				p.Format.Font.Italic = true;
+				p.Format.Alignment = ParagraphAlignment.Center;
+			}
+
 
 			PdfTable.AddSpacerRow(table);
 			//Append table

@@ -69,8 +69,8 @@
 										class="specialClass @(reorderable ? "reorderable" : "")"
 										ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering'] track by measurable.Key">
 										@if (reorderable) {
-											<td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.Disabled" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
-											<td class="button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.Disabled"></td>
+											<td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.IsReorderable" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
+											<td class="button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.IsReorderable"></td>
 										}
 
 										@if (disableName) {
@@ -99,6 +99,7 @@
 											<span ng-class="{'inlineEdit': measurable.Disabled!=true}">
 												<input ng-disabled="measurable.Disabled" placeholder="Enter measurable here" class="blend" ng-model-options="{ debounce: 250 }" ng-model="measurable.Name" @(elastic) ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
 											</span>
+											<span class="shift-visible edit-formula" title="Edit Formula" ng-click="showFormula(measurable.Id)"></span>
 										</td>
 										<td class="delete-column-alt button-column">
 											<span class="delete-row" ng-click="functions.removeRow($event,measurable)"></span>
@@ -174,8 +175,8 @@
 							<tbody as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
 								<tr as-sortable-item="measurable" ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering']"  ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}">
 									@if (reorderable) {
-											<td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.Disabled" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
-											<td class="button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.Disabled"></td>
+											<td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.IsReorderable" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
+											<td class="button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.IsReorderable"></td>
 									}
 									@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
 										<td class="who first1 alignRight accountable-column text-column" ng-class="{handle: measurable.IsDivider}">
@@ -204,6 +205,7 @@
 										<span ng-class="{'inlineEdit': measurable.Disabled!=true}">
 											<input ng-disabled="measurable.Disabled" class="blend" @(elastic) ng-model="measurable.Name" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
 										</span>
+										<span class="shift-visible edit-formula" title="Edit Formula" ng-click="functions.showFormula(measurable.Id)"></span>
 									</td>
 									<td class="delete-column-alt button-column">
 										<span class="delete-row" title="Remove Measurable" ng-click="functions.removeRow($event,measurable)"></span>
@@ -329,4 +331,4 @@
 			}).disableSelection();
 		});
 	</script>
-}
+}

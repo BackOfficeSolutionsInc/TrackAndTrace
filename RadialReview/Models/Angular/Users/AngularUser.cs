@@ -34,6 +34,7 @@ namespace RadialReview.Models.Angular.Users {
 		}
 
 		public static AngularUser CreateUser(UserOrganizationModel user, ImageSize imageSize = ImageSize._64, bool? managing = null) {
+			user = user.NotNull(x => x);
 			if (user == null)
 				return NoUser();
 

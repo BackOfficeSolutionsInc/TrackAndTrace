@@ -22,6 +22,7 @@ using RadialReview.Models.Application;
 using RadialReview.Utilities;
 using RadialReview.Hooks;
 using RadialReview.Variables;
+using NHibernate;
 
 namespace RadialReview.Controllers {
 	[Authorize]
@@ -165,7 +166,7 @@ namespace RadialReview.Controllers {
 			var userOrgs = GetUserOrganizations(null);
 			ViewBag.Admin = GetUserModel().IsRadialAdmin;
 			ViewBag.ReturnUrl = ReturnUrl;
-			return View(userOrgs.ToList());
+			return View(userOrgs.Where(x => x.DeleteTime == null && x.Organization.DeleteTime == null && x.Organization.AccountType != AccountType.Cancelled).ToList());
 		}
 
 		[Access(AccessLevel.Any)]
@@ -605,6 +606,61 @@ namespace RadialReview.Controllers {
 		public JsonResult SetHint(bool? hint) {
 			_UserAccessor.SetHints(GetUserModel(), hint.Value);
 			return Json(ResultObject.Success("Hints turned " + (hint.Value ? "on." : "off.")), JsonRequestBehavior.AllowGet);
+		}
+
+
+		public class AppVersionVM {
+			public string VersionId { get; set; }
+			public bool ShowMessage { get; set; }
+			public string Message { get; set; }
+			public string MessageType { get; set; }
+			public string MessageId { get; set; }
+		}
+
+		[Access(AccessLevel.Any)]
+		public async Task<JsonResult> AppVersion(string versionId = null, string deviceId = null, string deviceType = null, string deviceVersion = null, string userId = null) {
+			deviceType = deviceType.ToLower();
+
+			var o = new AppVersionVM() { };
+
+			string userName = null;
+			try {
+				userName = GetUserModel().UserName;
+			} catch (Exception) {
+				//maybe theres no user.
+			}
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					string currentVersion = null;
+
+					switch (deviceType) {
+
+						case "android":
+							currentVersion = s.GetSettingOrDefault("CurrentAndroidVersion", "1.0");
+							break;
+						case "ios":
+							currentVersion = s.GetSettingOrDefault("CurrentIOSVersion", "1.0");
+							break;
+						default:
+							break;
+					}
+
+					if (currentVersion != null) {
+						o.VersionId = currentVersion;
+						if (currentVersion != null && versionId != null && currentVersion.ToLower() != versionId.ToLower()) {
+							o.ShowMessage = true;
+							o.Message = "New version released. Please update.";
+							o.MessageType = "VersionUpdate-" + currentVersion;
+						}
+					}
+
+				}
+			}
+
+			await NotificationAccessor.TryRegisterPhone(userName, deviceId, deviceType, deviceVersion);
+
+			return Json(o, JsonRequestBehavior.AllowGet);
 		}
 
 

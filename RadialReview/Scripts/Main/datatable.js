@@ -96,6 +96,7 @@ var DataTable = function (settings) {
 
 	if (!settings.container) {
 		console.warn("Container not set for data-table.");
+		settings.container = "#main .body-content";
 	}
 
 	settings.id = settings.id || generateGuid();

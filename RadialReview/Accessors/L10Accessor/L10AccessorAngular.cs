@@ -141,7 +141,7 @@ namespace RadialReview.Accessors {
 
 			var measurables = scoresAndMeasurables.MeasurablesAndDividers.Select(x => {
 				if (x.IsDivider) {
-					var m = AngularMeasurable.CreateDivider(x._Ordering, x.Id);
+					var m = AngularMeasurable.CreateDivider(x);
 					m.RecurrenceId = x.L10Recurrence.Id;
 					return m;
 				} else {

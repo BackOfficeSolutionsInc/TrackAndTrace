@@ -50,6 +50,35 @@ namespace RadialReview.Accessors.PDF {
 				children = children.Select(x => dive(x, settings)).ToList(),
 				width = settings.baseWidth - settings.hSeparation,
 				height = settings.baseHeight,
+				hasHiddenChildren = aanode.HasChildren() && aanode.collapsed,				
+				
+			};
+
+			return node;
+		}
+
+		private static ACNode diveSelectedNode(AngularAccountabilityNode aanode, TreeSettings settings, List<long> selectedNodes) {
+			var pos = "";
+			var roles = new List<String>();
+			var children = aanode.children ?? new List<AngularAccountabilityNode>();
+
+			if (aanode.Group != null) {
+				if (aanode.Group.Position != null)
+					pos = aanode.Group.Position.Name ?? "";
+				if (aanode.Group.RoleGroups != null)
+					roles = aanode.Group.RoleGroups.SelectMany(x => x.Roles.Select(y => y.Name)).ToList();
+			}
+
+			children = children.Where(t => selectedNodes.Contains(t.Id));
+
+			var node = new ACNode() {
+				Name = aanode.Name ?? aanode.User.NotNull(x => x.Name),
+				Position = pos,
+				Roles = roles,
+				Id = aanode.Id,
+				children = children.Select(x => diveSelectedNode(x, settings, selectedNodes)).ToList(),
+				width = settings.baseWidth - settings.hSeparation,
+				height = settings.baseHeight,
 				hasHiddenChildren = aanode.HasChildren() && aanode.collapsed,
 
 			};
@@ -120,13 +149,18 @@ namespace RadialReview.Accessors.PDF {
 			return docs;
 		}
 
-		public static PdfDocument GenerateAccountabilityChart(AngularAccountabilityNode root, double width, double height, bool restrictSize = false, TreeSettings settings = null, bool anyAboveRoot = false) {
+		public static PdfDocument GenerateAccountabilityChart(AngularAccountabilityNode root, double width, double height, bool restrictSize = false, TreeSettings settings = null, bool anyAboveRoot = false, List<long> selectedNode = null) {
 
 			settings = settings ?? new TreeSettings();
-			var rootACNode = dive(root, settings);
+			var rootACNode = new ACNode();
+
+			if (selectedNode != null)
+				rootACNode = diveSelectedNode(root, settings, selectedNode);
+			else
+				rootACNode = dive(root, settings);
+
 
 			var margin = XUnit.FromInch(.5);
-
 			var pageProp = new PageProp() {
 				pageWidth = XUnit.FromInch(width),
 				pageHeight = XUnit.FromInch(height),

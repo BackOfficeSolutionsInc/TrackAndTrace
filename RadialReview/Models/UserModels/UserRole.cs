@@ -12,6 +12,7 @@ namespace RadialReview.Models.UserModels {
 		PlaceholderOnly = 1,
 		LeadershipTeamMember = 2,
 		AccountContact = 100,
+		EmailBlackList = 9999,
 
 	}
 

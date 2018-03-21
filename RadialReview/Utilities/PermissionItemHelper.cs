@@ -20,6 +20,7 @@ using RadialReview.Areas.CoreProcess.Models.MapModel;
 using RadialReview.Models.Components;
 using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Areas.CoreProcess.Models;
+using RadialReview.Models.Interfaces;
 
 namespace RadialReview.Utilities {
 	public partial class PermissionsUtility {
@@ -135,6 +136,7 @@ namespace RadialReview.Utilities {
 				};
 			});
 		}
+
 
 		public List<PermItem> GetAdmins(PermItem.ResourceType resourceType, long resourceId) {
 			CanView(resourceType, resourceId);

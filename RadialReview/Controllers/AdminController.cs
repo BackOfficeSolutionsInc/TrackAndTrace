@@ -7,6 +7,7 @@ using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Charts;
 using RadialReview.Models.Components;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Events;
@@ -32,10 +33,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using NHibernate.Criterion;
+using static RadialReview.Controllers.AbstractController.BaseExpensiveController;
+using RadialReview.Controllers.AbstractController;
+using RadialReview.Crosscutting.Flags;
 
 namespace RadialReview.Controllers {
 
-	public class AdminController : BaseController {
+	public class AdminController : BaseExpensiveController {
 
 		#region Implementers
 		[Access(AccessLevel.Radial)]
@@ -130,6 +135,41 @@ namespace RadialReview.Controllers {
 #pragma warning disable CS0618 // Type or member is obsolete
 			return View(_UserAccessor.GetUserOrganizationUnsafe(id));
 #pragma warning restore CS0618 // Type or member is obsolete
+		}
+
+		public class EmpCount {
+			public long Id { get; set; }
+			public MetricGraphic chart { get; set; }
+			public string Name { get; set; }
+		}
+
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> EmployeeCount(CancellationToken token, Divisor divisor = null) {
+			divisor = divisor ?? new Divisor();
+			ViewBag.Divisor = divisor;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					LocalizedStringModel alias = null;
+					var orgIds = s.QueryOver<OrganizationModel>()
+									.JoinAlias(x => x.Name, () => alias)
+									.Where(x => x.AccountType != AccountType.Cancelled)
+									.Where(Mod<OrganizationModel>(x => x.Id, divisor))
+									.Select(x => x.Id, x => alias.Standard)
+									.List<object[]>()
+									.Select(x => new { Id = (long)x[0], Name = (string)x[1] })
+									.ToList();
+					var burndowns = orgIds.Select(i => {
+						return new EmpCount {
+							Id = i.Id,
+							Name = i.Name,
+							chart = StatsAccessor.GetOrganizationMemberBurndown(s, PermissionsUtility.CreateAdmin(s), i.Id)
+						};
+					}).ToList();
+
+					return View(burndowns);
+				}
+			}
+			// return View();
 		}
 
 
@@ -569,13 +609,18 @@ namespace RadialReview.Controllers {
 
 		public class AllUserEmail {
 			public String UserName { get; set; }
+			public string FirstName { get; set; }
+			public string LastName { get; set; }
 			public String UserEmail { get; set; }
 			public String OrgName { get; set; }
 			public long UserId { get; set; }
 			public long OrgId { get; set; }
 			public DateTime UserCreateTime { get; set; }
+			public DateTime? UserDeleteTime { get; set; }
 			public string AccountType { get; set; }
 			public DateTime? OrgCreateTime { get; set; }
+			public DateTime? LastLogin { get; set; }
+			//public bool Blacklist { get; set; }
 		}
 		[Access(AccessLevel.Radial)]
 		public ActionResult AllUsers(long id) {
@@ -623,9 +668,43 @@ namespace RadialReview.Controllers {
 		public ActionResult AllEmails() {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var allUsersF = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && x.HasJoined).Future();
+					UserOrganizationModel userAlias = null;
+					var allUsersF = s.QueryOver<UserLookup>()
+						//.JoinAlias(x => x._User, () => userAlias)
+						.Where(x => x.DeleteTime == null && x.HasJoined)
+						.Future();
+					//.Select(x => x.Name, x => x.Email, x => x.UserId, b => b.OrganizationId, x => x.CreateTime,x=>userAlias.)
+					//.Future<object[]>().Select(x => new {
+					//    Name = (string)x[0],
+					//    Email = (string)x[1],
+					//    UserId = (long)x[2],
+					//    OrganizationId = (long)x[3],
+					//    CreateTime = (DateTime)x[4],
+					//    FirstName = (string)
+					//});
+
+					/*
+                      UserName = x.Name,
+                            UserEmail = x.Email,
+                            UserId = x.UserId,
+                            OrgId = x.OrganizationId,
+                            OrgName = org.NotNull(y => y.Name),
+                            AccountType = "" + org.NotNull(y => y.AccountType),
+                            OrgCreateTime = org.NotNull(y => y.CreateTime),
+                            UserCreateTime = x.CreateTime
+                     */
 					var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
 					var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
+
+					var allUserNames = s.QueryOver<UserModel>()
+						.Select(x => x.UserName, x => x.FirstName, x => x.LastName, x => x.DeleteTime)
+						.Future<object[]>()
+						.Select(x => new {
+							Email = (string)x[0],
+							FN = (string)x[1],
+							LN = (string)x[2],
+							Deleted = ((DateTime?)x[3]) != null
+						});
 
 
 					var chartsF = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Select(x => x.RootId).Future<long>();
@@ -634,6 +713,8 @@ namespace RadialReview.Controllers {
 						x => x.ParentNodeId,
 						x => x.UserId
 					).Future<object[]>();
+					var orgflagsF = s.QueryOver<OrganizationFlag>().Where(x => x.DeleteTime == null).Future();
+					var userFlagsF = s.QueryOver<UserRole>().Where(x => x.DeleteTime == null).Future();
 
 					var allUsers = allUsersF.ToList();
 					var allLocalizedStrings = localizedStringF.Select(x => new {
@@ -648,6 +729,7 @@ namespace RadialReview.Controllers {
 						DeleteTime = (DateTime?)x[2],
 						CreateTime = (DateTime)x[3],
 						AccountType = (AccountType)x[4],
+
 					}).ToDictionary(x => x.Id, x => x);
 
 
@@ -663,8 +745,11 @@ namespace RadialReview.Controllers {
 							OrgName = org.NotNull(y => y.Name),
 							AccountType = "" + org.NotNull(y => y.AccountType),
 							OrgCreateTime = org.NotNull(y => y.CreateTime),
-							UserCreateTime = x.CreateTime
+							UserCreateTime = x.CreateTime,
+							UserDeleteTime = x.DeleteTime,
+							LastLogin = x.LastLogin,
 
+							//Deleted = x.DeleteTime!=null  || org.DeleteTime !=null || org.AccountType == AccountType.Cancelled
 						};
 					}).Where(x => x != null).ToList();
 
@@ -699,9 +784,11 @@ namespace RadialReview.Controllers {
 								}
 							}
 						}
-
 					}
 
+					var nameLookup = allUserNames.ToList().Distinct(x => x.Email).ToDictionary(x => x.Email.ToLower(), x => x);
+					var orgFlags = orgflagsF.GroupBy(x => x.OrganizationId).ToDictionary(x => x.Key, x => x.ToList());
+					var userFlags = userFlagsF.GroupBy(x => x.UserId).ToDictionary(x => x.Key, x => x.ToList());
 
 					var csv = new Csv();
 					csv.Title = "UserId";
@@ -709,17 +796,47 @@ namespace RadialReview.Controllers {
 						if (o.UserEmail.ToLower().EndsWith("@mytractiontools.com")) {
 							continue;
 						}
+						var fn = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.FN) ?? o.UserName.NotNull(x => x.SubstringBefore(" ")) ?? o.UserName;
+						var ln = nameLookup.GetOrDefault(o.UserEmail, null).NotNull(x => x.LN) ?? o.UserName.NotNull(x => x.SubstringAfter(" ")) ?? o.UserName;
 
+						var of = orgFlags.GetOrAddDefault(o.OrgId, (x) => new List<OrganizationFlag>()).Select(x => x.FlagType).ToArray();
+						var uf = userFlags.GetOrAddDefault(o.UserId, (x) => new List<UserRole>()).Select(x => x.RoleType).ToArray();
+
+						//csv.Add("" + o.UserId, "UserName", o.UserName);
 						csv.Add("" + o.UserId, "UserName", o.UserName);
+						csv.Add("" + o.UserId, "FirstName", fn);
+						csv.Add("" + o.UserId, "LastName", ln);
 						csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
 						csv.Add("" + o.UserId, "OrgName", o.OrgName);
 						csv.Add("" + o.UserId, "UserId", "" + o.UserId);
 						csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
+						csv.Add("" + o.UserId, "LastLogin", "" + o.LastLogin);
 						csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
+						csv.Add("" + o.UserId, "UserDeleteTime", "" + o.UserDeleteTime);
 						csv.Add("" + o.UserId, "AccountType", o.AccountType);
 						csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
-						csv.Add("" + o.UserId, "LeadershipTeam", "" + leadershipMembers[o.UserId]);
+						csv.Add("" + o.UserId, "LeadershipTeam_Guess", "" + leadershipMembers[o.UserId]);
+						csv.Add("" + o.UserId, "LeadershipTeam_ClientMarked", "" + uf.Any(x => x == UserRoleType.LeadershipTeamMember));
+						csv.Add("" + o.UserId, "UserType_AccountContact", "" + uf.Any(x => x == UserRoleType.AccountContact));
+						csv.Add("" + o.UserId, "UserType_Placeholder", "" + uf.Any(x => x == UserRoleType.PlaceholderOnly));
+						csv.Add("" + o.UserId, "Delinquent", "" + of.Any(x => x == OrganizationFlagType.Delinquent));
+						csv.Add("" + o.UserId, "OrgFlags", string.Join("|", of));
+						csv.Add("" + o.UserId, "UserFlags", string.Join("|", uf));
+						csv.Add("" + o.UserId, "TT_Blacklist", "" + uf.Any(x => x == UserRoleType.EmailBlackList));
+
+
 					}
+
+					/*First Name        
+Last Name        
+Status        
+TT Active Account        
+Expired Flag    True / False    
+Late Payment Flag    True / False    
+Payment Failed Flag    True / False    could be done direct in TT
+Flag For Disabled / Blacklisted from TT        
+Flag For Disabled / Blacklisted from CS        
+3 Successful Meetings while in Trial (over 30 min)*/
 
 					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
 
@@ -799,6 +916,11 @@ namespace RadialReview.Controllers {
 
 
 
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> Notify(long userId, string message, string details = null, bool sensitive = true, string imageUrl = null) {
+			var n = await NotificationAccessor.CreateNotification_Unsafe(NotifcationCreation.Build(userId, message, details, sensitive, imageUrl), true);
+			return Json(n, JsonRequestBehavior.AllowGet);
+		}
 
 
 
@@ -1058,6 +1180,8 @@ namespace RadialReview.Controllers {
 			txt += gitRow;
 			txt += serverRow;
 			txt += dbTimeRow;
+			txt += "<tr><td>Server Time:</td><td>" + now.ToString("U") + " </td><td> [ticks: " + now.Ticks + "]</td></tr>";
+			txt += serverRow;
 			txt += "</table>";
 
 			return Content(txt);

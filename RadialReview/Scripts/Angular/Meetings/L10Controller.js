@@ -34,7 +34,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		}
 
 		function updateScorecard(data) {
-			console.log(data);
 			console.log("Updating Scorecard.");
 			$scope.ScoreLookup = $scope.ScoreLookup || {};
 			var luArr = [];
@@ -134,6 +133,10 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			}
 			console.error("Can't process:" + date);
 		}
+
+	$scope.functions.showFormula = function (id) {
+		setFormula(id);
+	};
 
 		$scope.functions.startCoreProcess = function (coreProcess) {
 			$http.get("/CoreProcess/Process/StartProcess/" + coreProcess.Id)
@@ -901,13 +904,25 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 					mid = event.source.itemScope.measurable.RecurrenceId;
 
 
+			//Adj order
+			var ordered = $scope.model.Scorecard.Measurables.slice().sort(function (a, b) { return a.Ordering - b.Ordering; })
+			var adjArr = [];
+			var adj = 0;
+			for (var i = 0; i < ordered.length; i++) {
+				var o = ordered[i];
+				adjArr.push(adj);
+				if (o.Id < 0 && !o.IsDivider)
+					adj += 1;
+			}
+
+
 				var dat = {
 					id: event.source.itemScope.measurable.Id,
 					recurrence: mid,
-					oldOrder: event.source.index,
-					newOrder: event.dest.index,
+				oldOrder: event.source.index - adjArr[event.source.index],
+				newOrder: event.dest.index - adjArr[event.dest.index],
 				}
-				event.source.itemScope.measurable.Ordering = event.dest.index;
+			//event.source.itemScope.measurable.Ordering = event.dest.index;
 				var url = Time.addTimestamp("/L10/OrderAngularMeasurable");
 
 				$http.post(url, dat).then(function () { }, showAngularError);
@@ -922,11 +937,10 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			//console.log(week.LocalDate);
 			//console.log(week.ForWeek);
 
-			var startOfWeek = selector.startOfWeek; // Monday			
-			//var dat = week.LocalDate;
-			debugger;
-			var forWeek = week.ForWeek;
-			//forWeek = forWeek.addDays(-7);
+		var forWeek = new Date(70, 0, 4);
+		forWeek.setDate(forWeek.getDate() + 7 * (week.ForWeekNumber - 1));
+		forWeek = new Date(+forWeek - 1);
+		//forWeek = week.ForWeek;
 			var dat = $scope.functions.startOfWeek(forWeek, selector.ScorecardWeekDay);
 
 			if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
@@ -937,16 +951,17 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		}
 
 		$scope.functions.topDate = function (week, selector) {
+		//debugger;
 			var dat = decideOnDate(week, selector);
-			var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
+		var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, false/* !(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
 			return $filter('date')(date, selector.DateFormat1);
 		};
 		$scope.functions.bottomDate = function (week, selector) {
 			// debugger;
 			var dat = decideOnDate(week, selector);
-			var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
+		var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6, false/*!(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
 			if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
-				date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
+			date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0, false/*!(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
 			}
 			return $filter('date')(date, selector.DateFormat2);
 		};

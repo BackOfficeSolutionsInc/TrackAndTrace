@@ -25,6 +25,11 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Any)]
+		public PartialViewResult GenerateTokenInstruction() {
+			return PartialView();
+		}
+
+		[Access(AccessLevel.Any)]
 		public ActionResult API() {
 
 			sections = new List<ApiSection>();

@@ -10,6 +10,7 @@ using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Areas.People.Accessors;
 using RadialReview.Areas.People.Models.Survey;
 using NHibernate;
+using RadialReview.Utilities.DataTypes;
 
 namespace TractionTools.Tests.Permissions {
 	[TestClass]
@@ -63,7 +64,7 @@ namespace TractionTools.Tests.Permissions {
 						var accIds = perms.GetIdsForResourceThatUserIsMemberOf(ResourceType.SurveyContainer, c.E1.Id);
 						Assert.AreEqual(0, accIds.Count());
 
-						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.E1), "sc", nodes, DateTime.UtcNow.AddDays(1), false);
+						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.E1), "sc", nodes, new DateRange(), DateTime.UtcNow.AddDays(1), false);
 
 						accIds = perms.GetIdsForResourceThatUserIsMemberOf(ResourceType.SurveyContainer, c.E1.Id);
 						Assert.AreEqual(1, accIds.Count());
@@ -118,7 +119,7 @@ namespace TractionTools.Tests.Permissions {
 						var accIds = perms.GetIdsForResourcesCreatedByUser(ResourceType.SurveyContainer, c.E1.Id);
 						Assert.AreEqual(0, accIds.Count());
 
-						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.E1), "sc", nodes, DateTime.UtcNow.AddDays(1), false);
+						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.E1), "sc", nodes, new DateRange(), DateTime.UtcNow.AddDays(1), false);
 
 						accIds = perms.GetIdsForResourcesCreatedByUser(ResourceType.SurveyContainer, c.E1.Id);
 						Assert.AreEqual(1, accIds.Count());
@@ -170,7 +171,7 @@ namespace TractionTools.Tests.Permissions {
 						var accIds = perms.GetIdsForResourceForOrganization(ResourceType.SurveyContainer, c.Org.Id);
 						Assert.AreEqual(0, accIds.Count());
 
-						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.E1), "sc", scNodes, DateTime.UtcNow.AddDays(1), false);
+						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.E1), "sc", scNodes, new DateRange(), DateTime.UtcNow.AddDays(1), false);
 
 						accIds = perms.GetIdsForResourceForOrganization(ResourceType.SurveyContainer, c.Org.Id);
 						Assert.AreEqual(1, accIds.Count());
@@ -281,7 +282,7 @@ namespace TractionTools.Tests.Permissions {
 						var accIds = perms.GetAllPermItemsForUser(ResourceType.SurveyContainer, c.E1.Id);
 						Assert.AreEqual(0, accIds.Count());
 
-						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.E1), "sc", nodes, DateTime.UtcNow.AddDays(1), false);
+						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.E1), "sc", nodes, new DateRange(), DateTime.UtcNow.AddDays(1), false);
 
 						accIds = perms.GetAllPermItemsForUser(ResourceType.SurveyContainer, c.E1.Id);
 						Assert.AreEqual(2, accIds.Count());

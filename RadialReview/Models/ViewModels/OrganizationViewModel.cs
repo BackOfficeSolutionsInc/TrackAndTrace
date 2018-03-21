@@ -15,6 +15,9 @@ namespace RadialReview.Models.ViewModels {
 		public Boolean ManagersCanEdit { get; set; }
 		public Boolean StrictHierarchy { get; set; }
 		public Boolean ManagersCanEditPositions { get; set; }
+		public bool AllowAddClient { get; set; }
+
+
 		public Boolean SendEmailImmediately { get; set; }
 		public Boolean ManagersCanCreateSurvey { get; set; }
 		public Boolean EmployeesCanCreateSurvey { get; set; }

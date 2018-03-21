@@ -399,6 +399,31 @@ body.resizing .notes-tile,
 				cursor: pointer;
 			}
 
+			.edit-formula {
+				float: right;
+				right: 14px;
+				position: relative;
+				background-color: white;
+				width: 16px;
+				height: 16px;
+				margin-top: 7px;
+				border-radius: 11px;
+				border: 1px solid lightgray;
+				margin-right: -16px;
+				outline: none;
+
+				&:after {
+					content: "f";
+					color: lightgray;
+					position: absolute;
+					margin-top: 1px;
+					font-size: 80%;
+					text-align: center;
+					/* color: white; */
+					padding-left: 5px;
+				}
+			}
+
 			.score input {
 				padding-left: 0px !important;
 				padding-right: 10px !important;
@@ -1273,15 +1298,21 @@ body.resizing .notes-tile,
 			margin-left: 6px;
 		}
 
+		.su-details {
+			padding-left: 14px;
+			border-bottom: 2px dashed #c7c7c7;
+			margin-bottom: 14px;
+		}
+
 		.su-row {
 			display: block;
 			transition: ease-in-out .2s color;
 
 			&:before {
-				content: ".";
+				/*content: ".";*/
 				color: #333;
 				/* font-size: 21px; */
-				left: -5px;
+				left: -8px;
 				position: relative;
 				top: -3px;
 				font-weight: bold;
@@ -1301,7 +1332,7 @@ body.resizing .notes-tile,
 		ul {
 			/*padding-left: 6px;
 			font-size: 9px;*/
-			font-size: 14px;
+			font-size: 13px;
 			color: #A9A9A9;
 			list-style: none;
 			transition: ease-in-out .2s color;
@@ -1322,11 +1353,11 @@ body.resizing .notes-tile,
 		}
 
 		blockquote {
-			padding: 5px 15px;
+			padding: 0px 10px;
 			margin-bottom: 20px;
 			border-left: 4px solid #D0D0D0;
 			font-size: 14px;
-			margin-top: 2px;
+			margin-top: 10px;
 		}
 	}
 
@@ -1673,6 +1704,7 @@ body.resizing .notes-tile,
 	}
 
 	.add-pages button,
+	.l10-pages button,
 	.add-tile button {
 		padding: 3px;
 		font-size: 11px;

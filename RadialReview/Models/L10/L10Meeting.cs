@@ -11,6 +11,7 @@ using RadialReview.Models.Interfaces;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.VideoConference;
+using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 
 namespace RadialReview.Models.L10 {
 	public class L10Meeting : ILongIdentifiable, IDeletable {
@@ -51,7 +52,7 @@ namespace RadialReview.Models.L10 {
 		public virtual Ratio TodoCompletion { get; set; }
 
 		public virtual bool Preview { get; set; }
-
+		public virtual Ratio AverageMeetingRating { get; set; }
 
 		public L10Meeting() {
 			_MeetingAttendees = new List<L10Meeting_Attendee>();
@@ -81,6 +82,7 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.Preview);
 
 				Component(x => x.TodoCompletion).ColumnPrefix("TodoCompletion_");
+				Component(x => x.AverageMeetingRating).ColumnPrefix("AvgRating_");
 
 				//HasMany(x => x.MeetingAttendees).KeyColumn("L10MeetingId").Not.LazyLoad().Cascade.None();
 				//HasMany(x => x.MeetingMeasurables).KeyColumn("L10MeetingId").Not.LazyLoad().Cascade.None();

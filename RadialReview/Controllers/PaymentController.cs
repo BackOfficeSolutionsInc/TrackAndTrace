@@ -70,13 +70,14 @@ namespace RadialReview.Controllers {
 				L10PricePerPerson = 10,
 				ReviewPricePerPerson = 2,
 				PlanCreated = DateTime.UtcNow,
+				SchedulePeriod = SchedulePeriodType.Monthly,
 				OrgId = id,
 				_Org = org
 			});
 		}
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult FreeUntil(long id, DateTime date) {
+		public JsonResult FreeUntil(long id, DateTime date) {
 
 			var plan = PaymentAccessor.GetPlan(GetUser(), id);
 			using (var s = HibernateSession.GetCurrentSession()) {

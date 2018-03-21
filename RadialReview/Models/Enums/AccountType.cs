@@ -15,7 +15,9 @@ namespace RadialReview.Models.Enums {
 		Demo = 0,
 		Other = 10,
 		SwanServices = 11,
+		FreeForever = 12,
 		Dormant = 20,
 		Cancelled = 30,
 	}
+
 }

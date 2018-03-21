@@ -1,0 +1,255 @@
+﻿@model List<RadialReview.Controllers.ClientSuccessController.CloseVM>
+@using RadialReview.Crosscutting.Flags
+
+
+<div id="table"></div>
+@using (Html.BeginStyles()) {
+	<style>
+		tr {
+			vertical-align: middle;
+		}
+
+		.date-column {
+			min-width: 122px;
+		}
+
+		.future-date {
+			/*color: darkgreen;
+			background-color: lightgreen;*/
+		}
+
+		.past-date {
+			color: darkblue;
+			background-color: lightblue;
+		}
+
+		.enough-meetings {
+			color: darkblue;
+			background-color: lightblue;
+			border-bottom: 1px solid white;
+			padding-top: 14px !important;
+		}
+
+		.w120 {
+			min-width: 120px;
+		}
+
+		.flag[data-enabled='true'] {
+			color: #333;
+		}
+
+		.flag {
+			padding-left: 4px;
+			padding-right: 4px;
+			color: lightgray;
+			cursor: pointer;
+			border-right: solid lightgray 1px;
+		}
+
+			.flag:last-of-type {
+				border-right: none;
+			}
+
+		.days {
+			padding: 4px 8px;
+			top: 7px;
+			position: relative;
+		}
+
+		.days-0,
+		.days-1 {
+			/*color: white;*/
+			color: darkgreen;
+		}
+
+		.days-7 {
+			color: green;
+			background-color: lightgoldenrodyellow;
+		}
+
+		.days-14 {
+			color: #ef7622;
+			background-color: #ffd68a;
+		}
+
+		.days-28 {
+			background-color: lightcoral;
+			color: white;
+		}
+	</style>
+	<link rel="~/Content/SnackbarAlerts.css" />
+
+}
+@using (Html.BeginScripts()) {
+	<script>
+		//return "green";
+		//}
+		//return "lightgreen";
+		//}
+		//return "#ef7622";
+		//}
+		//return "red";
+		//})??"darkred")">
+
+		var data = @Html.ArrayToString(Model);
+
+		DataTable({
+			container: "#table",
+			data: data,
+			//cellId:function(cell){
+			//	return cell.Item1;
+			//},
+			cells: [
+				{ name: "Id", contents: function (r) { return r.Id; } },
+				{ name: "Name", contents: function (r) { return "<a target='_blank' href='/Organization/Which/"+r.Id+"'>"+r.Name+"</a>"; }, classes: "fullWidth"  },
+				{ name: "LastLogin",classes:"w120",contents:
+					function(r){
+						var date = Time.parseJsonDate(r.LastLogin);
+						if (date==null)
+							return "never";
+						var daysAgo = (new Date() - date)/(24 * 60 *60 *1000);
+
+
+						var days = [0,1,7,14,28];
+						//var colors = "color:darkgreen","color:green","color:lightgreen","color:#ef7622",""];
+						var css = "days";
+						for(var i=0;i<days.length;i++){
+							if (daysAgo>days[i])
+								css="days days-"+days[i];
+						}
+						return "<span class='"+css+"'>"+getFormattedDate(date)+"</span>";
+					}
+				},
+				{ name: "Expiration", contents: function (r) {
+					//Html.EditorFor(x => x.PaymentPlan.FreeUntil, new { startDate = Html.Organization().ConvertFromUTC(DateTime.UtcNow) });
+					setTimeout(function(){
+						var evt = createDatepicker(".expire-"+r.Id,r.Expiration,"expire-"+r.Id,r.Id,{ startDate:new Date() });
+						$(evt).on("change",function(d){
+							$.ajax({
+								method:"get",
+								url:"/payment/FreeUntil/"+r.Id+"?date=" + $(this).val()
+							});
+						});
+					},1);
+					return "<span class='hidden'>"+r.Expiration+"</span><span class='expire-"+r.Id+"'></span>";
+					//return r.Expiration;
+				} , classes:"date-column"},
+				{name : "Status", contents:function(r){
+					var options =@Html.ArrayToString(Enum.GetValues(typeof(RadialReview.Models.Enums.AccountType)).Cast<RadialReview.Models.Enums.AccountType>().Select(x => new { value = (int)x, html = "<option value='" + x + "'>" + x.GetDisplayName() + "</option>" }).ToList());
+
+					var builder = $("<select>");
+					options.map(function(x){
+						var o = $(x.html);
+						if (r.AccountType == x.value)
+							o.attr("selected","true");
+
+
+						builder.append(o);
+					});
+
+					var obj = $(builder);
+					var oid = r.Id;
+					$(obj).on("change",function(){
+						changeAccountType(this,oid);
+					});
+					return obj;
+				}},
+				{ name: "Meetings", contents: function (r) { return r.MeetingCount; } ,classes:function(r){
+					var b ="alignCenter";
+					if (r.MeetingCount>=4)
+						b+=" enough-meetings";
+					return b;
+				}
+				},
+				{
+					name:"", contents: function(r){
+						@*@foreach (var item in Enum.GetValues(typeof(OrganizationFlagType))) {
+							var fi = (OrganizationFlagType)item;
+							@:var any = r.Flags.Any(x => x == "@fi");
+							@:<span class="userType userType-@fi.ToString() clickable" data-type="@fi.ToString()" data-orgid="" data-enabled="@any.ToJavascript()" onclick="setUserType(this)" title="@fi.ToString()"></span>
+						}*@
+						var options =@Html.ArrayToString(Enum.GetValues(typeof(OrganizationFlagType)).Cast<OrganizationFlagType>().Select(x => new { name = "" + x, value = (int)x } ).ToList());
+
+
+						var container = $("<div/>");
+						options.map(function(x){
+							var enabled = Enumerable.from(r.Flags).any(function(y){
+								return y.FlagType==x.value;
+							});
+							var o = $("<span class='flag' data-id='"+r.Id+"' data-type='"+x.value+"' data-enabled='"+enabled+"'>"+x.name+"</span>");
+							var orgId = r.Id;
+							$(o).on("click",function(){
+								setFlag(this,orgId);
+							});
+							container.append(o);
+						})
+						return container;
+					},
+					classes:"w120 alignCenter"
+				}
+					//{ name: "OriginalGoal", contents: function (r) { return r.Item3.OriginalGoal; } },
+					//{ name: "AlternateGoal", contents: function (r) { return r.Item3.AlternateOriginalGoal; } },
+					//{ name: "OriginalGoalDirection", contents: function (r) { return r.Item3.OriginalGoalDirection; } },
+					//{ name: "OwnerId", contents: function (r) { return r.Item3.AccountableUserId; } },
+					//{ name: "MeasurableId", contents: function (r) { return r.Item3.MeasurableId; } },
+					//{ name: "DeleteTime", contents: function (r) { return r.Item3.DeleteTime; } }
+			]
+		});
+
+
+		function setFlag(self,orgId){
+
+			var type = $(self).data("type");
+			var enabled =$(self).data("enabled");
+
+			$.ajax("/ClientSuccess/ToggleOrganizationFlag?type="+type+"&orgId="+orgId+"&enabled="+!enabled,{
+				success:function(data){
+					$(self).attr("data-enabled",data);
+					$(self).data("enabled",data);
+				}
+			});
+
+		}
+
+
+		function changeAccountType(self, id) {
+			function updateAccountType(){
+				$.ajax("/organization/setaccounttype/" + id + "?type=" + $(self).val());
+				//$(self).closest("td").removeClass(function (index, css) {
+				//	return (css.match(/\baccount-\S+/g) || []).join(' ');
+				//}).addClass("account-" + $(self).val());
+				//$(self).find("span").html(acType[$(self).val()]);
+			}
+
+
+			if ("Cancelled"==$(self).val()){
+
+				showModal({
+					title:"Are you sure you want to delete this organization?",
+					icon:"warning",
+					//fields:{type:"header",value:"This action will affect the organizations members"},
+					success:function(){
+
+						updateAccountType(); $(self).parent("td").html("Cancelled")
+					},
+					cancel:function(){
+						//$(self).val($(self).data("previous"));
+						//changeAccountType(self, id)
+					}
+				});
+			}else{
+				updateAccountType();
+			}
+		}
+
+
+		$("table").tablesorter({
+			// sortForce: [[0, 1]],
+			//sortList: [[1,1]],
+			sortStable: true,
+			//headers: {
+			//	5: { sorter: 'attr' },
+			//}
+		});
+	</script>
+}

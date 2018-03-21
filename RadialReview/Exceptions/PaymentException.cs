@@ -9,6 +9,7 @@ namespace RadialReview.Exceptions {
 		MissingToken = 1,
 		ResponseError = 2,
 		Fallthrough = 3,
+		Uncaptured = 4,
 
 	}
 	public class PaymentException : Exception {

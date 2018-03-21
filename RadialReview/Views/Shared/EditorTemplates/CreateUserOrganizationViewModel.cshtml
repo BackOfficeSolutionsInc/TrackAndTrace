@@ -77,12 +77,12 @@
 	}
 
 
-	if (true || ViewBag.HideEvalOnly == true) {
+	if (ViewBag.HideEvalOnly == true) {
 		@Html.HiddenFor(x => x.EvalOnly)
 	} else {
 		<div class="smallBreak"></div>
 		<div class="row">
-			<div class="col-xs-3"><label>Only Enable @RadialReview.Utilities.Config.ReviewName():</label></div>
+			<div class="col-xs-3"><label>People Tools Only:</label></div>
 			<div class="col-xs-9">@Html.CheckBoxFor(x => x.EvalOnly, new { style = "padding-bottom: 7px;", @class = "checkbox blend eval-box" })</div>
 		</div>
 	}

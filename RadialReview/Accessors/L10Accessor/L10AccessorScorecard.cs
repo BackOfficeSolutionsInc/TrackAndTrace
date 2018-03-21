@@ -206,7 +206,7 @@ namespace RadialReview.Accessors {
 						group.addMeasurable(first, second);
 					}
 					var scorecard = new AngularScorecard(recurrenceId);
-					scorecard.Measurables = new List<AngularMeasurable>() { AngularMeasurable.CreateDivider(divider._Ordering, divider.Id) };
+					scorecard.Measurables = new List<AngularMeasurable>() { AngularMeasurable.CreateDivider(divider) };
 					scorecard.Scores = new List<AngularScore>();
 
 					group.update(new AngularUpdate() { scorecard });
@@ -411,6 +411,10 @@ namespace RadialReview.Accessors {
 								var u1 = a.Measurable.AdminUser.GetName();
 								var v1 = a.Measurable.AdminUser.ImageUrl(true);
 							}
+
+							if (a.Measurable.HasFormula)
+								a._Editable = false;
+
 						}
 						if (a.AccountableUser != null) {
 							var j = a.AccountableUser.GetName();
@@ -520,7 +524,7 @@ namespace RadialReview.Accessors {
 				var updates = new AngularUpdate();
 				foreach (var x in recurMeasurables) {
 					if (x.IsDivider) {
-						updates.Add(AngularMeasurable.CreateDivider(x._Ordering, x.Id));
+						updates.Add(AngularMeasurable.CreateDivider(x));
 					} else {
 						updates.Add(new AngularMeasurable(x.Measurable) { Ordering = x._Ordering });
 					}
@@ -634,15 +638,15 @@ namespace RadialReview.Accessors {
 
 				group.reorderRecurrenceMeasurables(orderedL10Recurrene_Measurables);
 
-				var updates = new AngularUpdate();
-				foreach (var x in recurMeasurables) {
-					if (x.IsDivider) {
-						updates.Add(AngularMeasurable.CreateDivider(x._Ordering, x.Id));
-					} else {
-						updates.Add(new AngularMeasurable(x.Measurable) { Ordering = x._Ordering });
-					}
-				}
-				group.update(updates);
+                var updates = new AngularUpdate();
+                foreach (var x in recurMeasurables) {
+                    if (x.IsDivider) {
+						updates.Add(AngularMeasurable.CreateDivider(x));
+                    } else {
+                        updates.Add(new AngularMeasurable(x.Measurable) { Ordering = x._Ordering });
+                    }
+                }
+                group.update(updates);
 
 			});
 			//	}
@@ -737,7 +741,7 @@ namespace RadialReview.Accessors {
 		public static void _RecalculateCumulative_Unsafe(ISession s, RealTimeUtility rt, List<MeasurableModel> measurables, List<L10Recurrence> recurs, ScoreModel updatedScore = null, bool forceNoSkip = true) {
 			var cumulativeByMeasurable = new Dictionary<long, IEnumerable<object[]>>();
 			//Grab Cumulative Values
-			foreach (var mm in measurables.Where(x => x.ShowCumulative && x.Id > 0).Distinct(x => x.Id)) {
+			foreach (var mm in measurables.Where(x => x.ShowCumulative && x.Id > 0 && x.CumulativeRange.HasValue).Distinct(x => x.Id)) {
 				cumulativeByMeasurable[mm.Id] = s.QueryOver<ScoreModel>()
 				.Where(x => x.MeasurableId == mm.Id && x.DeleteTime == null && x.Measured != null && x.ForWeek > mm.CumulativeRange.Value.AddDays(-7))
 				.Select(x => x.ForWeek, x => x.Measured)

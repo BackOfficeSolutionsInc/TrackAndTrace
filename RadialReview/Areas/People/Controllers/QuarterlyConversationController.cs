@@ -21,6 +21,8 @@ using RadialReview.Utilities;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Properties;
+using RadialReview.Utilities.DataTypes;
+using System.Threading;
 
 namespace RadialReview.Areas.People.Controllers {
 	public class QuarterlyConversationController : BaseController {
@@ -35,6 +37,7 @@ namespace RadialReview.Areas.People.Controllers {
 		public class IssueViewModel {
 			public IEnumerable<SurveyUserNode> AvailableUsers { get; set; }
 			public DateTime DueDate { get; set; }
+			public DateTime QuarterStart { get; set; }
 			public bool Email { get; set; }
 			public bool EvalSelf { get; set; }
 			public string Name { get; set; }
@@ -43,6 +46,7 @@ namespace RadialReview.Areas.People.Controllers {
 			public IssueViewModel() {
 				Email = true;
 				EvalSelf = true;
+				QuarterStart = DateTime.UtcNow.AddDays(-90);
 			}
 		}
 		private IEnumerable<SurveyUserNode> Possible() {
@@ -51,7 +55,6 @@ namespace RadialReview.Areas.People.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Issue() {
-
 
 			var vm = new IssueViewModel() {
 				AvailableUsers = Possible(),
@@ -62,8 +65,10 @@ namespace RadialReview.Areas.People.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public async Task<ActionResult> Issue(FormCollection form) {
+		[AsyncTimeout(20 * 60000)]
+		public async Task<ActionResult> Issue(CancellationToken ct, FormCollection form) {
 			var name = form["Name"];
+			var qtrStart = (form["QuarterStart"] ?? "").ToDateTime("MM-dd-yyyy HH:mm:ss");
 			var dueDate = (form["DueDate"] ?? "").ToDateTime("MM-dd-yyyy HH:mm:ss");
 
 			if (string.IsNullOrWhiteSpace(name))
@@ -84,13 +89,17 @@ namespace RadialReview.Areas.People.Controllers {
 				//	byAbouts.AddRange(byAbouts.Select(x => new ByAboutSurveyUserNode(x.About, x.About, AboutType.Self)).ToList());
 				//}
 				//byAbouts = byAbouts.Distinct().ToList();
-				var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), name, filtered, dueDate, email);
-				return RedirectToAction("Questions", new { id = id });
+				var quarterRange = new DateRange(qtrStart, qtrStart.AddDays(90));
+
+
+				var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), name, filtered, quarterRange, dueDate, email);
+				return RedirectToAction("Questions",new { id = id });
 			}
 
 			return View(new IssueViewModel() {
 				AvailableUsers = Possible(),
 				DueDate = dueDate,
+				QuarterStart = qtrStart,
 				Name = form["Name"],
 				EvalSelf = (form["EvalSelf"] ?? "true").ToBooleanJS(),
 				Email = (form["Email"] ?? "true").ToBooleanJS(),
@@ -103,6 +112,39 @@ namespace RadialReview.Areas.People.Controllers {
 			return View(id);
 		}
 
+		public class SurveyRow {
+			public long SurveyContainerId { get; set; }
+			public string Name { get; set; }
+			public DateTime? CreateTime { get; set; }
+			public DateTime? DueDate { get; set; }
+			public String Creator { get; set; }
+			public long SunId { get; set; }
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Surveys(long id) {
+			var userId = id;
+			var user = _UserAccessor.GetUserOrganization(GetUser(), id, true, true);
+			ViewBag.AboutName = user.GetNameAndTitle();
+
+
+			var suns = SurveyAccessor.GetAllSurveyUserNodesForUser_IncludingDelete(GetUser(), userId);
+
+			//var userNodes = AccountabilityAccessor.GetNodesForUser(GetUser(), userId);
+			var containers = suns
+				.SelectMany(x =>
+					SurveyAccessor.GetSurveyContainersAbout(GetUser(), x, SurveyType.QuarterlyConversation).GroupBy(y => y.Id).Select(y => new SurveyRow {
+						CreateTime = y.First().CreateTime,
+						Creator = y.First().Creator.ToPrettyString(),
+						SunId = x.Id,
+						DueDate = y.First().DueDate,
+						Name = y.First().Name,
+						SurveyContainerId = y.Key,
+
+					})
+			   ).GroupBy(x => x.SurveyContainerId).Select(x => x.First()).ToList();
+			return View(containers);
+		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Print(long surveyContainerId, long sunId, bool print = true) {

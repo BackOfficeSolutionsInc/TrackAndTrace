@@ -54,7 +54,7 @@
 </div>
 
 <div class="panel panel-primary">
-	<div class="panel-heading">Export</div>
+	<div class="panel-heading">Data</div>
 	<div class="panel-body">
 		<a class="btn btn-default" href="/rocks/listing">All rocks</a>
 		<a class="btn btn-default" href="/scorecard/listing">All scorecards</a>
@@ -73,6 +73,14 @@
 			</ul>
 		</div>
 
+		<a class="btn btn-default pull-right" href="/data/dashboard">Account Statistics</a>
+	</div>
+</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">Archives</div>
+	<div class="panel-body">
+		<a class="btn btn-default" href="/archive/users">Deleted Users</a>
 	</div>
 </div>
 
@@ -184,6 +192,13 @@
 					</div>
 					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanEditPositions, new { @class = "checkbox" })
+					</div>
+				</div><div class="row">
+					<div class="col-xs-5  ttt">
+						<label class="control-label">Allow adding clients as users:</label>
+					</div>
+					<div class="col-xs-3">
+						@Html.CheckBoxFor(x => x.AllowAddClient, new { @class = "checkbox" })
 					</div>
 				</div>
 

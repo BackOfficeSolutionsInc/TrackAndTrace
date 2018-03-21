@@ -763,6 +763,7 @@ namespace RadialReview.Controllers {
 							filterContext.Controller.ViewBag.LimitFiveState = true;
 							filterContext.Controller.ViewBag.ShowAC = false;
 							filterContext.Controller.ViewBag.ShowCoreProcess = false;
+							filterContext.Controller.ViewBag.EvalOnly = false;
 
 
 
@@ -847,17 +848,18 @@ namespace RadialReview.Controllers {
 			filterContext.Controller.ViewBag.TaskCount = 0;
 
 			filterContext.Controller.ViewBag.UserName = name;
-			filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
+			filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10 && !oneUser.EvalOnly;
 			filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview && !oneUser.IsClient;
-			filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
+			filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager() && !oneUser.EvalOnly;
 			filterContext.Controller.ViewBag.ShowPeople = oneUser.Organization.Settings.EnablePeople;// && oneUser.IsManager();
-			filterContext.Controller.ViewBag.ShowCoreProcess = oneUser.Organization.Settings.EnableCoreProcess;// && oneUser.IsManager();
+			filterContext.Controller.ViewBag.ShowCoreProcess = oneUser.Organization.Settings.EnableCoreProcess && !oneUser.EvalOnly;// && oneUser.IsManager();
+			filterContext.Controller.ViewBag.EvalOnly = oneUser.EvalOnly;// && oneUser.IsManager();
 
 			filterContext.Controller.ViewBag.ShowAC = PermissionsAccessor.IsPermitted(s, oneUser, x => x.CanView(PermItem.ResourceType.AccountabilityHierarchy, oneUser.Organization.AccountabilityChartId)); // oneUser.Organization.acc && oneUser.IsManager();
 
 			var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
 			filterContext.Controller.ViewBag.LimitFiveState = oneUser.Organization.Settings.LimitFiveState;
-			filterContext.Controller.ViewBag.IsRadialAdmin = oneUser.IsRadialAdmin;
+			filterContext.Controller.ViewBag.IsRadialAdmin = oneUser.IsRadialAdmin || (filterContext.Controller.ViewBag.IsRadialAdmin ?? false);
 			filterContext.Controller.ViewBag.IsManager = isManager;
 			filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
 			filterContext.Controller.ViewBag.UserId = oneUser.Id;

@@ -1,0 +1,81 @@
+﻿
+@{
+	ViewBag.Title = "Dashboard";
+}
+
+@using (Html.BeginStyles()) {
+	@*<link href="~/Content/Scorecard/Scorecard.css" rel="stylesheet" />*@
+	<link href="~/Content/Chart/metric-graphics.css" rel="stylesheet" />
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,700" rel="stylesheet" type="text/css">
+}
+@using (Html.BeginScripts()) {
+	@*<script src="~/Scripts/d3/d3.v3.min.js"></script>*@
+	<script src="~/Scripts/d3/d3.v4.12.2.js"></script>
+	<script src="~/Scripts/Charts/metrics-graphics.js"></script>
+
+	<script>
+		$.ajax({
+			url: "/data/burndown/",
+			success: function (obj) {
+				//o.area = false;
+				//o.animate_on_load = true;
+				obj.RockCompletion.linked = true;
+				obj.Issues.linked = true;
+				obj.Todos.linked = true;
+				obj.Employees.linked = true;
+
+				$("#rockCompletion").appendGraph(obj.RockCompletion);
+				$("#issue").appendGraph(obj.Issues);
+				$("#todo").appendGraph(obj.Todos);
+				$("#employee").appendGraph(obj.Employees);
+			}
+		});
+
+	</script>
+}
+
+<div class="row">
+	<div class="col-md-6">
+		<div class="boxed">
+			<div id="rockCompletion" styl1e="height:200px;"></div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="boxed">
+			<div id="issue" styl1e="height:200px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-6">
+		<div class="boxed">
+			<div id="todo" styl1e="height:200px;"></div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="boxed">
+			<div id="employee" styl1e="height:200px;"></div>
+		</div>
+
+	</div>
+</div>
+
+<style>
+	.boxed {
+		background-color: white;
+		padding: 10px;
+		/*padding-right: 39px;*/
+		box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+		transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+	}
+
+		.boxed:hover {
+			box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+		}
+
+	.row {
+		padding-bottom: 30px;
+	}
+</style>

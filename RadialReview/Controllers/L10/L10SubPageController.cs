@@ -393,8 +393,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult MeetingStats(long recurrenceId) {
 			var model = L10Accessor.GetStats(GetUser(), recurrenceId);
-
-
+			model.RecurrenceId = recurrenceId;
 			#region For Demo
 			if (recurrenceId == 1) {
 				var latest = model.AllMeetings.Where(x => x.CompleteTime != null).OrderByDescending(x => x.CompleteTime.Value).FirstOrDefault();
@@ -423,6 +422,65 @@ namespace RadialReview.Controllers {
 
 			return PartialView("MeetingStats", model);
 		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult EditRanting(long recurrenceId) {
+			var model = L10Accessor.GetStats(GetUser(), recurrenceId);
+			var latest = model.AllMeetings.Where(x => x.CompleteTime != null).OrderByDescending(x => x.CompleteTime.Value).FirstOrDefault();
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true, true);
+			var model1 = new L10MeetingVM() {
+				Recurrence = recurrence,
+				Meeting = latest,
+
+			};
+
+			var attendes = L10Accessor.GetMeetingAttendesByMeetingId(GetUser(), recurrenceId, latest.Id);
+			model1.Meeting._MeetingAttendees = attendes;
+
+			//var model = L10Accessor.GetStats(GetUser(), recurrenceId);
+			return PartialView("EditRating", model1);
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> EditRanting(L10MeetingVM model, FormCollection form, string connectionId = null) {
+			ValidateValues(model, x => x.Recurrence.Id);
+			ValidateValues(model, x => x.Meeting.Id);
+			var ratingValues = new List<Tuple<long, decimal?>>();
+
+			if (ModelState.IsValid) {
+				var ratingKeys = form.AllKeys.Where(x => x.StartsWith("rating_"));
+				var ratingIds = ratingKeys.Where(x => form[x].TryParseDecimal() != null).Select(x => long.Parse(x.Replace("rating_", ""))).ToList();
+
+				ratingValues = ratingIds.Select(x => Tuple.Create(x, form["rating_" + x].TryParseDecimal())).ToList();
+				//allMembers./*Select(x => x.Id).*/EnsureContainsAll(ratingIds);
+
+				_OrganizationAccessor.EnsureAllAtOrganization(GetUser(), GetUser().Organization.Id, ratingIds);
+
+				//foreach (var r in ratingValues)
+				//{
+				//    if (r.Item2 < 1 || r.Item2 > 10)
+				//    {
+				//        ModelState.AddModelError("rating_" + r.Item1, "Value must be between 1 and 10.");
+				//    }
+				//}
+
+				//if (ratingValues.All(x => x.Item2 == null))
+				//{
+				//    foreach (var r in ratingValues)
+				//        ModelState.AddModelError("rating_" + r.Item1, "Ratings must be filled out.");
+				//}
+
+				if (ModelState.IsValid) {
+					await L10Accessor.UpdateRating(GetUser(), ratingValues, model.Meeting.Id, connectionId);
+					var model1 = L10Accessor.GetStats(GetUser(), model.Recurrence.Id);
+					return Json(new { data = model1.AverageRating, response = "success" }, JsonRequestBehavior.AllowGet);
+				}
+			}
+			return Json(new { response = "error" }, JsonRequestBehavior.AllowGet);
+		}
+
 		#endregion
 
 

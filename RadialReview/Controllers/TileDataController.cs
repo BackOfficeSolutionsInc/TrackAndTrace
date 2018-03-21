@@ -9,72 +9,82 @@ using System.Web.UI;
 using RadialReview.Accessors;
 using RadialReview.Models.Angular.Todos;
 using RadialReview.Utilities;
+using NHibernate;
+using RadialReview.Variables;
 
 namespace RadialReview.Controllers {
 	public class TileDataController : BaseController {
-		// GET: TileData
+        // GET: TileData
 
-		[Access(AccessLevel.Any)]
-		public PartialViewResult FAQTips() {
-			return PartialView("FAQTips");
-		}
+        [Access(AccessLevel.Any)]
+        public PartialViewResult FAQTips(){
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					ViewBag.KB = s.GetSettingOrDefault("KB_URL", "https://tractiontools.happyfox.com/kb/");
 
-
-
-		[Access(AccessLevel.Any)]
-		public PartialViewResult OrganizationValues() {
-			return PartialView("OrganizationValues");
-		}
-
-
-		[Access(AccessLevel.Any)]
-		public PartialViewResult L10Notes(long id) {
-			var note = L10Accessor.GetNote(GetUser(), id);
-			ViewBag.Title = note.Name;
-			var url = Config.NotesUrl() + "p/" + note.PadId + "?showControls=true&showChat=false";
-
-			return PartialView("L10Notes", url);
-		}
-
-		[Access(AccessLevel.Any)]
-		public PartialViewResult UserRoles() {
-			return PartialView("UserRoles");
-		}
-
-		[Access(AccessLevel.Any)]
-		public PartialViewResult UserNotes() {
-			var key = Config.NotesUrl("p/" + GetUser().Id + GetUser().User.Id);
-			return PartialView("UserNotes", key);
-		}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+            return PartialView("FAQTips");
+        }
 
 
-		[Access(AccessLevel.Any)]
-		public PartialViewResult UserNotifications() {
-			return PartialView("UserNotifications");
-		}
 
-		[Access(AccessLevel.Any)]
-		public PartialViewResult CoreProcesses() {
-			return PartialView("CoreProcesses");
-		}
-		[Access(AccessLevel.Any)]
-		public PartialViewResult Tasks() {
-			return PartialView("Tasks");
-		}
+        [Access(AccessLevel.Any)]
+        public PartialViewResult OrganizationValues(){
+            return PartialView("OrganizationValues");
+        }
 
-		[Access(AccessLevel.Any)]
-		public PartialViewResult UserTodo2() {
-			return PartialView("UserTodo", GetUser().Id);
-		}
 
-		[Access(AccessLevel.Any)]
-		public PartialViewResult Milestones() {
-			return PartialView("Milestones", GetUser().Id);
-		}
+        [Access(AccessLevel.Any)]
+        public PartialViewResult L10Notes(long id){
+            var note = L10Accessor.GetNote(GetUser(), id);
+            ViewBag.Title = note.Name;
+            var url = Config.NotesUrl() + "p/" + note.PadId + "?showControls=true&showChat=false";
 
-		[Access(AccessLevel.Any)]
-		public PartialViewResult UserScorecard2() {
-			ViewBag.NumberOfWeeks = TimingUtility.NumberOfWeeks(GetUser());
+            return PartialView("L10Notes", url);
+        }
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult UserRoles(){
+            return PartialView("UserRoles");
+        }
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult UserNotes(){
+            var key = Config.NotesUrl("p/"+GetUser().Id + GetUser().User.Id);
+            return PartialView("UserNotes",key);
+        }
+
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult UserNotifications() {
+            return PartialView("UserNotifications");
+        }
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult CoreProcesses() {
+            return PartialView("CoreProcesses");
+        }
+        [Access(AccessLevel.Any)]
+        public PartialViewResult Tasks() {
+            return PartialView("Tasks");
+        }
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult UserTodo2() {
+            return PartialView("UserTodo", GetUser().Id);
+        }
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult Milestones() {
+            return PartialView("Milestones", GetUser().Id);
+        }
+
+        [Access(AccessLevel.Any)]
+		public PartialViewResult UserScorecard2(){
+            ViewBag.NumberOfWeeks = TimingUtility.NumberOfWeeks(GetUser());
 
 			return PartialView("UserScorecard");
 		}

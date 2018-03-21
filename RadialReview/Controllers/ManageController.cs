@@ -17,8 +17,10 @@ using RadialReview.Utilities;
 
 namespace RadialReview.Controllers {
 	public class ManageController : BaseController {
+
 		private void UpdateViewbag() {
 			ViewBag.ManagingPayments = PermissionsAccessor.CanEdit(GetUser(), PermItem.ResourceType.UpdatePaymentForOrganization, GetUser().Organization.Id);
+			ViewBag.ShowAddClient = GetUser().Organization.Settings.AllowAddClient;
 		}
 
 
@@ -252,6 +254,8 @@ namespace RadialReview.Controllers {
 
 				LimitFiveState = user.Organization.Settings.LimitFiveState,
 
+				AllowAddClient = user.Organization.Settings.AllowAddClient,
+
 				DefaultSendTodoTime = user.Organization.Settings.DefaultSendTodoTime,
 				PossibleTodoTimes = TimingUtility.GetPossibleTimes(user.Organization.Settings.DefaultSendTodoTime),
 
@@ -298,7 +302,8 @@ namespace RadialReview.Controllers {
 				model.DateFormat,
 				model.NumberFormat,
 				model.LimitFiveState,
-				model.DefaultSendTodoTime);
+				model.DefaultSendTodoTime,
+				model.AllowAddClient);
 			ViewBag.Success = "Successfully Saved.";
 
 			//model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)

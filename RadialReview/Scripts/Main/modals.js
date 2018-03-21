@@ -141,7 +141,6 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 					$("." + custom + " .modal-content").append(titleDiv);
 					modalHeaderHeight += $(titleDiv).height();
 					modalHeaderHeight += $("#modalTitle").height();
-					//debugger;
 					titleDiv.remove();
 					document.styleSheets[0].insertRule("." + custom + ".modal-icon .modal-header{ height: " + modalHeaderHeight + "px !important;}", 0);
 				} catch (e) {
@@ -159,8 +158,8 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	$("#modal").addClass("loading");
 	$('#modal').modal('show');
 
-	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img", "select"];
-	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "file", "select"];
+	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img", "select", "readonly"];
+	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "file", "select", "readonly"];
 	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "div"];
 	var anyFields = ""
 
@@ -344,7 +343,12 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 						} else {
 							console.warn("radio field requires an 'options' array");
 						}
-					} else {
+					}
+					else if (type == "readonly") {
+						tag = "span";
+						input = "<div class='" + classes + "' style='padding-top:7px;'>" + value + "</div>";
+					}
+					else {
 						input = genInput(type, name, eid, placeholder, value, null, classes);
 					}
 

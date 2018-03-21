@@ -91,36 +91,7 @@
 			var d = new Date(+value);
 			return Time.toLocalTime(d);
 		}
-
 		return false;
-
-		//if (type == 'string' && dateRegex1.test(value)) {
-		//	var d = new Date(parseInt(value.substr(6)));
-		//	return Time.toLocalTime(d);
-		//	//return new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
-		//} else if (type == 'string' && dateRegex2.test(value)) {
-		//	var d = new Date(value);
-		//	return Time.toLocalTime(d);
-		//	//return  new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-		//} else if (type == 'string' && dateRegex3.test(value)) {
-		//	var d = new Date(value);
-		//	return Time.toLocalTime(d);
-		//	//return new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-		//} else if (type == "object") {
-		//	//It's local, We dont want to convert it.
-		//	if (value.local === true && typeof (value.date) === "string") {
-		//		if (dateRegex1.test(value)) {
-		//			var d = new Date(parseInt(value.substr(6)));
-		//			return d;
-		//		} else {
-		//		}
-		//	}
-		//}
-		//else if (value.getDate !== undefined) {
-		//	console.warn("timezone not applied");
-		//	return new Date(value.getTime());
-		//}
-
 	}
 
 	this.getWeekSinceEpoch = function (day) {
@@ -129,4 +100,8 @@
 		return Math.floor((span.getTime() / oneDay) / 7);
 	}
 
+	this.getDateSinceEpoch = function (week) {
+		var day = 24 * 60 * 60 * 1000 * 7 * week;
+		return new Date(day);
+	};
 }

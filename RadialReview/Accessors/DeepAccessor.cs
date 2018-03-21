@@ -264,14 +264,14 @@ namespace RadialReview.Accessors {
 
 				AccountabilityNode child = null;
 				var subordinateQueries = new List<IEnumerable<long>>();
-				
+
 
 				subordinateQueries.Add(
 					s.QueryOver<DeepAccountability>()
 						.Where(x => x.DeleteTime == null)
 						////////////////
 						//Added vvv
-						.WithSubquery.WhereProperty(x=>x.ParentId).In(allMyNodesQuery)
+						.WithSubquery.WhereProperty(x => x.ParentId).In(allMyNodesQuery)
 						//removed vvv
 						//.WhereRestrictionOn(x => x.ParentId).IsIn(allPermitted)
 						//////////////
@@ -286,7 +286,7 @@ namespace RadialReview.Accessors {
 						.Where(x => x.DeleteTime == null && x.ForUser.Id == userId && x.Permissions == type)
 						.Select(x => x.AsUser.Id);
 
-					subordinateQueries.Add(												
+					subordinateQueries.Add(
 						s.QueryOver<DeepAccountability>()
 							.Where(x => x.DeleteTime == null)
 							////////////////
@@ -348,12 +348,20 @@ namespace RadialReview.Accessors {
 				return users;
 			}
 #pragma warning restore CS0618 // Type or member is obsolete
-
-			public static bool ManagesUser(ISession s, PermissionsUtility perms, long managerId, long subordinateId) {
+			/// <summary>
+			/// 
+			/// </summary>
+			/// <param name="s"></param>
+			/// <param name="perms"></param>
+			/// <param name="managerId"></param>
+			/// <param name="subordinateId"></param>
+			/// <param name="allowDeletedSubordinateUser">for viewing user details page</param>
+			/// <returns></returns>
+			public static bool ManagesUser(ISession s, PermissionsUtility perms, long managerId, long subordinateId, bool allowDeletedSubordinateUser = false) {
 				perms.ViewUserOrganization(managerId, false).ViewUserOrganization(subordinateId, false);
 				var m = s.Get<UserOrganizationModel>(managerId);
 				var sub = s.Get<UserOrganizationModel>(subordinateId);
-				if (sub == null || sub.DeleteTime != null)
+				if (sub == null || (!allowDeletedSubordinateUser && sub.DeleteTime != null))
 					throw new PermissionsException("Subordinate user (" + subordinateId + ") does not exist.");
 				if (m == null || m.DeleteTime != null)
 					throw new PermissionsException("Manager user (" + managerId + ") does not exist.");
@@ -454,8 +462,8 @@ namespace RadialReview.Accessors {
 										.Where(d => d.ChildId == alias.Id)
 										.Select(d => d.Id))
 										.List().ToList();
-			
-			if (node != null && !subordinates.Any(x=>x.Id==nodeId)) {
+
+			if (node != null && !subordinates.Any(x => x.Id == nodeId)) {
 				subordinates.Add(node);
 			}
 

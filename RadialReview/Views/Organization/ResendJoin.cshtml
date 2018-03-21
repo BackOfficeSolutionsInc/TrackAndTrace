@@ -11,18 +11,26 @@
 	</div>
 </div>
 <div class="smallBreak"></div>
-<div class="row">
+<div class="row smallBreak2">
 	<div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
 	<div class="col-xs-9">@Html.TextBoxFor(x => x.Email, new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control" })</div>
 </div>
-<div class="smallBreak"></div>
-<div class="smallBreak"></div>
-@if (Model.LastSent != null) {
+<div class="row smallBreak2">
+	<div class="col-xs-3"><label>Resend Invite:</label></div>
+	<div class="col-xs-9">@Html.CheckBox("resendEmail",true,new { @class = "checkbox" })</div>
+</div>
+@if(Model.LastSent!=null)
+{ 
 	<div class="row">
-		<div class="col-xs-12">
-			<h4 style="color: #CC2424">Last sent : @Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", Html.Organization().ConvertFromUTC(Model.LastSent.Value)) @Html.Organization().ConvertFromUTC(Model.LastSent.Value).ToShortTimeString()</h4>
+	<div class="col-xs-6">
+			<h4 style="color: #CC2424">Last sent : @Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Html.Organization().ConvertFromUTC(Model.LastSent.Value)) @Html.Organization().ConvertFromUTC(Model.LastSent.Value).ToShortTimeString()</h4>
 		</div>
+	<div class="col-xs-6 alignRight">
+		<a href="javascript:void(0)" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoinEmailManual/" + Model.UserOrganizationId, null, onComplete: "afterResend")">
+			<h4 style="color:blue">Email not being sent? Try Alternate method.</h4>
+		</a>
 	</div>
+</div>
 }
 @if (ViewBag.IsRadialAdmin == true) {
 	<div style="color:white;font-size:4px;">https://traction.tools/Account/Register?returnUrl=%2FOrganization%2FJoin%2F@(Model.Guid)</div>

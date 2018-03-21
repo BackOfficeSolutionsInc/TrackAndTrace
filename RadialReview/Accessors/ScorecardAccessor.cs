@@ -28,6 +28,10 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.ViewModels;
 using System.Web.Mvc;
 using RadialReview.Utilities.NHibernate;
+using Dangl.Calculator;
+using static RadialReview.Utilities.GraphUtility;
+using static RadialReview.Utilities.FormulaUtility;
+using NHibernate.Criterion;
 
 namespace RadialReview.Accessors {
 
@@ -155,20 +159,32 @@ namespace RadialReview.Accessors {
 		public static async Task<List<ScoreModel>> _GenerateScoreModels_AddMissingScores_Unsafe(ISession s, IEnumerable<DateTime> weeks, List<long> measurableIds, List<ScoreModel> existing) {
 			//var measurableLU = measurables.ToDefaultDictionary(x => x.Id, x => x, x => null);
 			//var measurableIds = measurables.Select(x => x.Id).ToList();
-
-			var measurableToGet = new List<long>();
-			var toAdd_WeekMeasurable = new List<Tuple<DateTime, long>>();
+			var weekMeasurables = new List<Tuple<DateTime, long>>();
 			foreach (var week in weeks) {
 				foreach (var mid in measurableIds) {
-					if (!existing.Any(x => x.ForWeek == week && x.MeasurableId == mid)) {
-						measurableToGet.Add(mid);
-						toAdd_WeekMeasurable.Add(Tuple.Create(week, mid));
-					}
+					weekMeasurables.Add(Tuple.Create(week, mid));
+				}
+			}
+			List<ScoreModel> added = await _GenerateScoreModels_AddMissingScores_Unsafe(s, weekMeasurables, existing);
+			return added;
+		}
+
+		private static async Task<List<ScoreModel>> _GenerateScoreModels_AddMissingScores_Unsafe(ISession s, IEnumerable<Tuple<DateTime, long>> weekMeasurables, List<ScoreModel> existing) {
+			var measurableToGet = new List<long>();
+			var toAdd_WeekMeasurable = new List<Tuple<DateTime, long>>();
+			foreach (var wm in weekMeasurables) {
+				var week = wm.Item1;
+				var mid = wm.Item2;
+				if (!existing.Any(x => x.ForWeek == week && x.MeasurableId == mid)) {
+					measurableToGet.Add(mid);
+					toAdd_WeekMeasurable.Add(Tuple.Create(week, mid));
 				}
 			}
 
+
 			var added = new List<ScoreModel>();
 			if (measurableToGet.Any()) {
+				var calc = new List<ScoreModel>();
 				var measurables = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(measurableToGet.Distinct().ToList()).List().ToDefaultDictionary(x => x.Id, x => x, x => null);
 				foreach (var d in toAdd_WeekMeasurable) {
 					var m = measurables[d.Item2];
@@ -186,13 +202,19 @@ namespace RadialReview.Accessors {
 							AlternateOriginalGoal = m.AlternateGoal,
 							AccountableUser = s.Load<UserOrganizationModel>(m.AccountableUserId)
 						};
+
+						if (m.HasFormula) {
+							calc.Add(curr);
+						}
+
+
 						s.Save(curr);
 						added.Add(curr);
 					}
 				}
+				await UpdateTheseCalculatedScores_Unsafe(s, calc);
 			}
 			return added;
-
 		}
 
 		[Obsolete("Commit afterwards")]
@@ -468,7 +490,10 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var measureable = s.Get<MeasurableModel>(measurableId);
-					PermissionsUtility.Create(s, caller).ViewOrganizationScorecard(measureable.OrganizationId);
+					PermissionsUtility.Create(s, caller).Or(
+						x => x.ViewMeasurable(measurableId),
+						x => x.ViewOrganizationScorecard(measureable.OrganizationId)
+					);
 					return s.QueryOver<ScoreModel>().Where(x => x.MeasurableId == measurableId && x.DeleteTime == null).List().ToList();
 				}
 			}
@@ -497,15 +522,18 @@ namespace RadialReview.Accessors {
 		}
 
 		[Obsolete("Call commit")]
-		private static async Task<ScoreModel> GetScore(ISession s, PermissionsUtility perms, long measurableId, long weekId) {
-			perms.ViewMeasurable(measurableId);
+		private static async Task<ScoreModel> GetScore_Unsafe(ISession s, long measurableId, long weekId) {
 			var week = TimingUtility.GetDateSinceEpoch(weekId);
 			await _GenerateScoreModels_Unsafe(s, week.AsList(), measurableId.AsList());
 			var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.ForWeek == week && x.MeasurableId == measurableId).List().ToList();
 			var found = scores.OrderBy(x => x.Id).FirstOrDefault();
 			return found;
+		}
 
-
+		[Obsolete("Call commit")]
+		private static async Task<ScoreModel> GetScore(ISession s, PermissionsUtility perms, long measurableId, long weekId) {
+			perms.ViewMeasurable(measurableId);
+			return await GetScore_Unsafe(s, measurableId, weekId);
 		}
 
 		[Obsolete("Call commit")]
@@ -743,8 +771,6 @@ namespace RadialReview.Accessors {
 				//return score;
 			});
 			return score;
-			//	}
-			//}
 		}
 		//[Obsolete("Update for StrictlyAfter", true)]
 		[Untested("StrictlyAfter")]
@@ -773,23 +799,60 @@ namespace RadialReview.Accessors {
 		public static async Task<ScoreModel> UpdateScore(IOrderedSession s, PermissionsUtility perms, long scoreId, decimal? value) {
 			perms.EditScore(scoreId);
 			//SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(scoreId));
-			var updates = new IScoreHookUpdates();
-			var score = s.Get<ScoreModel>(scoreId);
-			if (score.Measured != value) {
-				if (value == null)
-					score.DateEntered = null;
-				else
-					score.DateEntered = DateTime.UtcNow;
-				score.Measured = value;
-				updates.ValueChanged = true;
+			return await UpdateScore_Unsafe(s, scoreId, value);
+		}
+
+		protected class ScoreUpdates {
+			public ScoreUpdates(ScoreModel score, decimal? value) {
+				Score = score;
+				Value = value;
 			}
 
-			updates.AbsoluteUpdateTime = HibernateSession.GetDbTime(s);
+			public ScoreModel Score { get; set; }
+			public decimal? Value { get; set; }
+			public bool Calculated { get; set; }
 
+		}
 
-			s.Update(score);
-			await HooksRegistry.Each<IScoreHook>((ses, x) => x.UpdateScore(ses, score, updates));
-			return score;
+		protected static async Task<ScoreModel> UpdateScore_Unsafe(ISession s, long scoreId, decimal? value, DateTime? absoluteUpdateTime = null) {
+			var updates = new List<ScoreUpdates> {
+				new ScoreUpdates(s.Get<ScoreModel>(scoreId),value)
+			};
+			return (await UpdateScore_Unsafe(s, updates, absoluteUpdateTime)).First();
+		}
+
+		protected static async Task<List<ScoreModel>> UpdateScore_Unsafe(ISession s, List<ScoreUpdates> scoreUpdates, DateTime? absoluteUpdateTime = null) {
+			var o = new List<ScoreModel>();
+			absoluteUpdateTime = absoluteUpdateTime ?? HibernateSession.GetDbTime(s);
+			var updateLater = new List<ScoreAndUpdates>();
+			foreach (var scoreUpdate in scoreUpdates) {
+				var score = scoreUpdate.Score;
+				var value = scoreUpdate.Value;
+				var updates = new IScoreHookUpdates();
+				//var score = s.Get<ScoreModel>(scoreId);
+				if (score.Measured != value) {
+					if (value == null)
+						score.DateEntered = null;
+					else
+						score.DateEntered = DateTime.UtcNow;
+					score.Measured = value;
+					updates.ValueChanged = true;
+				}
+
+				updates.AbsoluteUpdateTime = absoluteUpdateTime.Value;
+				s.Update(score);
+
+				updates.Calculated = scoreUpdate.Calculated;
+				updateLater.Add(new ScoreAndUpdates {
+					score = score,
+					updates = updates
+				});
+				o.Add(score);
+			}
+			if (updateLater.Any()) {
+				await HooksRegistry.Each<IScoreHook>((ses, x) => x.UpdateScores(ses, updateLater));
+			}
+			return o;
 		}
 
 		#endregion
@@ -851,7 +914,485 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		protected class FormulaVariable {
+			public long MeasurableId { get; set; }
+			public int Offset { get; set; }
+			public string Variable { get; set; }
+			//public DateRange Range { get; set; }
+		}
 
+		protected static List<FormulaVariable> GetVariables(FormulaUtility.ParsedFormula formula) {
+
+			return formula.GetVariables().Select(x => {
+				var split = x.Split('(');
+				var offset = 0;
+				var mid = long.Parse(split[0]);
+				if (split.Count() > 1) {
+					offset = int.Parse(split[1].SplitAndTrim(')', ',')[0]);
+				}
+				//var r = new DateRange(range.StartTime, range.EndTime);
+				//r.StartTime = TimingUtility.PeriodsFromNow(r.StartTime, offset, period);
+				//r.EndTime = TimingUtility.PeriodsFromNow(r.EndTime, offset, period);
+
+				//if (r.StartTime > DateTime.MinValue.AddDays(7))
+				//    r.StartTime = r.StartTime.AddDays(-7);
+
+				//if (r.EndTime < DateTime.MaxValue.AddDays(-7))
+				//    r.EndTime = r.EndTime.AddDays(7);
+
+
+				//fullRange.StartTime = Math2.Min(r.StartTime, fullRange.StartTime);
+				//fullRange.EndTime = Math2.Max(r.EndTime, fullRange.EndTime);
+
+				return new FormulaVariable { Variable = x, MeasurableId = mid, Offset = offset };
+			}).ToList();
+		}
+
+		public static async Task SetFormula(UserOrganizationModel caller, long measurableId, string formula) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+
+					await SetFormula(s, perms, measurableId, formula);
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static async Task SetFormula(ISession s, PermissionsUtility perms, long measurableId, string formula) {
+
+			perms.EditMeasurable(measurableId);
+			var parsed = FormulaUtility.Parse(formula);
+			var variables = GetVariables(parsed);
+
+			foreach (var v in variables) {
+				perms.ViewMeasurable(v.MeasurableId);
+			}
+
+
+			var measurable = s.Get<MeasurableModel>(measurableId);
+			var oldVariables = GetVariables(FormulaUtility.Parse(measurable.Formula ?? ""));
+
+			measurable.Formula = formula;
+			ConfirmNoCircularRefs(s, measurable);
+			s.Update(measurable);
+
+			//update all backreferences
+			var addRemove = SetUtility.AddRemove(oldVariables.Select(x => x.MeasurableId).Distinct(), variables.Select(x => x.MeasurableId).Distinct());
+			foreach (var v in addRemove.RemovedValues) {
+				var m = s.Get<MeasurableModel>(v);
+				var list = m.BackReferenceMeasurables.ToList();
+				list.RemoveAll(x => x == measurableId);
+				m.BackReferenceMeasurables = list.Distinct().ToArray();
+				s.Update(m);
+			}
+
+			foreach (var v in addRemove.AddedValues) {
+				var m = s.Get<MeasurableModel>(v);
+				var list = m.BackReferenceMeasurables.ToList();
+				list.Add(measurableId);
+				m.BackReferenceMeasurables = list.Distinct().ToArray();
+				s.Update(m);
+			}
+
+			await UpdateAllCalculatedScores_Unsafe(s, measurable);
+		}
+
+		protected static void _ConfirmNoCircularRefs(ISession s, MeasurableModel m, List<Node> existingNodes, List<long> visitedMeasurables) {
+
+			var backNodes = m.BackReferenceMeasurables
+									.Select(x => new Node() { ParentId = m.Id, Id = x })
+									.ToList();
+
+			//var alreadySeen = seen.Any(x => backNodes.Any(y => y.Id == x.Id && y.ParentId == x.ParentId));
+			//if (alreadySeen)
+			//    throw new Exception("A circular reference was found.");
+			//existingNodes.AddRange(backNodes);            
+
+			var forwardNodes = GetVariables(FormulaUtility.Parse(m.Formula))
+									.Select(x => new Node() { Id = m.Id, ParentId = x.MeasurableId })
+									.ToList();
+
+			//alreadySeen = seen.Any(x => backNodes.Any(y => y.Id == x.Id && y.ParentId == x.ParentId));
+			//if (alreadySeen)
+			//    throw new Exception("A circular reference was found.");
+			var potentialNewNodes = backNodes.ToList();
+			potentialNewNodes.AddRange(forwardNodes);
+
+			existingNodes.AddRange(potentialNewNodes);
+
+			var circular = GraphUtility.HasCircularDependency(existingNodes);
+			if (circular)
+				throw new PermissionsException("Formula Error: circular reference found.") {
+					NoErrorReport = true
+				};
+			visitedMeasurables.Add(m.Id);
+
+			var allNewMeasurableIds = potentialNewNodes
+				.SelectMany(x => new long?[] { x.Id, x.ParentId })
+				.Where(x => x != null)
+				.Select(x => x.Value)
+				.Where(x => !visitedMeasurables.Any(y => y == x))
+				.ToList();
+
+			var newMeasurables = s.QueryOver<MeasurableModel>().WhereRestrictionOn(x => x.Id).IsIn(allNewMeasurableIds).List().ToList();
+			foreach (var meas in newMeasurables) {
+				_ConfirmNoCircularRefs(s, meas, existingNodes, visitedMeasurables);
+			}
+
+		}
+
+		protected static void ConfirmNoCircularRefs(ISession s, MeasurableModel editedMeasurable) {
+			//var measurableIds = variables.Select(x => x.MeasurableId).Distinct().ToList();
+			//measurableIds.Add(measurableId);
+			//var measurables = s.QueryOver<MeasurableModel>().WhereRestrictionOn(x => x.Id).IsIn(measurableIds).List().ToList();
+			_ConfirmNoCircularRefs(s, editedMeasurable, new List<Node>(), new List<long>());
+		}
+
+		[Obsolete("Expensive")]
+		public static async Task UpdateAllCalculatedScores_Unsafe(ISession s, MeasurableModel measurable) {
+			var measurableId = measurable.Id;
+			var formula = measurable.Formula;
+			if (string.IsNullOrWhiteSpace(formula))
+				return;
+
+
+			//perms.ViewMeasurable(measurableId);
+			var parsed = FormulaUtility.Parse(formula);
+			//var variables = parsed.GetVariables();
+
+			//need to get all the relavent scores..
+			//var fullRange = DateRange.CopyFrom(range);
+			var measurables = GetVariables(parsed);
+
+
+
+			var uniqueMeasurableIds = measurables.Select(x => x.MeasurableId).Union(new[] { measurableId }).Distinct().ToList();
+
+			//foreach (var mid in uniqueMeasurableIds)
+			//    perms.ViewMeasurable(mid);
+
+			var scores = s.QueryOver<ScoreModel>()
+				.Where(x => x.DeleteTime == null)
+				.WhereRestrictionOn(x => x.MeasurableId).IsIn(uniqueMeasurableIds)
+				.List().ToList();
+
+			var scoreLookup = scores.GroupBy(x => x.MeasurableId).ToDictionary(
+								x => x.Key,
+								x => x.ToDefaultDictionary(
+										y => TimingUtility.GetWeekSinceEpoch(y.ForWeek),
+										y => (double?)y.Measured,
+										y => null
+								   )
+							 );
+
+			var measurableLookup = measurables.Distinct(x => x.Variable).ToDictionary(x => x.Variable, x => x);
+
+			var i = DateTime.UtcNow;
+			var end = DateTime.UtcNow;
+
+			if (scores.Any()) {
+				i = scores.Min(x => x.ForWeek);
+				end = scores.Max(x => x.ForWeek);
+			}
+
+			//var minOffset = 0;
+			//var maxOffset = 0;
+
+			//if (measurables.Any()) {
+			//    minOffset = measurables.Min(x => x.Offset);
+			//    maxOffset = measurables.Max(x => x.Offset);
+			//}
+
+			//i = Math2.Min(i, TimingUtility.PeriodsFromNow(i, minOffset, ScorecardPeriod.Weekly));
+			//end = Math2.Max(i, TimingUtility.PeriodsFromNow(end, maxOffset, ScorecardPeriod.Weekly));
+
+			i = TimingUtility.ToScorecardDate(i);
+			end = TimingUtility.ToScorecardDate(end);
+
+			var allMeasurableScores = scores.Where(x => x.MeasurableId == measurableId).ToList();
+			var gen = await _GenerateScoreModels_AddMissingScores_Unsafe(s, new DateRange(i, end), measurableId.AsList(), allMeasurableScores);
+			allMeasurableScores.AddRange(gen);
+
+			var allMeasurableScoresLookup = allMeasurableScores.ToDictionary(x => x.ForWeek, x => x);
+
+			var updates = new List<ScoreUpdates>();
+			while (i <= end) {
+				var update = GenerateUpdateForCalculatedScore_Unsafe(parsed, scoreLookup, measurableLookup, TimingUtility.GetWeekSinceEpoch(i), allMeasurableScoresLookup[i]);
+				updates.Add(update);
+				i = TimingUtility.ToScorecardDate(TimingUtility.PeriodsFromNow(i, 1, ScorecardPeriod.Weekly));
+			}
+
+			await UpdateScore_Unsafe(s, updates);
+		}
+		/// <summary>
+		/// Perform one-off recalculation
+		/// </summary>
+		/// <param name="parsed">the parsed formula</param>
+		/// <param name="scoreLookup">lookup containing all score needed to evaluate this cell. [measurableId][weekId] </param>
+		/// <param name="variableLookup">lookup containing parsed variable information. [variableStr] </param>
+		/// <param name="weekId">current week</param>
+		/// <param name="scoreToUpdate">the score to update with calculated value</param>
+		/// <returns></returns>
+		private static ScoreUpdates GenerateUpdateForCalculatedScore_Unsafe(FormulaUtility.ParsedFormula parsed, Dictionary<long, DefaultDictionary<long, double?>> scoreLookup, Dictionary<string, FormulaVariable> variableLookup, long weekId, ScoreModel scoreToUpdate) {
+			try {
+				var value = parsed.Evaluate(variable => {
+					var item = variableLookup[variable];
+					return scoreLookup[item.MeasurableId][weekId + item.Offset];
+				});
+				if (value.HasValue && double.IsNaN(value.Value))
+					value = null;
+
+				return new ScoreUpdates(scoreToUpdate, (decimal?)value) {
+					Calculated = true
+				};
+			} catch (InvalidOperationException e) {
+				throw new PermissionsException("Formula Error: " + e.Message, true) {
+					NoErrorReport = true,
+				};
+			}
+		}
+
+		public static async Task UpdateTheseCalculatedScores_Unsafe(ISession s, List<ScoreModel> scores) {
+
+			var measurableToUpdate = scores.Distinct(x => x.MeasurableId).Select(x => x.Measurable).ToList();
+			var measurableLookup = measurableToUpdate.ToDictionary(x => x.Id, x => x);
+			var variablesLookup = new DefaultDictionary<long, ParsedFormula>(x => FormulaUtility.Parse(measurableLookup[x].Formula));
+
+			var dataNeeded = scores.SelectMany(c => {
+				return GetVariables(variablesLookup[c.MeasurableId])
+							.Select(x => new {
+								measurableId = x.MeasurableId,
+								weekId = TimingUtility.GetWeekSinceEpoch(c.ForWeek) + x.Offset
+							});
+			}).Distinct().ToList();
+
+
+			//Get queries for data needed for calculations
+			IEnumerable<ScoreModel> actualScoreDataQ;
+			{
+				var criteria = s.CreateCriteria<ScoreModel>();
+				var ors = Restrictions.Disjunction();
+				foreach (var cell in dataNeeded) {
+					var ands = Restrictions.Conjunction();
+					ands.Add(Restrictions.Eq(Projections.Property<ScoreModel>(x => x.ForWeek), TimingUtility.GetDateSinceEpoch(cell.weekId)));
+					ands.Add(Restrictions.Eq(Projections.Property<ScoreModel>(x => x.MeasurableId), cell.measurableId));
+					ors.Add(ands);
+				}
+				criteria.Add(ors);
+				actualScoreDataQ = criteria.Future<ScoreModel>();
+				//.SetProjection(
+				//    Projections.Property<ScoreModel>(x => x.ForWeek),
+				//    Projections.Property<ScoreModel>(x => x.MeasurableId),
+				//    Projections.Property<ScoreModel>(x => x.Measured)
+				//)
+			}
+			var actualScores = actualScoreDataQ.ToList();
+
+
+
+			var genOnlyData = dataNeeded.Select(x => Tuple.Create(TimingUtility.GetDateSinceEpoch(x.weekId), x.measurableId)).Distinct().ToList();
+			var gen = await _GenerateScoreModels_AddMissingScores_Unsafe(s, genOnlyData, actualScores);
+			actualScores.AddRange(gen);
+
+			var actualData = actualScores.Select(x => new {
+				week = TimingUtility.GetWeekSinceEpoch(x.ForWeek),//(DateTime)x[0]),
+				measurableId = x.MeasurableId,//(long)x[1],
+				measured = x.Measured,//(decimal?)x[2]
+			}).ToList();
+
+			var scoreLookup = actualData.GroupBy(x => x.measurableId).ToDictionary(x => x.Key, x => x.ToDefaultDictionary(y => y.week, y => (double?)y.measured, y => null));
+
+			var dbUpdates = new List<ScoreUpdates>();
+
+			foreach (var u in scores) {
+				var parsed = variablesLookup[u.MeasurableId];
+				var variables = GetVariables(parsed).ToDictionary(x => x.Variable, x => x);
+				var theScore = u;//actualScores.SingleOrDefault(x => TimingUtility.GetWeekSinceEpoch(x.ForWeek) == u.weekId && x.MeasurableId == u.measurableId);
+				if (theScore != null) {
+					var dbUpdate = GenerateUpdateForCalculatedScore_Unsafe(parsed, scoreLookup, variables, TimingUtility.GetWeekSinceEpoch(u.ForWeek), theScore);
+					dbUpdates.Add(dbUpdate);
+				}
+			}
+			await UpdateScore_Unsafe(s, dbUpdates);
+		}
+
+		/// <summary>
+		/// When these scores are updated, also update their dependencies
+		/// </summary>
+		/// <param name="s"></param>
+		/// <param name="scores"></param>
+		/// <returns></returns>
+		public static async Task UpdateCalculatedScores_FromUpdatedScore_Unsafe(ISession s, List<ScoreModel> scores) {
+
+			if (!scores.Any())
+				return;
+
+			//Get all measurables that need updating.
+			var measurableToUpdate = s.QueryOver<MeasurableModel>()
+				.WhereRestrictionOn(x => x.Id).IsIn(scores.SelectMany(x => x.Measurable.BackReferenceMeasurables).Distinct().ToList())
+				.List().ToList();
+
+
+			var measurableLookup = measurableToUpdate.ToDictionary(x => x.Id, x => x);
+			var variablesLookup = new DefaultDictionary<long, ParsedFormula>(x => FormulaUtility.Parse(measurableLookup[x].Formula));
+
+			//Get all cells needing updates
+			var cellsToUpdate = scores.SelectMany(score => {
+				var curMeasurable = score.MeasurableId;
+				var curWeek = TimingUtility.GetWeekSinceEpoch(score.ForWeek);
+				return measurableToUpdate.Where(m => m.Formula != null).SelectMany(m => {
+					var variables = GetVariables(variablesLookup[m.Id]);
+					return variables.Where(x => x.MeasurableId == curMeasurable).Select(x => new {
+						measurableId = m.Id,
+						weekId = curWeek - x.Offset,
+					});
+				});
+			}).Distinct().ToList();
+
+			//Get all data needed to update cells
+			var dataNeeded = cellsToUpdate.SelectMany(c => {
+				return GetVariables(variablesLookup[c.measurableId]).Select(x => new { measurableId = x.MeasurableId, weekId = c.weekId + x.Offset });
+			}).Distinct().ToList();
+
+
+			//Get queries for cells to update
+			IEnumerable<ScoreModel> actualScoresToUpdateQ;
+			{
+				var criteria = s.CreateCriteria<ScoreModel>();
+				criteria.Add(Restrictions.Eq(Projections.Property<ScoreModel>(x => x.DeleteTime), null));
+				var ors = Restrictions.Disjunction();
+				foreach (var cell in cellsToUpdate) {
+					var ands = Restrictions.Conjunction();
+					ands.Add(Restrictions.Eq(Projections.Property<ScoreModel>(x => x.ForWeek), TimingUtility.GetDateSinceEpoch(cell.weekId)));
+					ands.Add(Restrictions.Eq(Projections.Property<ScoreModel>(x => x.MeasurableId), cell.measurableId));
+					ors.Add(ands);
+				}
+				criteria.Add(ors);
+				actualScoresToUpdateQ = criteria.Future<ScoreModel>();
+			}
+			//Get queries for data needed for calculations
+			IEnumerable<object[]> actualScoreDataQ;
+			{
+				var criteria = s.CreateCriteria<ScoreModel>();
+				criteria.Add(Restrictions.Eq(Projections.Property<ScoreModel>(x => x.DeleteTime), null));
+				var ors = Restrictions.Disjunction();
+				foreach (var cell in dataNeeded) {
+					var ands = Restrictions.Conjunction();
+					ands.Add(Restrictions.Eq(Projections.Property<ScoreModel>(x => x.ForWeek), TimingUtility.GetDateSinceEpoch(cell.weekId)));
+					ands.Add(Restrictions.Eq(Projections.Property<ScoreModel>(x => x.MeasurableId), cell.measurableId));
+					ors.Add(ands);
+				}
+				criteria.Add(ors);
+				actualScoreDataQ = criteria.SetProjection(
+											Projections.Property<ScoreModel>(x => x.ForWeek),
+											Projections.Property<ScoreModel>(x => x.MeasurableId),
+											Projections.Property<ScoreModel>(x => x.Measured)
+										).Future<object[]>();
+			}
+
+			var actualScores = actualScoresToUpdateQ.ToList();
+
+			//Generate some missing datas...
+			var datesNeeded = dataNeeded.Select(x => TimingUtility.GetDateSinceEpoch(x.weekId)).ToList();
+			datesNeeded.AddRange(cellsToUpdate.Select(x => TimingUtility.GetDateSinceEpoch(x.weekId)));
+			var measurablesNeeded = dataNeeded.Select(x => x.measurableId).ToList();
+			measurablesNeeded.AddRange(cellsToUpdate.Select(x => x.measurableId));
+
+			var genOnlyData = cellsToUpdate.Select(x => Tuple.Create(TimingUtility.GetDateSinceEpoch(x.weekId), x.measurableId)).Distinct().ToList();
+			var gen = await _GenerateScoreModels_AddMissingScores_Unsafe(s, genOnlyData, actualScores);
+			actualScores.AddRange(gen);
+
+			var actualData = actualScoreDataQ.Select(x => new {
+				week = TimingUtility.GetWeekSinceEpoch((DateTime)x[0]),
+				measurableId = (long)x[1],
+				measured = (decimal?)x[2]
+			}).ToList();
+
+			var scoreLookup = actualData.GroupBy(x => x.measurableId).ToDictionary(x => x.Key, x => x.ToDefaultDictionary(y => y.week, y => (double?)y.measured, y => null));
+
+			var dbUpdates = new List<ScoreUpdates>();
+
+			foreach (var u in cellsToUpdate) {
+				var parsed = variablesLookup[u.measurableId];
+				var variables = GetVariables(parsed).Distinct(x => x.Variable).ToDictionary(x => x.Variable, x => x);
+				var theScore = actualScores.SingleOrDefault(x => TimingUtility.GetWeekSinceEpoch(x.ForWeek) == u.weekId && x.MeasurableId == u.measurableId);
+
+				if (theScore != null) {
+					var dbUpdate = GenerateUpdateForCalculatedScore_Unsafe(parsed, scoreLookup, variables, u.weekId, theScore);
+					dbUpdates.Add(dbUpdate);
+				} else {
+					var a = 0;
+				}
+			}
+
+			await UpdateScore_Unsafe(s, dbUpdates);
+
+			//Get all variables needed for updates.
+			//var toUpdate = measurableToUpdate.Where(m=> m.Formula !=null).SelectMany(m => {
+			//    var parsed = FormulaUtility.Parse(m.Formula);
+			//    return GetVariables(parsed).Select(v=>new { parsed, toUpdateweek = curWeek - v.Offset, measurableId = m.Id, variable=v});                
+			//});
+
+			////Generate queries
+			////Scores needed for updates
+
+
+			////Scores needed for calculations 
+			//var scoresMeasuredQ = toUpdate.Select(u => new {
+			//   measuredQ = s.QueryOver<ScoreModel>()
+			//                .Where(x => x.DeleteTime == null &&
+			//                            x.ForWeek == TimingUtility.GetDateSinceEpoch(u.week) && 
+			//                            x.MeasurableId == u.measurableId)
+			//                .Select(x => x.Measured)
+			//                .FutureValue<decimal?>(),
+			//   update = u
+			//});
+			////var scoresQ = toUpdate.Select(u => new {
+			////    s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.ForWeek == TimingUtility.GetDateSinceEpoch(u.week)
+			////    });
+
+			////[MeasurableId][weekId]
+			//var scoreLookup_mid_week = scoresMeasuredQ.GroupBy(x=>x.update.measurableId).ToDictionary(x=>x.Key,x=>x.ToDictionary(y=>y.update.week,y=>y.measuredQ.Value));
+			//var variableLookup = toUpdate.ToDictionary(x => x.variable.Variable, x => x);
+
+
+
+
+		}
+
+
+		//public async Task<List<ScoreModel>> EvaluateCalculatedRow(UserOrganizationModel caller, long measurableId) {
+
+		//    using (var s = HibernateSession.GetCurrentSession()) {
+		//        using (var tx = s.BeginTransaction()) {
+		//            var perms = PermissionsUtility.Create(s, caller);
+		//            perms.ViewMeasurable(measurableId);
+		//            var measurable = s.Get<MeasurableModel>(measurableId);
+
+		//            range = range ?? DateRange.Full();
+		//            if (range.StartTime > DateTime.MinValue.AddDays(7))
+		//                range.StartTime = range.StartTime.AddDays(-7);
+
+		//            if (range.EndTime < DateTime.MaxValue.AddDays(-7))
+		//                range.EndTime = range.EndTime.AddDays(7);
+
+		//            if (measurable.Formula == null) {
+		//                return s.QueryOver<ScoreModel>()
+		//                    .Where(x => x.MeasurableId == measurableId && x.DeleteTime == null)
+		//                    .Where(range.Filter<ScoreModel>(x => x.ForWeek))
+		//                    .List().ToList();
+		//            } else {
+		//                adf 
+		//            }
+		//        }
+		//    }
+		//    var formula = "5+5";
+		//    var calculation = Calculator.Calculate(formula);
+		//    return null;
+		//}
 
 
 		#region Removed

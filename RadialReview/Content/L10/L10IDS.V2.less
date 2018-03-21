@@ -222,6 +222,9 @@
 			}
 		}
 
+
+
+
 		&:not([data-checked="true"]):not([data-checked="True"]):before {
 			content: "MOVED";
 			position: absolute;
@@ -251,6 +254,10 @@
 		}
 
 		.issuesModal {
+			pointer-events: none !important;
+		}
+
+		.issuesModal_move {
 			pointer-events: none !important;
 		}
 	}

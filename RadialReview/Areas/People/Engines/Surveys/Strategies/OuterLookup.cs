@@ -1,23 +1,42 @@
 ﻿using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Utilities.DataTypes;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace RadialReview.Areas.People.Engines.Surveys.Impl {
 	public class OuterLookup : IOuterLookup {
+		protected DefaultDictionary<Type, DefaultDictionary<Type, List<IEnumerable>>> BackingUnresolved { get; set; }
 		protected DefaultDictionary<Type, DefaultDictionary<Type, ICollection<object>>> Backing { get; set; }
 
 		public OuterLookup() {
-			Backing = new DefaultDictionary<Type, DefaultDictionary<Type, ICollection<object>>>(x => new DefaultDictionary<Type, ICollection<object>>(y => new List<object>()));
+			BackingUnresolved = new DefaultDictionary<Type, DefaultDictionary<Type, List<IEnumerable>>>(x =>
+									new DefaultDictionary<Type, List<IEnumerable>>(y =>
+										new List<IEnumerable>()
+									)
+								);
+			Backing = new DefaultDictionary<Type, DefaultDictionary<Type, ICollection<object>>>(x =>
+									new DefaultDictionary<Type, ICollection<object>>(y =>
+										BackingUnresolved[x][y].ToList().SelectMany(z => z.Cast<object>()).ToList()
+									)
+								);
 		}
 
 		public void AddList<U>(Type classType, IEnumerable<U> objects) {
 			var Utype = typeof(U);
-			foreach (var o in objects.Cast<object>()) {
-				Backing[classType][Utype].Add(o);
+			if (Backing.ContainsKey(classType) && Backing[classType].ContainsKey(Utype)) {
+				foreach (var o in objects.Cast<object>()) {
+					Backing[classType][Utype].Add(o);
+				}
+			} else {
+				//Speedups for .Future()
+				BackingUnresolved[classType][Utype].Add(objects);
 			}
+			//foreach (var o in objects.Cast<object>()) {
+			//    BackingUnresolved[classType][Utype].Add(o);
+			//}
 		}
 
 		public IDictionary<Type, ICollection<object>> GetLookups(Type Ttype) {
@@ -38,6 +57,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl {
 			var found = Backing[classType][typeof(string)].LastOrDefault(x => ((KeyValuePair<string, object>)x).Key == key);
 			if (found is KeyValuePair<string, object>) {
 				var keyVal = (KeyValuePair<string, object>)found;
+				if (!(keyVal.Value is U))
+					throw new ArgumentException("Found item did not match type", nameof(U));
+
 				return keyVal.Value as U;
 			}
 			return null;

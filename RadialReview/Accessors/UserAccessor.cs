@@ -171,7 +171,7 @@ namespace RadialReview.Accessors {
 				throw new LoginException(redirectUrl);
 			return user.UserOrganizationCount;
 		}
-		
+
 		public List<UserOrganizationModel> GetPeers(UserOrganizationModel caller, long forId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -180,7 +180,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		
+
 		public static List<UserOrganizationModel> GetPeers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forId) {
 			perms.ViewUserOrganization(forId, false);
 			var forUser = s.Get<UserOrganizationModel>(forId);
@@ -212,14 +212,14 @@ namespace RadialReview.Accessors {
 							.Where(x => x.Id != forUserId)
 							.ToList();
 		}
-		
+
 		public static List<long> WasAliveAt(ISession s, List<long> userOrgIds, DateTime time) {
 			return s.QueryOver<UserOrganizationModel>()
 				.WhereRestrictionOn(x => x.Id).IsIn(userOrgIds)
 				.Where(x => (x.CreateTime <= time) && (x.DeleteTime == null || time <= x.DeleteTime))
 				.Select(x => x.Id).List<long>().ToList();
 		}
-		
+
 		public List<UserOrganizationModel> GetDirectSubordinates(UserOrganizationModel caller, long forId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -275,7 +275,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		
+
 		public bool UpdateTempUser(UserOrganizationModel caller, long userOrgId, String firstName, String lastName, String email, DateTime? lastSent = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -505,7 +505,7 @@ namespace RadialReview.Accessors {
 			}
 			return count;
 		}
-		
+
 		[Obsolete("This is old. Only used for testing.")]
 		public static void AddManager(ISession s, PermissionsUtility perms, long userId, long managerId, DateTime now, bool ignoreCircular = false) {
 
@@ -514,7 +514,7 @@ namespace RadialReview.Accessors {
 
 			AddMangerUnsafe(s, perms.GetCaller(), userId, managerId, now, ignoreCircular);
 		}
-		
+
 		[Obsolete("This is old. Only used for testing.")]
 		public void AddManager(UserOrganizationModel caller, long userId, long managerId, DateTime now) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -553,7 +553,7 @@ namespace RadialReview.Accessors {
 			//s.Update(new DeepSubordinateModel(){ManagerId=manager.Id}
 
 		}
-		
+
 		public void ChangeRole(UserModel caller, UserOrganizationModel callerUserOrg, long roleId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -988,7 +988,7 @@ namespace RadialReview.Accessors {
 			return resultx;
 		}
 
-		public static CreateUserOrganizationViewModel BuildCreateUserVM(UserOrganizationModel caller,dynamic ViewBag, long? managerId=null, string name=null, bool isClient=false, long? managerNodeId=null, bool forceManager=false, bool hideIsManager=false, bool hidePosition=false, long? nodeId=null, bool hideEvalOnly=false, bool forceNoSend=false) {
+		public static CreateUserOrganizationViewModel BuildCreateUserVM(UserOrganizationModel caller, dynamic ViewBag, long? managerId = null, string name = null, bool isClient = false, long? managerNodeId = null, bool forceManager = false, bool hideIsManager = false, bool hidePosition = false, long? nodeId = null, bool hideEvalOnly = false, bool forceNoSend = false) {
 			var sw = new Stopwatch();
 			sw.Start();
 			//var caller = GetUser().Hydrate().Organization().Execute();
@@ -1048,7 +1048,7 @@ namespace RadialReview.Accessors {
 				managerNodeId = node == null ? (long?)null : node.Id;
 			}
 
-			if (!caller.Organization.Settings.EnableReview) {
+			if (!caller.Organization.Settings.EnableReview && !caller.Organization.Settings.EnablePeople) {
 				hideEvalOnly = true;
 			}
 

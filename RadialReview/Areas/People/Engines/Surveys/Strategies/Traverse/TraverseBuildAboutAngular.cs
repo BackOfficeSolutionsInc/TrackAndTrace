@@ -48,12 +48,12 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 			var surveyIds = allForModels.Where(x => x.Is<SurveyUserNode>()).Select(x => x.ModelId).ToArray();
 
 			var users = Session.QueryOver<UserOrganizationModel>()
-				.Where(x => x.DeleteTime == null)
+				//.Where(x => x.DeleteTime == null)
 				.WhereRestrictionOn(x => x.Id).IsIn(userIds)
 				.Future();
 
 			var nodes = Session.QueryOver<AccountabilityNode>()
-				.Where(x => x.DeleteTime == null)
+				//.Where(x => x.DeleteTime == null)
 				.WhereRestrictionOn(x => x.Id).IsIn(nodeIds)
 				.Fetch(x => x.User).Eager
 				.Future();
@@ -88,7 +88,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 		}
 
 		private void AdjPrettyName(Dictionary<string, string> dict, AngularForModel forModel) {
-			var name = dict[forModel.ToKey()];
+			var name = dict.GetOrDefault(forModel.ToKey(), "[err]");
 			forModel.SetPrettyString(name);
 		}
 

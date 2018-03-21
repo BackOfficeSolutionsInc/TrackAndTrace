@@ -338,6 +338,9 @@ namespace RadialReview.Controllers {
 			people.Add(GetUser());
 			people = people.Distinct(x => x.Id).ToList();
 
+			//get Notes
+			s._Notes = await PadAccessor.GetText(s.HeadlinePadId);
+
 			var model = new HeadlineTodoVm(recur.GetDefaultTodoOwner(GetUser()), GetUser()) {
 				ByUserId = GetUser().Id,
 				Message = await s.NotNull(async x => await x.GetTodoMessage()),

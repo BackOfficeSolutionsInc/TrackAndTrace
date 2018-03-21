@@ -113,6 +113,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 
 		IForModel By { get; }
 		IForModel About { get; }
+
+		bool FirstSeen(string key, string type = "");
+		bool FirstSeenByAbout();
 	}
 	public interface IResponseInitializerCtx : IInitializerData {
 		IInnerLookup Lookup { get; }

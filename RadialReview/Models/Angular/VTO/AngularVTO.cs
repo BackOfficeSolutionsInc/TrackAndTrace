@@ -30,6 +30,9 @@ namespace RadialReview.Models.Angular.VTO {
 		public DateTime? CreateTime { get; set; }
 		public long? CopiedFrom { get; set; }
 		public String Name { get; set; }
+
+		public string _TractionPageName { get; set; }
+
 		public bool IncludeVision { get; set; }
 
 		public AngularCoreFocus CoreFocus { get; set; }
@@ -78,6 +81,9 @@ namespace RadialReview.Models.Angular.VTO {
 			//L10Recurrence = vto.L10Recurrence,
 			//CreateTime = vto.CreateTime,
 			//CopiedFrom = vto.CopiedFrom,
+			_TractionPageName = Name ?? "";
+			Name = vto.Name;
+
 			TenYearTarget = vto.TenYearTarget;
 			//Name = vto.Name, //AngularVtoString.Create(vto.Name),
 			Values = AngularCompanyValue.Create(vto._Values);

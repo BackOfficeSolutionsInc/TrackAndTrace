@@ -243,7 +243,6 @@ namespace TractionTools.Tests.Accessors {
 			);
 
 			Assert.Inconclusive("Also test Eval Only");
-			Assert.Inconclusive("Also test Eval Only");
 
 		}
 	}

@@ -11,7 +11,7 @@ namespace RadialReview.Models.L10.VM {
 		public int IssuesSolved { get; set; }
 		public int TodoCompleted { get; set; }
 		public decimal TodoCompletionPercentage { get; set; }
-
+		public long RecurrenceId { get; set; }
 		public List<TodoModel> TodosCreated { get; set; }
 
 		public DateTime? StartTime { get; set; }

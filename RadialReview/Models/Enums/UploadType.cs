@@ -13,5 +13,6 @@ namespace RadialReview.Models.Enums {
 		Todos,
 		VTO,
 		Users,
+		AppImage
 	}
 }

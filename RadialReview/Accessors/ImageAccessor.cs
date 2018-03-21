@@ -35,6 +35,7 @@ namespace RadialReview.Accessors {
 			return session.Get<ImageModel>(guid).Url;
 		}
 		*/
+		public static Instructions HUGE_INSTRUCTIONS = new Instructions("width=2048;height=2048;format=png;mode=max");
 
 		public static Instructions BIG_INSTRUCTIONS = new Instructions("width=256;height=256;format=png;mode=max");
 		public static Instructions TINY_INSTRUCTIONS = new Instructions("width=32;height=32;format=png;mode=max");
@@ -80,11 +81,11 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public async Task<String> UploadImage(UserModel user, HttpServerUtilityBase server, HttpPostedFileBase file, UploadType uploadType) {
+		public async Task<String> UploadImage(UserModel user, string filename, Stream inputStream, UploadType type, bool huge = false) {
 			var img = new ImageModel() {
-				OriginalName = Path.GetFileName(file.FileName),
+				OriginalName = Path.GetFileName(filename),
 				UploadedBy = user,
-				UploadType = uploadType
+				UploadType = type
 			};
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -98,32 +99,50 @@ namespace RadialReview.Accessors {
 			var pathTiny = "32/" + guid + ".png";
 			var pathMed = "64/" + guid + ".png";
 			var pathLarge = "128/" + guid + ".png";
+			var pathHuge = "2048/" + guid + ".png";
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var sBig = new MemoryStream();
 					var sTiny = new MemoryStream();
 					var sMed = new MemoryStream();
-					var sLarge = new MemoryStream();
-					file.InputStream.Seek(0, SeekOrigin.Begin);
-					await file.InputStream.CopyToAsync(sBig);
-					file.InputStream.Seek(0, SeekOrigin.Begin);
-					await file.InputStream.CopyToAsync(sTiny);
-					file.InputStream.Seek(0, SeekOrigin.Begin);
-					await file.InputStream.CopyToAsync(sMed);
-					file.InputStream.Seek(0, SeekOrigin.Begin);
-					await file.InputStream.CopyToAsync(sLarge);
-					file.InputStream.Seek(0, SeekOrigin.Begin);
+					var sLarge=new MemoryStream();
+					var sHuge = new MemoryStream();
+					inputStream.Seek(0, SeekOrigin.Begin);
+					await inputStream.CopyToAsync(sBig);
+					inputStream.Seek(0, SeekOrigin.Begin);
+					await inputStream.CopyToAsync(sTiny);
+					inputStream.Seek(0, SeekOrigin.Begin);
+					await inputStream.CopyToAsync(sMed);
+					inputStream.Seek(0, SeekOrigin.Begin);
+					await inputStream.CopyToAsync(sLarge);
+					inputStream.Seek(0, SeekOrigin.Begin);
 
-					Upload(sBig, path, BIG_INSTRUCTIONS);
-					Upload(sTiny, pathTiny, TINY_INSTRUCTIONS);
-					Upload(sMed, pathMed, MED_INSTRUCTIONS);
-					Upload(sLarge, pathLarge, LARGE_INSTRUCTIONS);
+					if (huge) {
+						await inputStream.CopyToAsync(sHuge);
+						inputStream.Seek(0, SeekOrigin.Begin);
+					}
+
+
+
+					Upload(sBig,	path,		BIG_INSTRUCTIONS);
+					Upload(sTiny,	pathTiny,	TINY_INSTRUCTIONS);
+					Upload(sMed,	pathMed,	MED_INSTRUCTIONS);
+					Upload(sLarge,	pathLarge,	LARGE_INSTRUCTIONS);
+				
+					if (huge) {
+						Upload(sHuge, pathHuge, HUGE_INSTRUCTIONS);
+					}
 
 					img.Url = path;
+
+					if (huge) {
+						img.Url = pathHuge;
+					}
+
 					s.Update(img);
 
-					switch (uploadType) {
+					switch (type) {
 						case UploadType.ProfileImage: {
 								user = s.Get<UserModel>(user.Id);
 								var old = user.ImageGuid;
@@ -134,21 +153,30 @@ namespace RadialReview.Accessors {
 										u.UpdateCache(s);
 									}
 								}
+								var cache = new Cache();
+								cache.InvalidateForUser(user.Id, CacheKeys.USER);
+								cache.InvalidateForUser(user.Id, CacheKeys.USERORGANIZATION);
+
 							};
+							break;
+						case UploadType.AppImage:
 							break;
 						default:
 							throw new PermissionsException();
 					}
-					var cache = new Cache();
-					cache.InvalidateForUser(user.Id, CacheKeys.USER);
-					cache.InvalidateForUser(user.Id, CacheKeys.USERORGANIZATION);
 
 					tx.Commit();
 					s.Flush();
 				}
 			}
 
-			return ConstantStrings.AmazonS3Location + path;
+			return ConstantStrings.AmazonS3Location + img.Url;
+		}
+
+		public async Task<String> UploadImage(UserModel user, HttpServerUtilityBase server, HttpPostedFileBase file, UploadType uploadType) {
+			var filename = file.FileName;
+			var inputStream = file.InputStream;
+			return await UploadImage(user, filename, inputStream, uploadType);
 			/*
 			TransferUtility utility = new TransferUtility("AKIAJYCO3OR34HOFIQTQ", "HKotVY6T302RWUcHbDu+zyQlwBILKcp+99on8bs9",);
 			utility.Upload(file.InputStream, "Radial", path);	

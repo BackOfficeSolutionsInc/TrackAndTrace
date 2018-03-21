@@ -13,6 +13,7 @@ using RadialReview.Models.Json;
 using RadialReview.Accessors;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Enums;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Areas.People.Controllers {
 	public class SurveyController : BaseController {
@@ -50,7 +51,7 @@ namespace RadialReview.Areas.People.Controllers {
 					AboutType.Subordinate
 				));
 
-			var output = QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), "test" + (int)(DateTime.UtcNow.Ticks / 100000), byAbouts, DateTime.UtcNow.AddDays(1), false);
+			var output = QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), "test" + (int)(DateTime.UtcNow.Ticks / 100000), byAbouts, new DateRange(), DateTime.UtcNow.AddDays(1), false);
 
 			return Json(output, JsonRequestBehavior.AllowGet);
 		}
