@@ -15,8 +15,8 @@ var collapseAll = function () {
 
 function generateAccNodes() {
 	var data = angular.element("[ng-controller]").scope().model.data.Root;
-    var copy = {};
-    var nodeIds = [];
+	var copy = {};
+	var nodeIds = [];
 	function dive(parent, output) {
 		output.x = parent.x;
 		output.y = parent.y;
@@ -28,16 +28,16 @@ function generateAccNodes() {
 			output.isLeaf = parent._compact.isLeaf;
 		}
 
-        output.Roles = []
-        output.NodeId = []
-        if (parent.Id)
-            nodeIds.push(parent.Id);
+		output.Roles = []
+		output.NodeId = []
+		if (parent.Id)
+			nodeIds.push(parent.Id);
 		if (parent.User)
 			output.Name = parent.User.Name;
 		if (parent.Group && parent.Group.Position)
 			output.Position = parent.Group.Position.Name
 		else if (parent.Name)
-            output.Position = parent.Name;
+			output.Position = parent.Name;
 
 
 		if (parent.Group && parent.Group.RoleGroups) {
@@ -74,12 +74,12 @@ function generateAccNodes() {
 		}
 	}
 
-    dive(data, copy);
-    copy.NodeId = nodeIds;
+	dive(data, copy);
+	copy.NodeId = nodeIds;
 	return copy;
 }
 
-var genPdf = function (val,nodeId) {
+var genPdf = function (val, nodeId) {
 
 	function compactify(shouldCompact) {
 		angular.element($("[ng-controller]")).scope().$apply(function () {
@@ -99,49 +99,49 @@ var genPdf = function (val,nodeId) {
 	var selected = null;
 	var scope = angular.element($("[ng-controller]")).scope();
 	if (scope !== null && scope.search !== null && scope.search.selected !== null) {
-        selected = scope.search.selected.Id;
+		selected = scope.search.selected.Id;
 
-        if (!val) {
+		if (!val) {
 
-            fields.push({
-                text: " ", name: "which", type: "radio", options: [
+			fields.push({
+				text: " ", name: "which", type: "radio", options: [
                     { value: "full", text: "Full chart", checked: true },
                     { value: "visible", text: "Only visible" },
                     { value: "selected", text: "Selected" }
-                ]
-            });
-        }
-        else {
-            fields.push({
-                text: " ", name: "which", type: "radio", options: [
+				]
+			});
+		}
+		else {
+			fields.push({
+				text: " ", name: "which", type: "radio", options: [
                     { value: "full", text: "All Child", checked: true },
                     { value: "visible", text: "Only visible" },
                     { value: "selected", text: "Selected" }
-                ]
-            });
-        }
-    } else {
+				]
+			});
+		}
+	} else {
 
-        if (!val) {
-            fields.push({
-                text: " ", name: "which", type: "radio", options: [
+		if (!val) {
+			fields.push({
+				text: " ", name: "which", type: "radio", options: [
                     { value: "full", text: "Full chart", checked: true },
                     { value: "visible", text: "Only visible" }
-                ]
-            });
-        }
-        else {
-            fields.push({
-                text: " ", name: "which", type: "radio", options: [
+				]
+			});
+		}
+		else {
+			fields.push({
+				text: " ", name: "which", type: "radio", options: [
                     { value: "full", text: "All Children", checked: true },
                     { value: "visible", text: "Only visible" }
-                ]
-            });
-        }
+				]
+			});
+		}
 
 		fields.push({
 			type: "span",
-			classes:"gray",
+			classes: "gray",
 			text: "Use the search box to create a chart for one person."
 		})
 	}
@@ -151,7 +151,7 @@ var genPdf = function (val,nodeId) {
 		fields: fields,
 		success: function (d) {
 			var ajax = {
-                url: "/pdf/ac?fit=" + d.fit + "&pw=" + d.pw + "&ph=" + d.ph + "&compact=" + d.compact + "&department=" + d.department,
+				url: "/pdf/ac?fit=" + d.fit + "&pw=" + d.pw + "&ph=" + d.ph + "&compact=" + d.compact + "&department=" + d.department,
 				method: "POST",
 				dataType: 'native',
 				xhrFields: {
@@ -174,14 +174,14 @@ var genPdf = function (val,nodeId) {
 			}
 			if (d.which === "selected") {
 				ajax.url += "&selected=" + selected;
-            }
-          
-            if (nodeId > 0) {
-                ajax.url += "&selected=" + nodeId;
-            }
-            else {
-                ajax.url += "&userCheck=true";
-            }
+			}
+
+			if (nodeId > 0) {
+				ajax.url += "&selected=" + nodeId;
+			}
+			else {
+				ajax.url += "&userCheck=true";
+			}
 
 			$.ajax(ajax);
 		},
@@ -218,11 +218,11 @@ var genPdf = function (val,nodeId) {
 	var support = {},
         xhrId = 0,
         xhrSuccessStatus = {
-			// file protocol always yields status code 0, assume 200
-			0: 200,
-			// Support: IE9
-			// #1450: sometimes IE returns 1223 when it should be 204
-			1223: 204
+        	// file protocol always yields status code 0, assume 200
+        	0: 200,
+        	// Support: IE9
+        	// #1450: sometimes IE returns 1223 when it should be 204
+        	1223: 204
         },
         xhrCallbacks = {},
         xhrSupported = jQuery.ajaxSettings.xhr();

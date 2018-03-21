@@ -8,7 +8,7 @@ using System.Web;
 namespace RadialReview.Crosscutting.EventAnalyzers.Searchers {
 	public class SearchL10RecurrenceIds : BaseSearch<List<long>> {
 
-        public override List<long> PerformSearch(IEventSettings settings) {
+		public override List<long> PerformSearch(IEventSettings settings) {
 			return settings.Session.QueryOver<L10Recurrence>()
 				.Where(x => x.DeleteTime == null && x.OrganizationId == settings.OrganizationId)
 				.Select(x => x.Id)
@@ -16,7 +16,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Searchers {
 		}
 
 		protected override IEnumerable<string> UniqueKeys(IEventSettings settings) {
-			yield return ""+settings.OrganizationId;
-		}        
-    }
+			yield return "" + settings.OrganizationId;
+		}
+	}
 }

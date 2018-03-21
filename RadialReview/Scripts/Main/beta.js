@@ -19,6 +19,6 @@
 	if (window.location.href.search("localhost:") > 0) {
 		window.Config.ServerType = "developer";
 	}
-}catch(e){
+} catch (e) {
 	console.error(e);
 }

@@ -47,23 +47,23 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 		IDataSource DataSearch { get; }
 
 		T Lookup<T>(BaseSearch<T> search);
-        void SetLookup<T>(BaseSearch<T> searcher, IEventSettings settings, T obj);
+		void SetLookup<T>(BaseSearch<T> searcher, IEventSettings settings, T obj);
 
 
-    }
+	}
 	public interface IDataSource {
 		T Lookup<T>(BaseSearch<T> search);
 		void Set<T>(string key, T obj);
 	}
 	public abstract class BaseSearch<T> {
 		public abstract T PerformSearch(IEventSettings settings);
-        protected abstract IEnumerable<string> UniqueKeys(IEventSettings settings);
-        public virtual string GetKey(IEventSettings settings) {
-            var uniques = this.UniqueKeys(settings);
-            var type = this.GetType().FullName;
-            var end = string.Join("~", uniques);
-            return type + "~" + end;
-        }
+		protected abstract IEnumerable<string> UniqueKeys(IEventSettings settings);
+		public virtual string GetKey(IEventSettings settings) {
+			var uniques = this.UniqueKeys(settings);
+			var type = this.GetType().FullName;
+			var end = string.Join("~", uniques);
+			return type + "~" + end;
+		}
 	}
 
 	public interface IThreshold {
@@ -83,22 +83,22 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 
 	public static class EventHelper {
 
-        public class Bin<T> : IEnumerable<T> {
-            public DateTime Date { get; set; }
-            public List<T> Objects { get; set; }
-            public Bin(DateTime date,List<T> objects) {
-                Date = date;
-                Objects = objects ?? new List<T>();
-            }
+		public class Bin<T> : IEnumerable<T> {
+			public DateTime Date { get; set; }
+			public List<T> Objects { get; set; }
+			public Bin(DateTime date, List<T> objects) {
+				Date = date;
+				Objects = objects ?? new List<T>();
+			}
 
-            public IEnumerator<T> GetEnumerator() {
-                return Objects.GetEnumerator();
-            }
+			public IEnumerator<T> GetEnumerator() {
+				return Objects.GetEnumerator();
+			}
 
-            IEnumerator IEnumerable.GetEnumerator() {
-                return Objects.GetEnumerator();
-            }
-        }
+			IEnumerator IEnumerable.GetEnumerator() {
+				return Objects.GetEnumerator();
+			}
+		}
 
 		public static DateTime Add(this DateTime self, EventFrequency freq) {
 			return self.AddMinutes((int)freq);
@@ -107,88 +107,88 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 			return self.AddMinutes(-(int)freq);
 		}
 
-        public static List<IEvent> ToBinnedEvents<T>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector, Func<Bin<T>, IEvent> toEvent, bool allowNullItems = false) {
-            var bins = ToBins(binSize, items, dateSelector, allowNullItems);
-            return bins.Select(x => toEvent(x)).Where(x=> x!=null ).ToList();
-        }
+		public static List<IEvent> ToBinnedEvents<T>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector, Func<Bin<T>, IEvent> toEvent, bool allowNullItems = false) {
+			var bins = ToBins(binSize, items, dateSelector, allowNullItems);
+			return bins.Select(x => toEvent(x)).Where(x => x != null).ToList();
+		}
 
-        public static List<IEvent> ToBinnedEventsFromRatio<T>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector, Func<T, Ratio> ratioSelector, bool allowNullItems = false) {
-            return ToBinnedEvents(binSize, items, dateSelector,x=>{
-                var ratio = x.Aggregate(new Ratio(), (i, r) => {
-                    var binRatio = ratioSelector(r);
-                    if (binRatio != null) 
-                        i.Add(binRatio);
-                    return i;
-                 });
-                if (!ratio.IsValid())
-                    return null;
-                return (IEvent)new BaseEvent(ratio.GetValue(null), x.Date);
-            }, allowNullItems);
-        }
-        //public static List<IEvent> ToBinnedEventsAggregator<T, TAggreate>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector, TAggreate initialValue, Func<TAggreate,T, TAggreate> aggregator,Func<TAggreate,decimal?> aggregatorToMetric, bool allowNullItems = false) {          
-        //    return ToBinnedEvents(binSize, items, dateSelector, bin=> {
-        //        var agg = bin.Objects.Aggregate(initialValue, aggregator);
-        //        if ()
-        //        return new BaseEvent(aggregatorToMetric(agg),bin.Date);
-        //    }, allowNullItems);
-        //}
+		public static List<IEvent> ToBinnedEventsFromRatio<T>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector, Func<T, Ratio> ratioSelector, bool allowNullItems = false) {
+			return ToBinnedEvents(binSize, items, dateSelector, x => {
+				var ratio = x.Aggregate(new Ratio(), (i, r) => {
+					var binRatio = ratioSelector(r);
+					if (binRatio != null)
+						i.Add(binRatio);
+					return i;
+				});
+				if (!ratio.IsValid())
+					return null;
+				return (IEvent)new BaseEvent(ratio.GetValue(null), x.Date);
+			}, allowNullItems);
+		}
+		//public static List<IEvent> ToBinnedEventsAggregator<T, TAggreate>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector, TAggreate initialValue, Func<TAggreate,T, TAggreate> aggregator,Func<TAggreate,decimal?> aggregatorToMetric, bool allowNullItems = false) {          
+		//    return ToBinnedEvents(binSize, items, dateSelector, bin=> {
+		//        var agg = bin.Objects.Aggregate(initialValue, aggregator);
+		//        if ()
+		//        return new BaseEvent(aggregatorToMetric(agg),bin.Date);
+		//    }, allowNullItems);
+		//}
 
-        public static List<Bin<T>> ToBins<T>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector,bool allowNullItems = false) {
-            return ToBins(binSize, items, dateSelector, x => x, allowNullItems);
-        }
+		public static List<Bin<T>> ToBins<T>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector, bool allowNullItems = false) {
+			return ToBins(binSize, items, dateSelector, x => x, allowNullItems);
+		}
 
-        public static List<Bin<TPROP>> ToBins<T,TPROP>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector,Func<T,TPROP> propSelector,bool allowNullProp=false) {
+		public static List<Bin<TPROP>> ToBins<T, TPROP>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector, Func<T, TPROP> propSelector, bool allowNullProp = false) {
 
-            var orderedObj = items.Where(x => x != null && dateSelector(x)!=null).OrderBy(dateSelector).ToList();
-            var dates2 = orderedObj.Select(x=>dateSelector(x).Value).ToList();
-            if (!dates2.Any()) {
-                return new List<Bin<TPROP>>();
-            }
+			var orderedObj = items.Where(x => x != null && dateSelector(x) != null).OrderBy(dateSelector).ToList();
+			var dates2 = orderedObj.Select(x => dateSelector(x).Value).ToList();
+			if (!dates2.Any()) {
+				return new List<Bin<TPROP>>();
+			}
 
-            var min = dates2.Min();
-            var max = dates2.Max();
-            var i = min.StartOfPeriod(binSize);
-            var js = 0;
+			var min = dates2.Min();
+			var max = dates2.Max();
+			var i = min.StartOfPeriod(binSize);
+			var js = 0;
 
-            var result = new List<Bin<TPROP>>();
-            while (i <= max) {
-                var next = i.Add(binSize);
-                var count = 0;
-                var objs = new List<TPROP>();
-                for (var j = js; j < orderedObj.Count(); j++) {
-                    if (dates2[j] < next) {
-                        count += 1;
-                        var prop = propSelector(orderedObj[j]);
-                        if (prop != null || allowNullProp) {
-                            objs.Add(prop);
-                        }
-                    } else {
-                        js = j;
-                        break;
-                    }
-                }
+			var result = new List<Bin<TPROP>>();
+			while (i <= max) {
+				var next = i.Add(binSize);
+				var count = 0;
+				var objs = new List<TPROP>();
+				for (var j = js; j < orderedObj.Count(); j++) {
+					if (dates2[j] < next) {
+						count += 1;
+						var prop = propSelector(orderedObj[j]);
+						if (prop != null || allowNullProp) {
+							objs.Add(prop);
+						}
+					} else {
+						js = j;
+						break;
+					}
+				}
 
-                //if (false) {
-                //    var same = dates.Count(x => i <= x && x < next);
-                //}
-                result.Add(new Bin<TPROP>(i,objs));
+				//if (false) {
+				//    var same = dates.Count(x => i <= x && x < next);
+				//}
+				result.Add(new Bin<TPROP>(i, objs));
 
-                i = next;
-            }
+				i = next;
+			}
 
-            return result;
-        }
+			return result;
+		}
 
 
 		public static List<IEvent> ToHistogram(EventFrequency binSize, IEnumerable<DateTime?> items) {
 			return ToHistogram(binSize, items, x => x);
 		}
 
-        public static List<IEvent> ToHistogram<T>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector) {
-            return ToBinnedEvents(binSize, items, dateSelector, x => new BaseEvent(x.Objects.Count, x.Date));
-            ///return bins.Select().ToList();
-            
-            //var dates = items.Select(dateSelector).Where(x => x != null).Select(x => x.Value).OrderBy(x => x).ToList();
+		public static List<IEvent> ToHistogram<T>(EventFrequency binSize, IEnumerable<T> items, Func<T, DateTime?> dateSelector) {
+			return ToBinnedEvents(binSize, items, dateSelector, x => new BaseEvent(x.Objects.Count, x.Date));
+			///return bins.Select().ToList();
+
+			//var dates = items.Select(dateSelector).Where(x => x != null).Select(x => x.Value).OrderBy(x => x).ToList();
 			//if (!dates.Any()) {
 			//	return new List<IEvent>();
 			//}
@@ -271,7 +271,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 			return DataSearch.Lookup(search);
 		}
 
-		public void SetLookup<T>(BaseSearch<T> searcher,IEventSettings settings, T obj) {
+		public void SetLookup<T>(BaseSearch<T> searcher, IEventSettings settings, T obj) {
 			DataSearch.Set(searcher.GetKey(settings), obj);
 		}
 	}
@@ -291,14 +291,14 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 		/// <param name="consecutiveNegativesToTrigger"></param>
 		/// <param name="lastCheck"></param>
 		/// <returns></returns>
-		public static bool ShouldTrigger(IEnumerable<IEvent> evts, IThreshold threshold,int consecutivePositivesToReset,int consecutiveNegativesToTrigger, DateTime? lastCheck=null) {
+		public static bool ShouldTrigger(IEnumerable<IEvent> evts, IThreshold threshold, int consecutivePositivesToReset, int consecutiveNegativesToTrigger, DateTime? lastCheck = null) {
 			int positives = 0;
 			int negatives = 0;
 			bool trigger = false;
 			bool reset = false;
 
 			var events = evts.ToList();
-			 
+
 			var ordered = events.OrderBy(x => x.Time).ToList();
 			var first = ordered.FirstOrDefault();
 			if (first != null) {

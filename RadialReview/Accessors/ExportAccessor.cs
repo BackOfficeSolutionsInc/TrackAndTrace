@@ -21,29 +21,29 @@ namespace RadialReview.Accessors {
 			//var scores = L10Accessor.GetScoresForRecurrence(caller, recurrenceId);
 			var data = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(caller, recurrenceId);
 			switch (type.ToLower()) {
-			case "csv": {
-				return GenerateScorecardCsv("Measurable", data).ToCsv();
-				//var csv = new Csv();
-				//csv.SetTitle("Measurable");
-				//foreach (var s in scores.GroupBy(x => x.MeasurableId))
-				//{
-				//	var ss = s.First();
-				//	csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.NotNull(x=>x.GetName()));
-				//	csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.NotNull(x=>x.GetName()));
-				//	csv.Add(ss.Measurable.Title, "Goal", "" + ss.Measurable.Goal.NotNull(x => ss.Measurable.UnitType.Format(x)));
-				//	csv.Add(ss.Measurable.Title, "GoalDirection", "" + ss.Measurable.GoalDirection);
-				//}
-				//foreach (var s in scores.OrderBy(x => x.ForWeek))
-				//{
-				//	csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(),s.Measured.NotNull(x => s.Measurable.UnitType.Format(x.Value)) ?? "");
-				//}
-				//var csvTxt = csv.ToCsv();
-				//return csvTxt;
-				//return new System.Text.UTF8Encoding().GetBytes(csvTxt);
-				//break;
-			}
-			default:
-			throw new Exception("Unrecognized Type");
+				case "csv": {
+						return GenerateScorecardCsv("Measurable", data).ToCsv();
+						//var csv = new Csv();
+						//csv.SetTitle("Measurable");
+						//foreach (var s in scores.GroupBy(x => x.MeasurableId))
+						//{
+						//	var ss = s.First();
+						//	csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.NotNull(x=>x.GetName()));
+						//	csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.NotNull(x=>x.GetName()));
+						//	csv.Add(ss.Measurable.Title, "Goal", "" + ss.Measurable.Goal.NotNull(x => ss.Measurable.UnitType.Format(x)));
+						//	csv.Add(ss.Measurable.Title, "GoalDirection", "" + ss.Measurable.GoalDirection);
+						//}
+						//foreach (var s in scores.OrderBy(x => x.ForWeek))
+						//{
+						//	csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(),s.Measured.NotNull(x => s.Measurable.UnitType.Format(x.Value)) ?? "");
+						//}
+						//var csvTxt = csv.ToCsv();
+						//return csvTxt;
+						//return new System.Text.UTF8Encoding().GetBytes(csvTxt);
+						//break;
+					}
+				default:
+					throw new Exception("Unrecognized Type");
 			}
 		}
 
@@ -234,7 +234,7 @@ namespace RadialReview.Accessors {
 				csv.Add("" + t.Id, "Completed", time);
 
 				csv.Add("" + t.Id, "Status", RockStateExtensions.GetCompletionVal(t.Completion));
-                csv.Add("" + t.Id, "ArchivedTime", "" + t.DeleteTime);
+				csv.Add("" + t.Id, "ArchivedTime", "" + t.DeleteTime);
 
 
 

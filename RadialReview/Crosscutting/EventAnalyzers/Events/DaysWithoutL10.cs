@@ -11,16 +11,16 @@ using RadialReview.Models.Enums;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 	public class DaysWithoutL10 : BaseLeadershipTeamL10EventAnalyzer {
-		
+
 		public override EventFrequency GetExecutionFrequency() {
 			return EventFrequency.Weekly;
 		}
-		
+
 
 		public override int GetNumberOfFailsToTrigger(IEventSettings settings) {
 			return 15; // Days
 		}
-		
+
 
 		public override int GetNumberOfPassesToReset(IEventSettings settings) {
 			return 1; //Days
@@ -33,10 +33,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 		public override IThreshold GetFireThreshold(IEventSettings settings) {
 			return new EventThreshold(LessGreater.LessThan, 1);
 		}
-		
-		public override List<IEvent> EventsForRecurrence(long recurrenceId, IEventSettings settings) {			
-			var l10Meetings = settings.Lookup(new SearchRealL10Meeting(recurrenceId));			
-			return EventHelper.ToHistogram(EventFrequency.Daily, l10Meetings, x => x.StartTime);			
+
+		public override List<IEvent> EventsForRecurrence(long recurrenceId, IEventSettings settings) {
+			var l10Meetings = settings.Lookup(new SearchRealL10Meeting(recurrenceId));
+			return EventHelper.ToHistogram(EventFrequency.Daily, l10Meetings, x => x.StartTime);
 		}
 	}
 }

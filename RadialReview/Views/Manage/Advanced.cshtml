@@ -1,87 +1,87 @@
 ﻿@using RadialReview.Models
 @model RadialReview.Models.ViewModels.OrganizationViewModel
 @{
-    ViewBag.Title = "Advanced";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Page = "Advanced";
-    var showExtra_freeusers = false;
+	ViewBag.Title = "Advanced";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Page = "Advanced";
+	var showExtra_freeusers = false;
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1>Manage</h1>
-    </div>
+	<div class="jumbotron">
+		<h1>Manage</h1>
+	</div>
 }
 
 @section header{
-    @Html.Partial("Partial/manageheader")
+	@Html.Partial("Partial/manageheader")
 }
 <br />
 
 @{
-    var l10Enabled = Html.Organization().Settings.EnableL10;
-    var reviewedEnabled = Html.Organization().Settings.EnableReview;
-    var surveyEnabled = Html.Organization().Settings.EnableSurvey;
-    var isImplementer = Html.Organization().AccountType == RadialReview.Models.Enums.AccountType.Implementer;
+	var l10Enabled = Html.Organization().Settings.EnableL10;
+	var reviewedEnabled = Html.Organization().Settings.EnableReview;
+	var surveyEnabled = Html.Organization().Settings.EnableSurvey;
+	var isImplementer = Html.Organization().AccountType == RadialReview.Models.Enums.AccountType.Implementer;
 }
 
 
 
 <div class="panel panel-primary traction-library">
-    <div class="panel-heading">Traction Library Books</div>
-    <div class="panel-body">
-        <div class="row">
-            <div class="col-sm-6 ">
-                <div class="thumbnail" style="border:none;">
-                    <img src="https://s3.amazonaws.com/Radial/base/Pictures/bookssmall.png" alt="The Traction Library">
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="well" style="">
-                    <h4>THE TRACTION<sup>®</sup> LIBRARY</h4>
-                    Need to more books for your team?<br />
-                    Want to introduce EOS to your local business community?<br />
-                    Looking for the perfect thank you gift?<br />
-                </div>
-                <div class="alignCenter">
-                    <a href="/Redirect/BuyBooks" class="btn btn-info btn-invert" style="color:white">Buy books here!</a>
-                </div>
-                <br />
-            </div>
-            @*<div class="disclaimer"><i>*Bulk discounts are available!</i></div>*@
-        </div>
-    </div>
+	<div class="panel-heading">Traction Library Books</div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-sm-6 ">
+				<div class="thumbnail" style="border:none;">
+					<img src="https://s3.amazonaws.com/Radial/base/Pictures/bookssmall.png" alt="The Traction Library">
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="well" style="">
+					<h4>THE TRACTION<sup>®</sup> LIBRARY</h4>
+					Need to more books for your team?<br />
+					Want to introduce EOS to your local business community?<br />
+					Looking for the perfect thank you gift?<br />
+				</div>
+				<div class="alignCenter">
+					<a href="/Redirect/BuyBooks" class="btn btn-info btn-invert" style="color:white">Buy books here!</a>
+				</div>
+				<br />
+			</div>
+			@*<div class="disclaimer"><i>*Bulk discounts are available!</i></div>*@
+		</div>
+	</div>
 </div>
 
 <div class="panel panel-primary">
-    <div class="panel-heading">Data</div>
-    <div class="panel-body">
-        <a class="btn btn-default" href="/rocks/listing">All rocks</a>
-        <a class="btn btn-default" href="/scorecard/listing">All scorecards</a>
-        <a class="btn btn-default" href="/todo/listing">All to-dos</a>
-        @*<a class="btn btn-default" href="/issues/listing">All issues</a>*@
-        <div class="btn-group">
-            <a type="button" class="btn btn-default" href="/issues/listing">All issues</a>
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a href="/issues/listing">All Issues</a></li>
-                <li class="shift-hidden"><a href="/issues/issuesandtodos">All Issues and their Context-Aware To-dos™</a></li>
-                <li class="shift-visible"><a href="/issues/issuesandtodos?details=true">All Issues and their Context-Aware To-dos™ <small class="gray"> (and notes)</small></a></li>
-            </ul>
-        </div>
+	<div class="panel-heading">Data</div>
+	<div class="panel-body">
+		<a class="btn btn-default" href="/rocks/listing">All rocks</a>
+		<a class="btn btn-default" href="/scorecard/listing">All scorecards</a>
+		<a class="btn btn-default" href="/todo/listing">All to-dos</a>
+		@*<a class="btn btn-default" href="/issues/listing">All issues</a>*@
+		<div class="btn-group">
+			<a type="button" class="btn btn-default" href="/issues/listing">All issues</a>
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span class="caret"></span>
+				<span class="sr-only">Toggle Dropdown</span>
+			</button>
+			<ul class="dropdown-menu">
+				<li><a href="/issues/listing">All Issues</a></li>
+				<li class="shift-hidden"><a href="/issues/issuesandtodos">All Issues and their Context-Aware To-dos™</a></li>
+				<li class="shift-visible"><a href="/issues/issuesandtodos?details=true">All Issues and their Context-Aware To-dos™ <small class="gray"> (and notes)</small></a></li>
+			</ul>
+		</div>
 
-        <a class="btn btn-default pull-right" href="/data/dashboard">Account Statistics</a>
-    </div>
+		<a class="btn btn-default pull-right" href="/data/dashboard">Account Statistics</a>
+	</div>
 </div>
 
 <div class="panel panel-primary">
-    <div class="panel-heading">Archives</div>
-    <div class="panel-body">
-        <a class="btn btn-default" href="/archive/users">Deleted Users</a>
-    </div>
+	<div class="panel-heading">Archives</div>
+	<div class="panel-body">
+		<a class="btn btn-default" href="/archive/users">Deleted Users</a>
+	</div>
 </div>
 
 @using (var f = Html.BeginForm("Advanced", "Manage", FormMethod.Post)) {
@@ -192,13 +192,13 @@
 					</div>
 					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanEditPositions, new { @class = "checkbox" })
-                    </div>
-                </div><div class="row">
-                    <div class="col-xs-5  ttt">
-                        <label class="control-label">Allow adding clients as users:</label>
-                    </div>
-                    <div class="col-xs-3">
-                        @Html.CheckBoxFor(x => x.AllowAddClient, new { @class = "checkbox" })
+					</div>
+				</div><div class="row">
+					<div class="col-xs-5  ttt">
+						<label class="control-label">Allow adding clients as users:</label>
+					</div>
+					<div class="col-xs-3">
+						@Html.CheckBoxFor(x => x.AllowAddClient, new { @class = "checkbox" })
 					</div>
 				</div>
 
@@ -319,51 +319,51 @@
 
 
 @using (Html.BeginStyles()) {
-    <style>
-        .enabled {
-            font-size: 75%;
-        }
+	<style>
+		.enabled {
+			font-size: 75%;
+		}
 
-        .price {
-            font-size: 100%;
-        }
+		.price {
+			font-size: 100%;
+		}
 
-        .payment {
-            font-size: 110%;
-        }
+		.payment {
+			font-size: 110%;
+		}
 
-            .payment tbody td, .payment tbody th {
-                padding-top: 0 !important;
-                padding-bottom: 0 !important;
-            }
+			.payment tbody td, .payment tbody th {
+				padding-top: 0 !important;
+				padding-bottom: 0 !important;
+			}
 
-        .price-ending {
-            font-size: 80%;
-        }
+		.price-ending {
+			font-size: 80%;
+		}
 
-        .ttt {
-            text-align: right;
-        }
-    </style>
+		.ttt {
+			text-align: right;
+		}
+	</style>
 
-    @Styles.Render("~/Content/ManageCSS")
+	@Styles.Render("~/Content/ManageCSS")
 }
 @using (Html.BeginScripts()) {
-    <script>
-        function managersEdit() {
-            var newStatus = $(".cb-managers-edit").is(":checked");
-            if (newStatus == true) {
-                showModal({
-                    icon: "warning",
-                    title: "This gives supervisors all admin abilities. Are you sure you want to do this?",
-                    success: function () {
+	<script>
+		function managersEdit() {
+			var newStatus = $(".cb-managers-edit").is(":checked");
+			if (newStatus == true) {
+				showModal({
+					icon: "warning",
+					title: "This gives supervisors all admin abilities. Are you sure you want to do this?",
+					success: function () {
 
-                    },
-                    cancel: function () {
-                        $(".cb-managers-edit").prop("checked", false);
-                    }
-                });
-            }
-        }
-    </script>
+					},
+					cancel: function () {
+						$(".cb-managers-edit").prop("checked", false);
+					}
+				});
+			}
+		}
+	</script>
 }

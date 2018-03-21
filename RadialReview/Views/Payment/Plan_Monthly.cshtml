@@ -16,9 +16,9 @@
 		<div class="col-sm-3">
 			<h3><b><u>Plan</u></b></h3>
 			@Html.EditorForModel()
-            <script>document.getElementById("SchedulePeriod").remove()</script>
-            <label>Period:</label>
-            @Html.EnumDropDownListFor(x => x.SchedulePeriod)
+			<script>document.getElementById("SchedulePeriod").remove()</script>
+			<label>Period:</label>
+			@Html.EnumDropDownListFor(x => x.SchedulePeriod)
 			<br /><hr />
 			<label>Task Id (delete to create new)</label>@Html.TextBox("TaskId", Model.Task == null ? (long?)null : Model.Task.Id)
 			<hr />

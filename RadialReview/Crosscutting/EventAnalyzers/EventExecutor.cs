@@ -14,7 +14,7 @@ using System.Web;
 namespace RadialReview.Crosscutting.EventAnalyzers {
 	public class EventRegistry {
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-		
+
 
 		private static EventRegistry _Singleton { get; set; }
 		private List<IEventAnalyzer> _EventAnalyzers { get; set; }
@@ -36,7 +36,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers {
 		public static List<T> GetEventAnalyzers<T>() where T : IEventAnalyzer {
 			return GetSingleton()._EventAnalyzers.Where(x => x is T).Cast<T>().ToList();
 		}
-		
+
 		public static EventRegistry GetSingleton() {
 			if (_Singleton == null)
 				_Singleton = new EventRegistry();
@@ -73,15 +73,15 @@ namespace RadialReview.Crosscutting.EventAnalyzers {
 				if (log.LastRun < after) {
 					var anyExecuted = false;
 					foreach (var oId in orgIds) {
-						IEventSettings settings = new BaseEventSettings(s,oId, log.LastRun);
+						IEventSettings settings = new BaseEventSettings(s, oId, log.LastRun);
 
 						if (a.IsEnabled(settings)) {
 							var shouldTrigger = EventProcessor.ShouldTrigger(settings, a);
 
-                            if (shouldTrigger) {
-                                anyExecuted = true;
-                                await HooksRegistry.Each<IEventHook>((ses, x) => x.HandleEventTriggered(ses, a, settings));
-                            }
+							if (shouldTrigger) {
+								anyExecuted = true;
+								await HooksRegistry.Each<IEventHook>((ses, x) => x.HandleEventTriggered(ses, a, settings));
+							}
 							//Run the analyzer
 						}
 					}

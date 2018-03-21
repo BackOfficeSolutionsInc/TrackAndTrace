@@ -63,7 +63,7 @@ namespace RadialReview.Engines {
 					}
 
 					if (perms.IsPermitted(x => x.CanViewUserMeasurables(id))) {
-						var measurables = ScorecardAccessor.GetUserMeasurables(s, perms, id, true, false,includeAdmin:true);
+						var measurables = ScorecardAccessor.GetUserMeasurables(s, perms, id, true, false, includeAdmin: true);
 						model.Measurables = measurables.Where(x => x.AccountableUserId == id).ToList();
 						model.AdminMeasurables = measurables.Where(x => x.AdminUserId == id && x.AccountableUserId != id).ToList();
 						model.CanViewMeasurables = true;

@@ -184,143 +184,143 @@ namespace RadialReview.Utilities.Synchronize {
             return false;
         }
         */
-        //[Obsolete("Must call outside of a session")]
-        //public static SyncLock GenerateSyncLock(string lockCategory,string id) {
-        //    while (true) {
-        //        using (var s = HibernateSession.GetCurrentSession()) {
-        //            try {
-        //                using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
-        //                    var lck = s.Get<SyncLock>(id);
-        //                    if (lck == null) {
-        //                        lck = new SyncLock() { Id = id };
-        //                        s.Save(lck);
-        //                    }
-        //                    tx.Commit();
-        //                    return lck;
-        //                }
-        //            } catch (GenericADOException ex) {
+		//[Obsolete("Must call outside of a session")]
+		//public static SyncLock GenerateSyncLock(string lockCategory,string id) {
+		//    while (true) {
+		//        using (var s = HibernateSession.GetCurrentSession()) {
+		//            try {
+		//                using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
+		//                    var lck = s.Get<SyncLock>(id);
+		//                    if (lck == null) {
+		//                        lck = new SyncLock() { Id = id };
+		//                        s.Save(lck);
+		//                    }
+		//                    tx.Commit();
+		//                    return lck;
+		//                }
+		//            } catch (GenericADOException ex) {
 
-        //                // SQL-Server specific code for identifying deadlocks
-        //                var sqlEx = ex.InnerException as SqlException;
-        //                if (sqlEx == null || sqlEx.Number != 1205) {
-        //                    Console.WriteLine("Unhandled SyncLock error");
-        //                    throw;
-        //                }
-        //                Console.WriteLine("Handled Deadlock");
-        //                // Deadlock, just try again by letting the loop go on (eventually log it).
-        //            }
-        //        }
-        //    }
-        //}
+		//                // SQL-Server specific code for identifying deadlocks
+		//                var sqlEx = ex.InnerException as SqlException;
+		//                if (sqlEx == null || sqlEx.Number != 1205) {
+		//                    Console.WriteLine("Unhandled SyncLock error");
+		//                    throw;
+		//                }
+		//                Console.WriteLine("Handled Deadlock");
+		//                // Deadlock, just try again by letting the loop go on (eventually log it).
+		//            }
+		//        }
+		//    }
+		//}
 
-        public class TestHooks {
-            public Action AfterLock { get; set; }
-            public Action AfterUnlock { get; set; }
-            public Action BeforeLock { get; set; }
-            public Action BeforeUnlock { get; set; }
-        }
-        private static object TEST_LOCK = new object();
-        private static object TEST_UNLOCK = new object();
+		public class TestHooks {
+			public Action AfterLock { get; set; }
+			public Action AfterUnlock { get; set; }
+			public Action BeforeLock { get; set; }
+			public Action BeforeUnlock { get; set; }
+		}
+		private static object TEST_LOCK = new object();
+		private static object TEST_UNLOCK = new object();
 
-        public static async Task Lock(string key, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task> atomic, TestHooks testHooks = null) {
-            await Lock(x => key, clientUpdateTimeMs, atomic, testHooks);
-        }
+		public static async Task Lock(string key, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task> atomic, TestHooks testHooks = null) {
+			await Lock(x => key, clientUpdateTimeMs, atomic, testHooks);
+		}
 
-        public static async Task Lock(Func<ISession,string> keySelector, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task> atomic, TestHooks testHooks = null) {
-            var nil = await Lock(keySelector, clientUpdateTimeMs, async (s, lck) => { await atomic(s, lck); return false; }, testHooks);
-        }
+		public static async Task Lock(Func<ISession, string> keySelector, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task> atomic, TestHooks testHooks = null) {
+			var nil = await Lock(keySelector, clientUpdateTimeMs, async (s, lck) => { await atomic(s, lck); return false; }, testHooks);
+		}
 
-        public static async Task<T> Lock<T>(Func<ISession, string> keySelector, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task<T>> atomic, TestHooks testHooks = null) {
-            if (clientUpdateTimeMs == null) {
-                //probably want to make sure its not null...
-                int a = 0;
-            }
+		public static async Task<T> Lock<T>(Func<ISession, string> keySelector, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task<T>> atomic, TestHooks testHooks = null) {
+			if (clientUpdateTimeMs == null) {
+				//probably want to make sure its not null...
+				int a = 0;
+			}
 
-            //Make sure lock key exists
-            while (true) {
-                var key = "";
-                try {
-                    using (var s = HibernateSession.GetCurrentSession()) {
-                        using (var tx = s.BeginTransaction(/*IsolationLevel.Serializable*/)) {
+			//Make sure lock key exists
+			while (true) {
+				var key = "";
+				try {
+					using (var s = HibernateSession.GetCurrentSession()) {
+						using (var tx = s.BeginTransaction(/*IsolationLevel.Serializable*/)) {
 
-                            if (s is SingleRequestSession) {
-                                var srs = (SingleRequestSession)s;
-                                if (srs.GetCurrentContext().Depth != 0)
-                                    throw new Exception("Lock must be called outside of a session.");
-                            }
-                            key = keySelector(s);
-                            var found = s.Get<SyncLock>(key, LockMode.Upgrade);
-                            if (found == null) {
-                                //Didnt exists. Lets atomically create it
-                                //LockMode.Upgrade prevents creating simultaniously 
-                                var createLock = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
-                                if (createLock == null)
-                                    throw new Exception("CreateLock doesnt exist. Call ApplicationAccessor.EnsureExists()");
+							if (s is SingleRequestSession) {
+								var srs = (SingleRequestSession)s;
+								if (srs.GetCurrentContext().Depth != 0)
+									throw new Exception("Lock must be called outside of a session.");
+							}
+							key = keySelector(s);
+							var found = s.Get<SyncLock>(key, LockMode.Upgrade);
+							if (found == null) {
+								//Didnt exists. Lets atomically create it
+								//LockMode.Upgrade prevents creating simultaniously 
+								var createLock = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
+								if (createLock == null)
+									throw new Exception("CreateLock doesnt exist. Call ApplicationAccessor.EnsureExists()");
 
-                                //was it created in another thread while we were locked?
-                                if (s.Get<SyncLock>(key, LockMode.Upgrade) != null) {
-                                    //was already created in another thread....
-                                } else {
-                                    //doesn't exist. Lets create it..
-                                    s.Save(new SyncLock() {
-                                        Id = key,
-                                    });
-                                }
-                                s.Flush();
-                                tx.Commit();
-                            }
-                        }
-                    }
-                    break;
-                }catch(GenericADOException e) {
-                    Console.WriteLine("Deadlock: " + key);
-                    //Try again.
-                    await Task.Delay(10);
-                }catch(Exception) {
-                    throw;
-                }
-            } 
-            T result = default(T);
-            //Lets lock on the thing we just created..
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction(/*IsolationLevel.Serializable*/)) {
-                    var key = keySelector(s);
-                    //LOCK
-                    SyncLock lck;
-                    if (testHooks != null && testHooks.AfterLock != null) {
-                        //If we are testing, we need BeforeLock and Get to be atomic
-                        lock (TEST_LOCK) {
-                            testHooks.BeforeLock();
-                            lck = s.Get<SyncLock>(key, LockMode.Upgrade);
-                            testHooks.AfterLock();
-                            //Allowed to lock here since Get<> is atomic
-                        }
-                    } else {
-                        lck = s.Get<SyncLock>(key, LockMode.Upgrade); //Actual db lock happens on this line.
-                    }
+								//was it created in another thread while we were locked?
+								if (s.Get<SyncLock>(key, LockMode.Upgrade) != null) {
+									//was already created in another thread....
+								} else {
+									//doesn't exist. Lets create it..
+									s.Save(new SyncLock() {
+										Id = key,
+									});
+								}
+								s.Flush();
+								tx.Commit();
+							}
+						}
+					}
+					break;
+				} catch (GenericADOException e) {
+					Console.WriteLine("Deadlock: " + key);
+					//Try again.
+					await Task.Delay(10);
+				} catch (Exception) {
+					throw;
+				}
+			}
+			T result = default(T);
+			//Lets lock on the thing we just created..
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction(/*IsolationLevel.Serializable*/)) {
+					var key = keySelector(s);
+					//LOCK
+					SyncLock lck;
+					if (testHooks != null && testHooks.AfterLock != null) {
+						//If we are testing, we need BeforeLock and Get to be atomic
+						lock (TEST_LOCK) {
+							testHooks.BeforeLock();
+							lck = s.Get<SyncLock>(key, LockMode.Upgrade);
+							testHooks.AfterLock();
+							//Allowed to lock here since Get<> is atomic
+						}
+					} else {
+						lck = s.Get<SyncLock>(key, LockMode.Upgrade); //Actual db lock happens on this line.
+					}
 
-                    var now = DateTime.UtcNow;
-                    //atomic action here
-                    result = await atomic(s, lck);
+					var now = DateTime.UtcNow;
+					//atomic action here
+					result = await atomic(s, lck);
 
-                   // lck.LastUpdate = now;
-                    lck.LastClientUpdateTimeMs = clientUpdateTimeMs ?? lck.LastClientUpdateTimeMs;
+					// lck.LastUpdate = now;
+					lck.LastClientUpdateTimeMs = clientUpdateTimeMs ?? lck.LastClientUpdateTimeMs;
 
-                    lck.UpdateCount += 1;
-                    s.Update(lck);
+					lck.UpdateCount += 1;
+					s.Update(lck);
 
 
-                    if (testHooks != null && testHooks.BeforeUnlock != null) {
-                        //If we are testing, we need Commit and AfterLock to be atomic
-                        lock (TEST_UNLOCK) {
-                            testHooks.BeforeUnlock();
-                            tx.Commit();
-                            testHooks.AfterUnlock();
-                            //Allowed to lock here since Commit is atomic
-                        }
-                    } else {
-                        tx.Commit();//Actual db unlock happens on this line.
-                    }
+					if (testHooks != null && testHooks.BeforeUnlock != null) {
+						//If we are testing, we need Commit and AfterLock to be atomic
+						lock (TEST_UNLOCK) {
+							testHooks.BeforeUnlock();
+							tx.Commit();
+							testHooks.AfterUnlock();
+							//Allowed to lock here since Commit is atomic
+						}
+					} else {
+						tx.Commit();//Actual db unlock happens on this line.
+					}
 
 					s.Flush();
 					//unlock
@@ -444,15 +444,15 @@ namespace RadialReview.Utilities.Synchronize {
 			//log.Info(builder);
 
 
-            if (!IsStrictlyAfter(clientTimestamp, syncs)) {
-                return false;
-            }
-            return true;
-        }
+			if (!IsStrictlyAfter(clientTimestamp, syncs)) {
+				return false;
+			}
+			return true;
+		}
 
-        [Obsolete("Doesnt work", true)]
-        private static bool IsStrictlyAfter(long clientTimestamp, List<SyncTiny> existingSyncs) {
-            return existingSyncs.All(x => x.ClientTimestamp - clientTimestamp <= 0);
-        }
-    }
+		[Obsolete("Doesnt work", true)]
+		private static bool IsStrictlyAfter(long clientTimestamp, List<SyncTiny> existingSyncs) {
+			return existingSyncs.All(x => x.ClientTimestamp - clientTimestamp <= 0);
+		}
+	}
 }

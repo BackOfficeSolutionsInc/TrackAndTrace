@@ -21,7 +21,7 @@ namespace RadialReview.Hooks.Meeting {
 		public HookPriority GetHookPriority() {
 			return HookPriority.UI;
 		}
-		
+
 
 		public async Task AddAttendee(ISession s, long recurrenceId, UserOrganizationModel user, L10Recurrence.L10Recurrence_Attendee attendee) {
 			var auser = AngularUser.CreateUser(user);
@@ -65,7 +65,7 @@ namespace RadialReview.Hooks.Meeting {
 
 		public async Task UndeleteRecurrence(ISession s, L10Recurrence recur) {
 			//noop
-		} 
+		}
 		#endregion
 	}
 }
