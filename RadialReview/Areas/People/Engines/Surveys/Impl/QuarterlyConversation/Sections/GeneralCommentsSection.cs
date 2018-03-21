@@ -23,5 +23,5 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		public void Prelookup(IInitializerLookupData data) {
 			//nothing to do.
 		}
-	}	
+	}
 }

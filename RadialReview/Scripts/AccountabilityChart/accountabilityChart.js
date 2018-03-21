@@ -109,7 +109,7 @@ var genPdf = function () {
 		});
 		fields.push({
 			type: "span",
-			classes:"gray",
+			classes: "gray",
 			text: "Use the search box to create a chart for one person."
 		})
 	}
@@ -119,7 +119,7 @@ var genPdf = function () {
 		fields: fields,
 		success: function (d) {
 			var ajax = {
-				url: "/pdf/ac?fit=" + d.fit + "&pw=" + d.pw + "&ph=" + d.ph+"&compact="+d.compact,
+				url: "/pdf/ac?fit=" + d.fit + "&pw=" + d.pw + "&ph=" + d.ph + "&compact=" + d.compact,
 				method: "POST",
 				dataType: 'native',
 				xhrFields: {
@@ -179,11 +179,11 @@ var genPdf = function () {
 	var support = {},
         xhrId = 0,
         xhrSuccessStatus = {
-			// file protocol always yields status code 0, assume 200
-			0: 200,
-			// Support: IE9
-			// #1450: sometimes IE returns 1223 when it should be 204
-			1223: 204
+        	// file protocol always yields status code 0, assume 200
+        	0: 200,
+        	// Support: IE9
+        	// #1450: sometimes IE returns 1223 when it should be 204
+        	1223: 204
         },
         xhrCallbacks = {},
         xhrSupported = jQuery.ajaxSettings.xhr();

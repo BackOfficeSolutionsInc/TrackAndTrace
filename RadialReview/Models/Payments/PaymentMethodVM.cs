@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace RadialReview.Models.Payments
-{
-    public class PaymentMethodVM
-    {
-        public long CardId { get; set; }
-        public string Last4 { get; set; }
-        public string Owner { get; set; }
-        public DateTime Created { get; set; }
-        public bool Active { get; set; }
+namespace RadialReview.Models.Payments {
+	public class PaymentMethodVM {
+		public long CardId { get; set; }
+		public string Last4 { get; set; }
+		public string Owner { get; set; }
+		public DateTime Created { get; set; }
+		public bool Active { get; set; }
 		public PaymentSpringTokenType TokenType { get; set; }
 		public string ImageUrl { get; set; }
 
@@ -53,7 +51,7 @@ namespace RadialReview.Models.Payments
 				default:
 					break;
 			}
-			
+
 			Active = x.Active;
 			CardId = x.Id;
 			Created = x.CreateTime;
@@ -63,5 +61,5 @@ namespace RadialReview.Models.Payments
 
 
 		}
-    }
+	}
 }

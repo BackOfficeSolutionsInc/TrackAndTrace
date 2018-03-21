@@ -540,17 +540,17 @@ namespace TractionTools.Tests.Engines {
 					new ByAboutSurveyUserNode(manager, empl, AboutType.Subordinate),
 					new ByAboutSurveyUserNode(empl,empl, AboutType.Self),
 				};
-		long containerId;
+			long containerId;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, org.Manager);
-					var result = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s,perms, "TestGetSurveyContainerAbout", byAbout, DateTime.MaxValue, false);
+					var result = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, perms, "TestGetSurveyContainerAbout", byAbout, DateTime.MaxValue, false);
 					containerId = result.SurveyContainerId;
 					tx.Commit();
 					s.Flush();
 				}
 			}
-			var about = SurveyAccessor.GetSurveyContainerAbout(org.Manager,empl, containerId);
+			var about = SurveyAccessor.GetSurveyContainerAbout(org.Manager, empl, containerId);
 
 			Assert.AreEqual(1, about.GetSurveys().Count());
 			Assert.AreEqual(7, about.GetSurveys().First().GetSections().Count());

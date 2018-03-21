@@ -73,7 +73,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 				"I am letting go of the vine",
 					"I Delegate and Elevate™",
 					"GWC™"
-					//"Our team members Get, Want, and have the Capacity to perform their roles well"
+			//"Our team members Get, Want, and have the Capacity to perform their roles well"
 			);
 			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
 				"I act with the greater good in mind",
@@ -106,7 +106,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 				throw new NotImplementedException();
 			} else {
 				var sun = (data.About as SurveyUserNode);
-				if (sun!=null && sun._Relationship!=null && sun._Relationship[data.By.ToKey()].HasFlag(AboutType.Self))
+				if (sun != null && sun._Relationship != null && sun._Relationship[data.By.ToKey()].HasFlag(AboutType.Self))
 					return GetItemBuildersSupervisorSelfAssessment(data);
 				return GetItemBuildersSupervisorSelfAssessment(data); //GetItemBuildersSupervisorAssessment(data);
 			}
@@ -114,13 +114,13 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
 		public ISection InitializeSection(ISectionInitializerData data) {
 			var sun = data.About as SurveyUserNode;
-            var help = "Would you say your boss could say yes to...";
-            if (sun != null && sun._Relationship != null && sun._Relationship[data.Survey.GetBy().ToKey()].HasFlag(AboutType.Self))
-                help = "";
+			var help = "Would you say your boss could say yes to...";
+			if (sun != null && sun._Relationship != null && sun._Relationship[data.Survey.GetBy().ToKey()].HasFlag(AboutType.Self))
+				help = "";
 
-            return new SurveySection(data, "Leadership Self-Assessment", SurveySectionType.LeadershipAssessment, "leadership-assessment") {
-                Help = help
-            };
+			return new SurveySection(data, "Leadership Self-Assessment", SurveySectionType.LeadershipAssessment, "leadership-assessment") {
+				Help = help
+			};
 		}
 
 		public void Prelookup(IInitializerLookupData data) {

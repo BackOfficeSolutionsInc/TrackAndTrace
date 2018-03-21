@@ -6,16 +6,12 @@ using Amazon.ElasticTranscoder.Model;
 using RadialReview.Models;
 using RadialReview.Utilities;
 
-namespace RadialReview.Accessors
-{
-	public class InvoiceAccessor
-	{
+namespace RadialReview.Accessors {
+	public class InvoiceAccessor {
 
-		public static List<InvoiceModel> GetInvoicesForOrganization(UserOrganizationModel caller, long orgid)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction()){
+		public static List<InvoiceModel> GetInvoicesForOrganization(UserOrganizationModel caller, long orgid) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller).CanView(PermItem.ResourceType.InvoiceForOrganization, orgid, @this => @this.ManagingOrganization(orgid));
 					var invoices = s.QueryOver<InvoiceModel>().Where(x => x.DeleteTime == null && x.Organization.Id == orgid).List().ToList();
 
@@ -25,15 +21,13 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static object GetInvoice(UserOrganizationModel caller, long invoiceId)
-		{
+		public static object GetInvoice(UserOrganizationModel caller, long invoiceId) {
 			InvoiceModel invoice = null;
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction()){
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					invoice = s.Get<InvoiceModel>(invoiceId);
 					var perms = PermissionsUtility.Create(s, caller).CanView(PermItem.ResourceType.InvoiceForOrganization, invoice.Organization.Id, @this => @this.ManagingOrganization(invoice.Organization.Id));
-					foreach (var item in invoice.InvoiceItems){
+					foreach (var item in invoice.InvoiceItems) {
 						var a = item.Name;
 						var b = item.Description;
 						var c = item.AmountDue;

@@ -184,7 +184,7 @@ acapp.directive("ttOverflow", ["$timeout", function ($timeout) {
 					$timeout(function () {
 						ngModel.$viewValue = mv;
 						ngModel.$render();
-					},1);
+					}, 1);
 					return mv;
 				}
 				ngModel.$formatters.push(shorten);
@@ -284,7 +284,7 @@ acapp.filter('ttOverflowTxt', function () {
 					mv = mv.substr(0, lastspace);
 				}
 
-				mv = mv+ "...";
+				mv = mv + "...";
 
 				//console.log(" - shorten");
 			}

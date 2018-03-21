@@ -112,9 +112,9 @@ namespace RadialReview.Controllers {
 							Status = x.NotNull(y => y.AccountType),
 							LastMeeting = meetingLastLU.GetOrDefault(x.NotNull(y => y.Id), null),
 							TrialEnd = trialEnd,
-							CreditCardExp = !tokens.ContainsKey(x.Id)||tokens[x.Id].TokenType!=PaymentSpringTokenType.CreditCard ? (DateTime?)null : new DateTime(tokens[x.Id].YearExpire, tokens[x.Id].MonthExpire, 1)
+							CreditCardExp = !tokens.ContainsKey(x.Id) || tokens[x.Id].TokenType != PaymentSpringTokenType.CreditCard ? (DateTime?)null : new DateTime(tokens[x.Id].YearExpire, tokens[x.Id].MonthExpire, 1)
 						};
-					}).OrderByDescending(x=>x.OrgId).ToList();
+					}).OrderByDescending(x => x.OrgId).ToList();
 
 					return stats;
 
@@ -156,7 +156,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Invites() {
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
 
-			var temps = members.Where(x => x.HasJoined == false).Select(x =>_UserAccessor.GetUserOrganization(GetUser(), x.UserId, true, false, PermissionType.EditEmployeeDetails).TempUser).Where(x=>x!=null).ToList();
+			var temps = members.Where(x => x.HasJoined == false).Select(x => _UserAccessor.GetUserOrganization(GetUser(), x.UserId, true, false, PermissionType.EditEmployeeDetails).TempUser).Where(x => x != null).ToList();
 
 			return View(temps);
 		}
@@ -254,17 +254,17 @@ namespace RadialReview.Controllers {
 			ViewBag.Implementers = implementers;
 
 			var support = ApplicationAccessor.GetSupportMembers(GetUser()).OrderBy(x => x.User.GetName());
-            var myIds = new long[0];
-            try {
-                myIds = GetUser().User.UserOrganizationIds;
-            }catch(Exception e) {
-            }
-			ViewBag.MySupportId = support.FirstOrDefault(x => myIds.Any(y=>y== x.UserOrgId)).NotNull(x => x.Id);
+			var myIds = new long[0];
+			try {
+				myIds = GetUser().User.UserOrganizationIds;
+			} catch (Exception e) {
+			}
+			ViewBag.MySupportId = support.FirstOrDefault(x => myIds.Any(y => y == x.UserOrgId)).NotNull(x => x.Id);
 			ViewBag.SupportTeam = support.ToSelectList(x => x.User.GetName(), x => x.Id);
 
-			var campaigns= ApplicationAccessor.GetCampaigns(GetUser(),true).OrderBy(x => x.Name).ToSelectList(x => x.Name, x => x.Name).ToList();
+			var campaigns = ApplicationAccessor.GetCampaigns(GetUser(), true).OrderBy(x => x.Name).ToSelectList(x => x.Name, x => x.Name).ToList();
 			campaigns.Insert(0, new SelectListItem() { Text = "n/a", Value = null });
-			ViewBag.Campaigns = campaigns; 
+			ViewBag.Campaigns = campaigns;
 		}
 
 		[Access(AccessLevel.Radial)]
@@ -275,7 +275,7 @@ namespace RadialReview.Controllers {
 
 			return View(new OrgCreationData() {
 				AssignedTo = ViewBag.MySupportId,
-				CoachId = -1				
+				CoachId = -1
 			});
 		}
 
@@ -302,8 +302,8 @@ namespace RadialReview.Controllers {
 				if (data.AccountType == AccountType.Implementer || data.AccountType == AccountType.Coach) {
 					ApplicationAccessor.EditCoach(GetUser(), new Models.Application.Coach() {
 						CoachType = data.AccountType == AccountType.Implementer ? CoachType.CertifiedOrProfessionalEOSi : CoachType.BusinessCoach,
-						Name = data.ContactFN+" "+data.ContactLN,
-						Email =data.ContactEmail,
+						Name = data.ContactFN + " " + data.ContactLN,
+						Email = data.ContactEmail,
 						UserOrgId = uOrg.Id,
 					});
 				}
@@ -312,7 +312,7 @@ namespace RadialReview.Controllers {
 			}
 
 			PrepareCreateOrgViewBag();
-			return View(data);			
+			return View(data);
 		}
 
 		[HttpGet]

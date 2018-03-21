@@ -85,7 +85,7 @@ namespace RadialReview.Areas.People.Controllers {
 				//}
 				//byAbouts = byAbouts.Distinct().ToList();
 				var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), name, filtered, dueDate, email);
-				return RedirectToAction("Questions",new { id = id });
+				return RedirectToAction("Questions", new { id = id });
 			}
 
 			return View(new IssueViewModel() {
@@ -125,8 +125,8 @@ namespace RadialReview.Areas.People.Controllers {
 					var sun = s.Get<SurveyUserNode>(sunId);
 					perms.ViewUserOrganization(sun.UserOrganizationId, false);
 
-                    var user = s.Get<UserOrganizationModel>(sun.UserOrganizationId);                    
-                    await QuarterlyConversationAccessor.SendReminderUnsafe(s,user,surveyContainerId);
+					var user = s.Get<UserOrganizationModel>(sun.UserOrganizationId);
+					await QuarterlyConversationAccessor.SendReminderUnsafe(s, user, surveyContainerId);
 
 				}
 			}
@@ -159,19 +159,19 @@ namespace RadialReview.Areas.People.Controllers {
 			return RedirectToAction("Index", "Home", new { area = "" });
 		}
 
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> RemindAll(long id) {
-            var count = await QuarterlyConversationAccessor.RemindAllIncompleteSurveys(GetUser(), id);
-            var txt = "All Quarterly Conversations completed.";
-            if (count == 1) {
-                txt = "Reminder sent";
-            }else if (count > 1) {
-                txt = "Reminders sent";
-            }
-            return Json(ResultObject.Success(txt), JsonRequestBehavior.AllowGet);
-        }
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> RemindAll(long id) {
+			var count = await QuarterlyConversationAccessor.RemindAllIncompleteSurveys(GetUser(), id);
+			var txt = "All Quarterly Conversations completed.";
+			if (count == 1) {
+				txt = "Reminder sent";
+			} else if (count > 1) {
+				txt = "Reminders sent";
+			}
+			return Json(ResultObject.Success(txt), JsonRequestBehavior.AllowGet);
+		}
 
-        [Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Remove(long id) {
 			SurveyAccessor.RemoveSurveyContainer(GetUser(), id);// QuarterlyConversationAccessor
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);

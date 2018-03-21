@@ -283,7 +283,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		void OnBegin(ISurveyInitializer builder, long orgId, IOuterLookup outerLookup, IEnumerable<IByAbout> byAbouts);
 		void OnEnd(ISurveyContainer container);
 		void OnInitialize(IComponent compontent);
-		void AfterInitialized(IComponent compontent,bool hasElements);
+		void AfterInitialized(IComponent compontent, bool hasElements);
 	}
 	#endregion
 }

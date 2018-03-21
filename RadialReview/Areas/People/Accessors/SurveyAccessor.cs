@@ -55,7 +55,7 @@ namespace RadialReview.Areas.People.Accessors {
 		}
 
 #pragma warning restore CS0618 // Type or member is obsolete
-		
+
 		public static ISurveyAboutContainer GetSurveyContainerAbout(UserOrganizationModel caller, IForModel about, long surveyContainerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -104,7 +104,7 @@ namespace RadialReview.Areas.People.Accessors {
 
 					var container = s.Get<SurveyContainer>(surveyContainerId);
 
-					if (container.DeleteTime != null) 
+					if (container.DeleteTime != null)
 						throw new PermissionsException("Does not exist");
 					if (container.OrgId != caller.Organization.Id)
 						throw new PermissionsException();
@@ -130,7 +130,7 @@ namespace RadialReview.Areas.People.Accessors {
 						.Where(x => x.By.ModelId == byModel.ModelId && x.By.ModelType == byModel.ModelType)
 						//.Where(x=>x.By.ModelType == ForModel.GetModelType<SurveyUserNode>())
 						//.WhereRestrictionOn(x => x.By.ModelId).IsIn(sunIds)
-						
+
 						.Select(x => Projections.Group<Survey>(y => y.SurveyContainerId))
 						.Select(x => x.SurveyContainerId)
 						.List<long>().ToArray();
@@ -141,48 +141,48 @@ namespace RadialReview.Areas.People.Accessors {
 
 					var issuedBy = containers
 						.Select(x => x.CreatedBy)
-						.Where(x=>x.ModelType==ForModel.GetModelType<UserOrganizationModel>())
+						.Where(x => x.ModelType == ForModel.GetModelType<UserOrganizationModel>())
 						.Select(x => x.ModelId)
 						.Distinct().ToList();
 
-					var creatorLookup = TinyUserAccessor.GetUsers_Unsafe(s, issuedBy,false).ToDefaultDictionary(x=>x.ToKey(),x=>AngularUser.CreateUser(x),null);
-					
-					return containers.Select(x => new AngularSurveyContainer(x, x.DueDate<DateTime.UtcNow, creatorLookup[x.CreatedBy.ToKey()]));
+					var creatorLookup = TinyUserAccessor.GetUsers_Unsafe(s, issuedBy, false).ToDefaultDictionary(x => x.ToKey(), x => AngularUser.CreateUser(x), null);
+
+					return containers.Select(x => new AngularSurveyContainer(x, x.DueDate < DateTime.UtcNow, creatorLookup[x.CreatedBy.ToKey()]));
 
 					//perms.ViewSurveyContainer(surveyContainerId);
 				}
 			}
 		}
 
-        public static List<IForModel> GetForModelsWithIncompleteSurveysForSurveyContainers(UserOrganizationModel caller,long surveyContainerId) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var perms = PermissionsUtility.Create(s, caller);
-                    perms.CanAdmin(ResourceType.SurveyContainer, surveyContainerId);
-                    var sc = s.Get<SurveyContainer>(surveyContainerId);
-                    var byAndLockedIn= s.QueryOver<Survey>()
-                        .Where(x => x.DeleteTime == null && x.SurveyContainerId == surveyContainerId)
-                        .Select(x => x.By, x => x.LockedIn)
-                        .List<object[]>()
-                        .Select(x => new {
-                            By = (ForModel)x[0],
-                            LockedIn = (((bool?)x[1])??false)
-                        }).ToList();
+		public static List<IForModel> GetForModelsWithIncompleteSurveysForSurveyContainers(UserOrganizationModel caller, long surveyContainerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.CanAdmin(ResourceType.SurveyContainer, surveyContainerId);
+					var sc = s.Get<SurveyContainer>(surveyContainerId);
+					var byAndLockedIn = s.QueryOver<Survey>()
+						.Where(x => x.DeleteTime == null && x.SurveyContainerId == surveyContainerId)
+						.Select(x => x.By, x => x.LockedIn)
+						.List<object[]>()
+						.Select(x => new {
+							By = (ForModel)x[0],
+							LockedIn = (((bool?)x[1]) ?? false)
+						}).ToList();
 
-                    var allBy = byAndLockedIn.Select(x => x.By).Distinct(x => x.ToKey()).ToDictionary(x => x.ToKey(), x => x);
-                    var allLockedIn = byAndLockedIn.Select(x => x.By).Distinct(x => x.ToKey()).ToDictionary(x=>x.ToKey(),x=>true);
-                    foreach(var bl in byAndLockedIn) {
-                        if (bl.LockedIn == false) {
-                            allLockedIn[bl.By.ToKey()] = false;
-                        }
-                    }
+					var allBy = byAndLockedIn.Select(x => x.By).Distinct(x => x.ToKey()).ToDictionary(x => x.ToKey(), x => x);
+					var allLockedIn = byAndLockedIn.Select(x => x.By).Distinct(x => x.ToKey()).ToDictionary(x => x.ToKey(), x => true);
+					foreach (var bl in byAndLockedIn) {
+						if (bl.LockedIn == false) {
+							allLockedIn[bl.By.ToKey()] = false;
+						}
+					}
 
-                    return allLockedIn.Where(x => x.Value == false)
-                        .Select(x => (IForModel)allBy[x.Key])
-                        .ToList();
-                }
-            }            
-        }
+					return allLockedIn.Where(x => x.Value == false)
+						.Select(x => (IForModel)allBy[x.Key])
+						.ToList();
+				}
+			}
+		}
 
 		public static bool UpdateAngularSurveyResponse(UserOrganizationModel caller, long responseId, string answer, string connectionId = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {

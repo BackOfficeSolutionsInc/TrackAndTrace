@@ -1,39 +1,38 @@
 ﻿@model List<RadialReview.Models.UserOrganizationModel>
 @{
-    ViewBag.Title = "Users";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    //var format = Html.Organization().NotNull(y => y.Settings.NotNull(z => z.GetDateFormat())) ?? "MM-dd-yyyy";
+	ViewBag.Title = "Users";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	//var format = Html.Organization().NotNull(y => y.Settings.NotNull(z => z.GetDateFormat())) ?? "MM-dd-yyyy";
 }
 
 <h2>User Archive</h2>
 
 <table class="table table-striped" style="">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>User Details</th>
-            <th>Reviews</th>
-            <th>Deleted</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var user in Model)
-    {
-        <tr id="r_@user.Id">
-            <td>@user.GetName()</td>
-            <td><a href="/User/Details/@user.Id">User Details</a></td>
-            <td><a href="/User/Reviews/@user.Id">Reviews</a></td>
-            <td>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",user.DeleteTime.Value)</td>
-            <td><a href="#r_@user.Id" onclick="$.ajax({url:'/user/undelete/@(user.Id)',success:function(){$('#r_@(user.Id)').remove();}})">Undelete</a></td>
-        </tr>
-    }
-    </tbody>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>User Details</th>
+			<th>Reviews</th>
+			<th>Deleted</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var user in Model) {
+			<tr id="r_@user.Id">
+				<td>@user.GetName()</td>
+				<td><a href="/User/Details/@user.Id">User Details</a></td>
+				<td><a href="/User/Reviews/@user.Id">Reviews</a></td>
+				<td>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", user.DeleteTime.Value)</td>
+				<td><a href="#r_@user.Id" onclick="$.ajax({url:'/user/undelete/@(user.Id)',success:function(){$('#r_@(user.Id)').remove();}})">Undelete</a></td>
+			</tr>
+		}
+	</tbody>
 </table>
-@using (Html.BeginScripts()) { 
-<script>
-    $("table").tablesorter({
-        // sortForce: [[0, 1]],
-        sortStable: true,
-    });
-</script>
+@using (Html.BeginScripts()) {
+	<script>
+		$("table").tablesorter({
+			// sortForce: [[0, 1]],
+			sortStable: true,
+		});
+	</script>
 }

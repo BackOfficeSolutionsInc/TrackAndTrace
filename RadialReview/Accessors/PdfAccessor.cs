@@ -2470,7 +2470,7 @@ namespace RadialReview.Accessors {
 				if (f != null && f.Item is Paragraph) {
 					var p = (Paragraph)f.Item;
 					if (p.Format.Borders.Top.Color == TableGray) {
-						m.Items = m.Items.Take(m.Items.Count-1).ToList();
+						m.Items = m.Items.Take(m.Items.Count - 1).ToList();
 						marketingParagraphs.Remove(p);
 					}
 				}

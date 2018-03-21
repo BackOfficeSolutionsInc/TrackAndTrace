@@ -6,15 +6,12 @@ using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Interfaces;
 using System.Runtime.Serialization;
 
-namespace RadialReview.Models.Angular.Users
-{
-	public class AngularUser : Base.BaseAngular
-	{		
-		public AngularUser(long id) : base(id)
-		{
+namespace RadialReview.Models.Angular.Users {
+	public class AngularUser : Base.BaseAngular {
+		public AngularUser(long id) : base(id) {
 
 		}
-		public static AngularUser CreateUser(IForModel user,string imageUrl=null, ImageSize imageSize = ImageSize._64, bool? managing = null) {
+		public static AngularUser CreateUser(IForModel user, string imageUrl = null, ImageSize imageSize = ImageSize._64, bool? managing = null) {
 			if (user == null)
 				return NoUser();
 
@@ -25,7 +22,7 @@ namespace RadialReview.Models.Angular.Users
 			while (inits.Count > 2)
 				inits.RemoveAt(1);
 
-			var initials= string.Join(" ", inits).ToUpperInvariant();
+			var initials = string.Join(" ", inits).ToUpperInvariant();
 
 			return new AngularUser(user.ModelId) {
 				Name = user.ToPrettyString(),
@@ -36,27 +33,24 @@ namespace RadialReview.Models.Angular.Users
 			};
 		}
 
-		public static AngularUser CreateUser(UserOrganizationModel user, ImageSize imageSize = ImageSize._64, bool? managing = null)
-		{
+		public static AngularUser CreateUser(UserOrganizationModel user, ImageSize imageSize = ImageSize._64, bool? managing = null) {
 			if (user == null)
 				return NoUser();
 
 
-			return new AngularUser(user.Id){
+			return new AngularUser(user.Id) {
 				Name = user.GetName(),
 				ImageUrl = user.ImageUrl(true, imageSize),
 				Initials = user.GetInitials(),
 				Managing = managing,
-                CreateTime = user.CreateTime,
+				CreateTime = user.CreateTime,
 			};
 		}
-		public static AngularUser CreateUser(UserModels.UserLookup user,ImageSize imageSize = ImageSize._64,bool? managing = null)
-		{
+		public static AngularUser CreateUser(UserModels.UserLookup user, ImageSize imageSize = ImageSize._64, bool? managing = null) {
 			if (user == null)
 				return NoUser();
 
-			return new AngularUser(user.UserId)
-			{
+			return new AngularUser(user.UserId) {
 				Name = user.Name,
 				ImageUrl = user.ImageUrl(imageSize),
 				Initials = user.GetInitials(),
@@ -65,14 +59,13 @@ namespace RadialReview.Models.Angular.Users
 		}
 
 
-		public static AngularUser NoUser()
-		{
-			return new AngularUser(-1){
-				Name ="n/a",
+		public static AngularUser NoUser() {
+			return new AngularUser(-1) {
+				Name = "n/a",
 				ImageUrl = null,
 				Initials = "n/a",
 				Managing = null,
-                
+
 			};
 		}
 
@@ -89,8 +82,8 @@ namespace RadialReview.Models.Angular.Users
 		[IgnoreDataMember]
 		public bool? Managing { get; set; }
 
-        [IgnoreDataMember]
-        public DateTime? CreateTime { get;set;}
-	
+		[IgnoreDataMember]
+		public DateTime? CreateTime { get; set; }
+
 	}
 }

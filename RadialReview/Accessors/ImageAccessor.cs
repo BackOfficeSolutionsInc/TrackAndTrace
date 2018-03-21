@@ -16,16 +16,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace RadialReview.Accessors
-{
-	public class ImageAccessor : BaseAccessor
-	{
-		public String GetImagePath(UserModel caller, String imageId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+namespace RadialReview.Accessors {
+	public class ImageAccessor : BaseAccessor {
+		public String GetImagePath(UserModel caller, String imageId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					//PermissionsUtility.Create(s, caller).ViewImage(imageId);
 
 					if (imageId == null)
@@ -45,16 +40,15 @@ namespace RadialReview.Accessors
 		public static Instructions TINY_INSTRUCTIONS = new Instructions("width=32;height=32;format=png;mode=max");
 		public static Instructions MED_INSTRUCTIONS = new Instructions("width=64;height=64;format=png;mode=max");
 		public static Instructions LARGE_INSTRUCTIONS = new Instructions("width=128;height=128;format=png;mode=max");
-	
-		public static void Upload(Stream stream, string path, Instructions instructions)
-		{
-			using (var ms = new MemoryStream()){
+
+		public static void Upload(Stream stream, string path, Instructions instructions) {
+			using (var ms = new MemoryStream()) {
 				stream.Seek(0, SeekOrigin.Begin);
-				var i = new ImageJob(stream , ms,instructions);
+				var i = new ImageJob(stream, ms, instructions);
 				i.Build();
 				ms.Seek(0, SeekOrigin.Begin);
 
-				var fileTransferUtilityRequest = new TransferUtilityUploadRequest{
+				var fileTransferUtilityRequest = new TransferUtilityUploadRequest {
 					BucketName = "Radial",
 					InputStream = ms,
 					StorageClass = S3StorageClass.ReducedRedundancy,
@@ -68,7 +62,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public bool RemoveImage(UserModel caller,string userId) {
+		public bool RemoveImage(UserModel caller, string userId) {
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -86,36 +80,31 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public async Task<String> UploadImage(UserModel user, HttpServerUtilityBase server, HttpPostedFileBase file, UploadType uploadType)
-		{
-			var img = new ImageModel()
-			{
+		public async Task<String> UploadImage(UserModel user, HttpServerUtilityBase server, HttpPostedFileBase file, UploadType uploadType) {
+			var img = new ImageModel() {
 				OriginalName = Path.GetFileName(file.FileName),
 				UploadedBy = user,
 				UploadType = uploadType
 			};
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					s.Save(img);
 					tx.Commit();
 					s.Flush();
 				}
 			}
 			var guid = img.Id.ToString();
-			var path =	"img/" + guid + ".png";
+			var path = "img/" + guid + ".png";
 			var pathTiny = "32/" + guid + ".png";
 			var pathMed = "64/" + guid + ".png";
 			var pathLarge = "128/" + guid + ".png";
 
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction()){
-					var sBig=new MemoryStream();
-					var sTiny=new MemoryStream();
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var sBig = new MemoryStream();
+					var sTiny = new MemoryStream();
 					var sMed = new MemoryStream();
-					var sLarge=new MemoryStream();
+					var sLarge = new MemoryStream();
 					file.InputStream.Seek(0, SeekOrigin.Begin);
 					await file.InputStream.CopyToAsync(sBig);
 					file.InputStream.Seek(0, SeekOrigin.Begin);
@@ -126,29 +115,29 @@ namespace RadialReview.Accessors
 					await file.InputStream.CopyToAsync(sLarge);
 					file.InputStream.Seek(0, SeekOrigin.Begin);
 
-					Upload(sBig,	path,		BIG_INSTRUCTIONS);
-					Upload(sTiny,	pathTiny,	TINY_INSTRUCTIONS);
-					Upload(sMed,	pathMed,	MED_INSTRUCTIONS);
-					Upload(sLarge,	pathLarge,	LARGE_INSTRUCTIONS);
-				
+					Upload(sBig, path, BIG_INSTRUCTIONS);
+					Upload(sTiny, pathTiny, TINY_INSTRUCTIONS);
+					Upload(sMed, pathMed, MED_INSTRUCTIONS);
+					Upload(sLarge, pathLarge, LARGE_INSTRUCTIONS);
+
 					img.Url = path;
 					s.Update(img);
 
-					switch (uploadType)
-					{
-						case UploadType.ProfileImage:
-							{
+					switch (uploadType) {
+						case UploadType.ProfileImage: {
 								user = s.Get<UserModel>(user.Id);
 								var old = user.ImageGuid;
 								user.ImageGuid = img.Id.ToString();
 								s.Update(user);
-								if (user.UserOrganization != null && user.UserOrganization.Any()){
-									foreach (var u in user.UserOrganization){
+								if (user.UserOrganization != null && user.UserOrganization.Any()) {
+									foreach (var u in user.UserOrganization) {
 										u.UpdateCache(s);
 									}
 								}
-							}; break;
-						default: throw new PermissionsException();
+							};
+							break;
+						default:
+							throw new PermissionsException();
 					}
 					var cache = new Cache();
 					cache.InvalidateForUser(user.Id, CacheKeys.USER);
@@ -178,8 +167,7 @@ namespace RadialReview.Accessors
 			*/
 		}
 
-		private String GetPath(HttpServerUtilityBase server, String imageId)
-		{
+		private String GetPath(HttpServerUtilityBase server, String imageId) {
 			var fileName = imageId + ".png";
 			// store the file inside ~/App_Data/uploads folder
 			var dir = server.MapPath("~/App_Data/uploads");
@@ -189,8 +177,7 @@ namespace RadialReview.Accessors
 			return path;
 		}
 
-		private String GetOldPath(HttpServerUtilityBase server, String imageId)
-		{
+		private String GetOldPath(HttpServerUtilityBase server, String imageId) {
 			var fileName = imageId + ".png";
 			// store the file inside ~/App_Data/uploads folder
 			var dir = server.MapPath("~/App_Data/uploads/old");

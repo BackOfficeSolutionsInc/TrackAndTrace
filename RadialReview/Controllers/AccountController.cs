@@ -27,26 +27,26 @@ namespace RadialReview.Controllers {
 	[Authorize]
 	public partial class AccountController : UserManagementController {
 
-        //public AccountController()
-        //    : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
-        //{
-        //}
+		//public AccountController()
+		//    : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
+		//{
+		//}
 
-        //public AccountController(NHibernateUserManager userManager)
-        //{
-        //    UserManager = userManager;
-        //}
-        [Access(AccessLevel.Radial)]
-        public virtual async Task<ActionResult> SetAsUser(string id) {
+		//public AccountController(NHibernateUserManager userManager)
+		//{
+		//    UserManager = userManager;
+		//}
+		[Access(AccessLevel.Radial)]
+		public virtual async Task<ActionResult> SetAsUser(string id) {
 #pragma warning disable CS0618 // Type or member is obsolete
 			var user = _UserAccessor.GetUserByEmail(id.ToLower());
 #pragma warning restore CS0618 // Type or member is obsolete
 			if (user != null) {
-                await SignInAsync(user);
-                return RedirectToAction("Index", "Dashboard");
-            }
-            return Content("Could not set as "+ id);
-        }
+				await SignInAsync(user);
+				return RedirectToAction("Index", "Dashboard");
+			}
+			return Content("Could not set as " + id);
+		}
 
 
 
@@ -77,7 +77,7 @@ namespace RadialReview.Controllers {
 				var nexus = new NexusModel(token) { DateCreated = DateTime.UtcNow, DeleteTime = until, ActionCode = NexusActions.ResetPassword };
 				nexus.SetArgs(user.Id);
 				var result = _NexusAccessor.Put(nexus);
-				
+
 				await Emailer.SendEmail(
 						Mail.To(EmailTypes.ResetPassword, user.Email)
 						.Subject(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName)
@@ -88,7 +88,7 @@ namespace RadialReview.Controllers {
 				log.Info("Resent login information for " + user.Email);
 
 			} else {
-				log.Info("Could not send login information for " + rpvm.Email+". User was null");
+				log.Info("Could not send login information for " + rpvm.Email + ". User was null");
 				TempData["Message"] = ("An error has occurred. Please check that you have the correct email address and try again. Contact us if the problem persists.");
 			}
 			return RedirectToAction("Index", "Home");
@@ -107,7 +107,7 @@ namespace RadialReview.Controllers {
 
 			return View(new ResetPasswordWithTokenViewModel() { Token = id });
 		}
-				
+
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AllowAnonymous]
@@ -406,7 +406,7 @@ namespace RadialReview.Controllers {
 				UserId = user.Id,
 				ShowScorecardColors = user._StylesSettings.ShowScorecardColors,
 				ReverseScorecard = user.ReverseScorecard,
-                DisableTips = user.DisableTips,
+				DisableTips = user.DisableTips,
 			};
 		}
 
@@ -423,8 +423,8 @@ namespace RadialReview.Controllers {
 				model.SendTodoTime != null,
 				model.SendTodoTime,
 				model.ShowScorecardColors,
-                model.ReverseScorecard,
-                model.DisableTips);
+				model.ReverseScorecard,
+				model.DisableTips);
 			return RedirectToAction("Index", "Home");
 		}
 
@@ -537,45 +537,45 @@ namespace RadialReview.Controllers {
 			return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
 		}
 
-        //
-        // POST: /Account/ExternalLoginConfirmation
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        [Access(AccessLevel.Any)]
-        public ActionResult ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl) {
-            throw new Exception("Fix Default Todo Send Time");
-            //if (User.Identity.IsAuthenticated) {
-            //	return RedirectToAction("Manage");
-            //}
+		//
+		// POST: /Account/ExternalLoginConfirmation
+		[HttpPost]
+		[AllowAnonymous]
+		[ValidateAntiForgeryToken]
+		[Access(AccessLevel.Any)]
+		public ActionResult ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl) {
+			throw new Exception("Fix Default Todo Send Time");
+			//if (User.Identity.IsAuthenticated) {
+			//	return RedirectToAction("Manage");
+			//}
 
-            //if (ModelState.IsValid) {
-            //	// Get the information about the user from the external login provider
-            //	var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-            //	if (info == null) {
-            //		return View("ExternalLoginFailure");
-            //	}
-            //	var user = new UserModel() { UserName = model.UserName };
-            //	//var result = await UserManager.CreateAsync(user);
-            //	var result = await UserAccessor.CreateUser(UserManager, user, info);
-            //	if (result.Succeeded) {
-            //		//result = await UserManager.AddLoginAsync(user.Id, info.Login);
-            //		//if (result.Succeeded)
-            //		//{
-            //		await SignInAsync(user, isPersistent: false);
-            //		return RedirectToLocal(returnUrl);
-            //		//}
-            //	}
-            //	AddErrors(result);
-            //}
+			//if (ModelState.IsValid) {
+			//	// Get the information about the user from the external login provider
+			//	var info = await AuthenticationManager.GetExternalLoginInfoAsync();
+			//	if (info == null) {
+			//		return View("ExternalLoginFailure");
+			//	}
+			//	var user = new UserModel() { UserName = model.UserName };
+			//	//var result = await UserManager.CreateAsync(user);
+			//	var result = await UserAccessor.CreateUser(UserManager, user, info);
+			//	if (result.Succeeded) {
+			//		//result = await UserManager.AddLoginAsync(user.Id, info.Login);
+			//		//if (result.Succeeded)
+			//		//{
+			//		await SignInAsync(user, isPersistent: false);
+			//		return RedirectToLocal(returnUrl);
+			//		//}
+			//	}
+			//	AddErrors(result);
+			//}
 
-            //ViewBag.ReturnUrl = returnUrl;
-            //return View(model);
-        }
+			//ViewBag.ReturnUrl = returnUrl;
+			//return View(model);
+		}
 
-        //
-        // POST: /Account/LogOff
-        [HttpPost]
+		//
+		// POST: /Account/LogOff
+		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[Access(AccessLevel.Any)]
 		public ActionResult LogOff() {

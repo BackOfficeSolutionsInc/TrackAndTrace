@@ -27,7 +27,7 @@ namespace RadialReview.Controllers {
 
 		[HttpPost, ValidateInput(false)]
 		[Access(AccessLevel.Any)]
-		public ActionResult AC(PdfAccessor.AccNodeJs root=null, bool fit = false, PageSize ps = PageSize.Letter, double? pw = null, double? ph = null, long? selected = null,bool? compact=null) {
+		public ActionResult AC(PdfAccessor.AccNodeJs root = null, bool fit = false, PageSize ps = PageSize.Letter, double? pw = null, double? ph = null, long? selected = null, bool? compact = null) {
 			//using (var stream = new MemoryStream()) {
 			//	var html = new HtmlDocument();
 			//	var config = new GlobalConfig();
@@ -53,8 +53,8 @@ namespace RadialReview.Controllers {
 
 			}
 
-			PdfDocument pdf=null;
-			if (root != null && (root.children!=null || root._children!=null)) {
+			PdfDocument pdf = null;
+			if (root != null && (root.children != null || root._children != null)) {
 #pragma warning disable CS0618 // Type or member is obsolete
 				pdf = PdfAccessor.GenerateAccountabilityChart(root, pw.Value, ph.Value, restrictSize: fit);
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -70,7 +70,7 @@ namespace RadialReview.Controllers {
 						if (x.Id == selected)
 							node = x;
 					});
-					pdf = AccountabilityChartPDF.GenerateAccountabilityChart(node, pw.Value, ph.Value, restrictSize: fit,settings: settings);
+					pdf = AccountabilityChartPDF.GenerateAccountabilityChart(node, pw.Value, ph.Value, restrictSize: fit, settings: settings);
 				}
 
 				if (selected == null || pdf == null) {

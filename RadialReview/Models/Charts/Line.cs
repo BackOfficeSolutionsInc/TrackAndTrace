@@ -5,8 +5,7 @@ using System.Web;
 using System.Web.Helpers;
 
 namespace RadialReview.Models.Charts {
-	public class Line
-	{
+	public class Line {
 		public long start { get; set; }
 		public long end { get; set; }
 		public List<LineChart> charts { get; set; }
@@ -17,13 +16,11 @@ namespace RadialReview.Models.Charts {
 		public long? marginLeft { get; set; }
 
 
-		public Line()
-		{
-			charts=new List<LineChart>();
+		public Line() {
+			charts = new List<LineChart>();
 		}
 
-		public class LineChart
-		{
+		public class LineChart {
 			public bool rounding { get; set; }
 			public string color { get; set; }
 			public string axis { get; set; }
@@ -32,8 +29,7 @@ namespace RadialReview.Models.Charts {
 			public List<LinePoint> points { get; set; }
 		}
 
-		public class LinePoint
-		{
+		public class LinePoint {
 			public long time { get; set; }
 			public decimal? value { get; set; }
 

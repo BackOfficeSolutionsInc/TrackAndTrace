@@ -13,87 +13,87 @@ using System.Linq;
 using RadialReview;
 
 namespace TractionTools.Tests.PeopleTools {
-    [TestClass]
-    public class QcSettings : BaseTest {
+	[TestClass]
+	public class QcSettings : BaseTest {
 
-        private async Task<Org> CreateOrg() {
-            var org = await OrgUtil.CreateOrganization();
+		private async Task<Org> CreateOrg() {
+			var org = await OrgUtil.CreateOrganization();
 
-            DbCommit(s => {
-                var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK);
+			DbCommit(s => {
+				var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK);
 
-                //Init values
-                s.Save(new CompanyValueModel() {
-                    OrganizationId = org.Id,
-                    CompanyValue = "Value",
-                    CompanyValueDetails = "Value Details ",
-                    Category = category
-                });
-                //Init roles
-                var eRole = new RoleModel() {
-                    OrganizationId = org.Id,
-                    Role = "E Role",
-                    Category = category
-                };
-                s.Save(eRole);
-                var mRole = new RoleModel() {
-                    OrganizationId = org.Id,
-                    Role = "M Role",
-                    Category = category
-                };
-                s.Save(mRole);
-                //Init role links
-                s.Save(new RoleLink() {
-                    RoleId = eRole.Id,
-                    AttachId = org.Employee.Id,
-                    AttachType = AttachType.User,
-                    OrganizationId = org.Id,
-                });
-                s.Save(new RoleLink() {
-                    RoleId = mRole.Id,
-                    AttachId = org.Manager.Id,
-                    AttachType = AttachType.User,
-                    OrganizationId = org.Id,
-                });
-                //Save Rocks
-                s.Save(new RockModel() {
-                    Rock = "M Rock",
-                    ForUserId = org.Manager.Id,
-                    OrganizationId = org.Id,
-                    Category = category
-                });
-                s.Save(new RockModel() {
-                    Rock = "E Rock",
-                    ForUserId = org.Employee.Id,
-                    OrganizationId = org.Id,
-                    Category = category
-                });
-            });
-            return org;
-        }
+				//Init values
+				s.Save(new CompanyValueModel() {
+					OrganizationId = org.Id,
+					CompanyValue = "Value",
+					CompanyValueDetails = "Value Details ",
+					Category = category
+				});
+				//Init roles
+				var eRole = new RoleModel() {
+					OrganizationId = org.Id,
+					Role = "E Role",
+					Category = category
+				};
+				s.Save(eRole);
+				var mRole = new RoleModel() {
+					OrganizationId = org.Id,
+					Role = "M Role",
+					Category = category
+				};
+				s.Save(mRole);
+				//Init role links
+				s.Save(new RoleLink() {
+					RoleId = eRole.Id,
+					AttachId = org.Employee.Id,
+					AttachType = AttachType.User,
+					OrganizationId = org.Id,
+				});
+				s.Save(new RoleLink() {
+					RoleId = mRole.Id,
+					AttachId = org.Manager.Id,
+					AttachType = AttachType.User,
+					OrganizationId = org.Id,
+				});
+				//Save Rocks
+				s.Save(new RockModel() {
+					Rock = "M Rock",
+					ForUserId = org.Manager.Id,
+					OrganizationId = org.Id,
+					Category = category
+				});
+				s.Save(new RockModel() {
+					Rock = "E Rock",
+					ForUserId = org.Employee.Id,
+					OrganizationId = org.Id,
+					Category = category
+				});
+			});
+			return org;
+		}
 
 
-        [TestMethod]
-        [TestCategory("Survey")]
-        public async Task ManagerIssues_SelfOn_ManagerOn() {
-            var org = await CreateOrg();
+		[TestMethod]
+		[TestCategory("Survey")]
+		public async Task ManagerIssues_SelfOn_ManagerOn() {
+			var org = await CreateOrg();
 
-            var nodes = QuarterlyConversationAccessor.AvailableAboutsForMe(org.Manager);
-            var filtered = QuarterlyConversationAccessor.AvailableByAboutsFiltered(org.Manager, nodes, true, true);
-            var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(org.Manager, "Test QC", filtered, DateTime.UtcNow, false);
+			var nodes = QuarterlyConversationAccessor.AvailableAboutsForMe(org.Manager);
+			var filtered = QuarterlyConversationAccessor.AvailableByAboutsFiltered(org.Manager, nodes, true, true);
+			var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(org.Manager, "Test QC", filtered, DateTime.UtcNow, false);
 
-            {
-                var expectedManagerQ = new[] {
+			{
+				var expectedManagerQ = new[] {
 					//"M Role","M Rock","Value",
 					"E Role","E Rock","Value",
-                    "Rock Quality/Comments",//"Role Comments", "Value Comments",
+					"Rock Quality/Comments",//"Role Comments", "Value Comments",
                     "Gets it", "Wants it","Capacity to do it",
-                    "Comments",
+					"Comments",
 
-                    "Core Values Comments",
-                    "5 Roles/GWC Comments",
-                    "# of Rocks completed last Quarter",
-                    "# of Rocks last Quarter",
+					"Core Values Comments",
+					"5 Roles/GWC Comments",
+					"# of Rocks completed last Quarter",
+					"# of Rocks last Quarter",
 
 					//"They are rewarding and recognizing",
 					//"They are having quarterly conversations",
@@ -102,29 +102,29 @@ namespace TractionTools.Tests.PeopleTools {
 					//"They act with the greater good in mind","They keep expectations clear",
 
 					"I am giving clear direction","I am providing the necessary tools","I am letting go of the vine",
-                    "I act with the greater good in mind","I am taking Clarity Breaks™","I keep expectations clear",
-                    "I am communicating well","I have the right meeting pulse","I am having quarterly conversations",
-                    "I am rewarding and recognizing"
+					"I act with the greater good in mind","I am taking Clarity Breaks™","I keep expectations clear",
+					"I am communicating well","I have the right meeting pulse","I am having quarterly conversations",
+					"I am rewarding and recognizing"
 
 
 
-                };
+				};
 
-                var managerQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Manager, org.Manager, id);
-                var managerQuestions = managerQC.GetSurveys().SelectMany(x => x.GetSections().SelectMany(y => y.GetItems().Select(z => z.GetName()))).ToList();
-                SetUtility.AssertEqual(managerQuestions, expectedManagerQ);
-            }
+				var managerQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Manager, org.Manager, id);
+				var managerQuestions = managerQC.GetSurveys().SelectMany(x => x.GetSections().SelectMany(y => y.GetItems().Select(z => z.GetName()))).ToList();
+				SetUtility.AssertEqual(managerQuestions, expectedManagerQ);
+			}
 
 
-            {
-                var expectedEmployeeQ = new[] {
-                    "E Role","E Rock","Value",
-                    "Rock Quality/Comments",//"Role Comments", "Value Comments",
+			{
+				var expectedEmployeeQ = new[] {
+					"E Role","E Rock","Value",
+					"Rock Quality/Comments",//"Role Comments", "Value Comments",
                     "Gets it", "Wants it","Capacity to do it",
-                    "Comments",
+					"Comments",
 
-                    "Core Values Comments",
-                    "5 Roles/GWC Comments",
+					"Core Values Comments",
+					"5 Roles/GWC Comments",
                     //"# of Rocks completed last Quarter",
                     //"# of Rocks last Quarter",
 
@@ -141,39 +141,39 @@ namespace TractionTools.Tests.PeopleTools {
 					"I am rewarding and recognizing"
 				};
 
-                var employeeQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Employee, org.Employee, id);
-                var employeeQuestions = employeeQC.GetSurveys().SelectMany(x => x.GetSections().SelectMany(y => y.GetItems().Select(z => z.GetName()))).ToList();
-                SetUtility.AssertEqual(employeeQuestions, expectedEmployeeQ);
-            }
-        }
-        [TestMethod]
-        [TestCategory("Survey")]
-        public async Task ManagerIssues_SelfOn_ManagerOff() {
+				var employeeQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Employee, org.Employee, id);
+				var employeeQuestions = employeeQC.GetSurveys().SelectMany(x => x.GetSections().SelectMany(y => y.GetItems().Select(z => z.GetName()))).ToList();
+				SetUtility.AssertEqual(employeeQuestions, expectedEmployeeQ);
+			}
+		}
+		[TestMethod]
+		[TestCategory("Survey")]
+		public async Task ManagerIssues_SelfOn_ManagerOff() {
 
-            var org = await CreateOrg();
+			var org = await CreateOrg();
 
-            var nodes = QuarterlyConversationAccessor.AvailableAboutsForMe(org.Manager);
-            var filtered = QuarterlyConversationAccessor.AvailableByAboutsFiltered(org.Manager, nodes, true, false);
-            var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(org.Manager, "Test QC", filtered, DateTime.UtcNow, false);
+			var nodes = QuarterlyConversationAccessor.AvailableAboutsForMe(org.Manager);
+			var filtered = QuarterlyConversationAccessor.AvailableByAboutsFiltered(org.Manager, nodes, true, false);
+			var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(org.Manager, "Test QC", filtered, DateTime.UtcNow, false);
 
-            {
-                var expectedManagerQ = new[] {
+			{
+				var expectedManagerQ = new[] {
 					//"M Role","M Rock","Value",
 					"E Role","E Rock","Value",
-                    "Rock Quality/Comments",//"Role Comments", "Value Comments",
+					"Rock Quality/Comments",//"Role Comments", "Value Comments",
                     "Gets it", "Wants it","Capacity to do it",
-                    "Comments",
+					"Comments",
 
-                    "Core Values Comments",
-                    "5 Roles/GWC Comments",
-                    "# of Rocks completed last Quarter",
-                    "# of Rocks last Quarter",
+					"Core Values Comments",
+					"5 Roles/GWC Comments",
+					"# of Rocks completed last Quarter",
+					"# of Rocks last Quarter",
 
 
-                    "I am giving clear direction","I am providing the necessary tools","I am letting go of the vine",
-                    "I act with the greater good in mind","I am taking Clarity Breaks™","I keep expectations clear",
-                    "I am communicating well","I have the right meeting pulse","I am having quarterly conversations",
-                    "I am rewarding and recognizing"
+					"I am giving clear direction","I am providing the necessary tools","I am letting go of the vine",
+					"I act with the greater good in mind","I am taking Clarity Breaks™","I keep expectations clear",
+					"I am communicating well","I have the right meeting pulse","I am having quarterly conversations",
+					"I am rewarding and recognizing"
 					//"They are rewarding and recognizing",
 					//"They are having quarterly conversations",
 					//"We have the right meeting pulse","They are communicating well","They are providing the necessary tools",
@@ -186,21 +186,21 @@ namespace TractionTools.Tests.PeopleTools {
 
 
 
-                var managerQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Manager, org.Manager, id);
-                var managerQuestions = managerQC.GetSurveys().SelectMany(x => x.GetSections().SelectMany(y => y.GetItems().Select(z => z.GetName()))).ToList();
-                SetUtility.AssertEqual(managerQuestions, expectedManagerQ);
-            }
+				var managerQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Manager, org.Manager, id);
+				var managerQuestions = managerQC.GetSurveys().SelectMany(x => x.GetSections().SelectMany(y => y.GetItems().Select(z => z.GetName()))).ToList();
+				SetUtility.AssertEqual(managerQuestions, expectedManagerQ);
+			}
 
 
-            {
-                var expectedEmployeeQ = new[] {
-                    "E Role","E Rock","Value",
-                    "Rock Quality/Comments",//"Role Comments", "Value Comments",
+			{
+				var expectedEmployeeQ = new[] {
+					"E Role","E Rock","Value",
+					"Rock Quality/Comments",//"Role Comments", "Value Comments",
                     "Gets it", "Wants it","Capacity to do it",
-                    "Comments",
+					"Comments",
 
-                    "Core Values Comments",
-                    "5 Roles/GWC Comments",
+					"Core Values Comments",
+					"5 Roles/GWC Comments",
                     //"# of Rocks completed last Quarter",
                     //"# of Rocks last Quarter",
 					//"They are rewarding and recognizing",
@@ -210,64 +210,64 @@ namespace TractionTools.Tests.PeopleTools {
 					//"They act with the greater good in mind","They keep expectations clear"
 				};
 
-                var employeeQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Employee, org.Employee, id);
-                var employeeQuestions = employeeQC.GetSurveys().SelectMany(x => x.GetSections().SelectMany(y => y.GetItems().Select(z => z.GetName()))).ToList();
-                SetUtility.AssertEqual(employeeQuestions, expectedEmployeeQ);
-            }
-        }
-        [TestMethod]
-        [TestCategory("Survey")]
-        public async Task ManagerIssues_SelfOff_ManagerOff() {
+				var employeeQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Employee, org.Employee, id);
+				var employeeQuestions = employeeQC.GetSurveys().SelectMany(x => x.GetSections().SelectMany(y => y.GetItems().Select(z => z.GetName()))).ToList();
+				SetUtility.AssertEqual(employeeQuestions, expectedEmployeeQ);
+			}
+		}
+		[TestMethod]
+		[TestCategory("Survey")]
+		public async Task ManagerIssues_SelfOff_ManagerOff() {
 
-            var org = await CreateOrg();
+			var org = await CreateOrg();
 
-            var nodes = QuarterlyConversationAccessor.AvailableAboutsForMe(org.Manager);
-            var filtered = QuarterlyConversationAccessor.AvailableByAboutsFiltered(org.Manager, nodes, false, false);
-            var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(org.Manager, "Test QC", filtered, DateTime.UtcNow, false);
+			var nodes = QuarterlyConversationAccessor.AvailableAboutsForMe(org.Manager);
+			var filtered = QuarterlyConversationAccessor.AvailableByAboutsFiltered(org.Manager, nodes, false, false);
+			var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(org.Manager, "Test QC", filtered, DateTime.UtcNow, false);
 
-            {
-                var expectedManagerQ = new[] {
-                    "E Role","E Rock","Value",
-                    "Rock Quality/Comments",//"Role Comments", "Value Comments",
+			{
+				var expectedManagerQ = new[] {
+					"E Role","E Rock","Value",
+					"Rock Quality/Comments",//"Role Comments", "Value Comments",
 					"Gets it", "Wants it","Capacity to do it",
-                    "Comments",
-                    "Core Values Comments",
-                    "5 Roles/GWC Comments",
-                    "# of Rocks completed last Quarter",
-                    "# of Rocks last Quarter"
-                };
+					"Comments",
+					"Core Values Comments",
+					"5 Roles/GWC Comments",
+					"# of Rocks completed last Quarter",
+					"# of Rocks last Quarter"
+				};
 
-                var managerQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Manager, org.Manager, id);
-                var managerQuestions = managerQC.GetSurveys().SelectMany(x => x.GetSections().SelectMany(y => y.GetItems().Select(z => z.GetName()))).ToList();
-                SetUtility.AssertEqual(managerQuestions, expectedManagerQ);
-            }
-
-
-            Throws<Exception>(() => {
-                SurveyAccessor.GetAngularSurveyContainerBy(org.Employee, org.Employee, id);
-            });
-
-        }
-
-        //[TestMethod]
-        //[TestCategory("Survey")]
-        //public void GuessRocks() {
-        //    var l = new DateTime(2017, 3, 1);
-        //    var n = new DateTime(2017, 6, 1);
-
-        //    var dates = new[] {
-        //        l.AddDays(3), l.AddDays(4), l.AddDays(2), l.AddDays(6), l.AddDays(4),
-        //        n.AddDays(3), n.AddDays(4), n.AddDays(2), n.AddDays(6), n.AddDays(4),
-        //    };
-
-        //    DbCommit(s => {
-
-        //    });
+				var managerQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Manager, org.Manager, id);
+				var managerQuestions = managerQC.GetSurveys().SelectMany(x => x.GetSections().SelectMany(y => y.GetItems().Select(z => z.GetName()))).ToList();
+				SetUtility.AssertEqual(managerQuestions, expectedManagerQ);
+			}
 
 
-        //    Assert.Inconclusive("Not finished");
+			Throws<Exception>(() => {
+				SurveyAccessor.GetAngularSurveyContainerBy(org.Employee, org.Employee, id);
+			});
 
-        //}
+		}
 
-    }
+		//[TestMethod]
+		//[TestCategory("Survey")]
+		//public void GuessRocks() {
+		//    var l = new DateTime(2017, 3, 1);
+		//    var n = new DateTime(2017, 6, 1);
+
+		//    var dates = new[] {
+		//        l.AddDays(3), l.AddDays(4), l.AddDays(2), l.AddDays(6), l.AddDays(4),
+		//        n.AddDays(3), n.AddDays(4), n.AddDays(2), n.AddDays(6), n.AddDays(4),
+		//    };
+
+		//    DbCommit(s => {
+
+		//    });
+
+
+		//    Assert.Inconclusive("Not finished");
+
+		//}
+
+	}
 }

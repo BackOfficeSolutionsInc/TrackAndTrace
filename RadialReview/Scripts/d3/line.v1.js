@@ -209,7 +209,7 @@ function LineGraph(argsMap) {
 		data = processDataMap(getRequiredVar(argsMap, 'data'));
 		margin = data.margin;
 		// margins with defaults (do this before processDataMap since it can modify the margins)
-		
+
 		/* set the default scale */
 		yScale = data.scale;
 
@@ -256,30 +256,30 @@ function LineGraph(argsMap) {
 
 		//var axis = getOptionalVar(dataMap, 'axis', []);
 		// default axis values
-			var hasRightAxis = false;
-			dataValues.forEach(function (v, i) {
-				// set the default to left axis
-				if (!v.axis) {
-					v.axis = "left";
-				} else {
-					
-					if (v.axis == 'right') {
-						hasRightAxis = true;
-					}
-				}
-				// default colors values
-				if (!v.color)
-					v.color = "black";
-				// default rounding values
-				if (!v.rounding)
-					v.rounding = 0;
-			});
-			if (hasRightAxis) {
-				// add space to right margin
-				margin[1] = margin[1] + 50;
-			}
+		var hasRightAxis = false;
+		dataValues.forEach(function (v, i) {
+			// set the default to left axis
+			if (!v.axis) {
+				v.axis = "left";
+			} else {
 
-		
+				if (v.axis == 'right') {
+					hasRightAxis = true;
+				}
+			}
+			// default colors values
+			if (!v.color)
+				v.color = "black";
+			// default rounding values
+			if (!v.rounding)
+				v.rounding = 0;
+		});
+		if (hasRightAxis) {
+			// add space to right margin
+			margin[1] = margin[1] + 50;
+		}
+
+
 		var maxValues = [];
 
 		/* copy the dataValues array, do NOT assign the reference otherwise we modify the original source when we shift/push data */
@@ -287,7 +287,7 @@ function LineGraph(argsMap) {
 		dataValues.forEach(function (v, i) {
 			newDataValues[i] = v;
 
-			maxValues[i] = d3.max(newDataValues[i].points,function(p) { return p.value; });
+			maxValues[i] = d3.max(newDataValues[i].points, function (p) { return p.value; });
 		});
 		return {
 			"values": newDataValues,
@@ -303,7 +303,7 @@ function LineGraph(argsMap) {
 			//"rounding": rounding,
 			"numAxisLabelsLinearScale": numAxisLabelsLinearScale,
 			"numAxisLabelsPowerScale": numAxisLabelsPowerScale,
-			"margin" : margin1,
+			"margin": margin1,
 		};
 	};
 	var redrawAxes = function (withTransition) {
@@ -385,7 +385,7 @@ function LineGraph(argsMap) {
 			yLeft = d3.scale.linear().domain([0, maxYscaleLeft]).range([h, 0]).nice();
 			numAxisLabels = data.numAxisLabelsLinearScale;
 		}
-		
+
 		yAxisLeft = d3.svg.axis().scale(yLeft).ticks(numAxisLabels, tickFormatForLogScale).orient("left");
 	};
 	var initYright = function () {
@@ -484,7 +484,7 @@ function LineGraph(argsMap) {
  				 * We also reach out to the persisted 'data' object for time
  				 * since the 'd' passed in here is one of the children, not the parent object
 				 */
-				
+
 				var _x = x(data.startTime.getTime() + (data.step * i));
 
 				// verbose logging to show what's actually being done
@@ -494,7 +494,7 @@ function LineGraph(argsMap) {
 			})
 			.y(function (d, i) {
 
-				
+
 				if (yScale == 'log' && d < 0.1) {
 					// log scale can't have 0s, so we set it to the smallest value we set on y
 					d = 0.1;
@@ -570,9 +570,9 @@ function LineGraph(argsMap) {
 				.attr("stroke", function (d, i) {
 					return d.color;
 				})
-				.attr("d", function(d) {
-				return lineFunction(d);
-			}) // use the 'lineFunction' to create the data points in the correct x,y axis
+				.attr("d", function (d) {
+					return lineFunction(d);
+				}) // use the 'lineFunction' to create the data points in the correct x,y axis
 				.on('mouseover', function (d, i) {
 					handleMouseOverLine(d, i);
 				});
@@ -621,7 +621,7 @@ function LineGraph(argsMap) {
 		legendLabelGroup.append("svg:text")
 				.attr("class", "legend name")
 				.text(function (d, i) {
-					return  d.displayName || d.name;
+					return d.displayName || d.name;
 				})
 				.attr("font-size", legendFontSize)
 				.attr("fill", function (d, i) {
@@ -923,7 +923,7 @@ function LineGraph(argsMap) {
 
 		var roundToNumDecimals = data.values[dataSeriesIndex].rounding;
 
-		return { value: roundNumber(v.value, roundToNumDecimals), date:new Date(v.time) /*bucketDate*/ };
+		return { value: roundNumber(v.value, roundToNumDecimals), date: new Date(v.time) /*bucketDate*/ };
 	}; /**
 	 * Called when the window is resized to redraw graph accordingly.
 	 */
@@ -1000,7 +1000,7 @@ function LineGraph(argsMap) {
 	* Return the value from argsMap for key or defaultValue if no value found
 	*/
 	var getOptionalVar = function (argsMap, key, defaultValue) {
-		if (argsMap[key]===undefined) {
+		if (argsMap[key] === undefined) {
 			return defaultValue;
 		} else {
 			return argsMap[key];

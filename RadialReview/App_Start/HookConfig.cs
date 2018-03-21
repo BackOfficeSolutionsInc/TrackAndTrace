@@ -16,12 +16,11 @@ using System.Web;
 
 namespace RadialReview.App_Start {
 
-   
 
-    public class HookConfig {
-        
-        public static void RegisterHooks()
-        {
+
+	public class HookConfig {
+
+		public static void RegisterHooks() {
 			//HooksRegistry.RegisterHook(new CreateUserOrganization_UpdateHierarchy());
 
 			HooksRegistry.RegisterHook(new UpdateUserModel_TeamNames());
@@ -32,7 +31,7 @@ namespace RadialReview.App_Start {
 			//HooksRegistry.RegisterHook(new IssueWebhook());
 
 			HooksRegistry.RegisterHook(new ActiveCampaignEventHooks());
-            HooksRegistry.RegisterHook(new EnterpriseHook(Config.EnterpriseAboveUserCount()));
+			HooksRegistry.RegisterHook(new EnterpriseHook(Config.EnterpriseAboveUserCount()));
 			HooksRegistry.RegisterHook(new ActiveCampaignFirstThreeMeetings());
 
 
@@ -55,11 +54,11 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new CalculateCumulative());
 			HooksRegistry.RegisterHook(new AttendeeHooks());
 			HooksRegistry.RegisterHook(new SwapScorecardOnRegister());
-			
+
 			HooksRegistry.RegisterHook(new CreateFinancialPermItems());
 
 			HooksRegistry.RegisterHook(new UpdatePlaceholder());
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
-    }
+	}
 }

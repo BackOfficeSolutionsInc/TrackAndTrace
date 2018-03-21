@@ -595,7 +595,7 @@ namespace RadialReview.Accessors {
 							var padTexts = await PadAccessor.GetHtmls(pads);
 
 							/////
-							var headlineTable = await HeadlineAccessor.BuildHeadlineTable(headlines.ToList(), "Headlines", recurrenceId,true, padTexts);
+							var headlineTable = await HeadlineAccessor.BuildHeadlineTable(headlines.ToList(), "Headlines", recurrenceId, true, padTexts);
 
 							var issueTable = await IssuesAccessor.BuildIssuesSolvedTable(issuesForTable.ToList(), "Issues Solved", recurrenceId, true, padTexts);
 							var todosTable = new DefaultDictionary<long, string>(x => "");
@@ -619,7 +619,7 @@ namespace RadialReview.Accessors {
 									hasTodos[personTodos.First().AccountableUserId] = true;
 
 								var todoTable = await TodoAccessor.BuildTodoTable(personTodos.ToList(), "Outstanding To-dos", true, padLookup: padTexts);
-								
+
 
 								var output = new StringBuilder();
 

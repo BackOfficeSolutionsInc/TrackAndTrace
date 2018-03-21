@@ -20,6 +20,6 @@
 		window.Config.ServerType = "developer";
 	}
 
-}catch(e){
+} catch (e) {
 	console.error(e);
 }

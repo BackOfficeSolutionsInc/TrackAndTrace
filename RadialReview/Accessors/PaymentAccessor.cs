@@ -736,7 +736,7 @@ namespace RadialReview.Accessors {
 		public static PaymentPlanModel GetPlan(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).Or(x=>x.ManagingOrganization(organizationId),x=>x.CanView(PermItem.ResourceType.UpdatePaymentForOrganization,organizationId));
+					PermissionsUtility.Create(s, caller).Or(x => x.ManagingOrganization(organizationId), x => x.CanView(PermItem.ResourceType.UpdatePaymentForOrganization, organizationId));
 					var org = s.Get<OrganizationModel>(organizationId);
 
 					var plan = s.Get<PaymentPlanModel>(org.PaymentPlan.Id);
@@ -836,14 +836,14 @@ namespace RadialReview.Accessors {
 
 
 		[Obsolete("Dont forget to attach to send this through AttachPlan")]
-		public static PaymentPlan_Monthly GeneratePlan(PaymentPlanType type, DateTime? now = null,DateTime? trialEnd=null) {
+		public static PaymentPlan_Monthly GeneratePlan(PaymentPlanType type, DateTime? now = null, DateTime? trialEnd = null) {
 			var now1 = now ?? DateTime.UtcNow;
 			var day30 = now1.AddDays(30);
 			var day90 = now1.AddDays(90);
 			var basePlan = new PaymentPlan_Monthly() {
-				FreeUntil = trialEnd??day30,
-				L10FreeUntil = trialEnd??day30,
-				ReviewFreeUntil = Math2.Max(day90, trialEnd??DateTime.MinValue),
+				FreeUntil = trialEnd ?? day30,
+				L10FreeUntil = trialEnd ?? day30,
+				ReviewFreeUntil = Math2.Max(day90, trialEnd ?? DateTime.MinValue),
 				PlanCreated = now1,
 				NoChargeForUnregisteredUsers = true,
 			};

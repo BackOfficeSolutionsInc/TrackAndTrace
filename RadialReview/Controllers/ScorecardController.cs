@@ -7,9 +7,8 @@ using RadialReview.Accessors;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Angular.Scorecard;
 
-namespace RadialReview.Controllers
-{
-    public class ScorecardController : BaseController{
+namespace RadialReview.Controllers {
+	public class ScorecardController : BaseController {
 
 		[Access(AccessLevel.UserOrganization)]
 		public FileContentResult Listing() {

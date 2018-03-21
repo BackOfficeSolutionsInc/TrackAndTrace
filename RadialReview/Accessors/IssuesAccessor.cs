@@ -54,8 +54,8 @@ namespace RadialReview.Accessors {
 			Priority = priority;
 		}
 
-		public static IssueCreation CreateL10Issue(string message, string details, long? ownerId, long recurrenceId, long? createdDuringMeeting=null,int priority=0, string modelType = "IssueModel", long modelId = -1, DateTime? now = null) {
-			return new IssueCreation(message, details, ownerId, createdDuringMeeting,priority, recurrenceId, now, modelType, modelId);
+		public static IssueCreation CreateL10Issue(string message, string details, long? ownerId, long recurrenceId, long? createdDuringMeeting = null, int priority = 0, string modelType = "IssueModel", long modelId = -1, DateTime? now = null) {
+			return new IssueCreation(message, details, ownerId, createdDuringMeeting, priority, recurrenceId, now, modelType, modelId);
 		}
 
 
@@ -103,7 +103,7 @@ namespace RadialReview.Accessors {
 
 			if (CreatedDuringMeetingId != null && CreatedDuringMeetingId > 0)
 				perms.ViewL10Meeting(CreatedDuringMeetingId.Value);
-			perms.ViewOrganization(orgId);			
+			perms.ViewOrganization(orgId);
 			if (OwnerId != null)
 				perms.ViewUserOrganization(OwnerId.Value, false);
 
@@ -122,7 +122,7 @@ namespace RadialReview.Accessors {
 			public IssueModel IssueModel { get; set; }
 			public IssueModel.IssueModel_Recurrence IssueRecurrenceModel { get; set; }
 		}
-		
+
 		public static async Task<IssueOutput> CreateIssue(ISession s, PermissionsUtility perms, IssueCreation issueCreator) {
 			//var o = new IssueOutput();
 
@@ -254,7 +254,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		
+
 		public static async Task<IssueOutput> CreateIssue(UserOrganizationModel caller, IssueCreation creation) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -271,33 +271,32 @@ namespace RadialReview.Accessors {
 			long? owner = null, int? priority = null, int? rank = null, bool? awaitingSolve = null, DateTime? now = null) {
 			//using (var s = HibernateSession.GetCurrentSession()) {
 			//	using (var tx = s.BeginTransaction()) {
-            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateIssueMessage(issueRecurrenceId),async s=>{
-                var perms = PermissionsUtility.Create(s, caller);
-                await EditIssue(s, perms, issueRecurrenceId, message, complete, owner, priority, rank, awaitingSolve, now);
-            });
+			await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateIssueMessage(issueRecurrenceId), async s => {
+				var perms = PermissionsUtility.Create(s, caller);
+				await EditIssue(s, perms, issueRecurrenceId, message, complete, owner, priority, rank, awaitingSolve, now);
+			});
 			//		tx.Commit();
 			//		s.Flush();
 			//	}
 			//}
 		}
-        /// <summary>
-        /// SyncAction.UpdateIssueMessage(issue.Issue.Id)
-        /// </summary>
-        /// <param name="s"></param>
-        /// <param name="perms"></param>
-        /// <param name="issueRecurrenceId"></param>
-        /// <param name="message"></param>
-        /// <param name="complete"></param>
-        /// <param name="owner"></param>
-        /// <param name="priority"></param>
-        /// <param name="rank"></param>
-        /// <param name="awaitingSolve"></param>
-        /// <param name="now"></param>
-        /// <returns></returns>
-		public static async Task EditIssue(IOrderedSession s,PermissionsUtility perms, long issueRecurrenceId, string message=null,
-			bool? complete=null, long? owner=null, int? priority=null, int? rank=null, /*bool? delete=null,*/ bool? awaitingSolve=null,
-			DateTime? now = null) 
-		{
+		/// <summary>
+		/// SyncAction.UpdateIssueMessage(issue.Issue.Id)
+		/// </summary>
+		/// <param name="s"></param>
+		/// <param name="perms"></param>
+		/// <param name="issueRecurrenceId"></param>
+		/// <param name="message"></param>
+		/// <param name="complete"></param>
+		/// <param name="owner"></param>
+		/// <param name="priority"></param>
+		/// <param name="rank"></param>
+		/// <param name="awaitingSolve"></param>
+		/// <param name="now"></param>
+		/// <returns></returns>
+		public static async Task EditIssue(IOrderedSession s, PermissionsUtility perms, long issueRecurrenceId, string message = null,
+			bool? complete = null, long? owner = null, int? priority = null, int? rank = null, /*bool? delete=null,*/ bool? awaitingSolve = null,
+			DateTime? now = null) {
 			now = Math2.Min(DateTime.UtcNow.AddSeconds(3), now ?? DateTime.UtcNow);
 
 			var issue = s.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
@@ -307,7 +306,7 @@ namespace RadialReview.Accessors {
 			var recurrenceId = issue.Recurrence.Id;
 			if (recurrenceId == 0)
 				throw new PermissionsException("Meeting does not exist.");
-			
+
 			perms.EditL10Recurrence(recurrenceId);
 
 			//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
@@ -404,7 +403,7 @@ namespace RadialReview.Accessors {
 			//}
 
 			await HooksRegistry.Each<IIssueHook>((ses, x) => x.UpdateIssue(ses, perms.GetCaller(), issue, updates));
-			
+
 		}
 
 		public static void _UpdateIssueCompletion_Unsafe(ISession s, /*RealTimeUtility rt,*/ IssueModel.IssueModel_Recurrence issue, bool complete, DateTime? now = null) {
@@ -741,7 +740,7 @@ namespace RadialReview.Accessors {
 			table.Append("</table>");
 			return table;
 		}
-		
+
 		#region Deleted
 		// [Obsolete("Method is broken",true)]
 		//private static void RecurseIssue(StringBuilder sb, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails) {

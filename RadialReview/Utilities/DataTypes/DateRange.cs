@@ -7,29 +7,25 @@ using NHibernate.Criterion;
 using RadialReview.Models.Interfaces;
 using System.Linq.Expressions;
 
-namespace RadialReview.Utilities.DataTypes
-{
-	public class DateRange
-	{
+namespace RadialReview.Utilities.DataTypes {
+	public class DateRange {
 
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
 		public bool IncludeCurrent { get; set; }
 
 
-        public DateRange(long? start, long? end) {
-            StartTime = (start == null) ? DateTime.MinValue : start.Value.ToDateTime();
-            EndTime = (end == null) ? DateTime.MaxValue : end.Value.ToDateTime();
-        }
+		public DateRange(long? start, long? end) {
+			StartTime = (start == null) ? DateTime.MinValue : start.Value.ToDateTime();
+			EndTime = (end == null) ? DateTime.MaxValue : end.Value.ToDateTime();
+		}
 
-        public DateRange(DateTime start, DateTime end)
-		{
+		public DateRange(DateTime start, DateTime end) {
 			StartTime = start;
 			EndTime = end;
 		}
 
-		public DateRange()
-		{
+		public DateRange() {
 			StartTime = DateTime.MinValue;
 			EndTime = DateTime.MaxValue;
 		}
@@ -42,13 +38,13 @@ namespace RadialReview.Utilities.DataTypes
 	}
 	public static class DateRangeExtensions {
 
-        /// <summary>
-        /// Filters IDeletable. Use Filter.Compile() for Linq
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="range"></param>
-        /// <returns></returns>
-        public static Expression<Func<T, bool>> FilterRestricted<T>(this DateRange range) where T : IDeletable {
+		/// <summary>
+		/// Filters IDeletable. Use Filter.Compile() for Linq
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="range"></param>
+		/// <returns></returns>
+		public static Expression<Func<T, bool>> FilterRestricted<T>(this DateRange range) where T : IDeletable {
 			if (range == null) {
 				return (T x) => x.DeleteTime == null; /// x => true
 			}
@@ -56,14 +52,13 @@ namespace RadialReview.Utilities.DataTypes
 
 		}
 
-        /// <summary>
-        /// Filters IHistoricals. Use Filter.Compile() for Linq
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="range"></param>
-        /// <returns></returns>
-		public static Expression<Func<T, bool>> Filter<T>(this DateRange range) where T : IHistorical
-		{
+		/// <summary>
+		/// Filters IHistoricals. Use Filter.Compile() for Linq
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="range"></param>
+		/// <returns></returns>
+		public static Expression<Func<T, bool>> Filter<T>(this DateRange range) where T : IHistorical {
 			if (range == null) {
 				return (T x) => x.DeleteTime == null; /// x => true
 			}
@@ -78,7 +73,7 @@ namespace RadialReview.Utilities.DataTypes
 			return (T x) => transform(x) <= range.EndTime && transform(x) >= range.StartTime;
 		}
 
-		public static Expression<Func<T, bool>> Filter<T>(this DateRange range,bool allowNull, Func<T, DateTime?> transform) {
+		public static Expression<Func<T, bool>> Filter<T>(this DateRange range, bool allowNull, Func<T, DateTime?> transform) {
 			if (range == null) {
 				if (allowNull)
 					return x => true; /// x => true

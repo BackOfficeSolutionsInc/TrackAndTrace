@@ -31,11 +31,11 @@
 		var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
 		var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
 		var dateRegex3 = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
-		
+
 		if (type == 'string' && dateRegex1.test(value)) {
 			return new Date(parseInt(value.substr(6)));
 		} else if (type == 'string' && dateRegex2.test(value)) {
-			var v=value;
+			var v = value;
 			if (v.indexOf("Z", v.length - "Z".length) !== -1)
 				v = v.slice(0, -1);
 			return new Date(v);
@@ -62,24 +62,24 @@
 		}
 		if (type === "string") {
 			var d = convertDateFromString(value);
-			if (d!==false) {
+			if (d !== false) {
 				return Time.toLocalTime(d);
 			}
 			//number string handled below.
 		}
 
 		if (type === "object") {
-			if (typeof(value.Local) === "boolean" && (typeof (value.Date) === "string" || value.Date.getDate !== undefined)) {
+			if (typeof (value.Local) === "boolean" && (typeof (value.Date) === "string" || value.Date.getDate !== undefined)) {
 				var d = value.Date;
 				if (typeof (value.Date) === "string") {
 					d = convertDateFromString(value.Date);
 				}
-				if (value.Local === false && d!==false) {
+				if (value.Local === false && d !== false) {
 					d = Time.toLocalTime(d);
 				}
 				if (d !== false) {
 					return d;
-				}				
+				}
 			}
 			if (value.getDate !== undefined) {
 				console.warn("timezone not applied");

@@ -15,10 +15,8 @@ using System.Web.Mvc;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities;
 
-namespace RadialReview.Controllers
-{
-	public class ManageController : BaseController
-	{
+namespace RadialReview.Controllers {
+	public class ManageController : BaseController {
 		private void UpdateViewbag() {
 			ViewBag.ManagingPayments = PermissionsAccessor.CanEdit(GetUser(), PermItem.ResourceType.UpdatePaymentForOrganization, GetUser().Organization.Id);
 		}
@@ -27,8 +25,7 @@ namespace RadialReview.Controllers
 		//
 		// GET: /Manage/
 		[Access(AccessLevel.Manager)]
-		public ActionResult Index()
-		{
+		public ActionResult Index() {
 			//Main page
 			var page = "Members";//(string)new Cache().Get(CacheKeys.MANAGE_PAGE) ?? "Members";
 			return RedirectToAction(page);
@@ -43,14 +40,12 @@ namespace RadialReview.Controllers
 			}*/
 		}
 
-		public class ManageUserModel
-		{
+		public class ManageUserModel {
 			public UserOrganizationDetails Details { get; set; }
 		}
 
 		[Access(AccessLevel.Manager)]
-		public ActionResult UserDetails(long id)
-		{
+		public ActionResult UserDetails(long id) {
 			if (id == 0)
 				id = GetUser().Id;
 
@@ -61,7 +56,7 @@ namespace RadialReview.Controllers
 
 			details.ForceEditable = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditQuestionForUser(id));
 
-			var model = new ManageUserModel(){
+			var model = new ManageUserModel() {
 				Details = details
 			};
 
@@ -69,8 +64,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Manager)]
-		public ActionResult Positions()
-		{
+		public ActionResult Positions() {
 			UpdateViewbag();
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Positions", LifeTime.Request/*Session*/);
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -87,45 +81,41 @@ namespace RadialReview.Controllers
 			return View(model);
 		}
 
-        [Access(AccessLevel.Manager)]
-        public ActionResult Teams() {
+		[Access(AccessLevel.Manager)]
+		public ActionResult Teams() {
 			UpdateViewbag();
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Teams", LifeTime.Request/*Session*/);
-            var orgTeams = TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
-            var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = 0, TemplateId = x.TemplateId }).ToList();
+			var orgTeams = TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
+			var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = 0, TemplateId = x.TemplateId }).ToList();
 
-            for (int i = 0; i < orgTeams.Count(); i++)
-            {
-                try
-                {
-                    teams[i].Team = teams[i].Team.HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
-                    teams[i].Members = TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id, false).ToListAlive().Count();
-                }
-                catch (Exception e)
-                {
-                    log.Error(e);
-                }
+			for (int i = 0; i < orgTeams.Count(); i++) {
+				try {
+					teams[i].Team = teams[i].Team.HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
+					teams[i].Members = TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id, false).ToListAlive().Count();
+				} catch (Exception e) {
+					log.Error(e);
+				}
 
-            }
-            var model = new OrganizationTeamsViewModel() { Teams = teams };
-            return View(model);
-        }
-        public class DataVM{
-            public List<SelectListItem> Periods { get; set; }
-        }
-        [Access(AccessLevel.Manager)]
-        public ActionResult Data() {
+			}
+			var model = new OrganizationTeamsViewModel() { Teams = teams };
+			return View(model);
+		}
+		public class DataVM {
+			public List<SelectListItem> Periods { get; set; }
+		}
+		[Access(AccessLevel.Manager)]
+		public ActionResult Data() {
 			UpdateViewbag();
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Data", LifeTime.Request/*Session*/);
-            var model = new DataVM(){
-                Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(y=>y.Name,y=>y.Id)
-            };
+			var model = new DataVM() {
+				Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(y => y.Name, y => y.Id)
+			};
 
-            return View(model);
-        }
+			return View(model);
+		}
 
 		[Access(AccessLevel.Manager)]
-		[OutputCache(NoStore = true,Duration = 0)]
+		[OutputCache(NoStore = true, Duration = 0)]
 		public ActionResult Members() {
 			UpdateViewbag();
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Members", LifeTime.Request/*Session*/);
@@ -133,14 +123,13 @@ namespace RadialReview.Controllers
 
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
 
-			var hasAdminDelete=_PermissionsAccessor.AnyTrue(GetUser(),PermissionType.DeleteEmployees,x=>x.ManagingOrganization);
+			var hasAdminDelete = _PermissionsAccessor.AnyTrue(GetUser(), PermissionType.DeleteEmployees, x => x.ManagingOrganization);
 
 			var messages = MessageAccessor.GetManageMembers_Messages(GetUser(), GetUser().Organization.Id);
 
 			var canUpgrade = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
 
-			for (int i = 0; i < members.Count(); i++)
-			{
+			for (int i = 0; i < members.Count(); i++) {
 				var u = members[i];
 				//u.Teams = u.Teams.OrderBy(x => x.Team.Type).ToList();
 				//var teams = _TeamAccessor.GetUsersTeams(GetUser(), u.Id);
@@ -149,19 +138,18 @@ namespace RadialReview.Controllers
 
 			var roles = UserAccessor.GetUserRolesAtOrganization(GetUser(), GetUser().Organization.Id);
 
-			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization, hasAdminDelete, canUpgrade,roles);
+			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization, hasAdminDelete, canUpgrade, roles);
 			model.Messages = messages;
 			return View(model);
 		}
 
-		public class ReorganizeVM
-		{
+		public class ReorganizeVM {
 			public List<UserOrganizationModel> AllUsers { get; set; }
 			public List<ManagerDuration> AllManagerLinks { get; set; }
 		}
 
 		[Access(AccessLevel.Manager)]
-		[Obsolete("Do not use",true)]
+		[Obsolete("Do not use", true)]
 		public ActionResult Reorganize() {
 			UpdateViewbag();
 			throw new Exception("Do not use");
@@ -195,7 +183,7 @@ namespace RadialReview.Controllers
 			//var companyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 			var companyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
 
-			var model = new OrganizationViewModel(){
+			var model = new OrganizationViewModel() {
 				Id = user.Organization.Id,
 				CompanyValues = companyValues,
 				CompanyRocks = null,//companyRocks,
@@ -208,18 +196,18 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult Advanced() {
 			UpdateViewbag();
-			OrganizationViewModel model = GetAdminDataModel(true,false);
+			OrganizationViewModel model = GetAdminDataModel(true, false);
 			return View(model);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Payment() {
 			UpdateViewbag();
-			OrganizationViewModel model = GetAdminDataModel(false,true);
+			OrganizationViewModel model = GetAdminDataModel(false, true);
 			return View(model);
 		}
 
-		private OrganizationViewModel GetAdminDataModel(bool testManageOrg,bool testManageFinance) {
+		private OrganizationViewModel GetAdminDataModel(bool testManageOrg, bool testManageFinance) {
 			var user = GetUser().Hydrate().Organization().Execute();
 
 			if (!testManageFinance && !testManageOrg)
@@ -275,8 +263,7 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
-		public ActionResult Organization(OrganizationViewModel model)
-		{
+		public ActionResult Organization(OrganizationViewModel model) {
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)//.Select(x => x.CompanyValue)
 				.ToList();
 			model.CompanyRocks = null;//_OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
@@ -287,8 +274,7 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
-		public ActionResult Advanced(OrganizationViewModel model)
-		{
+		public ActionResult Advanced(OrganizationViewModel model) {
 			OrganizationAccessor.Edit(
 				GetUser(),
 				model.Id,
@@ -324,10 +310,10 @@ namespace RadialReview.Controllers
 
 			//model.CompanyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
 
-   //         model.AccountabilityChartId = user.Organization.AccountabilityChartId
+			//         model.AccountabilityChartId = user.Organization.AccountabilityChartId
 
 
-            return Advanced();
+			return Advanced();
 		}
 	}
 }

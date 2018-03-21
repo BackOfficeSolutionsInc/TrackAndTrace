@@ -14,7 +14,7 @@ using System.ComponentModel.DataAnnotations;
 namespace RadialReview.Api.V1 {
 	[RoutePrefix("api/v1")]
 	public class IssuesController : BaseApiController {
-		
+
 		public class CreateIssueModel {
 			///<summary>
 			///Level 10 meeting ID

@@ -511,7 +511,7 @@ function getIssueOrder() {
 	return output;
 }
 
-function updateIssueAwaitingSolve(issueRecurId,status) {
+function updateIssueAwaitingSolve(issueRecurId, status) {
 	$(".issue-row[data-recurrence_issue='" + issueRecurId + "']").attr("data-awaitingsolve", status);
 }
 

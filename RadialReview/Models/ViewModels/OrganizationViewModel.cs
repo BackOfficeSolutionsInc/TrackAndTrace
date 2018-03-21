@@ -8,10 +8,8 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Payments;
 using RadialReview.Models.Scorecard;
 
-namespace RadialReview.Models.ViewModels
-{
-	public class OrganizationViewModel
-	{
+namespace RadialReview.Models.ViewModels {
+	public class OrganizationViewModel {
 		public long Id { get; set; }
 		public String OrganizationName { get; set; }
 		public Boolean ManagersCanEdit { get; set; }
@@ -37,10 +35,9 @@ namespace RadialReview.Models.ViewModels
 		public int? DefaultSendTodoTime { get; set; }
 		public List<SelectListItem> PossibleTodoTimes { get; set; }
 
-		public List<SelectListItem> TimeZones
-		{
-			get{
-				return TimeZoneInfo.GetSystemTimeZones().Select(x => new SelectListItem(){
+		public List<SelectListItem> TimeZones {
+			get {
+				return TimeZoneInfo.GetSystemTimeZones().Select(x => new SelectListItem() {
 					Text = x.DisplayName,
 					Value = x.Id
 				}).ToList();
@@ -50,8 +47,8 @@ namespace RadialReview.Models.ViewModels
 		public List<CompanyValueModel> CompanyValues { get; set; }
 		public List<RockModel> CompanyRocks { get; set; }
 		public List<AboutCompanyAskable> CompanyQuestions { get; set; }
-        public String RockName { get; set; }
-        public List<PaymentMethodVM> Cards { get; set; }
+		public String RockName { get; set; }
+		public List<PaymentMethodVM> Cards { get; set; }
 		public PaymentPlanModel PaymentPlan { get; set; }
 		public bool LimitFiveState { get; set; }
 

@@ -52,7 +52,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[OutputCache(NoStore = true, Duration = 0)]
 		public async Task<JsonResult> Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false, long? dashboardId = null) {
-												
+
 			//Response.AddHeader("Content-Encoding", "gzip");
 			var userId = id;
 			Dashboard dash;
@@ -179,7 +179,7 @@ namespace RadialReview.Controllers {
 			}
 
 
-			
+
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -432,7 +432,7 @@ namespace RadialReview.Controllers {
 			public DashboardVM() {
 				L10s = new List<L10>();
 				Dashboards = new List<SelectListItem>();
-			}			
+			}
 		}
 		public class TileVM {
 			public int w { get; set; }
@@ -512,7 +512,7 @@ namespace RadialReview.Controllers {
 			return View(dashboard);
 		}
 
-		private DashboardVM GenerateDashboardViewModel(long? id, bool useDefault, List<TileModel> tiles,string workspaceName = null) {
+		private DashboardVM GenerateDashboardViewModel(long? id, bool useDefault, List<TileModel> tiles, string workspaceName = null) {
 			var l10s = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, onlyDashboardRecurrences: true);
 			var notes = L10Accessor.GetVisibleL10Notes_Unsafe(l10s.Select(x => x.Id).ToList());
 

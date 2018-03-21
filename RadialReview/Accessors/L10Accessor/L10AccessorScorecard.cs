@@ -473,108 +473,108 @@ namespace RadialReview.Accessors {
 		#endregion
 
 		#region Update
-        [Untested("ESA")]
+		[Untested("ESA")]
 		public static async Task SetMeetingMeasurableOrdering(UserOrganizationModel caller, long recurrenceId, List<long> orderedL10Meeting_Measurables) {
-            //using (var s = HibernateSession.GetCurrentSession()) {
-            //	using (var tx = s.BeginTransaction()) {
-            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.MeasurableReorder(recurrenceId), async s => {
-                PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+			await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.MeasurableReorder(recurrenceId), async s => {
+				PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
 
-                //SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.MeasurableReorder(recurrenceId));
+				//SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.MeasurableReorder(recurrenceId));
 
-                var l10measurables = s.QueryOver<L10Meeting.L10Meeting_Measurable>().WhereRestrictionOn(x => x.Id).IsIn(orderedL10Meeting_Measurables).Where(x => x.DeleteTime == null).List().ToList();
+				var l10measurables = s.QueryOver<L10Meeting.L10Meeting_Measurable>().WhereRestrictionOn(x => x.Id).IsIn(orderedL10Meeting_Measurables).Where(x => x.DeleteTime == null).List().ToList();
 
-                if (!l10measurables.Any())
-                    throw new PermissionsException("None found.");
-                if (l10measurables.GroupBy(x => x.L10Meeting.Id).Count() > 1)
-                    throw new PermissionsException("Measurables must be part of the same meeting");
-                if (l10measurables.First().L10Meeting.L10RecurrenceId != recurrenceId)
-                    throw new PermissionsException("Not part of the specified L10");
-                var recurMeasurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
+				if (!l10measurables.Any())
+					throw new PermissionsException("None found.");
+				if (l10measurables.GroupBy(x => x.L10Meeting.Id).Count() > 1)
+					throw new PermissionsException("Measurables must be part of the same meeting");
+				if (l10measurables.First().L10Meeting.L10RecurrenceId != recurrenceId)
+					throw new PermissionsException("Not part of the specified L10");
+				var recurMeasurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
 
-                for (var i = 0; i < orderedL10Meeting_Measurables.Count; i++) {
-                    var id = orderedL10Meeting_Measurables[i];
-                    var f = l10measurables.FirstOrDefault(x => x.Id == id);
-                    if (f != null) {
-                        f._Ordering = i;
-                        s.Update(f);
-                        var g = recurMeasurables.FirstOrDefault(x => (x.Measurable != null && f.Measurable != null && x.Measurable.Id == f.Measurable.Id) || ((x.Measurable == null && f.Measurable == null) && !x._WasModified));
-                        if (g != null) {
-                            g._WasModified = true;
-                            g._Ordering = i;
-                            s.Update(g);
-                        }
-                    }
-                }
+				for (var i = 0; i < orderedL10Meeting_Measurables.Count; i++) {
+					var id = orderedL10Meeting_Measurables[i];
+					var f = l10measurables.FirstOrDefault(x => x.Id == id);
+					if (f != null) {
+						f._Ordering = i;
+						s.Update(f);
+						var g = recurMeasurables.FirstOrDefault(x => (x.Measurable != null && f.Measurable != null && x.Measurable.Id == f.Measurable.Id) || ((x.Measurable == null && f.Measurable == null) && !x._WasModified));
+						if (g != null) {
+							g._WasModified = true;
+							g._Ordering = i;
+							s.Update(g);
+						}
+					}
+				}
 
-                Audit.L10Log(s, caller, recurrenceId, "SetMeasurableOrdering", null);
+				Audit.L10Log(s, caller, recurrenceId, "SetMeasurableOrdering", null);
 
-                //tx.Commit();
-                //s.Flush();
+				//tx.Commit();
+				//s.Flush();
 
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+				var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 
-                group.reorderMeasurables(orderedL10Meeting_Measurables);
+				group.reorderMeasurables(orderedL10Meeting_Measurables);
 
-                var updates = new AngularUpdate();
-                foreach (var x in recurMeasurables) {
-                    if (x.IsDivider) {
-                        updates.Add(AngularMeasurable.CreateDivider(x._Ordering, x.Id));
-                    } else {
-                        updates.Add(new AngularMeasurable(x.Measurable) { Ordering = x._Ordering });
-                    }
-                }
-                group.update(updates);
-                //	}
-                //}
-            });
+				var updates = new AngularUpdate();
+				foreach (var x in recurMeasurables) {
+					if (x.IsDivider) {
+						updates.Add(AngularMeasurable.CreateDivider(x._Ordering, x.Id));
+					} else {
+						updates.Add(new AngularMeasurable(x.Measurable) { Ordering = x._Ordering });
+					}
+				}
+				group.update(updates);
+				//	}
+				//}
+			});
 		}
 		public static async Task SetRecurrenceMeasurableOrdering(UserOrganizationModel caller, long recurrenceId, List<long> orderedL10Recurrene_Measurables) {
-            //using (var s = HibernateSession.GetCurrentSession()) {
-            //	using (var tx = s.BeginTransaction()) {
-            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.MeasurableReorder(recurrenceId), async s => {
-                var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+			await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.MeasurableReorder(recurrenceId), async s => {
+				var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
 
 
-                //SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.MeasurableReorder(recurrenceId));
+				//SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.MeasurableReorder(recurrenceId));
 
-                /*var l10measurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
+				/*var l10measurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
                     .WhereRestrictionOn(x => x.Measurable.Id).IsIn(orderedL10Recurrene_Measurables)
                     .Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
                     .List().ToList();*/
-                MeasurableModel mm = null;
+				MeasurableModel mm = null;
 
-                var l10RecurMeasurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().JoinAlias(p => p.Measurable, () => mm)
-                    .WhereRestrictionOn(() => mm.Id)
-                    .IsIn(orderedL10Recurrene_Measurables.Where(x => x >= 0).ToArray())
-                    .Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
-                    .List<L10Recurrence.L10Recurrence_Measurable>();
+				var l10RecurMeasurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().JoinAlias(p => p.Measurable, () => mm)
+					.WhereRestrictionOn(() => mm.Id)
+					.IsIn(orderedL10Recurrene_Measurables.Where(x => x >= 0).ToArray())
+					.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
+					.List<L10Recurrence.L10Recurrence_Measurable>();
 
-                var dividers = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
-                    .WhereRestrictionOn(x => x.Id)
-                    .IsIn(orderedL10Recurrene_Measurables.Where(x => x < 0).Select(x => -x).ToArray())
-                    .Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
-                    .List<L10Recurrence.L10Recurrence_Measurable>();
+				var dividers = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
+					.WhereRestrictionOn(x => x.Id)
+					.IsIn(orderedL10Recurrene_Measurables.Where(x => x < 0).Select(x => -x).ToArray())
+					.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
+					.List<L10Recurrence.L10Recurrence_Measurable>();
 
 
 
-                if (!l10RecurMeasurables.Any())
-                    throw new PermissionsException("None found.");
-                if (l10RecurMeasurables.GroupBy(x => x.L10Recurrence.Id).Count() > 1)
-                    throw new PermissionsException("Measurables must be part of the same meeting");
-                if (l10RecurMeasurables.First().L10Recurrence.Id != recurrenceId)
-                    throw new PermissionsException("Not part of the specified L10");
-                var recurMeasurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
+				if (!l10RecurMeasurables.Any())
+					throw new PermissionsException("None found.");
+				if (l10RecurMeasurables.GroupBy(x => x.L10Recurrence.Id).Count() > 1)
+					throw new PermissionsException("Measurables must be part of the same meeting");
+				if (l10RecurMeasurables.First().L10Recurrence.Id != recurrenceId)
+					throw new PermissionsException("Not part of the specified L10");
+				var recurMeasurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
 
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+				var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 
-                var meeting = _GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false);
-                if (meeting != null) {
-                    var l10MeetingMeasurables = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
-                        .Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
-                        .List().ToList();/*.JoinAlias(p => p.Measurable, () => mm)
+				var meeting = _GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false);
+				if (meeting != null) {
+					var l10MeetingMeasurables = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
+						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
+						.List().ToList();/*.JoinAlias(p => p.Measurable, () => mm)
 							.WhereRestrictionOn(() => mm.Id)
 							.IsIn(orderedL10Recurrene_Measurables)
 							.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
@@ -583,15 +583,15 @@ namespace RadialReview.Accessors {
 
 
 
-                    var orderedL10Meeting_Measurables = new List<long>();
-                    for (var i = 0; i < orderedL10Recurrene_Measurables.Count; i++) {
-                        var id = orderedL10Recurrene_Measurables[i];
-                        var f = l10MeetingMeasurables.FirstOrDefault(x => (x.Measurable != null && x.Measurable.Id == id) || (x.Measurable == null && !x._WasModified));
-                        if (f != null) {
-                            f._WasModified = true;
-                            f._Ordering = i;
-                            s.Update(f);
-                            /*var g = l10MeetingMeasurables.FirstOrDefault(x => 
+					var orderedL10Meeting_Measurables = new List<long>();
+					for (var i = 0; i < orderedL10Recurrene_Measurables.Count; i++) {
+						var id = orderedL10Recurrene_Measurables[i];
+						var f = l10MeetingMeasurables.FirstOrDefault(x => (x.Measurable != null && x.Measurable.Id == id) || (x.Measurable == null && !x._WasModified));
+						if (f != null) {
+							f._WasModified = true;
+							f._Ordering = i;
+							s.Update(f);
+							/*var g = l10MeetingMeasurables.FirstOrDefault(x => 
                                 (x.Measurable != null && f.Measurable != null && x.Measurable.Id == f.Measurable.Id) 
                                 || ((x.Measurable == null && f.Measurable == null) && !x._WasModified));
                             if (g != null)
@@ -600,54 +600,54 @@ namespace RadialReview.Accessors {
                                 g._Ordering = i;
                                 s.Update(g);
                             }*/
-                            orderedL10Meeting_Measurables.Add(f.Id);
+							orderedL10Meeting_Measurables.Add(f.Id);
 
-                        }
-                    }
+						}
+					}
 
-                    group.reorderMeasurables(orderedL10Meeting_Measurables);
-                }
+					group.reorderMeasurables(orderedL10Meeting_Measurables);
+				}
 
-                for (var i = 0; i < orderedL10Recurrene_Measurables.Count; i++) {
-                    var id = orderedL10Recurrene_Measurables[i];
-                    var f = l10RecurMeasurables.FirstOrDefault(x => x.Measurable.Id == id) ?? dividers.FirstOrDefault(x => x.Id == -id);
-                    if (f != null) {
-                        f._Ordering = i;
-                        s.Update(f);
-                        /*var g = recurMeasurables.FirstOrDefault(x => (x.Measurable != null && f.Measurable != null && x.Measurable.Id == f.Measurable.Id) || (x.Measurable == null && f.Measurable == null && x.Id==f.Id));
+				for (var i = 0; i < orderedL10Recurrene_Measurables.Count; i++) {
+					var id = orderedL10Recurrene_Measurables[i];
+					var f = l10RecurMeasurables.FirstOrDefault(x => x.Measurable.Id == id) ?? dividers.FirstOrDefault(x => x.Id == -id);
+					if (f != null) {
+						f._Ordering = i;
+						s.Update(f);
+						/*var g = recurMeasurables.FirstOrDefault(x => (x.Measurable != null && f.Measurable != null && x.Measurable.Id == f.Measurable.Id) || (x.Measurable == null && f.Measurable == null && x.Id==f.Id));
                         if (g != null)
                         {
                             g._Ordering = i;
                             s.Update(g);
                         }*/
-                    } else {
-                        //int a = 0;
-                    }
-                }
+					} else {
+						//int a = 0;
+					}
+				}
 
-                Audit.L10Log(s, caller, recurrenceId, "SetMeasurableOrdering", null);
+				Audit.L10Log(s, caller, recurrenceId, "SetMeasurableOrdering", null);
 
-                //tx.Commit();
-                //s.Flush();
+				//tx.Commit();
+				//s.Flush();
 
 
 
-                group.reorderRecurrenceMeasurables(orderedL10Recurrene_Measurables);
+				group.reorderRecurrenceMeasurables(orderedL10Recurrene_Measurables);
 
-                var updates = new AngularUpdate();
-                foreach (var x in recurMeasurables) {
-                    if (x.IsDivider) {
-                        updates.Add(AngularMeasurable.CreateDivider(x._Ordering, x.Id));
-                    } else {
-                        updates.Add(new AngularMeasurable(x.Measurable) { Ordering = x._Ordering });
-                    }
-                }
-                group.update(updates);
+				var updates = new AngularUpdate();
+				foreach (var x in recurMeasurables) {
+					if (x.IsDivider) {
+						updates.Add(AngularMeasurable.CreateDivider(x._Ordering, x.Id));
+					} else {
+						updates.Add(new AngularMeasurable(x.Measurable) { Ordering = x._Ordering });
+					}
+				}
+				group.update(updates);
 
-            });
-            //	}
-            //}
-        }
+			});
+			//	}
+			//}
+		}
 		#endregion
 
 		#region Detatch

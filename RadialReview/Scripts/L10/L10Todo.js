@@ -22,7 +22,7 @@ $(function () {
 		//var padId = $(todoRow).data("padid");
 		var todo = $(todoRow).data("todo");
 
-	    //var due = new Date(new Date(duedate).toUTCString().substr(0, 16));
+		//var due = new Date(new Date(duedate).toUTCString().substr(0, 16));
 		var due = new Date(duedate);
 		var checked = $(todoRow).find(".todo-checkbox").is(":checked");
 
@@ -158,7 +158,7 @@ $(function () {
 		$(selector).prop("checked", checked);
 		$(selector2).data("checked", checked);
 		$(selector2).attr("data-checked", checked);
-		
+
 		$.ajax({
 			url: "/l10/UpdateTodoCompletion/" + window.recurrenceId,
 			method: "post",
@@ -313,7 +313,7 @@ function sortTodoByUser(recurId, todoList) {
 }
 
 function constructTodoRow(todo) {
-    debugger;
+	debugger;
 	var red = "";
 	var nowDateStr = new Date();
 	var nowDate = new Date(nowDateStr.getYear() + 1900, nowDateStr.getMonth(), nowDateStr.getDate());
@@ -324,7 +324,7 @@ function constructTodoRow(todo) {
 	var message = todo.message;
 
 	if (message == null)
-	    message = "";
+		message = "";
 
 	if (duedate < nowDate)
 		red = "red";
@@ -444,7 +444,7 @@ function updateTodoCompletion(todoId, complete) {
 	$(selector2).data("checked", complete);
 	$(selector2).attr("data-checked", complete);
 	///
-	
+
 	checkFireworks();
 }
 

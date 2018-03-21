@@ -72,7 +72,7 @@ namespace RadialReview.Areas.People.Accessors {
 			var possible = new List<ByAboutSurveyUserNode>();
 			foreach (var node in nodes) {
 				var reports = DeepAccessor.GetDirectReportsAndSelf(caller, node.Id);
-				if (!includeSelf) {	
+				if (!includeSelf) {
 					reports = reports.Where(x => x.Id != node.Id).ToList();
 				}
 				var callerUN = SunGetter(sunDict, node);
@@ -107,46 +107,46 @@ namespace RadialReview.Areas.People.Accessors {
 			return combined.OrderBy(x => x.GetBy().ToPrettyString());
 		}
 
-        public static async Task<int> RemindAllIncompleteSurveys(UserOrganizationModel caller, long surveyContainerId) {
-            var output = SurveyAccessor.GetForModelsWithIncompleteSurveysForSurveyContainers(caller, surveyContainerId);
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var perms = PermissionsUtility.Create(s, caller);
-                    var userIds = output.Where(x => x.ModelType == ForModel.GetModelType<UserOrganizationModel>()).Select(x => x.ModelId).Distinct().ToList();
-                    var users = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(userIds).List().ToList();
+		public static async Task<int> RemindAllIncompleteSurveys(UserOrganizationModel caller, long surveyContainerId) {
+			var output = SurveyAccessor.GetForModelsWithIncompleteSurveysForSurveyContainers(caller, surveyContainerId);
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var userIds = output.Where(x => x.ModelType == ForModel.GetModelType<UserOrganizationModel>()).Select(x => x.ModelId).Distinct().ToList();
+					var users = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(userIds).List().ToList();
 
-                    var availUsers = users.Where(x => {
-                        try {
-                            perms.ViewUserOrganization(x.Id, false);
-                            return true;
-                        } catch (PermissionsException e) {
-                            return false;
-                        }
-                        return false;
-                    }).ToList();
+					var availUsers = users.Where(x => {
+						try {
+							perms.ViewUserOrganization(x.Id, false);
+							return true;
+						} catch (PermissionsException e) {
+							return false;
+						}
+						return false;
+					}).ToList();
 
-                    var tasks = availUsers.Select(u => SendReminderUnsafe(s, u, surveyContainerId)).ToList();
-                    await Task.WhenAll(tasks);
+					var tasks = availUsers.Select(u => SendReminderUnsafe(s, u, surveyContainerId)).ToList();
+					await Task.WhenAll(tasks);
 
-                    return tasks.Count;
-                    //tx.Commit();
-                    //s.Flush();
-                }
-            }
-        }
+					return tasks.Count;
+					//tx.Commit();
+					//s.Flush();
+				}
+			}
+		}
 
-        public static async Task SendReminderUnsafe(ISession s,UserOrganizationModel user,long surveyContainerId) {
-            var email = user.GetEmail();
-            var linkUrl = Config.BaseUrl(null, "/People/QuarterlyConversation/");
-            var sc = s.Get<SurveyContainer>(surveyContainerId);
-            await Emailer.SendEmail(
-                Mail.To(EmailTypes.QuarterlyConversationReminder, email)
-                .SubjectPlainText("[Reminder] Please complete your Quarterly Conversation")
-                .Body(EmailStrings.QuarterlyConversationReminder_Body, user.GetFirstName(), sc.DueDate.NotNull(x => x.Value.ToShortDateString()), linkUrl, linkUrl, Config.ProductName()));
+		public static async Task SendReminderUnsafe(ISession s, UserOrganizationModel user, long surveyContainerId) {
+			var email = user.GetEmail();
+			var linkUrl = Config.BaseUrl(null, "/People/QuarterlyConversation/");
+			var sc = s.Get<SurveyContainer>(surveyContainerId);
+			await Emailer.SendEmail(
+				Mail.To(EmailTypes.QuarterlyConversationReminder, email)
+				.SubjectPlainText("[Reminder] Please complete your Quarterly Conversation")
+				.Body(EmailStrings.QuarterlyConversationReminder_Body, user.GetFirstName(), sc.DueDate.NotNull(x => x.Value.ToShortDateString()), linkUrl, linkUrl, Config.ProductName()));
 
-        }
+		}
 
-        public static void LockinSurvey(UserOrganizationModel caller, long surveyContainerId) {
+		public static void LockinSurvey(UserOrganizationModel caller, long surveyContainerId) {
 			var output = SurveyAccessor.GetAngularSurveyContainerBy(caller, caller, surveyContainerId);
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -224,20 +224,20 @@ namespace RadialReview.Areas.People.Accessors {
 			var caller = perms.GetCaller();
 
 			var reconstructed = byAbout.GroupBy(x => x.By.UserOrganizationId + "~" + x.About.ToViewModelKey())
-                .OrderBy(x=>x.First().AboutIsThe.NotNull(y=>y.Value.Order()))
-                .Select(ba => {
-				    //var reconstructedRelationship = AboutType.NoRelationship;
-				    //foreach (var x in ba) {
-				    //	if (x.AboutIsThe.HasValue)
-				    //		reconstructedRelationship = reconstructedRelationship | x.AboutIsThe.Value;
-				    //}
+				.OrderBy(x => x.First().AboutIsThe.NotNull(y => y.Value.Order()))
+				.Select(ba => {
+					//var reconstructedRelationship = AboutType.NoRelationship;
+					//foreach (var x in ba) {
+					//	if (x.AboutIsThe.HasValue)
+					//		reconstructedRelationship = reconstructedRelationship | x.AboutIsThe.Value;
+					//}
 
-				    //var reconstructedAbout = SurveyUserNode.Clone(ba.First().About,true);
-				    //reconstructedAbout.Relationship = reconstructedRelationship;
-				    //return new ByAbout(ba.First().By.User, reconstructedAbout);
+					//var reconstructedAbout = SurveyUserNode.Clone(ba.First().About,true);
+					//reconstructedAbout.Relationship = reconstructedRelationship;
+					//return new ByAbout(ba.First().By.User, reconstructedAbout);
 
-				    return new ByAbout(ba.First().By.User, ba.First().About);
-			    }).ToList();
+					return new ByAbout(ba.First().By.User, ba.First().About);
+				}).ToList();
 
 			foreach (var ba in reconstructed) {
 				//	if (ba.By.Id == 0) {
@@ -312,7 +312,7 @@ namespace RadialReview.Areas.People.Accessors {
 			TransformValueAnswer["not-often"] = "–";
 
 		}
-		
+
 
 		public static AngularPeopleAnalyzer GetPeopleAnalyzer(UserOrganizationModel caller, long userId, DateRange range = null) {
 			//Determine if self should be included.

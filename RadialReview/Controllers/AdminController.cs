@@ -43,7 +43,7 @@ namespace RadialReview.Controllers {
 			return View(ApplicationAccessor.GetCoaches(GetUser()));
 		}
 		[Access(AccessLevel.Radial)]
-		public PartialViewResult EditImplementers(long id=0) {
+		public PartialViewResult EditImplementers(long id = 0) {
 			return PartialView(ApplicationAccessor.GetCoach(GetUser(), id));
 		}
 		[Access(AccessLevel.Radial)]
@@ -84,7 +84,7 @@ namespace RadialReview.Controllers {
 		}
 		[Access(AccessLevel.Radial)]
 		public ActionResult Campaigns() {
-			return View(ApplicationAccessor.GetCampaigns(GetUser(),false));
+			return View(ApplicationAccessor.GetCampaigns(GetUser(), false));
 		}
 		[Access(AccessLevel.Radial)]
 		public PartialViewResult EditCampaign(long id = 0) {
@@ -105,12 +105,12 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess(model));
 		}
 		#endregion
-		
+
 		[Access(AccessLevel.Radial)]
 		[AsyncTimeout(5000)]
-		public async Task<ActionResult> Wait(CancellationToken ct,int seconds = 10,int timeout = 5) {
+		public async Task<ActionResult> Wait(CancellationToken ct, int seconds = 10, int timeout = 5) {
 			await Task.Delay((int)(seconds * 1000));
-			return Content("done "+ DateTime.UtcNow.ToJsMs());
+			return Content("done " + DateTime.UtcNow.ToJsMs());
 		}
 
 		[Access(AccessLevel.Radial)]
@@ -302,7 +302,7 @@ namespace RadialReview.Controllers {
 						csv.Add("" + evt.Id, "Arg1", "" + evt.Argument1);
 					}
 
-					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_Events"+orgId.NotNull(x=>"_"+x)+ ".csv");
+					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_Events" + orgId.NotNull(x => "_" + x) + ".csv");
 				}
 			}
 		}
@@ -325,10 +325,10 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Radial)]
 		public ActionResult DbTime() {
-			
+
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					return Content("DbTimestamp:"+HibernateSession.GetDbTime(s));					
+					return Content("DbTimestamp:" + HibernateSession.GetDbTime(s));
 				}
 			}
 		}
@@ -530,7 +530,7 @@ namespace RadialReview.Controllers {
 
 					if (true/*regen*/) {
 						s.Flush();
-						recur = await L10Accessor.GetOrGenerateAngularRecurrence(s,perms, recurId);
+						recur = await L10Accessor.GetOrGenerateAngularRecurrence(s, perms, recurId);
 					}
 
 
@@ -568,14 +568,14 @@ namespace RadialReview.Controllers {
 		}
 
 		public class AllUserEmail {
-			public String	UserName		{ get; set; }
-			public String	UserEmail	{ get; set; }
-			public String	OrgName		{ get; set; }
-			public long		UserId		{ get; set; }
-			public long		OrgId			{ get; set; }
+			public String UserName { get; set; }
+			public String UserEmail { get; set; }
+			public String OrgName { get; set; }
+			public long UserId { get; set; }
+			public long OrgId { get; set; }
 			public DateTime UserCreateTime { get; set; }
-			public string	AccountType { get; set; }
-			public DateTime? OrgCreateTime { get;  set; }
+			public string AccountType { get; set; }
+			public DateTime? OrgCreateTime { get; set; }
 		}
 		[Access(AccessLevel.Radial)]
 		public ActionResult AllUsers(long id) {
@@ -612,7 +612,7 @@ namespace RadialReview.Controllers {
 						csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
 					}
 
-					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllUsers_"+org.GetName()+".csv");
+					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllUsers_" + org.GetName() + ".csv");
 
 
 				}
@@ -628,11 +628,11 @@ namespace RadialReview.Controllers {
 					var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
 
 
-					var chartsF = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Select(x=>x.RootId).Future<long>();
+					var chartsF = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Select(x => x.RootId).Future<long>();
 					var nodesF = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).Select(
-						x=>x.Id,
-						x=>x.ParentNodeId,
-						x=>x.UserId
+						x => x.Id,
+						x => x.ParentNodeId,
+						x => x.UserId
 					).Future<object[]>();
 
 					var allUsers = allUsersF.ToList();
@@ -644,12 +644,12 @@ namespace RadialReview.Controllers {
 					var allOrgs = allOrgsF.Select(x => new {
 						Id = (long)x[0],
 						NameId = (long)x[1],
-						Name = (string)allLocalizedStrings.GetOrDefault((long)x[1],""),
+						Name = (string)allLocalizedStrings.GetOrDefault((long)x[1], ""),
 						DeleteTime = (DateTime?)x[2],
 						CreateTime = (DateTime)x[3],
 						AccountType = (AccountType)x[4],
 					}).ToDictionary(x => x.Id, x => x);
-					
+
 
 					var items = allUsers.Select(x => {
 						var org = allOrgs.GetOrDefault(x.OrganizationId, null);
@@ -666,22 +666,22 @@ namespace RadialReview.Controllers {
 							UserCreateTime = x.CreateTime
 
 						};
-					}).Where(x=>x!=null).ToList();
+					}).Where(x => x != null).ToList();
 
-					var charts = chartsF.Select(x=>new { RootId = x }).ToList();
+					var charts = chartsF.Select(x => new { RootId = x }).ToList();
 					var nodes = nodesF.Select(x => new {
-						Id=(long)x[0],
+						Id = (long)x[0],
 						ParentNodeId = (long?)x[1],
 						UserId = (long?)x[2]
 					}).ToList();
 
-					var leadershipMembers = new DefaultDictionary<long,bool>(x=>false);
+					var leadershipMembers = new DefaultDictionary<long, bool>(x => false);
 					foreach (var c in charts.ToList()) {
 						var roots = nodes.Where(x => x.Id == c.RootId).ToList();
 						if (roots.Any()) {
 							var visionaryRow = nodes.Where(x => roots.Any(y => x.ParentNodeId == y.Id)).ToList();
 
-							foreach (var i in roots.Where(x=>x.UserId!=null).Select(x => x.UserId))
+							foreach (var i in roots.Where(x => x.UserId != null).Select(x => x.UserId))
 								leadershipMembers[i.Value] = true;
 							foreach (var i in visionaryRow.Where(x => x.UserId != null).Select(x => x.UserId))
 								leadershipMembers[i.Value] = true;
@@ -710,19 +710,19 @@ namespace RadialReview.Controllers {
 							continue;
 						}
 
-						csv.Add("" + o.UserId, "UserName"			,o.UserName);
-						csv.Add("" + o.UserId, "UserEmail"			,o.UserEmail						);
-						csv.Add("" + o.UserId, "OrgName"			,o.OrgName							);
-						csv.Add("" + o.UserId, "UserId"				,""+o.UserId						);
-						csv.Add("" + o.UserId, "OrgId"				,"" + o.OrgId						);
-						csv.Add("" + o.UserId, "UserCreateTime"		,"" + o.UserCreateTime				);
-						csv.Add("" + o.UserId, "AccountType"		,o.AccountType						);
-						csv.Add("" + o.UserId, "OrgCreateTime"		,"" + o.OrgCreateTime				);
-						csv.Add("" + o.UserId, "LeadershipTeam"		,"" + leadershipMembers[o.UserId]	);
+						csv.Add("" + o.UserId, "UserName", o.UserName);
+						csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
+						csv.Add("" + o.UserId, "OrgName", o.OrgName);
+						csv.Add("" + o.UserId, "UserId", "" + o.UserId);
+						csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
+						csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
+						csv.Add("" + o.UserId, "AccountType", o.AccountType);
+						csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
+						csv.Add("" + o.UserId, "LeadershipTeam", "" + leadershipMembers[o.UserId]);
 					}
 
 					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
-					
+
 
 				}
 			}
@@ -1024,16 +1024,16 @@ namespace RadialReview.Controllers {
 			//var server = NetworkAccessor.GetPublicIP();//Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
 			var serverRow = "<tr><td>Amazon Server: </td><td><i>failed</i></td></tr>";
 			try {
-				serverRow = "<tr><td>Amazon Server: </td><td>"+Amazon.EC2.Util.EC2Metadata.InstanceId.ToString()+"</td></tr>";
+				serverRow = "<tr><td>Amazon Server: </td><td>" + Amazon.EC2.Util.EC2Metadata.InstanceId.ToString() + "</td></tr>";
 			} catch (Exception e) {
 
 			}
-            var gitRow = "<tr><td>Git:</td><td><i>failed</i></td></tr>";
-            try {
-                gitRow = "<tr><td>Git:</td><td>" + ThisAssembly.Git.Branch+" </td><td>" +ThisAssembly.Git.Sha+ "</td></tr>";
-            } catch(Exception e) {
+			var gitRow = "<tr><td>Git:</td><td><i>failed</i></td></tr>";
+			try {
+				gitRow = "<tr><td>Git:</td><td>" + ThisAssembly.Git.Branch + " </td><td>" + ThisAssembly.Git.Sha + "</td></tr>";
+			} catch (Exception e) {
 
-            }
+			}
 
 			DateTime? dbTime = null;
 			var now = DateTime.UtcNow;
@@ -1046,19 +1046,19 @@ namespace RadialReview.Controllers {
 					}
 				}
 				var nowAfter = DateTime.UtcNow;
-				var half = new DateTime((nowAfter.Ticks - now.Ticks) / 2+now.Ticks);
+				var half = new DateTime((nowAfter.Ticks - now.Ticks) / 2 + now.Ticks);
 				diff = (dbTime - half).Value.TotalMilliseconds;
-				dbTimeRow = "<tr><td>DbTime:</td><td>" + dbTime.Value.ToString("U") + " </td><td> [diff: "+diff+ "ms]</td></tr>";
+				dbTimeRow = "<tr><td>DbTime:</td><td>" + dbTime.Value.ToString("U") + " </td><td> [diff: " + diff + "ms]</td></tr>";
 
 			} catch (Exception e) {
 			}
-			var txt	 = "<table>";
-			txt		+= "<tr><td>Server Time:</td><td>" + now.ToString("U") +	  " </td><td> [ticks: "+now.Ticks+"]</td></tr>";
-			txt		+= "<tr><td>Build Date: </td><td>"+ buildDate.ToString("U") + " </td><td> [version: "+ version.ToString() + "]</td></tr>";
-            txt     += gitRow;
-			txt		+= serverRow;
-			txt		+= dbTimeRow;
-			txt		+= "</table>";
+			var txt = "<table>";
+			txt += "<tr><td>Server Time:</td><td>" + now.ToString("U") + " </td><td> [ticks: " + now.Ticks + "]</td></tr>";
+			txt += "<tr><td>Build Date: </td><td>" + buildDate.ToString("U") + " </td><td> [version: " + version.ToString() + "]</td></tr>";
+			txt += gitRow;
+			txt += serverRow;
+			txt += dbTimeRow;
+			txt += "</table>";
 
 			return Content(txt);
 		}
@@ -1573,7 +1573,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
-		public async Task<JsonResult> TestChargeToken(string token, decimal amt,bool bank=false) {
+		public async Task<JsonResult> TestChargeToken(string token, decimal amt, bool bank = false) {
 #pragma warning disable CS0618 // Type or member is obsolete
 			var pr = await PaymentSpringUtil.ChargeToken(null, token, amt, true, bank);
 			return Json(pr, JsonRequestBehavior.AllowGet);
@@ -1598,9 +1598,9 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-        [Access(AccessLevel.Radial)]
-        public ActionResult XLS() {
-            return Xls(CsvUtility.ToXls((List<Csv>)null), "myxml");
-        }
+		[Access(AccessLevel.Radial)]
+		public ActionResult XLS() {
+			return Xls(CsvUtility.ToXls((List<Csv>)null), "myxml");
+		}
 	}
 }

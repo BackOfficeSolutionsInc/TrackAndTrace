@@ -42,16 +42,14 @@
 	</tr>
 } else {
 
-	<tr data-row="@ViewBag.Row" 
-		class="@(auto ? "auto" : "reorderable")" 
-		data-measurable="@Model.MeetingMeasurable.Measurable.Id" 
+	<tr data-row="@ViewBag.Row"
+		class="@(auto ? "auto" : "reorderable")"
+		data-measurable="@Model.MeetingMeasurable.Measurable.Id"
 		data-meetingmeasurable="@Model.MeetingMeasurable.Id"
 		data-ShowCumulative="@Model.MeetingMeasurable.Measurable.ShowCumulative"
 		data-CumulativeRange="@Model.MeetingMeasurable.Measurable.CumulativeRange"
 		data-Target="@Model.MeetingMeasurable.Measurable.Goal"
-		data-AltTarget="@Model.MeetingMeasurable.Measurable.AlternateGoal"
-
-	>
+		data-AltTarget="@Model.MeetingMeasurable.Measurable.AlternateGoal">
 		<td class="header-cell">
 			@if (!auto) {
 				<div class="icon fontastic-icon-three-bars icon-rotate handle reorder-icon"></div>
@@ -59,9 +57,7 @@
 		</td>
 		<td><div class="number header-cell"></div></td>
 		<td class="who first1 alignRight @inlineEdit accountable header-cell test-ignore" data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
-			@*data-accountable-name="@Model.MeetingMeasurable.Measurable.AccountableUser.GetName()"
-            data-accountable-initals="@Model.MeetingMeasurable.Measurable.AccountableUser.GetInitials()"
-            data-accountable-url="@Model.MeetingMeasurable.Measurable.AccountableUser.ImageUrl(true,ImageSize._32)"*@
+			@*data-accountable-name="@Model.MeetingMeasurable.Measurable.AccountableUser.GetName()" data-accountable-initals="@Model.MeetingMeasurable.Measurable.AccountableUser.GetInitials()" data-accountable-url="@Model.MeetingMeasurable.Measurable.AccountableUser.ImageUrl(true,ImageSize._32)"*@
 			data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-url="/L10/UpdateMeasurable" data-type="select" data-name="accountable" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" title="Owner">
 			@if (Model.MeetingMeasurable.Measurable.AccountableUser != null) {
 				@Html.Partial("_ProfilePicture", Model.MeetingMeasurable.Measurable.AccountableUser);
@@ -103,46 +99,45 @@
 					}
 					<form>
 						<input @(inlineEdit == "" ? "disabled" : "")
-							   data-goal="@(found.NotNull(x => x.OriginalGoal) ?? Model.MeetingMeasurable.Measurable.Goal)"
-							   data-alt-goal="@(found.NotNull(x => x.AlternateOriginalGoal) ?? Model.MeetingMeasurable.Measurable.AlternateGoal)"
-							   data-goal-dir="@(found.NotNull(x => x.OriginalGoalDirection) ?? Model.MeetingMeasurable.Measurable.GoalDirection)"
-							   data-row="@(ViewBag.Row)"
-							   data-col="@(col)"
-							   data-oldval="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
-							   type="text"
-							   placeholder="N/A"
-							   @if (found != null && !found._Editable) { @: disabled
-							   							   							                                  }
-							   value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
-							   class="grid rt score-value @(seenCurrent?"future-score":"")"
-							   data-scoreid="@(found.NotNull(x => x.Id))"
-							   data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-							   data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
-							   @*id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />*@
-							   id="sc_@(found != null ? "" + found.Id : Model.MeetingMeasurable.Measurable.Id + "_" + r.ForWeek.ToJavascriptMilliseconds())" />
+								data-goal="@(found.NotNull(x => x.OriginalGoal) ?? Model.MeetingMeasurable.Measurable.Goal)"
+								data-alt-goal="@(found.NotNull(x => x.AlternateOriginalGoal) ?? Model.MeetingMeasurable.Measurable.AlternateGoal)"
+								data-goal-dir="@(found.NotNull(x => x.OriginalGoalDirection) ?? Model.MeetingMeasurable.Measurable.GoalDirection)"
+								data-row="@(ViewBag.Row)"
+								data-col="@(col)"
+								data-oldval="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+								type="text"
+								placeholder="N/A"
+								@if (found != null && !found._Editable) { @: disabled
+								}
+								value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+								class="grid rt score-value @(seenCurrent?"future-score":"")"
+								data-scoreid="@(found.NotNull(x => x.Id))"
+								data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+								data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
+								@*id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />*@
+								id="sc_@(found != null ? "" + found.Id : Model.MeetingMeasurable.Measurable.Id + "_" + r.ForWeek.ToJavascriptMilliseconds())" />
 					</form>
 
 				</td>
 				if (r.IsCurrentWeek) {
 					<td class="buttonHolder">
 						<span class="icon fontastic-icon-pinboard issuesButton issuesModal"
-							  data-meeting="@Model.MeetingId"
-							  data-recurrence="@Model.RecurrenceId"
-							  data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-							  data-score="@(found.NotNull(x => x.Id))"
-							  data-userid="@(Model.MeetingMeasurable.Measurable.AccountableUserId)"
-							  title="Create a Context-Aware Issue™"
-							  @*data-message="@found.IssueMessage().EscapeHtml()"
-                                data-details="@found.IssueDetails().EscapeHtml()"*@>
+								data-meeting="@Model.MeetingId"
+								data-recurrence="@Model.RecurrenceId"
+								data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+								data-score="@(found.NotNull(x => x.Id))"
+								data-userid="@(Model.MeetingMeasurable.Measurable.AccountableUserId)"
+								title="Create a Context-Aware Issue™"
+								@*data-message="@found.IssueMessage().EscapeHtml()" data-details="@found.IssueDetails().EscapeHtml()"*@>
 						</span>
 						<span class="glyphicon glyphicon-unchecked todoButton todoModal"
-							  data-method="CreateScorecardTodo"
-							  data-meeting="@Model.MeetingId"
-							  data-recurrence="@Model.RecurrenceId"
-							  data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-							  data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
-							  title="Create a Context-Aware To-Do™"
-							  data-score="@(found.NotNull(x => x.Id))">
+								data-method="CreateScorecardTodo"
+								data-meeting="@Model.MeetingId"
+								data-recurrence="@Model.RecurrenceId"
+								data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+								data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
+								title="Create a Context-Aware To-Do™"
+								data-score="@(found.NotNull(x => x.Id))">
 						</span>
 					</td>
 				}

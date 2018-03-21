@@ -64,19 +64,19 @@
 			@foreach (var m in (List<UserLookup>)ViewBag.Members) {
 				<tr>
 					<td class="alignCenter" style="color:@(m.LastLogin.NotNull(x =>{
-						                         if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
-						                         {
+												 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
+												 {
 													 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(7)))
 													 {
 														 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))){
 															 return "green";
 														 }
 														 return "lightgreen";
-							                         }
+													 }
 													 return "#ef7622";
-						                         }
-						                         return "red";
-					                         })??"darkred")">
+												 }
+												 return "red";
+											 })??"darkred")">
 						@m.LastLogin.NotNull(x => x.ToString())
 					</td>
 					<td class="alignCenter">@m.HasSentInvite.GetIcon() <span style="display: none">@(m.HasSentInvite ? 1 : 0)</span></td>
@@ -118,21 +118,21 @@
 						</td>
 						<td>@(m._MeetingAttendees.NotNull(x => x.Count()))</td>
 						<td style="color:@(m.CompleteTime.NotNull(x=>{
-                                         if (totalMin > 200)
-                                             return "darkred";
+										 if (totalMin > 200)
+											 return "darkred";
 
-                                     if (totalMin > 10){
+									 if (totalMin > 10){
 											if (totalMin > 60)
 											{
 												if (totalMin >80){
 													return "green";
 												}
 												return "lightgreen";
-							                }
+											}
 											return "#ef7622";
-						                }
-						                return "red";
-					                }))">
+										}
+										return "red";
+									}))">
 							@(totalMin + "m")
 						</td>
 					</tr>

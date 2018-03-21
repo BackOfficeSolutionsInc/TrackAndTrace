@@ -115,7 +115,7 @@
 		}
 
 		.userType[data-enabled='true']:before {
-			text-transform:lowercase;
+			text-transform: lowercase;
 			color: #333;
 		}
 
@@ -123,7 +123,7 @@
 			color: lightgray;
 		}
 
-		.userroles{
+		.userroles {
 			text-align: right;
 		}
 
@@ -540,7 +540,7 @@
 								@foreach (var item in Enum.GetValues(typeof(UserRoleType))) {
 									var fi = (UserRoleType)item;
 									var any = p.Roles.Any(x => x.RoleType == fi);
-									score += any?(int)fi:0;
+									score += any ? (int)fi : 0;
 									<span class="userType userType-@fi.ToString() clickable" data-type="@fi.ToString()" data-id="@p.Id" data-enabled="@any.ToJavascript()" onclick="setUserType(this)" title="@fi.ToString()"></span>
 								}
 								<span class="hidden">@(-score)</span>

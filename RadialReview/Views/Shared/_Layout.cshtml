@@ -162,173 +162,173 @@
 
 			var _userFormat = format.replace(/MM/g, MM).replace(/M/g, _M).replace(/dd/g, dd).replace(/d/g, _d).replace(/yyyy/g, yyyy).replace(/yy/g, (yyyy - 2000))
 				.replace(/HH/g, HH).replace(/H/g, H).replace(/hh/g, hh).replace(/h/g, h).replace(/mm/g, mm).replace(/m/g, m).replace(/ss/g, ss).replace(/s/g, s).replace(/tt/g, tt).replace(/t/g, t);
-            return _userFormat;
-        }
+			return _userFormat;
+		}
 
 
 
-    </script>
+	</script>
 
 
-    @RenderSection("topSection", required: false)
+	@RenderSection("topSection", required: false)
 
-    @if (ViewBag.IsLocal ?? false) {
-        <div id="local" onclick="showDebug()"></div>
-        <div class="debugger"></div>
-    }
-    <div class="statusContainer"><div id="status">No status</div></div>
-    <div id="wrap">
-        <div id="main">
-            @if (!(ViewBag.NoTitleBar ?? false)) {
-                <div class="navbar navbar-inverse navbar-fixed-top">
-                    <div class="container body-navbar">
-                        <div class="navbar-header">
-                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                            </button>
-                            @if (ViewBag.FullLogo as bool? != true) {
-                                <div id="logo">
-                                    <div class="link">
-                                        <a href="@Url.Action("Index", "Home",new {area=""})" class="navbar-brand">
-                                            <span style="z-index: 1000001; position: relative; top: -2px;">
-                                                <img src="/Content/img/TRACTION-TOOLS_large_icon_wh.png" height="54" width="54" style="opacity: .95;">
-                                            </span>
-                                        </a>
-                                    </div>
-                                </div>
-                            } else {
-                                <div id="logo">
-                                    <div class="link">
-                                        <a href="@Url.Action("Index", "Home", new { area = "" })" class="navbar-brand">
-                                            <span style="z-index: 1000001; position: relative; top: -2px;">
-                                                <img src="/Content/img/TRACTION-TOOLS_small_horizontal_wh.png" height="54" style="opacity: .95;">
-                                            </span>
-                                        </a>
-                                    </div>
-                                </div>
-                            }
+	@if (ViewBag.IsLocal ?? false) {
+		<div id="local" onclick="showDebug()"></div>
+		<div class="debugger"></div>
+	}
+	<div class="statusContainer"><div id="status">No status</div></div>
+	<div id="wrap">
+		<div id="main">
+			@if (!(ViewBag.NoTitleBar ?? false)) {
+				<div class="navbar navbar-inverse navbar-fixed-top">
+					<div class="container body-navbar">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							@if (ViewBag.FullLogo as bool? != true) {
+								<div id="logo">
+									<div class="link">
+										<a href="@Url.Action("Index", "Home",new {area=""})" class="navbar-brand">
+											<span style="z-index: 1000001; position: relative; top: -2px;">
+												<img src="/Content/img/TRACTION-TOOLS_large_icon_wh.png" height="54" width="54" style="opacity: .95;">
+											</span>
+										</a>
+									</div>
+								</div>
+							} else {
+								<div id="logo">
+									<div class="link">
+										<a href="@Url.Action("Index", "Home", new { area = "" })" class="navbar-brand">
+											<span style="z-index: 1000001; position: relative; top: -2px;">
+												<img src="/Content/img/TRACTION-TOOLS_small_horizontal_wh.png" height="54" style="opacity: .95;">
+											</span>
+										</a>
+									</div>
+								</div>
+							}
 							<span class="beta-only beta-label">beta</span>
-                            <span class="pull-right navbar-icon-container visible-xs">
-                                @if (((int?)ViewBag.Organizations ?? 0) > 0) {
-                                    if (ViewBag.ShowL10) {
-                                        <span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal" title="New People Headline"></span>
-                                        <span id="header-tab-new-issue" class="navbar-icon-button glyphicon1 glyphicon-pushpi1n icon fontastic-icon-pinboard issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
-                                    }
-                                    <span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
-                                }
-                            </span>
+							<span class="pull-right navbar-icon-container visible-xs">
+								@if (((int?)ViewBag.Organizations ?? 0) > 0) {
+									if (ViewBag.ShowL10) {
+										<span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal" title="New People Headline"></span>
+										<span id="header-tab-new-issue" class="navbar-icon-button glyphicon1 glyphicon-pushpi1n icon fontastic-icon-pinboard issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+									}
+									<span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
+								}
+							</span>
 
-                        </div>
-                        <div class="navbar-collapse collapse">
-                            <ul class="nav navbar-nav">
-                                @if (Request.IsAuthenticated) {
-                                    if (((int?)ViewBag.Organizations ?? 0) == 0 && !(ViewBag.NoAccessCode ?? false)) {
-                                        <li>
-                                            <a href="@Url.Action("Index", "Home", new { area = "" })" class="@(ViewBag.TaskCount == 0?"":"flashing")">
-                                                Access Code
-                                                <span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
-                                            </a>
-                                        </li>
-                                    }
-                                    if (((int?)ViewBag.Organizations ?? 0) > 0) {
-                                        <li>
-                                            <a href="@Url.Action("Index", "Home",new { area = "" })" id="header-tab-workspace">
-                                                Workspace
-                                                <span id="DashboardNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-                                            </a>
-                                        </li>
-                                        if (ViewBag.ShowL10 ?? false) {
-                                            <li>
-                                                <a href="@Url.Action("Index", "L10",new { area = "" })" id="header-tab-l10">
-                                                    L10
-                                                    <span id="L10Notification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-                                                </a>
-                                            </li>
-                                        }
-                                        if (ViewBag.ShowReview ?? false) {
-                                            <li>
-                                                <a href="@Url.Action("Index", "Reviews",new { area = "" })" id="header-tab-reviews">
-                                                    @(Html.ReviewName())s
-                                                    <span id="ReviewsNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-                                                </a>
-                                            </li>
-                                        }
-                                        if ((ViewBag.ShowAC ?? false) && !(ViewBag.ShowPeople ?? false)) {
-                                            <li>
-                                                <a href="@Url.Action("Chart", "Accountability",new { area = "" })" id="header-tab-ac">
-                                                    AC
-                                                    <span id="AcNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-                                                </a>
-                                            </li>
-                                        }
-                                        if (ViewBag.ShowSurvey ?? false) {
-                                            <li>
-                                                <a href="@Url.Action("Index", "Surveys",new { area = "" })" id="header-tab-survey">
-                                                    Surveys
-                                                    <span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-                                                </a>
-                                            </li>
-                                        }
-                                        if (ViewBag.ShowPeople ?? false) {
-                                            <li>
-                                                <a href="@Url.Action("Index", "Main",new { area = "People" })" id="header-tab-survey">
-                                                    People
-                                                    <span id="PeopleNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-                                                </a>
-                                            </li>
-                                        }
-                                        if (ViewBag.ShowCoreProcess ?? false) {
-                                            <li>
-                                                <a href="@Url.Action("Index", "Process",new { area = "CoreProcess" })" id="header-tab-survey">
-                                                    Core Process
-                                                    <span id="CoreProcessNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-                                                </a>
-                                            </li>
-                                        }
-                                    }
-                                } else {
-                                }
-                            </ul>
-                            @if (!(ViewBag.IsLogin ?? false)) {
-                                Html.RenderPartial("_LoginPartial", (string)ViewBag.ReturnUrl);
-                            }
-                             <div class="beta-only">
-                                 <a href="/redirect/feedback" target="_blank"><span class="feedback-smile" title="Send us feedback!"></span></a>
-                             </div>
-                        </div>
-                    </div>
-                </div>
-                <script>
-                    //Test for IOS
-                    if ((/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
-                        document.getElementById("body").className += " is-ios";
-                        var allowBack = document.referrer != "" && document.referrer.toLowerCase().lastIndexOf("/account/login") == -1;
+						</div>
+						<div class="navbar-collapse collapse">
+							<ul class="nav navbar-nav">
+								@if (Request.IsAuthenticated) {
+									if (((int?)ViewBag.Organizations ?? 0) == 0 && !(ViewBag.NoAccessCode ?? false)) {
+										<li>
+											<a href="@Url.Action("Index", "Home", new { area = "" })" class="@(ViewBag.TaskCount == 0?"":"flashing")">
+												Access Code
+												<span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
+											</a>
+										</li>
+									}
+									if (((int?)ViewBag.Organizations ?? 0) > 0) {
+										<li>
+											<a href="@Url.Action("Index", "Home",new { area = "" })" id="header-tab-workspace">
+												Workspace
+												<span id="DashboardNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+											</a>
+										</li>
+										if (ViewBag.ShowL10 ?? false) {
+											<li>
+												<a href="@Url.Action("Index", "L10",new { area = "" })" id="header-tab-l10">
+													L10
+													<span id="L10Notification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+												</a>
+											</li>
+										}
+										if (ViewBag.ShowReview ?? false) {
+											<li>
+												<a href="@Url.Action("Index", "Reviews",new { area = "" })" id="header-tab-reviews">
+													@(Html.ReviewName())s
+													<span id="ReviewsNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+												</a>
+											</li>
+										}
+										if ((ViewBag.ShowAC ?? false) && !(ViewBag.ShowPeople ?? false)) {
+											<li>
+												<a href="@Url.Action("Chart", "Accountability",new { area = "" })" id="header-tab-ac">
+													AC
+													<span id="AcNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+												</a>
+											</li>
+										}
+										if (ViewBag.ShowSurvey ?? false) {
+											<li>
+												<a href="@Url.Action("Index", "Surveys",new { area = "" })" id="header-tab-survey">
+													Surveys
+													<span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+												</a>
+											</li>
+										}
+										if (ViewBag.ShowPeople ?? false) {
+											<li>
+												<a href="@Url.Action("Index", "Main",new { area = "People" })" id="header-tab-survey">
+													People
+													<span id="PeopleNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+												</a>
+											</li>
+										}
+										if (ViewBag.ShowCoreProcess ?? false) {
+											<li>
+												<a href="@Url.Action("Index", "Process",new { area = "CoreProcess" })" id="header-tab-survey">
+													Core Process
+													<span id="CoreProcessNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+												</a>
+											</li>
+										}
+									}
+								} else {
+								}
+							</ul>
+							@if (!(ViewBag.IsLogin ?? false)) {
+								Html.RenderPartial("_LoginPartial", (string)ViewBag.ReturnUrl);
+							}
+							 <div class="beta-only">
+								 <a href="/redirect/feedback" target="_blank"><span class="feedback-smile" title="Send us feedback!"></span></a>
+							 </div>
+						</div>
+					</div>
+				</div>
+				<script>
+					//Test for IOS
+					if ((/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
+						document.getElementById("body").className += " is-ios";
+						var allowBack = document.referrer != "" && document.referrer.toLowerCase().lastIndexOf("/account/login") == -1;
 
-                        var link = allowBack ?"javascript:history.back()":"#";
-                        var disabled = allowBack ?"":"disabled";
-                        var newLogo = "<span class='link'><a class='"+disabled+"' href='"+link+"'>Back</a></span>";
-                        document.getElementById("logo").innerHTML =newLogo
-                    }
-                </script>
+						var link = allowBack ?"javascript:history.back()":"#";
+						var disabled = allowBack ?"":"disabled";
+						var newLogo = "<span class='link'><a class='"+disabled+"' href='"+link+"'>Back</a></span>";
+						document.getElementById("logo").innerHTML =newLogo
+					}
+				</script>
 
-            }
-            @RenderSection("top", false)
-            <div class="container body-content">
-                @RenderSection("header", false)
-                <div class="clearfix subheading noPrint hidden-xs">@ViewBag.Subheading</div>
-                <div id="alerts"></div>
-                <div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
-                    @RenderSection("hints", false)
-                </div>
-                @RenderBody()
-                <div class="footer-bar">@{ Html.RenderPartial("Partial/_VideoChat"); }</div>
-            </div>
-            <div id="animationContainer"></div>
-        </div>
-        @{Html.RenderPartial("Partial/_Modal");}
-        @using (var s = Html.BeginScripts()) {
+			}
+			@RenderSection("top", false)
+			<div class="container body-content">
+				@RenderSection("header", false)
+				<div class="clearfix subheading noPrint hidden-xs">@ViewBag.Subheading</div>
+				<div id="alerts"></div>
+				<div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
+					@RenderSection("hints", false)
+				</div>
+				@RenderBody()
+				<div class="footer-bar">@{ Html.RenderPartial("Partial/_VideoChat"); }</div>
+			</div>
+			<div id="animationContainer"></div>
+		</div>
+		@{Html.RenderPartial("Partial/_Modal");}
+		@using (var s = Html.BeginScripts()) {
 				<!--script src="~/Scripts/Main/radial.js"></script-->
 			<script>
 				$(function () {
@@ -337,14 +337,13 @@
 					ForceUnhide();
 					@if (ViewBag.Alert!=null){
 							@:showAlert("@ViewBag.Alert");
-																																					                                                                                                    																																														                                        }
+					}
 					@if(ViewBag.Success!=null){
-                      @: showAlert("@ViewBag.Success", "alert-success" , "Success!" );
-
-                    }
+					  @: showAlert("@ViewBag.Success", "alert-success" , "Success!" );
+					}
 					@if(ViewBag.InfoAlert!=null){
-                        @: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" );
-																																					                                                                                                    																																														                                        }
+						@: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" );
+					}
 					UnstoreJsonAlert();
 
 					try{
@@ -360,13 +359,13 @@
 
 				});  var statusTimeout;
 				@{
-                    var tooltips = new MvcHtmlString("[]");
-                    try {
-                        tooltips = new MvcHtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Tooltips));
-                    } catch (Exception) {
+					var tooltips = new MvcHtmlString("[]");
+					try {
+						tooltips = new MvcHtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Tooltips));
+					} catch (Exception) {
 
-                    }
-                }
+					}
+				}
 				window.tooltips = @(tooltips);
 
 			</script>}

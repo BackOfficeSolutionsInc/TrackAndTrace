@@ -21,14 +21,14 @@
 <div class="review smallBreak2 loading tiny" style2="min-height:30px;">
 	<div class="heading" @*="margin:7px;"*@>Traction Tools Update:</div>
 	<div class="tile">
-        <div class="software-updates scroller">
-            @*@foreach (var g in Model.OrderByDescending(x => x.Date)) {
-                <h1 class="hidden-width-1">** Update for @lookupDate(g.Date, false)@(String.IsNullOrWhiteSpace(g.Title) ? "" : " - ")@g.Title **</h1>
-                <h1 class="visible-width-1">** Update @lookupDate(g.Date, true)@(String.IsNullOrWhiteSpace(g.Title) ? "" : " - ")@g.Title **</h1>
-                <blockquote>
-                    @g.Markup
-                </blockquote>
-            }*@
+		<div class="software-updates scroller">
+			@*@foreach (var g in Model.OrderByDescending(x => x.Date)) {
+				<h1 class="hidden-width-1">** Update for @lookupDate(g.Date, false)@(String.IsNullOrWhiteSpace(g.Title) ? "" : " - ")@g.Title **</h1>
+				<h1 class="visible-width-1">** Update @lookupDate(g.Date, true)@(String.IsNullOrWhiteSpace(g.Title) ? "" : " - ")@g.Title **</h1>
+				<blockquote>
+					@g.Markup
+				</blockquote>
+			}*@
 
 			@*=================*@
 
@@ -116,6 +116,6 @@
 
 			</blockquote>
 			@*=================*@
-        </div>
+		</div>
 	</div>
 </div>

@@ -56,14 +56,14 @@ namespace RadialReview.Hooks.Realtime.L10 {
 			var recur = s.Load<L10Recurrence>(recurrenceId);
 			var current = L10Accessor._GetCurrentL10Meeting(s, PermissionsUtility.CreateAdmin(s), recurrenceId, true, false, false);
 			var skipRealTime = false;
-		
+
 			var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.MeasurableId == measurable.Id).List().ToList();
 
 			using (var rt = RealTimeUtility.Create()) {
 				if (current != null) {
 					var ts = recur.Organization.GetTimeSettings();
 					ts.Descending = recur.ReverseScorecard;
-					var weeks = TimingUtility.GetPeriods(ts, recurMeasurable.CreateTime, current.StartTime,true);
+					var weeks = TimingUtility.GetPeriods(ts, recurMeasurable.CreateTime, current.StartTime, true);
 
 					var additional = await ScorecardAccessor._GenerateScoreModels_AddMissingScores_Unsafe(s, weeks.Select(x => x.ForWeek), measurable.Id.AsList(), scores);
 					scores.AddRange(additional);
