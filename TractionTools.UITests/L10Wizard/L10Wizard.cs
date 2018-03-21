@@ -8,93 +8,92 @@ using OpenQA.Selenium.Support.UI;
 using RadialReview.Accessors;
 
 namespace TractionTools.UITests.L10Wizard {
-    [TestClass]
-    public class L10Wizard : BaseSelenium {
+	[TestClass]
+	public class L10Wizard : BaseSelenium {
 
-        public static Credentials AUC { get; set; }
-        public static String MeetingName { get; set; }
-        public static L10 Recur { get; set; }
+		public static Credentials AUC { get; set; }
+		public static String MeetingName { get; set; }
+		public static L10 Recur { get; set; }
 
-        [ClassInitialize]
-        public static void Setup(TestContext ctx)
-        {
-            var testId = Guid.NewGuid();
-            AUC = GetAdminCredentials(testId).GetAwaiter().GetResult();
+		[ClassInitialize]
+		public static void Setup(TestContext ctx) {
+			var testId = Guid.NewGuid();
+			AUC = GetAdminCredentials(testId).GetAwaiter().GetResult();
 
-            MeetingName = "WizardMeeting";
-            Recur = L10Utility.CreateRecurrence(MeetingName).GetAwaiter().GetResult();
-			
+			MeetingName = "WizardMeeting";
+			var org = OrgUtil.CreateOrganization("WizardTests").GetAwaiter().GetResult();
+
+			Recur = L10Utility.CreateRecurrence(name:MeetingName,org:org).GetAwaiter().GetResult();
+
 			Recur.AddAttendee(Recur.Creator).GetAwaiter().GetResult();
-			
+
 		}
 
-        [TestMethod]
+		[TestMethod]
 		[TestCategory("Visual")]
-		public void Visual_L10_Wizard_Basics()
-        {
-            TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
-                d.Find("#l10-wizard-menu", 10);
-                var basics = d.FindElement(By.PartialLinkText("Basics"), 10);
-                Assert.IsTrue(basics.HasClass("selected"));
+		public void Visual_L10_Wizard_Basics() {
+			TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
+				d.Find("#l10-wizard-menu", 10);
+				var basics = d.FindElement(By.PartialLinkText("Basics"), 10);
+				Assert.IsTrue(basics.HasClass("selected"));
 				d.FindElement(By.CssSelector(".nextButton"), 10);
 				d.WaitForNotVisible(".backButton");
 				Assert.IsFalse(d.Find(".backButton", 10).Displayed);
-                Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
+				Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
 
-                d.WaitUntil(x => MeetingName == d.Find("#l10-wizard-name input").Val());
-                //Assert.AreEqual(MeetingName, d.Find("#l10-wizard-name input").Val());
+				d.WaitUntil(x => MeetingName == d.Find("#l10-wizard-name input").Val());
+				//Assert.AreEqual(MeetingName, d.Find("#l10-wizard-name input").Val());
 
-                var select = d.Find("#l10-wizard-teamtype select");
+				var select = d.Find("#l10-wizard-teamtype select");
 
-				d.WaitUntil(x=> "string:LeadershipTeam" == select.Val());
+				d.WaitUntil(x => "string:LeadershipTeam" == select.Val());
 
 				//Assert.AreEqual(, select.Val());
-                d.TestScreenshot("Basics");
+				d.TestScreenshot("Basics");
 
-                select.Click();
-                new SelectElement(select).SelectByText("Other");
-                Assert.AreEqual("string:Other", select.Val());
-                d.TestScreenshot("Basics-Select");
-            });
-        }
-        [TestMethod]
+				select.Click();
+				new SelectElement(select).SelectByText("Other");
+				Assert.AreEqual("string:Other", select.Val());
+				d.TestScreenshot("Basics-Select");
+			});
+		}
+		[TestMethod]
 		[TestCategory("Visual")]
-		public void Visual_L10_Wizard_Attendees()
-        {
-            TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
-                d.Find("#l10-wizard-menu", 10);
-                var pageTitle = d.FindElement(By.PartialLinkText("Attendees"), 10);
-                pageTitle.Click();
-                Assert.IsTrue(d.WaitUntil(x => pageTitle.HasClass("selected")));
+		public void Visual_L10_Wizard_Attendees() {
+			TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
+				d.Find("#l10-wizard-menu", 10);
+				var pageTitle = d.FindElement(By.PartialLinkText("Attendees"), 10);
+				pageTitle.Click();
+				Assert.IsTrue(d.WaitUntil(x => pageTitle.HasClass("selected")));
 
-                Assert.IsTrue(d.Find(".backButton", 10).Displayed);
-                Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
+				Assert.IsTrue(d.Find(".backButton", 10).Displayed);
+				Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
 
-                var page = d.Find("#l10-wizard-attendees");
+				var page = d.Find("#l10-wizard-attendees");
 
-               // d.WaitForVisible("#l10-wizard-attendees .empty-search");
+				// d.WaitForVisible("#l10-wizard-attendees .empty-search");
 
 
-                d.TestScreenshot("Blank");
+				d.TestScreenshot("Blank");
 
-                Assert.AreEqual("ATTENDEES LIST", d.Find(".title-bar").Text);
-                Assert.IsTrue(d.Find(".upload-attendees").Displayed);
+				Assert.AreEqual("ATTENDEES LIST", d.Find(".title-bar").Text);
+				Assert.IsTrue(d.Find(".upload-attendees").Displayed);
 
-                Assert.IsFalse(d.Find(".livesearch-container").Displayed);
-                Assert.IsFalse(d.Find(".create-user").Displayed);
-                Assert.IsFalse(d.Find(".upload-users").Displayed);
+				Assert.IsFalse(d.Find(".livesearch-container").Displayed);
+				Assert.IsFalse(d.Find(".create-user").Displayed);
+				Assert.IsFalse(d.Find(".upload-users").Displayed);
 
-                page.Find(".create-row").Click();
+				page.Find(".create-row").Click();
 
 				//Assert.IsTrue(d.WaitUntil(x => x.Find(".livesearch-container").Displayed));
 				//Assert.IsTrue(d.WaitUntil(x => x.Find(".create-user").Displayed));
 				//Assert.IsTrue(d.WaitUntil(x => x.Find(".upload-users").Displayed));
 
-				Assert.IsTrue(d.WaitUntil(10,x => x.Find(".seoc .select2-selection--single",10).Displayed));
+				Assert.IsTrue(d.WaitUntil(10, x => x.Find(".seoc .select2-selection--single", 10).Displayed));
 
 				d.TestScreenshot("Basics-Select");
-            });
-        }
+			});
+		}
 		[TestMethod]
 		[TestCategory("Visual")]
 		public async Task Visual_L10_Wizard_Scorecard() {
@@ -145,12 +144,12 @@ namespace TractionTools.UITests.L10Wizard {
 				d.Find("body").Click();
 
 				d.Wait(1000);
-				
+
 
 				d.Find("#modalOk").Submit();
 
 				d.TestScreenshot("Scorecard-AfterAdd");
-				
+
 				//d.Wait(1000);
 				//d.Find("#modalOk").Submit();
 
@@ -251,118 +250,117 @@ namespace TractionTools.UITests.L10Wizard {
 			});
 		}
 		[TestMethod]
-        [TestCategory("Visual")]
-        public async Task Visual_L10_Wizard_Todo() {
-            await L10Accessor.AddAttendee(AUC.User, Recur.Id, AUC.User.Id);
-
-            TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
-                d.Find("#l10-wizard-menu", 10);
-                var pageTitle = d.FindElement(By.PartialLinkText("To-dos"), 10);
-                pageTitle.Click();
-                Assert.IsTrue(d.WaitUntil(x => pageTitle.HasClass("selected")));
-
-                Assert.IsTrue(d.Find(".backButton", 10).Displayed);
-                Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
-
-                var page = d.Find("#l10-wizard-todos");
-
-                d.WaitForVisible("#l10-wizard-todos .empty-search");
-
-                //Assert.IsTrue(d.WaitUntil(x => page.Find(".empty-search").Displayed));
-
-                d.TestScreenshot("Blank");
-
-                Assert.AreEqual("TO-DO LIST", page.Find(".title-bar").Text);
-
-                Assert.IsTrue(page.Find(".upload-todos").Displayed);
-
-                page.Find(".create-row").Click();
-
-                var rows = d.WaitUntil(x => {
-                    var f = x.Finds(".todo-pane tbody tr[md-row]");
-                    if (f.Count == 0)
-                        return null;
-                    return f;
-                });
-
-                d.WaitForNotVisible("#l10-wizard-todos .empty-search");
-
-                Assert.AreEqual(1, rows.Count); //extra one for repeat container
-
-                var row = rows[0];
-                d.TestScreenshot("BeforeAdd");
-
-                var measurableName = "Todo-Name";
-                row.Find(".message-column input").SendKeys(measurableName);
-
-                d.TestScreenshot("AfterAdd");
-
-                row.Find(".picture").Click();
-                Assert.IsTrue(d.WaitUntil(x => x.Find(".editable-wrap").Displayed));
-                d.TestScreenshot("Picture");
-
-                row.Find(".delete-row").Click();
-
-                d.WaitForNotVisible(/*"#l10-wizard-todos */".editable-wrap");
-
-                d.WaitForVisible("#l10-wizard-todos .empty-search");
-
-            });
-        }
-        [TestMethod]
 		[TestCategory("Visual")]
-		public void Visual_L10_Wizard_Issues()
-        {
-            TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
-                d.Find("#l10-wizard-menu", 10);
-                var pageTitle = d.FindElement(By.PartialLinkText("Issues"), 10);
-                pageTitle.Click();
-                Assert.IsTrue(d.WaitUntil(x => pageTitle.HasClass("selected")));
+		public async Task Visual_L10_Wizard_Todo() {
+			await L10Accessor.AddAttendee(AUC.User, Recur.Id, AUC.User.Id);
 
-                Assert.IsTrue(d.Find(".backButton", 10).Displayed);
-                d.WaitForNotVisible(".nextButton");
+			TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
+				d.Find("#l10-wizard-menu", 10);
+				var pageTitle = d.FindElement(By.PartialLinkText("To-dos"), 10);
+				pageTitle.Click();
+				Assert.IsTrue(d.WaitUntil(x => pageTitle.HasClass("selected")));
 
-                var page = d.Find("#l10-wizard-issues");
+				Assert.IsTrue(d.Find(".backButton", 10).Displayed);
+				Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
 
-                d.WaitForVisible("#l10-wizard-issues .empty-search");
+				var page = d.Find("#l10-wizard-todos");
 
-                d.TestScreenshot("Blank");
+				d.WaitForVisible("#l10-wizard-todos .empty-search");
 
-                Assert.AreEqual("ISSUES LIST", page.Find(".title-bar").Text);
+				//Assert.IsTrue(d.WaitUntil(x => page.Find(".empty-search").Displayed));
 
-                Assert.IsTrue(d.Find(".upload-issues").Displayed);
+				d.TestScreenshot("Blank");
 
-                page.Find(".create-row").Click();
+				Assert.AreEqual("TO-DO LIST", page.Find(".title-bar").Text);
 
-                var rows = d.WaitUntil(x => {
-                    var f = x.Finds(".issues-pane tbody tr[md-row]");
-                    if (f.Count == 0)
-                        return null;
-                    return f;
-                });
-                d.WaitForNotVisible("#l10-wizard-issues .empty-search");
+				Assert.IsTrue(page.Find(".upload-todos").Displayed);
 
-                Assert.AreEqual(1, rows.Count);//extra one for ".vs-repeat-before-content"
+				page.Find(".create-row").Click();
+
+				var rows = d.WaitUntil(x => {
+					var f = x.Finds(".todo-pane tbody tr[md-row]");
+					if (f.Count == 0)
+						return null;
+					return f;
+				});
+
+				d.WaitForNotVisible("#l10-wizard-todos .empty-search");
+
+				Assert.AreEqual(1, rows.Count); //extra one for repeat container
 
 				var row = rows[0];
-                d.TestScreenshot("BeforeAdd");
+				d.TestScreenshot("BeforeAdd");
 
-                var measurableName = "Issue-Name";
-                row.Find(".message-column input").SendKeys(measurableName);
+				var measurableName = "Todo-Name";
+				row.Find(".message-column input").SendKeys(measurableName);
 
-                d.TestScreenshot("AfterAdd");
+				d.TestScreenshot("AfterAdd");
 
-                row.Find(".picture").Click();
-                d.WaitForVisible(/*"#l10-wizard-issues */".editable-wrap");
-                d.TestScreenshot("Picture");
+				row.Find(".picture").Click();
+				Assert.IsTrue(d.WaitUntil(x => x.Find(".editable-wrap").Displayed));
+				d.TestScreenshot("Picture");
 
-                row.Find(".delete-row").Click();
+				row.Find(".delete-row").Click();
 
-                d.WaitForNotVisible(/*"#l10-wizard-issues */".editable-wrap");
+				d.WaitForNotVisible(/*"#l10-wizard-todos */".editable-wrap");
 
-                d.WaitForVisible("#l10-wizard-issues .empty-search");
+				d.WaitForVisible("#l10-wizard-todos .empty-search");
 
-            });
-        }
-    }
+			});
+		}
+		[TestMethod]
+		[TestCategory("Visual")]
+		public void Visual_L10_Wizard_Issues() {
+			TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
+				d.Find("#l10-wizard-menu", 10);
+				var pageTitle = d.FindElement(By.PartialLinkText("Issues"), 10);
+				pageTitle.Click();
+				Assert.IsTrue(d.WaitUntil(x => pageTitle.HasClass("selected")));
+
+				Assert.IsTrue(d.Find(".backButton", 10).Displayed);
+				d.WaitForNotVisible(".nextButton");
+
+				var page = d.Find("#l10-wizard-issues");
+
+				d.WaitForVisible("#l10-wizard-issues .empty-search");
+
+				d.TestScreenshot("Blank");
+
+				Assert.AreEqual("ISSUES LIST", page.Find(".title-bar").Text);
+
+				Assert.IsTrue(d.Find(".upload-issues").Displayed);
+
+				page.Find(".create-row").Click();
+
+				var rows = d.WaitUntil(x => {
+					var f = x.Finds(".issues-pane tbody tr[md-row]");
+					if (f.Count == 0)
+						return null;
+					return f;
+				});
+				d.WaitForNotVisible("#l10-wizard-issues .empty-search");
+
+				Assert.AreEqual(1, rows.Count);//extra one for ".vs-repeat-before-content"
+
+				var row = rows[0];
+				d.TestScreenshot("BeforeAdd");
+
+				var measurableName = "Issue-Name";
+				row.Find(".message-column input").SendKeys(measurableName);
+
+				d.TestScreenshot("AfterAdd");
+
+				row.Find(".picture").Click();
+				d.WaitForVisible(/*"#l10-wizard-issues */".editable-wrap");
+				d.TestScreenshot("Picture");
+
+				row.Find(".delete-row").Click();
+
+				d.WaitForNotVisible(/*"#l10-wizard-issues */".editable-wrap");
+
+				d.WaitForVisible("#l10-wizard-issues .empty-search");
+
+			});
+		}
+	}
 }
