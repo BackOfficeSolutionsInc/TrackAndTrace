@@ -1674,15 +1674,28 @@ namespace RadialReview.Utilities {
 
             var user = session.Get<UserOrganizationModel>(userId);
 
-            var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf
+			ViewUserOrganization(userId, false);
+
+			var obj = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x =>
+			x.DeleteTime == null
+			&& x.L10Recurrence.Id == recurrenceId
+			&& x.User.Id == userId).Take(1).SingleOrDefault();
+
+			if(obj == null) {
+				throw new PermissionsException("User is not attendee.");
+			}
+
+			CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId);
+
+			var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf
                 || (user.IsManager() && user.Organization.Settings.ManagersCanEditSelf);
 
             if (IsPermitted(x => x.ManagesUserOrganization(userId, !canEditSelf))) {
                 return this;
             }
 
-            if (!user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
-                return CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId);
+            if (!user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {				
+                return this;
             }
 
             throw new PermissionsException("You do not manage this user.") { NoErrorReport = true };

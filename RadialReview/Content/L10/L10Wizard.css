@@ -2749,3 +2749,18 @@ body,
   width: 47px;
   height: 47px;
 }
+body.admin-disabled .user-pane .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
+}
+body.admin-disabled .scorecard-list-container .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
+}
+body.admin-disabled .rock-pane .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
+}

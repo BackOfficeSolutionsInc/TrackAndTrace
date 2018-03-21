@@ -460,7 +460,7 @@ namespace RadialReview.Accessors {
 			return rock;
 		}
 
-		public static CreateRockViewModel BuildCreateRockVM(UserOrganizationModel caller, dynamic ViewBag, List<SelectListItem> potentialUsers = null,bool populateManaging=false, long? recurrenceId = null) {
+		public static CreateRockViewModel BuildCreateRockVM(UserOrganizationModel caller, dynamic ViewBag, List<SelectListItem> potentialUsers = null, bool populateManaging = false, long? recurrenceId = null) {
 			if (potentialUsers == null) {
 				potentialUsers = TinyUserAccessor.GetOrganizationMembers(caller, caller.Organization.Id, false).Select((x, i) => new SelectListItem() {
 					Selected = i == 0 || x.UserOrgId == caller.Id,
@@ -476,60 +476,57 @@ namespace RadialReview.Accessors {
 			if (selected == null)
 				selected = potentialUsers.First();
 
-            if (populateManaging) {
-                using (var s = HibernateSession.GetCurrentSession()) {
-                    using (var tx = s.BeginTransaction()) {
-                        var perms = PermissionsUtility.Create(s, caller);
-                        foreach (var item in potentialUsers) {
-                            if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
-                                if (!perms.IsPermitted(x => x.CanAdminMeetingItemsForUser(Convert.ToInt64(item.Value), recurrenceId.Value))) {
-                                    item.Disabled = true;
-                                    item.Text = item.Text + "(You do not manage this user)";
-                                }
-                            }
+			if (populateManaging) {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						var perms = PermissionsUtility.Create(s, caller);
+						foreach (var item in potentialUsers) {
+							if (!perms.IsPermitted(x => x.CanAdminMeetingItemsForUser(Convert.ToInt64(item.Value), recurrenceId.Value))) {
+								item.Disabled = true;
+								item.Text = item.Text + "(You do not manage this user)";
+							}
+						}
+					}
+				}
+			}
 
-                        }
-                    }
-                }
-            }
-
-            return new CreateRockViewModel() {
+			return new CreateRockViewModel() {
 				AccountableUser = selected.Value.ToLong(),
 				PotentialUsers = potentialUsers,
 			};
 		}
 
 		public static async Task UpdateRock(UserOrganizationModel caller, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
-            //using (var s = HibernateSession.GetCurrentSession()) {
-            //	using (var tx = s.BeginTransaction()) {
-            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateRockCompletion(rockId), async s => {
-                var perms = PermissionsUtility.Create(s, caller);
-                await UpdateRock(s, perms, rockId, message, ownerId, completion, dueDate, DateTime.UtcNow);
-            });
-					//tx.Commit();
-					//s.Flush();
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+			await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateRockCompletion(rockId), async s => {
+				var perms = PermissionsUtility.Create(s, caller);
+				await UpdateRock(s, perms, rockId, message, ownerId, completion, dueDate, DateTime.UtcNow);
+			});
+			//tx.Commit();
+			//s.Flush();
 			//	}
 			//}
 		}
 
 
-        //[Obsolete("Update for StrictlyAfter", true)]
-        //[Untested("StrictlyAfter")]
-        /// <summary>
-        /// SyncAction.UpdateRockCompletion(rockId)
-        /// </summary>
-        /// <param name="s"></param>
-        /// <param name="perms"></param>
-        /// <param name="rockId"></param>
-        /// <param name="message"></param>
-        /// <param name="ownerId"></param>
-        /// <param name="completion"></param>
-        /// <param name="dueDate"></param>
-        /// <param name="now"></param>
-        /// <returns></returns>
-        public static async Task UpdateRock(IOrderedSession s, PermissionsUtility perms, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
+		//[Obsolete("Update for StrictlyAfter", true)]
+		//[Untested("StrictlyAfter")]
+		/// <summary>
+		/// SyncAction.UpdateRockCompletion(rockId)
+		/// </summary>
+		/// <param name="s"></param>
+		/// <param name="perms"></param>
+		/// <param name="rockId"></param>
+		/// <param name="message"></param>
+		/// <param name="ownerId"></param>
+		/// <param name="completion"></param>
+		/// <param name="dueDate"></param>
+		/// <param name="now"></param>
+		/// <returns></returns>
+		public static async Task UpdateRock(IOrderedSession s, PermissionsUtility perms, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
 
-            //SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRockCompletion(rockId));
+			//SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRockCompletion(rockId));
 			perms.EditRock(rockId);
 			now = now ?? DateTime.UtcNow;
 
