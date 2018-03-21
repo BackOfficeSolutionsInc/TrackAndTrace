@@ -171,6 +171,7 @@
     <Compile Include="Hooks\Realtime\L10\Realtime_L10Scorecard.cs" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Issues.cs" />
     <Compile Include="Hooks\Meeting\MeetingRockCompletion.cs" />
+    <Compile Include="Hooks\Realtime\Position\RealTime_Positions.cs" />
     <Compile Include="Hooks\Realtime\RealTimeHelpers.cs" />
     <Compile Include="Hooks\Realtime\Dashboard\RealTime_Dashboard_UpdateL10Rocks.cs" />
     <Compile Include="Hooks\Realtime\Dashboard\RealTime_Dashboard_Todo.cs" />
@@ -877,6 +878,7 @@
     <Compile Include="Utilities\Hooks\IMeetingEvents.cs" />
     <Compile Include="Utilities\Hooks\IMeetingItemHooks.cs" />
     <Compile Include="Utilities\Hooks\IOrganizationHooks.cs" />
+    <Compile Include="Utilities\Hooks\IPositionHooks.cs" />
     <Compile Include="Utilities\Hooks\IUserRoleHook.cs" />
     <Compile Include="Utilities\Hooks\IScoreHook.cs" />
     <Compile Include="Utilities\Hooks\IRockHook.cs" />

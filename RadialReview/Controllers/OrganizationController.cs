@@ -603,7 +603,7 @@ namespace RadialReview.Controllers {
 					var positionFound = existingPositions.FirstOrDefault(x => x.CustomName == position);
 
 					if (positionFound == null && !String.IsNullOrWhiteSpace(position)) {
-						var newPosition = _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, /*pos.Id,*/ position);
+						var newPosition =await _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, /*pos.Id,*/ position);
 						existingPositions.Add(newPosition);
 						positionFound = newPosition;
 					}

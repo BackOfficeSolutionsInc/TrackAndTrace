@@ -897,7 +897,7 @@ namespace RadialReview.Accessors {
 				throw new PermissionsException();
 
 			if (model.Position != null && model.Position.CustomPosition != null) {
-				var newPosition = _OrganizationAccessor.EditOrganizationPosition(user, 0, user.Organization.Id, /*model.Position.CustomPositionId,*/ model.Position.CustomPosition);
+				var newPosition =await _OrganizationAccessor.EditOrganizationPosition(user, 0, user.Organization.Id, /*model.Position.CustomPositionId,*/ model.Position.CustomPosition);
 				model.Position.PositionId = newPosition.Id;
 			}
 
