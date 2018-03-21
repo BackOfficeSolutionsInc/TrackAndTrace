@@ -698,7 +698,7 @@ namespace RadialReview.Controllers {
 									throw new PermissionsException("You do not have access to this resource.");
 								break;
 							case AccessLevel.RadialData:
-								var ids = VariableAccessor.Get<string>(Variable.Names.USER_RADIAL_DATA_IDS, () => "").Split(new[] { ',' }).Select(x=>long.Parse(x)).ToList();
+								var ids = s.GetSettingOrDefault(Variable.Names.USER_RADIAL_DATA_IDS, () => "").Split(new[] { ',' }).Select(x=>long.Parse(x)).ToList();
 								var u3 = GetUser(s);
 								if (u3 != null && ids.Contains(u3.Id)) {
 									if (u3.DeleteTime != null)
