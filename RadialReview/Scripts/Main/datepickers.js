@@ -5,8 +5,8 @@ function parseJsonDate(value, allowNumbers) {
 	return Time.parseJsonDate(value, allowNumbers);
 }
 function getWeekSinceEpoch(day) {
-    console.warn("obsolete. use Time.getWeekSinceEpoch(...) instead");
-    return Time.getWeekSinceEpoch(day);
+	console.warn("obsolete. use Time.getWeekSinceEpoch(...) instead");
+	return Time.getWeekSinceEpoch(day);
 }
 
 function dateFormatter(date) {
@@ -68,16 +68,16 @@ function createDatepicker(selector, date, name, id, options) {
 		id = name;
 
 	var setClasses = function (obj, d) {
-	    //debugger;
-	    var o = $(obj);
-        if (!o.is(".client-date"))
-	        o = $(obj).find(".client-date");
-	    $(o).removeClass("past-date");
-	    $(o).removeClass("future-date");
-	    if (d < new Date())
-	        $(o).addClass("past-date");
-	    else
-	        $(o).addClass("future-date");
+		//debugger;
+		var o = $(obj);
+		if (!o.is(".client-date"))
+			o = $(obj).find(".client-date");
+		$(o).removeClass("past-date");
+		$(o).removeClass("future-date");
+		if (d < new Date())
+			$(o).addClass("past-date");
+		else
+			$(o).addClass("future-date");
 	}
 
 
@@ -250,7 +250,7 @@ function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
 }
 
 Date.prototype.addDays = function (pDays) {
-	
+
 	var oDate = new Date(this.valueOf());
 	var mDate = new Date(this.valueOf());
 	mDate.setDate(mDate.getDate() + pDays);

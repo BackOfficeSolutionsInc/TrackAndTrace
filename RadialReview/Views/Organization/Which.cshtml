@@ -1,150 +1,150 @@
 ﻿@using RadialReview.Models.UserModels
 @model RadialReview.Models.OrganizationModel
 @{
-    ViewBag.Title = "Which";
-    ViewBag.FullWidth = true;
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Which";
+	ViewBag.FullWidth = true;
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @if (Model != null) {
 
 
-    <div class="row">
-        <div class="col-xs-8">
-            <h1 class="pull-left">Which</h1>
-            <h1 style="color: orange" class="pull-left"><b> @Model.GetName() [@Model.Id]</b></h1>
-            <div class="clearfix"></div>
-            <h4 class="pull-left">Server Time</h4>
-            <h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
-            <div class="clearfix"></div>
-            <h4 class="pull-left">Count</h4>
-            <h4 style="color: orange" class="pull-left"><b> @(((List<UserLookup>)ViewBag.Members).Count())</b></h4>
-            <div class="clearfix"></div>
-        </div>
-        <div class="col-xs-4">
-            <div class="row">
-                <div class="col-xs-6">
-                    <span><lable>Free until</lable>@Html.EditorFor(x => x.PaymentPlan.FreeUntil, new { startDate = Html.Organization().ConvertFromUTC(DateTime.UtcNow) })</span>
-                </div>
-                <div class="col-xs-6">
-                    <lable>Account Status</lable>
-                    <div>
-                        @Html.EnumDropDownListFor(x => x.AccountType, new { onchange = "changeAccountType(this," + Model.Id + ")", @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-            <div class="clearfix smallBreak2"></div>
-            <div class="clearfix"></div>
-            <a class="pull-right" href="/account/calculateorganizationcharge/@Model.Id">Calculate Charge...</a>
-            <div class="clearfix"></div>
-            <a class="pull-right" href="/Organization/Which">Back to Listing...</a>
+	<div class="row">
+		<div class="col-xs-8">
+			<h1 class="pull-left">Which</h1>
+			<h1 style="color: orange" class="pull-left"><b> @Model.GetName() [@Model.Id]</b></h1>
+			<div class="clearfix"></div>
+			<h4 class="pull-left">Server Time</h4>
+			<h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
+			<div class="clearfix"></div>
+			<h4 class="pull-left">Count</h4>
+			<h4 style="color: orange" class="pull-left"><b> @(((List<UserLookup>)ViewBag.Members).Count())</b></h4>
+			<div class="clearfix"></div>
+		</div>
+		<div class="col-xs-4">
+			<div class="row">
+				<div class="col-xs-6">
+					<span><lable>Free until</lable>@Html.EditorFor(x => x.PaymentPlan.FreeUntil, new { startDate = Html.Organization().ConvertFromUTC(DateTime.UtcNow) })</span>
+				</div>
+				<div class="col-xs-6">
+					<lable>Account Status</lable>
+					<div>
+						@Html.EnumDropDownListFor(x => x.AccountType, new { onchange = "changeAccountType(this," + Model.Id + ")", @class = "form-control" })
+					</div>
+				</div>
+			</div>
+			<div class="clearfix smallBreak2"></div>
+			<div class="clearfix"></div>
+			<a class="pull-right" href="/account/calculateorganizationcharge/@Model.Id">Calculate Charge...</a>
+			<div class="clearfix"></div>
+			<a class="pull-right" href="/Organization/Which">Back to Listing...</a>
 
-            <div class="clearfix"></div>
-            <a class="pull-right" href="/Organization/Stats">Back to Stats...</a>
-        </div>
-    </div>
+			<div class="clearfix"></div>
+			<a class="pull-right" href="/Organization/Stats">Back to Stats...</a>
+		</div>
+	</div>
 
 
 
-    <a href="#meetings">#meetings</a>    <a href="#events">#events</a><a href="#invoices">#invoices</a>
+	<a href="#meetings">#meetings</a>	<a href="#events">#events</a><a href="#invoices">#invoices</a>
 
-    <table class="table table-hover">
-        <thead style="background-color: orange">
-            <tr>
-                <th class="alignCenter">Last Login</th>
-                <th class="alignCenter">Invite Sent</th>
-                <th class="alignCenter">Joined</th>
-                <th class="alignCenter">UserId</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Login</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var m in (List<UserLookup>)ViewBag.Members) {
-                <tr>
-                    <td class="alignCenter" style="color:@(m.LastLogin.NotNull(x =>{
-						                         if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
-						                         {
+	<table class="table table-hover">
+		<thead style="background-color: orange">
+			<tr>
+				<th class="alignCenter">Last Login</th>
+				<th class="alignCenter">Invite Sent</th>
+				<th class="alignCenter">Joined</th>
+				<th class="alignCenter">UserId</th>
+				<th>Name</th>
+				<th>Email</th>
+				<th>Login</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var m in (List<UserLookup>)ViewBag.Members) {
+				<tr>
+					<td class="alignCenter" style="color:@(m.LastLogin.NotNull(x =>{
+												 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
+												 {
 													 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(7)))
 													 {
 														 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))){
 															 return "green";
 														 }
 														 return "lightgreen";
-							                         }
+													 }
 													 return "#ef7622";
-						                         }
-						                         return "red";
-					                         })??"darkred")">
-                        @m.LastLogin.NotNull(x => x.ToString())
-                    </td>
-                    <td class="alignCenter">@m.HasSentInvite.GetIcon() <span style="display: none">@(m.HasSentInvite ? 1 : 0)</span></td>
-                    <td class="alignCenter">@m.HasJoined.GetIcon()<span style="display: none">@(m.HasJoined ? 1 : 0)</span></td>
-                    <td class="alignCenter">@m.UserId</td>
-                    <td><a href="/Manage/UserDetails/@m.UserId">@m.Name</a></td>
-                    <td>@m.Email</td>
-                    <td class="alignCenter"><a href="/Account/SetRole/@(m.UserId)?ReturnUrl=%2FDashboard">login</a></td>
-                </tr>}
-        </tbody>
-    </table>
-    <div id="meetings"></div>
-    <br />
-    <br />
-    <br />
+												 }
+												 return "red";
+											 })??"darkred")">
+						@m.LastLogin.NotNull(x => x.ToString())
+					</td>
+					<td class="alignCenter">@m.HasSentInvite.GetIcon() <span style="display: none">@(m.HasSentInvite ? 1 : 0)</span></td>
+					<td class="alignCenter">@m.HasJoined.GetIcon()<span style="display: none">@(m.HasJoined ? 1 : 0)</span></td>
+					<td class="alignCenter">@m.UserId</td>
+					<td><a href="/Manage/UserDetails/@m.UserId">@m.Name</a></td>
+					<td>@m.Email</td>
+					<td class="alignCenter"><a href="/Account/SetRole/@(m.UserId)?ReturnUrl=%2FDashboard">login</a></td>
+				</tr>}
+		</tbody>
+	</table>
+	<div id="meetings"></div>
+	<br />
+	<br />
+	<br />
 
-    if (ViewBag.Meetings != null && ((List<RadialReview.Models.L10.L10Meeting>)ViewBag.Meetings).Any()) {
-        <table class="table table-hover">
-            <thead style="background-color: orange">
-                <tr>
-                    <th colspan="4">Meetings in the last 90 days</th>
-                </tr>
-                <tr>
-                    <th class="">Meeting Name</th>
-                    <th class="">Date</th>
-                    <th class="">Attendees</th>
-                    <th class="">Duration</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var m in ((List<RadialReview.Models.L10.L10Meeting>)ViewBag.Meetings).OrderByDescending(x => x.CreateTime)) {
+	if (ViewBag.Meetings != null && ((List<RadialReview.Models.L10.L10Meeting>)ViewBag.Meetings).Any()) {
+		<table class="table table-hover">
+			<thead style="background-color: orange">
+				<tr>
+					<th colspan="4">Meetings in the last 90 days</th>
+				</tr>
+				<tr>
+					<th class="">Meeting Name</th>
+					<th class="">Date</th>
+					<th class="">Attendees</th>
+					<th class="">Duration</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var m in ((List<RadialReview.Models.L10.L10Meeting>)ViewBag.Meetings).OrderByDescending(x => x.CreateTime)) {
 
-                    var totalMin = m.CompleteTime.NotNull(x => Math.Round((x.Value - m.CreateTime).TotalMinutes * 10) / 10);
-                    <tr>
-                        <td><a href="/l10/timeline/@(m.L10RecurrenceId)">@m.L10Recurrence.Name</a></td>
-                        <td style="background-color:hsl(127,@(100-Math.Min(30,(DateTime.UtcNow-m.CreateTime).TotalDays)/30*100)%,@(53+Math.Min(100,(DateTime.UtcNow-m.CreateTime).TotalDays)/100*56)%)">
-                            @m.CreateTime
-                        </td>
-                        <td>@(m._MeetingAttendees.NotNull(x => x.Count()))</td>
-                        <td style="color:@(m.CompleteTime.NotNull(x=>{
-                                         if (totalMin > 200)
-                                             return "darkred";
+					var totalMin = m.CompleteTime.NotNull(x => Math.Round((x.Value - m.CreateTime).TotalMinutes * 10) / 10);
+					<tr>
+						<td><a href="/l10/timeline/@(m.L10RecurrenceId)">@m.L10Recurrence.Name</a></td>
+						<td style="background-color:hsl(127,@(100-Math.Min(30,(DateTime.UtcNow-m.CreateTime).TotalDays)/30*100)%,@(53+Math.Min(100,(DateTime.UtcNow-m.CreateTime).TotalDays)/100*56)%)">
+							@m.CreateTime
+						</td>
+						<td>@(m._MeetingAttendees.NotNull(x => x.Count()))</td>
+						<td style="color:@(m.CompleteTime.NotNull(x=>{
+										 if (totalMin > 200)
+											 return "darkred";
 
-                                     if (totalMin > 10){
+									 if (totalMin > 10){
 											if (totalMin > 60)
 											{
 												if (totalMin >80){
 													return "green";
 												}
 												return "lightgreen";
-							                }
+											}
 											return "#ef7622";
-						                }
-						                return "red";
-					                }))">
-                            @(totalMin + "m")
-                        </td>
-                    </tr>}
-            </tbody>
-        </table>
-    } else {
-        <div class="panel panel-default">
-            <div class="panel-heading">Meetings</div>
-            <div class="panel-body gray">
-                No meetings to show.
-            </div>
-        </div>
-    }
+										}
+										return "red";
+									}))">
+							@(totalMin + "m")
+						</td>
+					</tr>}
+			</tbody>
+		</table>
+	} else {
+		<div class="panel panel-default">
+			<div class="panel-heading">Meetings</div>
+			<div class="panel-body gray">
+				No meetings to show.
+			</div>
+		</div>
+	}
 
 
 
@@ -155,83 +155,83 @@
 
 
 
-    <div id="events"></div>
-    <br />
-    <br />
-    <br />
+	<div id="events"></div>
+	<br />
+	<br />
+	<br />
 
-    <div class="panel panel-default">
-        <div class="panel-heading">Events</div>
-        <div class="panel-body">
-            @{ Html.RenderAction("Events", "Admin", new { orgId = Model.Organization.Id });}
+	<div class="panel panel-default">
+		<div class="panel-heading">Events</div>
+		<div class="panel-body">
+			@{ Html.RenderAction("Events", "Admin", new { orgId = Model.Organization.Id });}
 
-        </div>
-    </div>
+		</div>
+	</div>
 
-    <div id="invoices"></div>
-    <br />
-    <br />
-    <br />
+	<div id="invoices"></div>
+	<br />
+	<br />
+	<br />
 
-    @*<div class="panel panel-default">
-        <div class="panel-heading">Invoices</div>
-        <div class="panel-body">*@
-                <div class="">
-                    @{ Html.RenderAction("List", "Invoice", new { id = Model.Organization.Id });}
-                </div>
-                @*</div>
-                    </div>*@
-
-
+	@*<div class="panel panel-default">
+		<div class="panel-heading">Invoices</div>
+		<div class="panel-body">*@
+				<div class="">
+					@{ Html.RenderAction("List", "Invoice", new { id = Model.Organization.Id });}
+				</div>
+				@*</div>
+					</div>*@
 
 
 
 
 
-                        } else {
-                            <h1 class="pull-left">Which</h1>
-                            <h1 style="color: #D0D0D0" class="pull-left"><b> NULL</b></h1>
-                            <div class="clearfix"></div>
-                            <h4 class="pull-left">Server Time</h4>
-                            <h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
-                        }
+
+
+						} else {
+							<h1 class="pull-left">Which</h1>
+							<h1 style="color: #D0D0D0" class="pull-left"><b> NULL</b></h1>
+							<div class="clearfix"></div>
+							<h4 class="pull-left">Server Time</h4>
+							<h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
+						}
 <hr />
 
 @using (Html.BeginScripts()) {
-    <script>
-        $("table").tablesorter({
-            // sortForce: [[0, 1]],
-            sortStable: true,
-        });
+	<script>
+		$("table").tablesorter({
+			// sortForce: [[0, 1]],
+			sortStable: true,
+		});
 
-        function changeAccountType(self, id) {
-            $.ajax("/organization/setaccounttype/" + id + "?type=" + $(self).val());
-        }
+		function changeAccountType(self, id) {
+			$.ajax("/organization/setaccounttype/" + id + "?type=" + $(self).val());
+		}
 
-        $("body").on("change", "[name='PaymentPlan.FreeUntil']", function () {
-            $.get("/payment/FreeUntil/@Model.Id?date=" + $(this).val());
-        });
+		$("body").on("change", "[name='PaymentPlan.FreeUntil']", function () {
+			$.get("/payment/FreeUntil/@Model.Id?date=" + $(this).val());
+		});
 
-    </script>
+	</script>
 }
 
 @using (Html.BeginStyles()) {
-    <style>
-        .alignRight .display-label {
-            padding-right: 0px;
-        }
+	<style>
+		.alignRight .display-label {
+			padding-right: 0px;
+		}
 
-        .display-label {
-            padding-right: 10px;
-            font-weight: bold;
-        }
+		.display-label {
+			padding-right: 10px;
+			font-weight: bold;
+		}
 
-        .display-field {
-            height: 20px;
-        }
+		.display-field {
+			height: 20px;
+		}
 
-        .grayed {
-            color: #888;
-        }
-    </style>
+		.grayed {
+			color: #888;
+		}
+	</style>
 }

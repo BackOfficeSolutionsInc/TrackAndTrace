@@ -38,7 +38,7 @@ namespace RadialReview.Models.Angular.Notifications {
 					case NotificationGroupType.Individual: {
 							//an.Details = an.Details.Union(an.AsList());
 							output.Add(an);
-							an.DetailsList = new List<AngularNotification>() ;
+							an.DetailsList = new List<AngularNotification>();
 							break;
 						}
 					case NotificationGroupType.Name: {

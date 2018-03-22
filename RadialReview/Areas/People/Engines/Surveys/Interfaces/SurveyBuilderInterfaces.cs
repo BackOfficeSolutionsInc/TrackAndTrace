@@ -114,8 +114,8 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		IForModel By { get; }
 		IForModel About { get; }
 
-        bool FirstSeen(string key,string type="");
-        bool FirstSeenByAbout();
+		bool FirstSeen(string key, string type = "");
+		bool FirstSeenByAbout();
 	}
 	public interface IResponseInitializerCtx : IInitializerData {
 		IInnerLookup Lookup { get; }
@@ -286,7 +286,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		void OnBegin(ISurveyInitializer builder, long orgId, IOuterLookup outerLookup, IEnumerable<IByAbout> byAbouts);
 		void OnEnd(ISurveyContainer container);
 		void OnInitialize(IComponent compontent);
-		void AfterInitialized(IComponent compontent,bool hasElements);
+		void AfterInitialized(IComponent compontent, bool hasElements);
 	}
 	#endregion
 }

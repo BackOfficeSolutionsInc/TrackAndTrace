@@ -40,7 +40,7 @@ namespace RadialReview {
 			AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
 
 			//AreaRegistration.RegisterAllAreas();
-            AreaRegistration.RegisterAllAreas();
+			AreaRegistration.RegisterAllAreas();
 
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -50,7 +50,7 @@ namespace RadialReview {
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
 
 			HookConfig.RegisterHooks();
-           // EventConfig.RegisterEvents();
+			// EventConfig.RegisterEvents();
 
 			// ValueProviderFactories.Factories.Add(new JsonValueProviderFactory());
 
@@ -74,11 +74,11 @@ namespace RadialReview {
 			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new[] { "cshtml" } };
 			ViewEngines.Engines.Add(razorEngine);
 
-            ModelBinders.Binders.Add(typeof(DateTime), new DateTimeModelBinder());
-            ModelBinders.Binders.Add(typeof(DateTime?), new DateTimeModelBinder());
+			ModelBinders.Binders.Add(typeof(DateTime), new DateTimeModelBinder());
+			ModelBinders.Binders.Add(typeof(DateTime?), new DateTimeModelBinder());
 
-            //install fonts
-            InstallFonts();
+			//install fonts
+			InstallFonts();
 		}
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 

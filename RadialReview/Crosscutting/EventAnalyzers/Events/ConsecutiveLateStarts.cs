@@ -13,7 +13,7 @@ using NHibernate;
 using RadialReview.Models.L10;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
-	public class ConsecutiveLateStarts : IEventAnalyzer,IEventAnalyzerGenerator, IRecurrenceEventAnalyerGenerator {
+	public class ConsecutiveLateStarts : IEventAnalyzer, IEventAnalyzerGenerator, IRecurrenceEventAnalyerGenerator {
 		public ConsecutiveLateStarts(long recurrenceId) {
 			RecurrenceId = recurrenceId;
 			WeeksInARow = 2;
@@ -77,6 +77,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 					return new BaseEvent(minutes, x.Date);
 				}
 			);
+
 			return evts;
 		}
 
@@ -98,9 +99,14 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 				return "Consecutive late meeting starts";
 			}
 		}
+
+
+		public override int GetNumberOfPassesToReset(IEventSettings settings) {
+			return 1;
+		}
 		public string Description {
 			get {
-				return string.Format("{0} minutes for {1} weeks in a row{2}", LessGreater.GreaterThan.ToDescription(MinutesLate), WeeksInARow,_MeetingName.NotNull(x=>" for "+x)??"");
+				return string.Format("{0} minutes for {1} weeks in a row{2}", LessGreater.GreaterThan.ToDescription(MinutesLate), WeeksInARow, _MeetingName.NotNull(x => " for " + x) ?? "");
 			}
 		}
 	}

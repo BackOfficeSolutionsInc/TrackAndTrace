@@ -112,9 +112,9 @@ namespace RadialReview.Controllers {
 							Status = x.NotNull(y => y.AccountType),
 							LastMeeting = meetingLastLU.GetOrDefault(x.NotNull(y => y.Id), null),
 							TrialEnd = trialEnd,
-							CreditCardExp = !tokens.ContainsKey(x.Id)||tokens[x.Id].TokenType!=PaymentSpringTokenType.CreditCard ? (DateTime?)null : new DateTime(tokens[x.Id].YearExpire, tokens[x.Id].MonthExpire, 1)
+							CreditCardExp = !tokens.ContainsKey(x.Id) || tokens[x.Id].TokenType != PaymentSpringTokenType.CreditCard ? (DateTime?)null : new DateTime(tokens[x.Id].YearExpire, tokens[x.Id].MonthExpire, 1)
 						};
-					}).OrderByDescending(x=>x.OrgId).ToList();
+					}).OrderByDescending(x => x.OrgId).ToList();
 
 					return stats;
 
@@ -156,7 +156,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Invites() {
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
 
-			var temps = members.Where(x => x.HasJoined == false).Select(x =>_UserAccessor.GetUserOrganization(GetUser(), x.UserId, true, false, PermissionType.EditEmployeeDetails).TempUser).Where(x=>x!=null).ToList();
+			var temps = members.Where(x => x.HasJoined == false).Select(x => _UserAccessor.GetUserOrganization(GetUser(), x.UserId, true, false, PermissionType.EditEmployeeDetails).TempUser).Where(x => x != null).ToList();
 
 			return View(temps);
 		}
@@ -254,17 +254,17 @@ namespace RadialReview.Controllers {
 			ViewBag.Implementers = implementers;
 
 			var support = ApplicationAccessor.GetSupportMembers(GetUser()).OrderBy(x => x.User.GetName());
-            var myIds = new long[0];
-            try {
-                myIds = GetUser().User.UserOrganizationIds;
-            }catch(Exception e) {
-            }
-			ViewBag.MySupportId = support.FirstOrDefault(x => myIds.Any(y=>y== x.UserOrgId)).NotNull(x => x.Id);
+			var myIds = new long[0];
+			try {
+				myIds = GetUser().User.UserOrganizationIds;
+			} catch (Exception e) {
+			}
+			ViewBag.MySupportId = support.FirstOrDefault(x => myIds.Any(y => y == x.UserOrgId)).NotNull(x => x.Id);
 			ViewBag.SupportTeam = support.ToSelectList(x => x.User.GetName(), x => x.Id);
 
-			var campaigns= ApplicationAccessor.GetCampaigns(GetUser(),true).OrderBy(x => x.Name).ToSelectList(x => x.Name, x => x.Name).ToList();
+			var campaigns = ApplicationAccessor.GetCampaigns(GetUser(), true).OrderBy(x => x.Name).ToSelectList(x => x.Name, x => x.Name).ToList();
 			campaigns.Insert(0, new SelectListItem() { Text = "n/a", Value = null });
-			ViewBag.Campaigns = campaigns; 
+			ViewBag.Campaigns = campaigns;
 		}
 
 		[Access(AccessLevel.Radial)]
@@ -275,7 +275,7 @@ namespace RadialReview.Controllers {
 
 			return View(new OrgCreationData() {
 				AssignedTo = ViewBag.MySupportId,
-				CoachId = -1				
+				CoachId = -1
 			});
 		}
 
@@ -302,8 +302,8 @@ namespace RadialReview.Controllers {
 				if (data.AccountType == AccountType.Implementer || data.AccountType == AccountType.Coach) {
 					ApplicationAccessor.EditCoach(GetUser(), new Models.Application.Coach() {
 						CoachType = data.AccountType == AccountType.Implementer ? CoachType.CertifiedOrProfessionalEOSi : CoachType.BusinessCoach,
-						Name = data.ContactFN+" "+data.ContactLN,
-						Email =data.ContactEmail,
+						Name = data.ContactFN + " " + data.ContactLN,
+						Email = data.ContactEmail,
 						UserOrgId = uOrg.Id,
 					});
 				}
@@ -312,7 +312,7 @@ namespace RadialReview.Controllers {
 			}
 
 			PrepareCreateOrgViewBag();
-			return View(data);			
+			return View(data);
 		}
 
 		[HttpGet]
@@ -461,7 +461,7 @@ namespace RadialReview.Controllers {
 			return PartialView(found.TempUser);
 		}
 
-        [Access(AccessLevel.Manager)]
+		[Access(AccessLevel.Manager)]
 		public ActionResult ResendJoinEmailManual(long id) {
 			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 
@@ -473,14 +473,14 @@ namespace RadialReview.Controllers {
 					return Content("You're not permitted to upgrade placeholders to paid accounts.");
 			}
 
-            //var id = found.TempUser.Guid;
-            var url = "Account/Register?returnUrl=%2FOrganization%2FJoin%2F" + found.TempUser.Guid;
-            url = Config.BaseUrl(GetUser().Organization) + url;
-            var productName = Config.ProductName(GetUser().Organization);
-            found.TempUser.EmailTemplate = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, new String[] { found.TempUser.FirstName, GetUser().Organization.Name.Translate(), url, url, productName, found.TempUser.Guid.ToUpper() });
+			//var id = found.TempUser.Guid;
+			var url = "Account/Register?returnUrl=%2FOrganization%2FJoin%2F" + found.TempUser.Guid;
+			url = Config.BaseUrl(GetUser().Organization) + url;
+			var productName = Config.ProductName(GetUser().Organization);
+			found.TempUser.EmailTemplate = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, new String[] { found.TempUser.FirstName, GetUser().Organization.Name.Translate(), url, url, productName, found.TempUser.Guid.ToUpper() });
 
 
-            return PartialView(found.TempUser);
+			return PartialView(found.TempUser);
 		}
 
 		[Access(AccessLevel.Manager)]
@@ -503,18 +503,18 @@ namespace RadialReview.Controllers {
 
 			_UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email, DateTime.UtcNow);
 			model.Id = TempId;
-            if (resendEmail) {
-                var result = await Emailer.SendEmail(JoinOrganizationAccessor.CreateJoinEmailToGuid(GetUser(), model));
-                var prefix = "Resent";
-                if (model.LastSent == null)
-                    prefix = "Sent";
-                var o = result.ToResults(prefix + " invite to " + model.Name() + ".");
-                o.Object = model;
+			if (resendEmail) {
+				var result = await Emailer.SendEmail(JoinOrganizationAccessor.CreateJoinEmailToGuid(GetUser(), model));
+				var prefix = "Resent";
+				if (model.LastSent == null)
+					prefix = "Sent";
+				var o = result.ToResults(prefix + " invite to " + model.Name() + ".");
+				o.Object = model;
 
-                return Json(o);
-            }else {
-                return Json(ResultObject.SilentSuccess(model));
-            }
+				return Json(o);
+			} else {
+				return Json(ResultObject.SilentSuccess(model));
+			}
 		}
 
 

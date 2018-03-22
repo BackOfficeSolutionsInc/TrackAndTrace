@@ -56,8 +56,8 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 	}
 
 	public interface IEventGeneratorSettings {
-		UserOrganizationModel Caller { get;  }
-		PermissionsUtility Permissions { get;  }
+		UserOrganizationModel Caller { get; }
+		PermissionsUtility Permissions { get; }
 
 		List<KeyValuePair<string, long>> VisibleRecurrences { get; }
 
@@ -80,6 +80,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 		Task<T> Lookup<T>(BaseSearch<T> search);
 		void SetLookup<T>(BaseSearch<T> searcher, IEventSettings settings, T obj);
 	}
+
 	public interface IDataSource {
 		Task<T> Lookup<T>(BaseSearch<T> search);
 		void Set<T>(string key, T obj);
@@ -306,7 +307,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 			OrganizationId = organizationId;
 			Session = session;
 			DataSearch = new BaseEventDataSource(this);
-			Admin= PermissionsUtility.CreateAdmin(Session);
+			Admin = PermissionsUtility.CreateAdmin(Session);
 		}
 
 		public IDataSource DataSearch { get; private set; }
@@ -320,7 +321,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 			return await DataSearch.Lookup(search);
 		}
 
-		public void SetLookup<T>(BaseSearch<T> searcher,IEventSettings settings, T obj) {
+		public void SetLookup<T>(BaseSearch<T> searcher, IEventSettings settings, T obj) {
 			DataSearch.Set(searcher.GetKey(settings), obj);
 		}
 	}
@@ -340,14 +341,14 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 		/// <param name="consecutiveNegativesToTrigger"></param>
 		/// <param name="lastCheck"></param>
 		/// <returns></returns>
-		public static bool ShouldTrigger(IEnumerable<IEvent> evts, IThreshold threshold,int consecutivePositivesToReset,int consecutiveNegativesToTrigger, DateTime? lastCheck=null) {
+		public static bool ShouldTrigger(IEnumerable<IEvent> evts, IThreshold threshold, int consecutivePositivesToReset, int consecutiveNegativesToTrigger, DateTime? lastCheck = null) {
 			int positives = 0;
 			int negatives = 0;
 			bool trigger = false;
 			bool reset = false;
 
 			var events = evts.ToList();
-			 
+
 			var ordered = events.OrderBy(x => x.Time).ToList();
 			var first = ordered.FirstOrDefault();
 			if (first != null) {

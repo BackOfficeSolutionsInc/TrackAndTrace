@@ -42,11 +42,10 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
 			//Nothing
 		}
-        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
-        {
-            //Nothing to do...
-        }
-        public async Task CreateRock(ISession s, RockModel rock) {
+		public async Task UnArchiveRock(ISession s, RockModel rock, bool v) {
+			//Nothing to do...
+		}
+		public async Task CreateRock(ISession s, RockModel rock) {
 			//Nothing
 		}
 		#endregion

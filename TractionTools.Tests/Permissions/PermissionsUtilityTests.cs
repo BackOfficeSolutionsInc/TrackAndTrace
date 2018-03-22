@@ -34,7 +34,7 @@ namespace TractionTools.Tests.Permissions {
 						Assert.AreEqual(c.Org.Organization.AccountabilityChartId, accIds.First());
 					}
 					//CoreProcess - Members not implemented.
-					{						
+					{
 						Throws<NotImplementedException>(() => perms.GetIdsForResourceThatUserIsMemberOf(ResourceType.CoreProcess, c.E1.Id));
 						//var accIds = perms.GetIdsForResourceThatUserIsMemberOf(ResourceType.CoreProcess, c.E1.Id);
 						//Assert.AreEqual(0, accIds.Count());
@@ -53,7 +53,7 @@ namespace TractionTools.Tests.Permissions {
 						accIds = perms.GetIdsForResourceThatUserIsMemberOf(ResourceType.L10Recurrence, c.E1.Id);
 						Assert.AreEqual(0, accIds.Count());
 
-						await l10.AddAttendee(s,c.E1);
+						await l10.AddAttendee(s, c.E1);
 
 						accIds = perms.GetIdsForResourceThatUserIsMemberOf(ResourceType.L10Recurrence, c.E1.Id);
 						Assert.AreEqual(1, accIds.Count());
@@ -64,7 +64,7 @@ namespace TractionTools.Tests.Permissions {
 						var accIds = perms.GetIdsForResourceThatUserIsMemberOf(ResourceType.SurveyContainer, c.E1.Id);
 						Assert.AreEqual(0, accIds.Count());
 
-						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s,PermissionsUtility.Create(s,c.E1), "sc", nodes, new DateRange(),DateTime.UtcNow.AddDays(1), false);
+						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.E1), "sc", nodes, new DateRange(), DateTime.UtcNow.AddDays(1), false);
 
 						accIds = perms.GetIdsForResourceThatUserIsMemberOf(ResourceType.SurveyContainer, c.E1.Id);
 						Assert.AreEqual(1, accIds.Count());
@@ -257,7 +257,7 @@ namespace TractionTools.Tests.Permissions {
 						}
 						{
 							//Try with E2
-							await l10.AddAttendee(s,c.E2);
+							await l10.AddAttendee(s, c.E2);
 
 							accIds = perms.GetAllPermItemsForUser(ResourceType.L10Recurrence, c.E2.Id).ToList();
 							Assert.AreEqual(1, accIds.Count());
@@ -271,7 +271,7 @@ namespace TractionTools.Tests.Permissions {
 
 						{
 							//Remove some permissions
-							l10.RemovePermissions(s,AccessType.Members);
+							l10.RemovePermissions(s, AccessType.Members);
 							accIds = perms.GetAllPermItemsForUser(ResourceType.L10Recurrence, c.E2.Id).ToList();
 							Assert.AreEqual(0, accIds.Count());
 
@@ -282,7 +282,7 @@ namespace TractionTools.Tests.Permissions {
 						var accIds = perms.GetAllPermItemsForUser(ResourceType.SurveyContainer, c.E1.Id);
 						Assert.AreEqual(0, accIds.Count());
 
-						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s,PermissionsUtility.Create(s, c.E1), "sc", nodes, new DateRange(), DateTime.UtcNow.AddDays(1), false);
+						var sc = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s, c.E1), "sc", nodes, new DateRange(), DateTime.UtcNow.AddDays(1), false);
 
 						accIds = perms.GetAllPermItemsForUser(ResourceType.SurveyContainer, c.E1.Id);
 						Assert.AreEqual(2, accIds.Count());

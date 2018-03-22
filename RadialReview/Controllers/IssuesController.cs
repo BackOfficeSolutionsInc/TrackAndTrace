@@ -16,66 +16,66 @@ using RadialReview.Utilities;
 namespace RadialReview.Controllers {
 	public class IssuesController : BaseController {
 
-        [Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Pad(long id, bool showControls = true, bool readOnly = false) {
 			try {
-                var issue = IssuesAccessor.GetIssue(GetUser(), id);
-                var padId = issue.PadId;
+				var issue = IssuesAccessor.GetIssue(GetUser(), id);
+				var padId = issue.PadId;
 				if (readOnly || !_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssue(id))) {
-                    padId = await PadAccessor.GetReadonlyPad(issue.PadId);
-                }
-                return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
-            } catch (Exception) {
-                return RedirectToAction("Index", "Error");
-            }
-        }
+					padId = await PadAccessor.GetReadonlyPad(issue.PadId);
+				}
+				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+			} catch (Exception) {
+				return RedirectToAction("Index", "Error");
+			}
+		}
 
-        #region From Todo
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<PartialViewResult> IssueFromTodo(long recurrence, long todo, long meeting) {
-            //var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
-            //copyto = copyto ?? i.Recurrence.Id;
-            _PermissionsAccessor.Permitted(GetUser(), x =>
-                x.ViewL10Meeting(meeting)
-                 .ViewL10Recurrence(recurrence)
-            );
+		#region From Todo
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<PartialViewResult> IssueFromTodo(long recurrence, long todo, long meeting) {
+			//var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
+			//copyto = copyto ?? i.Recurrence.Id;
+			_PermissionsAccessor.Permitted(GetUser(), x =>
+				x.ViewL10Meeting(meeting)
+				 .ViewL10Recurrence(recurrence)
+			);
 
-            var todoModel = TodoAccessor.GetTodo(GetUser(), todo);
-            var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
-            var possible = recur._DefaultAttendees
-                .Select(x => x.User)
-                .Select(x => new IssueVM.AccountableUserVM() {
-                    id = x.Id,
-                    imageUrl = x.ImageUrl(true, ImageSize._32),
-                    name = x.GetName()
-                }).ToList();
+			var todoModel = TodoAccessor.GetTodo(GetUser(), todo);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var possible = recur._DefaultAttendees
+				.Select(x => x.User)
+				.Select(x => new IssueVM.AccountableUserVM() {
+					id = x.Id,
+					imageUrl = x.ImageUrl(true, ImageSize._32),
+					name = x.GetName()
+				}).ToList();
 
-            var model = new IssueVM() {
-                //IssueId = i.Issue.Id,
-                RecurrenceId = recurrence,
-                Message = await todoModel.NotNull(async x => await x.GetIssueMessage()),
-                Details = await todoModel.NotNull(async x => await x.GetIssueDetails()),
-                ByUserId = GetUser().Id,
-                MeetingId = meeting,
-                ForId = todo,
-                PossibleUsers = possible,
-                OwnerId = GetUser().Id,
-            };
-            return PartialView("CreateIssueModal", model);
-        }
+			var model = new IssueVM() {
+				//IssueId = i.Issue.Id,
+				RecurrenceId = recurrence,
+				Message = await todoModel.NotNull(async x => await x.GetIssueMessage()),
+				Details = await todoModel.NotNull(async x => await x.GetIssueDetails()),
+				ByUserId = GetUser().Id,
+				MeetingId = meeting,
+				ForId = todo,
+				PossibleUsers = possible,
+				OwnerId = GetUser().Id,
+			};
+			return PartialView("CreateIssueModal", model);
+		}
 
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> IssueFromTodo(IssueVM model) {
-            ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId, x => x.ForId);
-            _PermissionsAccessor.Permitted(GetUser(), x =>
-                x.ViewL10Meeting(model.MeetingId)
-                 .ViewL10Recurrence(model.RecurrenceId)
-            );
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> IssueFromTodo(IssueVM model) {
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId, x => x.ForId);
+			_PermissionsAccessor.Permitted(GetUser(), x =>
+				x.ViewL10Meeting(model.MeetingId)
+				 .ViewL10Recurrence(model.RecurrenceId)
+			);
 
-            var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, modelType: "TodoModel", modelId: model.ForId);
+			var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, modelType: "TodoModel", modelId: model.ForId);
 
-            await IssuesAccessor.CreateIssue(GetUser(), creation); /*model.RecurrenceId, model.OwnerId, new IssueModel() {
+			await IssuesAccessor.CreateIssue(GetUser(), creation); /*model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -86,187 +86,181 @@ namespace RadialReview.Controllers {
                 Organization = GetUser().Organization,
                 _Priority = model.Priority
             });*/
-            return Json(ResultObject.SilentSuccess().NoRefresh());
-        }
-        #endregion
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+		}
+		#endregion
 
 
-        /// <summary>
-        /// Copy an issue
-        /// </summary>
-        /// <param name="copyto"></param>
-        /// <param name="recurrence_issue"></param>
-        /// <returns></returns>
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<PartialViewResult> CopyModal(long recurrence_issue, long? copyto = null) {
-            var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
+		/// <summary>
+		/// Copy an issue
+		/// </summary>
+		/// <param name="copyto"></param>
+		/// <param name="recurrence_issue"></param>
+		/// <returns></returns>
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<PartialViewResult> CopyModal(long recurrence_issue, long? copyto = null) {
+			var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
 
-            copyto = copyto ?? i.Recurrence.Id;
-            var details = "";
-            try {
-                details = await PadAccessor.GetText(i.Issue.PadId);
-            } catch (Exception) {
-            }
+			copyto = copyto ?? i.Recurrence.Id;
+			var details = "";
+			try {
+				details = await PadAccessor.GetText(i.Issue.PadId);
+			} catch (Exception) {
+			}
 
-            var model = new CopyIssueVM() {
-                IssueId = i.Issue.Id,
-                Message = i.Issue.Message,
-                Details = details,//i.Issue.Description,
-                ParentIssue_RecurrenceId = i.Id,
-                CopyIntoRecurrenceId = copyto.Value,
-                PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), i.Recurrence.Id)
-            };
-            return PartialView("CopyIssueModal", model);
-        }
-
-
-
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> GetCopyModal(long recurrence_issue, long? copyto = null)
-        {
-            var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
-
-            copyto = copyto ?? i.Recurrence.Id;
-            var details = "";
-
-            var model = new CopyIssueVM()
-            {
-                IssueId = i.Issue.Id,
-                Message = i.Issue.Message,
-                Details = details,//i.Issue.Description,
-                ParentIssue_RecurrenceId = i.Id,
-                CopyIntoRecurrenceId = copyto.Value,
-                PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), i.Recurrence.Id).Where(m => m.Id != i.Recurrence.Id).Select(s => new L10Recurrence() { Id = s.Id, Name = s.Name }).ToList()
-            };
-
-            return Json(ResultObject.SilentSuccess(model), JsonRequestBehavior.AllowGet);
-        }
-
-        //[Access(AccessLevel.UserOrganization)]
-        //public PartialViewResult EditModal(long id) {
-        //	var todo = TodoAccessor.GetTodo(GetUser(), id);
-
-        //	ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
-        //	return PartialView(todo);
-        //}
-
-        [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult EditModal(long id) {
-
-            var issueRecurrence = IssuesAccessor.GetIssue_Recurrence(GetUser(), id);
-
-            ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssueRecurrence(id));
-            return PartialView(new IssueVM() {
-                Priority = issueRecurrence.Priority,
-                Message = issueRecurrence.Issue.Message,
-                OwnerId = issueRecurrence.Owner.Id,
-                IssueId = issueRecurrence.Issue.Id,
-                IssueRecurrenceId = issueRecurrence.Id,
-            });
-        }
-
-        [Access(AccessLevel.UserOrganization)]
-        [HttpPost]
-        public async Task<JsonResult> EditModal(IssueVM model) {
-
-            await IssuesAccessor.EditIssue(GetUser(), model.IssueRecurrenceId, message: model.Message, owner: model.OwnerId, priority: model.Priority);
-
-            //var todo = IssuesAccessor.EditIssue(GetUser(), model.IssueRecurrenceId, model.Message, model.OwnerId,model.Priority);
-            return Json(ResultObject.SilentSuccess());
-        }
+			var model = new CopyIssueVM() {
+				IssueId = i.Issue.Id,
+				Message = i.Issue.Message,
+				Details = details,//i.Issue.Description,
+				ParentIssue_RecurrenceId = i.Id,
+				CopyIntoRecurrenceId = copyto.Value,
+				PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), i.Recurrence.Id)
+			};
+			return PartialView("CopyIssueModal", model);
+		}
 
 
 
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> CopyModal(CopyIssueVM model)
-        {
-            //ValidateValues(model, x => x.ParentIssue_RecurrenceId, x => x.IssueId);
-            var issue = IssuesAccessor.CopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
-            model.PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), issue.Recurrence.Id);
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> GetCopyModal(long recurrence_issue, long? copyto = null) {
+			var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
 
-            await IssuesAccessor.EditIssue(GetUser(), model.ParentIssue_RecurrenceId, awaitingSolve: true);
-            return Json(ResultObject.SilentSuccess().NoRefresh());
-        }
+			copyto = copyto ?? i.Recurrence.Id;
+			var details = "";
 
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> UnCopyModal(CopyIssueVM model)
-        {            
-            var issue = IssuesAccessor.UnCopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);            
+			var model = new CopyIssueVM() {
+				IssueId = i.Issue.Id,
+				Message = i.Issue.Message,
+				Details = details,//i.Issue.Description,
+				ParentIssue_RecurrenceId = i.Id,
+				CopyIntoRecurrenceId = copyto.Value,
+				PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), i.Recurrence.Id).Where(m => m.Id != i.Recurrence.Id).Select(s => new L10Recurrence() { Id = s.Id, Name = s.Name }).ToList()
+			};
 
-            await IssuesAccessor.EditIssue(GetUser(), model.ParentIssue_RecurrenceId, awaitingSolve: false);
-            return Json(ResultObject.SilentSuccess().NoRefresh());
-        }
+			return Json(ResultObject.SilentSuccess(model), JsonRequestBehavior.AllowGet);
+		}
 
-        [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CreateIssue(long recurrence, long meeting = -1, string issue = null, long? modelId = null, string modelType = null,bool showUsers=true)
-        {
-            if (meeting != -1)
-                _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+		//[Access(AccessLevel.UserOrganization)]
+		//public PartialViewResult EditModal(long id) {
+		//	var todo = TodoAccessor.GetTodo(GetUser(), id);
 
-            var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
-            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
-            people.Add(GetUser());
-            people = people.Distinct(x => x.Id).ToList();
+		//	ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
+		//	return PartialView(todo);
+		//}
 
-            var possible = people.Select(x => new IssueVM.AccountableUserVM() {
-                id = x.Id,
-                imageUrl = x.ImageUrl(true, ImageSize._32),
-                name = x.GetName()
-            }).ToList();
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult EditModal(long id) {
+
+			var issueRecurrence = IssuesAccessor.GetIssue_Recurrence(GetUser(), id);
+
+			ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssueRecurrence(id));
+			return PartialView(new IssueVM() {
+				Priority = issueRecurrence.Priority,
+				Message = issueRecurrence.Issue.Message,
+				OwnerId = issueRecurrence.Owner.Id,
+				IssueId = issueRecurrence.Issue.Id,
+				IssueRecurrenceId = issueRecurrence.Id,
+			});
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public async Task<JsonResult> EditModal(IssueVM model) {
+
+			await IssuesAccessor.EditIssue(GetUser(), model.IssueRecurrenceId, message: model.Message, owner: model.OwnerId, priority: model.Priority);
+
+			//var todo = IssuesAccessor.EditIssue(GetUser(), model.IssueRecurrenceId, model.Message, model.OwnerId,model.Priority);
+			return Json(ResultObject.SilentSuccess());
+		}
 
 
-            var prior = recur.Prioritization;
-            var showPriority = false;
-            if (/*prior == Models.L10.PrioritizationType.Invalid ||*/ prior == Models.L10.PrioritizationType.Priority)
-                showPriority = true;
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> CopyModal(CopyIssueVM model) {
+			//ValidateValues(model, x => x.ParentIssue_RecurrenceId, x => x.IssueId);
+			var issue = IssuesAccessor.CopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
+			model.PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), issue.Recurrence.Id);
+
+			await IssuesAccessor.EditIssue(GetUser(), model.ParentIssue_RecurrenceId, awaitingSolve: true);
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UnCopyModal(CopyIssueVM model) {
+			var issue = IssuesAccessor.UnCopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
+
+			await IssuesAccessor.EditIssue(GetUser(), model.ParentIssue_RecurrenceId, awaitingSolve: false);
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult CreateIssue(long recurrence, long meeting = -1, string issue = null, long? modelId = null, string modelType = null, bool showUsers = true) {
+			if (meeting != -1)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+			people.Add(GetUser());
+			people = people.Distinct(x => x.Id).ToList();
+
+			var possible = people.Select(x => new IssueVM.AccountableUserVM() {
+				id = x.Id,
+				imageUrl = x.ImageUrl(true, ImageSize._32),
+				name = x.GetName()
+			}).ToList();
 
 
+			var prior = recur.Prioritization;
+			var showPriority = false;
+			if (/*prior == Models.L10.PrioritizationType.Invalid ||*/ prior == Models.L10.PrioritizationType.Priority)
+				showPriority = true;
 
-            var model = new IssueVM() {
-                Message = issue,
-                ByUserId = GetUser().Id,
-                MeetingId = meeting,
-                RecurrenceId = recurrence,
-                PossibleUsers = possible,
-                OwnerId = GetUser().Id,
-                ForModelId = modelId,
-                ForModelType = modelType,
-                ShowPriority = showPriority,
+
+			var model = new IssueVM() {
+				Message = issue,
+				ByUserId = GetUser().Id,
+				MeetingId = meeting,
+				RecurrenceId = recurrence,
+				PossibleUsers = possible,
+				OwnerId = GetUser().Id,
+				ForModelId = modelId,
+				ForModelType = modelType,
+				ShowPriority = showPriority,
 				HideUsers = !showUsers
-            };
+			};
 			return PartialView("CreateIssueModal", model);
-        }
+		}
 
-        public class MeetingVm {
-            public long id { get; set; }
+		public class MeetingVm {
+			public long id { get; set; }
 
-            public string name { get; set; }
-        }
+			public string name { get; set; }
+		}
 
-        [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CreateIssueRecurrence() {
-            //if (meeting != -1)
-            //	_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult CreateIssueRecurrence() {
+			//if (meeting != -1)
+			//	_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
-            ViewBag.PossibleMeetings = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, true)
-                .Select(x => new MeetingVm { name = x.Name, id = x.Id })
-                .ToList();
+			ViewBag.PossibleMeetings = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, true)
+				.Select(x => new MeetingVm { name = x.Name, id = x.Id })
+				.ToList();
 
-            var model = new IssueVM() {
-                ByUserId = GetUser().Id,
-                MeetingId = -1,
-                PossibleUsers = null,
-                OwnerId = GetUser().Id
-            };
-            return PartialView("CreateIssueRecurrenceModal", model);
-        }
+			var model = new IssueVM() {
+				ByUserId = GetUser().Id,
+				MeetingId = -1,
+				PossibleUsers = null,
+				OwnerId = GetUser().Id
+			};
+			return PartialView("CreateIssueRecurrenceModal", model);
+		}
 
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> CreateIssueRecurrence(IssueVM model) {
-            ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.OwnerId, x => x.ForId);
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> CreateIssueRecurrence(IssueVM model) {
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.OwnerId, x => x.ForId);
 			var creation = IssueCreation.CreateL10Issue(model.Message ?? "", model.Details ?? "", model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority);
 			await IssuesAccessor.CreateIssue(GetUser(), creation);/*model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
@@ -282,15 +276,15 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
 
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> CreateIssue(IssueVM model) {
-            ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId, x => x.ForId);
-            if (model.MeetingId != -1)
-                _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> CreateIssue(IssueVM model) {
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId, x => x.ForId);
+			if (model.MeetingId != -1)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-            var creation = IssueCreation.CreateL10Issue(model.Message ?? "", model.Details ?? "", model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, model.ForModelType ?? "IssueModel", model.ForModelId ?? -1);
-            await IssuesAccessor.CreateIssue(GetUser(), creation);/*model.RecurrenceId, model.OwnerId, new IssueModel() {
+			var creation = IssueCreation.CreateL10Issue(model.Message ?? "", model.Details ?? "", model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, model.ForModelType ?? "IssueModel", model.ForModelId ?? -1);
+			await IssuesAccessor.CreateIssue(GetUser(), creation);/*model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -392,13 +386,13 @@ namespace RadialReview.Controllers {
 
 
 		[HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> Modal(ScoreCardIssueVM model) {
-            ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.MeasurableId, x => x.RecurrenceId);
-            _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> Modal(ScoreCardIssueVM model) {
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.MeasurableId, x => x.RecurrenceId);
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-            var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, "MeasurableModel", model.MeasurableId);
-            await IssuesAccessor.CreateIssue(GetUser(), creation); /*model.RecurrenceId, model.OwnerId, new IssueModel() {
+			var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, "MeasurableModel", model.MeasurableId);
+			await IssuesAccessor.CreateIssue(GetUser(), creation); /*model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -409,48 +403,48 @@ namespace RadialReview.Controllers {
                 Organization = GetUser().Organization,
                 _Priority = model.Priority
             });*/
-            return Json(ResultObject.SilentSuccess().NoRefresh());
-            //return PartialView("ScorecardIssueModal", model);
-        }
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+			//return PartialView("ScorecardIssueModal", model);
+		}
 
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<PartialViewResult> CreateRockIssue(long meeting, long rock) {
-            _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<PartialViewResult> CreateRockIssue(long meeting, long rock) {
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
-            var s = RockAccessor.GetRockInMeeting(GetUser(), rock, meeting);
-            var recur = L10Accessor.GetCurrentL10RecurrenceFromMeeting(GetUser(), meeting);
+			var s = RockAccessor.GetRockInMeeting(GetUser(), rock, meeting);
+			var recur = L10Accessor.GetCurrentL10RecurrenceFromMeeting(GetUser(), meeting);
 
-            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
-            people.Add(GetUser());
-            people = people.Distinct(x => x.Id).ToList();
+			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+			people.Add(GetUser());
+			people = people.Distinct(x => x.Id).ToList();
 
-            var possible = people.Select(x => new IssueVM.AccountableUserVM() {
-                id = x.Id,
-                imageUrl = x.ImageUrl(true, ImageSize._32),
-                name = x.GetName()
-            }).ToList();
+			var possible = people.Select(x => new IssueVM.AccountableUserVM() {
+				id = x.Id,
+				imageUrl = x.ImageUrl(true, ImageSize._32),
+				name = x.GetName()
+			}).ToList();
 
 
-            var model = new RockIssueVM() {
-                ByUserId = GetUser().Id,
-                Message = await s.NotNull(async x => await x.GetIssueMessage()),
-                Details = await s.NotNull(async x => await x.GetIssueDetails()),
-                MeetingId = meeting,
-                RockId = rock,
-                RecurrenceId = s.ForRecurrence.Id,
-                PossibleUsers = possible,
-                OwnerId = s.ForRock.ForUserId
-            };
-            return PartialView("RockIssueModal", model);
-        }
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> CreateRockIssue(RockIssueVM model) {
-            ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RockId, x => x.RecurrenceId);
-            _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+			var model = new RockIssueVM() {
+				ByUserId = GetUser().Id,
+				Message = await s.NotNull(async x => await x.GetIssueMessage()),
+				Details = await s.NotNull(async x => await x.GetIssueDetails()),
+				MeetingId = meeting,
+				RockId = rock,
+				RecurrenceId = s.ForRecurrence.Id,
+				PossibleUsers = possible,
+				OwnerId = s.ForRock.ForUserId
+			};
+			return PartialView("RockIssueModal", model);
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> CreateRockIssue(RockIssueVM model) {
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RockId, x => x.RecurrenceId);
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-            var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, "RockModel", model.RockId);
-            await IssuesAccessor.CreateIssue(GetUser(), creation);/*model.RecurrenceId, model.OwnerId, new IssueModel() {
+			var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, "RockModel", model.RockId);
+			await IssuesAccessor.CreateIssue(GetUser(), creation);/*model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -461,59 +455,59 @@ namespace RadialReview.Controllers {
                 Organization = GetUser().Organization,
                 _Priority = model.Priority
             });*/
-            return Json(ResultObject.SilentSuccess().NoRefresh());
-            //return PartialView("ScorecardIssueModal", model);
-        }
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+			//return PartialView("ScorecardIssueModal", model);
+		}
 
 
-        [Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization)]
 
-        public async Task<PartialViewResult> CreateHeadlineIssue(long meeting, long headline, long? recurrence = null) {
+		public async Task<PartialViewResult> CreateHeadlineIssue(long meeting, long headline, long? recurrence = null) {
 
-            //Sometimes this method is called with -1 for meetingId,
-            if (meeting == -1 && recurrence != null) {
-                meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence.Value, true).NotNull(x => x.Id);
-            }
+			//Sometimes this method is called with -1 for meetingId,
+			if (meeting == -1 && recurrence != null) {
+				meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence.Value, true).NotNull(x => x.Id);
+			}
 
-            _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
-            var s = HeadlineAccessor.GetHeadline(GetUser(), headline);
-            var recur = L10Accessor.GetCurrentL10RecurrenceFromMeeting(GetUser(), meeting);
+			var s = HeadlineAccessor.GetHeadline(GetUser(), headline);
+			var recur = L10Accessor.GetCurrentL10RecurrenceFromMeeting(GetUser(), meeting);
 
-            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
-            people.Add(GetUser());
-            people = people.Distinct(x => x.Id).ToList();
+			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+			people.Add(GetUser());
+			people = people.Distinct(x => x.Id).ToList();
 
-            var possible = people.Select(x => new IssueVM.AccountableUserVM() {
-                id = x.Id,
-                imageUrl = x.ImageUrl(true, ImageSize._32),
-                name = x.GetName()
-            }).ToList();
+			var possible = people.Select(x => new IssueVM.AccountableUserVM() {
+				id = x.Id,
+				imageUrl = x.ImageUrl(true, ImageSize._32),
+				name = x.GetName()
+			}).ToList();
 
-            //get Notes
-            s._Notes = await PadAccessor.GetText(s.HeadlinePadId);
+			//get Notes
+			s._Notes = await PadAccessor.GetText(s.HeadlinePadId);
 
-            var model = new HeadlineIssueVM() {
-                ByUserId = GetUser().Id,
-                Message = await s.NotNull(async x => await x.GetIssueMessage()),
-                Details = await s.NotNull(async x => await x.GetIssueDetails()),
-                MeetingId = meeting,
-                HeadlineId = headline,
-                RecurrenceId = s.RecurrenceId,
-                PossibleUsers = possible,
-                OwnerId = s.OwnerId
-            };
-            return PartialView("HeadlineIssueModal", model);
-        }
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> CreateHeadlineIssue(HeadlineIssueVM model) {
-            ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.HeadlineId, x => x.RecurrenceId);
-            _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+			var model = new HeadlineIssueVM() {
+				ByUserId = GetUser().Id,
+				Message = await s.NotNull(async x => await x.GetIssueMessage()),
+				Details = await s.NotNull(async x => await x.GetIssueDetails()),
+				MeetingId = meeting,
+				HeadlineId = headline,
+				RecurrenceId = s.RecurrenceId,
+				PossibleUsers = possible,
+				OwnerId = s.OwnerId
+			};
+			return PartialView("HeadlineIssueModal", model);
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> CreateHeadlineIssue(HeadlineIssueVM model) {
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.HeadlineId, x => x.RecurrenceId);
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-            var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, "PeopleHeadline", model.HeadlineId);
+			var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, "PeopleHeadline", model.HeadlineId);
 
-            await IssuesAccessor.CreateIssue(GetUser(), creation);/* model.RecurrenceId, model.OwnerId, new IssueModel() {
+			await IssuesAccessor.CreateIssue(GetUser(), creation);/* model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -524,23 +518,23 @@ namespace RadialReview.Controllers {
                 Organization = GetUser().Organization,
                 _Priority = model.Priority
             });*/
-            return Json(ResultObject.SilentSuccess().NoRefresh());
-            //return PartialView("ScorecardIssueModal", model);
-        }
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+			//return PartialView("ScorecardIssueModal", model);
+		}
 
 
-        [Access(AccessLevel.UserOrganization)]
-        public FileContentResult Listing() {
-            var csv = IssuesAccessor.Listing(GetUser(), GetUser().Organization.Id);
-            return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
-        }
+		[Access(AccessLevel.UserOrganization)]
+		public FileContentResult Listing() {
+			var csv = IssuesAccessor.Listing(GetUser(), GetUser().Organization.Id);
+			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
+		}
 
-        [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> IssuesAndTodos(bool details = false) {
-            var file = await IssuesAccessor.GetIssuesAndTodosSpreadsheetAtOrganization(GetUser(), GetUser().Organization.Id, details);
-            return Xls(file, "Issues_Todos_" + DateTime.UtcNow.ToJavascriptMilliseconds());
-        }
-    }
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> IssuesAndTodos(bool details = false) {
+			var file = await IssuesAccessor.GetIssuesAndTodosSpreadsheetAtOrganization(GetUser(), GetUser().Organization.Id, details);
+			return Xls(file, "Issues_Todos_" + DateTime.UtcNow.ToJavascriptMilliseconds());
+		}
+	}
 }
 
 #region Deleted

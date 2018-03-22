@@ -253,7 +253,7 @@ namespace RadialReview.Utilities {
 
 			switch (env) {
 				case Env.local_test_sqlite:
-                    return true;
+					return true;
 				case Env.local_mysql:
 					goto case Env.local_sqlite;
 				case Env.local_sqlite: {
@@ -433,7 +433,7 @@ namespace RadialReview.Utilities {
 		}
 
 		public static string FixEmail(string email) {
-			return Config.IsLocal() ? "clay.upton+test_" + (email??"").Replace("@", "_at_") + "@mytractiontools.com" : email;
+			return Config.IsLocal() ? "clay.upton+test_" + (email ?? "").Replace("@", "_at_") + "@mytractiontools.com" : email;
 		}
 
 		public static Env GetEnv() {
@@ -465,7 +465,7 @@ namespace RadialReview.Utilities {
 		}
 
 		public static bool DisableMinification() {
-			
+
 			switch (GetEnv()) {
 				case Env.local_sqlite:
 					return GetAppSetting("DisableMinification", "False").ToBoolean();
