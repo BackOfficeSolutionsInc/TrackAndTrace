@@ -99,11 +99,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 				return "Consecutive late meeting starts";
 			}
 		}
-
-
-		public override int GetNumberOfPassesToReset(IEventSettings settings) {
-			return 1;
-		}
+		
 		public string Description {
 			get {
 				return string.Format("{0} minutes for {1} weeks in a row{2}", LessGreater.GreaterThan.ToDescription(MinutesLate), WeeksInARow, _MeetingName.NotNull(x => " for " + x) ?? "");

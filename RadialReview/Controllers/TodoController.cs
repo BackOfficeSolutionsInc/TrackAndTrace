@@ -275,8 +275,7 @@ namespace RadialReview.Controllers {
 				throw new PermissionsException("Rock Id blank");
 			}
 			var r = rr.Value;
-
-==== BASE ====
+			
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
 			var s = RockAccessor.GetRockInMeeting(GetUser(), r, meeting);

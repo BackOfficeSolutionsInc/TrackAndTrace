@@ -147,7 +147,6 @@
     <Compile Include="Api\V1\Todo.cs" />
     <Compile Include="Api\V1\Users.cs" />
     <Compile Include="App_Start\DateTimeModelBinder.cs" />
-    <Compile Include="App_Start\EventConfig.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />
@@ -924,7 +923,6 @@
     <Compile Include="Utilities\FormulaUtility.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\HashUtil.cs" />
-
     <Compile Include="Utilities\Hooks\IMilestoneHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IAccountEvent.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\ICreateIssue.cs" />
@@ -941,7 +939,6 @@
     <Compile Include="Crosscutting\Hooks\Interfaces\IUserHooks.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IRolesHook.cs" />
-    
     <Compile Include="Utilities\HtmlUtility.cs" />
     <Compile Include="Utilities\Integrations\ActiveCampaign.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />

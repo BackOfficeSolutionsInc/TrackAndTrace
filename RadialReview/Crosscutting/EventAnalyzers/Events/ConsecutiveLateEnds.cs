@@ -100,9 +100,6 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 				return string.Format("{0} minutes for {1} weeks in a row{2}", LessGreater.GreaterThan.ToDescription(MinutesOver), WeeksInARow, _MeetingName.NotNull(x => " for " + x) ?? "");
 			}
 		}
-
-		public override bool IsEnabled(IEventSettings settings) {
-			return true;
-		}
+		
 	}
 }
