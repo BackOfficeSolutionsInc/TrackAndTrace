@@ -194,7 +194,7 @@ acapp.directive("ttOverflow", ["$timeout", function ($timeout) {
 					return shorten();
 				});
 				element.on('focus', function () {
-					debugger;
+					//debugger;
 					ngModel.$viewValue = ngModel.$modelValue;
 					ngModel.$render();
 					console.info(ngModel.$viewValue);
@@ -849,7 +849,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		} else {
 			console.log("..applying update");
 			try {
-				$scope.$eval("search.searchPos_" + id + "=$scope.model.Lookup['AngularAccountabilityNode_" + id + "'].Group.Position.Name");
+				$scope.$eval("model.data.search.searchPos[" + id + "]=$scope.model.Lookup['AngularAccountabilityNode_" + id + "'].Group.Position.Name");
 			} catch (e) {
 				console.error("Silly position update " + e)
 			}
@@ -1018,8 +1018,8 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 	var canReorder = function (d) {
 		var res = d.Editable == true && $scope.model.data.CanReorganize;
-		if (res)
-			debugger;
+		    //if (res)
+			//debugger;
 		return res;
 	}
 	var standardNodeEnter = function (nodeEnter) {
@@ -1055,25 +1055,25 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 				return null;
 			})
 			.attr("md-blur", function (d) {
-				return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"search.searchPos_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
+				return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"model.data.search.searchPos[" + d.Id + "]\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
 			})
 			.attr("md-selected-item", function (d) {
 				return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
 			}).attr("md-item-text", function (d) {
 				return "pitem.Name";
-			}).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
-            .attr("md-search-text", function (d) { return "search.searchPos_" + d.Id; })
+			}).attr("md-items", function (d) { return "pitem in search.queryPositions(model.data.search.searchPos[" + d.Id + "])"; })
+            .attr("md-search-text", function (d) { return "model.data.search.searchPos[" + d.Id + "]"; })
 			.attr("ng-class", function (d) {
-				return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && search.searchPos_" + d.Id + " }";
+				return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && model.data.search.searchPos[" + d.Id + "] }";
 			}).attr("ng-attr-title", function (d) {
 				return "{{(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null)?'Invalid: Position does not exist.':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
 			})
 			.attr("md-selected-item-change", function (d) {
-				return "functions.fixName(" + d.Id + ",'search.searchPos_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
+				return "functions.fixName(" + d.Id + ",'model.data.search.searchPos[" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
 			}).attr("md-no-cache", "true");
 
 		//Is this even used? vvv
-		posAutoComplete.append("md-item-template").append("span").attr("md-highlight-text", function (d) { return "search.searchPos_" + d.Id; }).attr("md-highlight-flags", "^i").text("{{pitem.Name}}{{pitem.Create}}");
+		posAutoComplete.append("md-item-template").append("span").attr("md-highlight-text", function (d) { return "model.data.search.searchPos[" + d.Id + "]"; }).attr("md-highlight-flags", "^i").text("{{pitem.Name}}{{pitem.Create}}");
 
 
 		var owner = contents.append("xhtml:div").classed("acc-owner", true);
@@ -1172,7 +1172,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		};
 
 		function onClickKey(func) {
-			debugger;
+			//debugger;
 			if (d3.event && (d3.event.keyCode == 13 || d3.event.keyCode == 32))
 				return func;
 			return function (d) { };
@@ -1264,21 +1264,21 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		//	return null;
 		//})
 		//.attr("md-blur", function (d) {
-		//	return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"search.searchPos_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
+		//	return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"model.data.search.searchPos[" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
 		//})
 		//.attr("md-selected-item", function (d) {
 		//	return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
 		//}).attr("md-item-text", function (d) {
 		//	return "pitem.Name";
-		//}).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
-		//.attr("md-search-text", function (d) { return "search.searchPos_" + d.Id; })
+		//}).attr("md-items", function (d) { return "pitem in search.queryPositions(model.data.search.searchPos[" + d.Id + "])"; })
+		//.attr("md-search-text", function (d) { return "model.data.search.searchPos[" + d.Id + "]"; })
 		//.attr("ng-class", function (d) {
-		//	return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && search.searchPos_" + d.Id + " }";
+		//	return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && model.data.search.searchPos[" + d.Id + "] }";
 		//}).attr("ng-attr-title", function (d) {
 		//	return "{{(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null)?'Invalid: Position does not exist.':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
 		//})
 		//.attr("md-selected-item-change", function (d) {
-		//	return "functions.fixName(" + d.Id + ",'search.searchPos_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
+		//	return "functions.fixName(" + d.Id + ",'model.data.search.searchPos[" + d.Id + "]',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
 		//}).attr("md-no-cache", "true");
 
 
@@ -1349,7 +1349,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		};
 
 		function onClickKey(func) {
-			debugger;
+			//debugger;
 			if (d3.event && (d3.event.keyCode == 13 || d3.event.keyCode == 32))
 				return func;
 			return function (d) { };
@@ -1373,7 +1373,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 					clickAddNode(d);
 			});
 		var ci = addNodeBtn.append("circle").classed("acc-fallback-ignore", true).attr("r", 10).attr("title", "Add direct report").on("click", clickAddNode);
-		debugger;
+		//debugger;
 		addNodeBtn.append("title").text("Add direct report");
 		addNodeBtn.append("text").attr("transform", "translate(-4.5,4.5)").classed("acc-fallback-ignore", true).text("+").attr("title", "Add direct report").on("click", clickAddNode);
 
@@ -1409,7 +1409,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		}).attr("tabindex", function (d) {
 			return canReorder(d) == false ? "-1" : "0";
 		}).style("display", function (d) {
-			debugger;
+			//debugger;
 			return canReorder(d) == false ? "none" : null;
 		});
 
@@ -1418,7 +1418,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		}).attr("tabindex", function (d) {
 			return canReorder(d) == false ? "-1" : "0";
 		}).style("display", function (d) {
-			debugger;
+			//debugger;
 			return canReorder(d) == false ? "none" : null;
 		});
 
