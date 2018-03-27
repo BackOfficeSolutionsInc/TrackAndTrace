@@ -230,6 +230,7 @@ if (ViewBag.NoTitleBar ?? false) {
                               {"SortBy","createtime-column"},
                               {"AddHeaders",false},
                               {"AddDatePicker",false},
+                              {"UsePopup", true},
                               {"Filter",""},
                               {"DefaultSort","['Id','CreateTime']"}
                           });
@@ -254,6 +255,7 @@ if (ViewBag.NoTitleBar ?? false) {
                               {"AddHeaders",false},
                               {"ShowDetails",false},
                               {"SortBy","createtime-column"},
+                                 {"UsePopup",true},
                               {"AddDatePicker",false},
                               {"DefaultSort","CreateTime"},
                               {"Order","| orderBy: ['Id','DateCreated']"}
@@ -266,6 +268,7 @@ if (ViewBag.NoTitleBar ?? false) {
                         @{Html.RenderPartial("~/Views/Issues/partial/list.cshtml", new ViewDataDictionary{
                               {"AddHeaders",false},
                               {"ShowDetails",false},
+                                      { "UsePopup",true},
                               {"SortBy","createtime-column"},
                               {"SortByDirection","ascending"},
                               {"DefaultSort","['Id','CreateTime']"}

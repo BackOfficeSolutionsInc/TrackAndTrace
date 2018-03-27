@@ -9,13 +9,13 @@
     var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
     var defaultSort = ViewBag.DefaultSort ?? "'-DueDate'";
 
-    var usePopup = ViewBag.UsePopup==true;
+    var usePopup = ViewBag.UsePopup == true;
 
     var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
 
     var guid = Guid.NewGuid().ToString().Replace("-", "");
 
-    var detailsCode = showDetails ? "todo.DetailsUrl_Src=todo.DetailsUrl;model.Selected = todo.Key+'"+guid+"';" : "";
+    var detailsCode = showDetails ? "todo.DetailsUrl_Src=todo.DetailsUrl;model.Selected = todo.Key+'" + guid + "';" : "";
 
     var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 
@@ -23,110 +23,109 @@
 
 
     var attrLookup = new Dictionary<string, string>(){
-        {"todotype-column",""},
-        {"checkbox-column",""},
-        {"picture-column",""},
-        {"message-column",""},
-        {"due-column",""},
-        {"empty-column",""},
-        {"createtime-column",""},
-        {"complete-column",""},
-        {"origin-column",""},
-        {"delete-column",""}
-    };
+{"todotype-column",""},
+{"checkbox-column",""},
+{"picture-column",""},
+{"message-column",""},
+{"due-column",""},
+{"empty-column",""},
+{"createtime-column",""},
+{"complete-column",""},
+{"origin-column",""},
+{"delete-column",""}
+};
 }
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak todo-list-container app">
-	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
-		<div class="row">
-			<div class="col-md-12 component">
-				<div id="Todo" class="tab-pane todo-pane scrollbox pull-left fullWidth scroller">
-					<div></div>
-					<md-table-container class="repeater-container">
-						<table class="@(orderVariable)" 
-							   md-table 
-							   width="100%" 
-							   class="component table-hover" 
-							   ng-if="(@(selector) @(filter)).length" 
-							   @if(!usePopup) { 
-									@:click-anywhere-but-here="model.Selected = -1"
-							   }
-						>
-							<thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
-								<tr class="table-header" md-row>
-									<th md-column @(attrLookup["todotype-column"]) class="todotype-column" style="width: 25px;" md-order-by="TodoType">&nbsp;</th>
-									<th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" style="width: 25px;" md-order-by="Complete">&nbsp;</th>
-									<th md-column @(attrLookup["picture-column"]) class="picture-column owner-column" style="width: 32px;" md-order-by="Owner.Name">&nbsp;</th>
-									<th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">To-Do</th>
-									<th md-column md-numeric @(attrLookup["origin-column"]) class="origin-column alignCenter hidden-width-1" md-order-by="Origin">Origin</th>
-									<th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column" md-order-by="Created">Created</th>
-									<th md-column md-numeric @(attrLookup["due-column"]) class="due-column alignCenter hidden-width-1" md-order-by="DueDate">Due Date</th>
-									<th md-column md-numeric @(attrLookup["empty-column"]) class="empty-cell" style="width:1px;">&nbsp;</th>
-									@if (completion) {
-										<th md-column md-numeric @(attrLookup["complete-column"]) class="complete-column alignCenter hidden-width-1" md-order-by="CompleteTime" style="width:90px;">Completed</th>
-									}
-									<th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
-								</tr>
-							</thead>
-							<tbody md-body>
-								<tr ng-hide="todo.Hide" id="todo_{{todo.Id}}"
-									ng-repeat="todo in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
-									ng-class="{grayRow: todo.Complete}"
-									class="clickable todotype-{{todo.TodoType}} {{model.Selected == todo.Key+'@guid'?'selected':''}}"
+    <div @(headers || controller ? "ng-controller=L10Controller" : "")>
+        <div class="row">
+            <div class="col-md-12 component">
+                <div id="Todo" class="tab-pane todo-pane scrollbox pull-left fullWidth scroller">
+                    <div></div>
+                    <md-table-container class="repeater-container">
+                        <table class="@(orderVariable)"
+                               md-table
+                               width="100%"
+                               class="component table-hover"
+                               ng-if="(@(selector) @(filter)).length"
+                               @if (!usePopup) { @: click-anywhere-but-here="model.Selected = -1"
+                               }>
+                            <thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
+                                <tr class="table-header" md-row>
+                                    <th md-column @(attrLookup["todotype-column"]) class="todotype-column" style="width: 25px;" md-order-by="TodoType">&nbsp;</th>
+                                    <th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" style="width: 25px;" md-order-by="Complete">&nbsp;</th>
+                                    <th md-column @(attrLookup["picture-column"]) class="picture-column owner-column" style="width: 32px;" md-order-by="Owner.Name">&nbsp;</th>
+                                    <th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">To-Do</th>
+                                    <th md-column md-numeric @(attrLookup["origin-column"]) class="origin-column alignCenter hidden-width-1" md-order-by="Origin">Origin</th>
+                                    <th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column" md-order-by="Created">Created</th>
+                                    <th md-column md-numeric @(attrLookup["due-column"]) class="due-column alignCenter hidden-width-1" md-order-by="DueDate">Due Date</th>
+                                    <th md-column md-numeric @(attrLookup["empty-column"]) class="empty-cell" style="width:1px;">&nbsp;</th>
+                                    @if (completion) {
+                                        <th md-column md-numeric @(attrLookup["complete-column"]) class="complete-column alignCenter hidden-width-1" md-order-by="CompleteTime" style="width:90px;">Completed</th>
+                                    }
+                                    <th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
+                                </tr>
+                            </thead>
+                            <tbody md-body>
+                                <tr ng-hide="todo.Hide" id="todo_{{todo.Id}}"
+                                    ng-repeat="todo in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
+                                    ng-class="{grayRow: todo.Complete}"
+                                    class="clickable todotype-{{todo.TodoType}} {{model.Selected == todo.Key+'@guid'?'selected':''}}"
                                     data-todo="{{::todo.Id}}"
-									md-row>
-									<td class="todotype-column"><span class="type-icon"></span></td>
-									<td class="todo-checkbox-container clickable checkbox-column" style="min-width: 25px;text-align: center;" md-cell>
-										<md-checkbox aria-label="Complete" ng-model="todo.Complete" class="md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)"></md-checkbox>
-									</td>
-									<td class="picture-column owner-column" md-cell>
-										<span class="item-wrapper place-right">
-											<span onaftersave="functions.sendUpdate(todo)"
-												  editable-select="todo.Owner"
-												  onshow="loadPossibleOwners(@(recurrenceId))"
-												  e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
-												<profile-image user="todo.Owner"></profile-image>
-											</span>
-										</span>
-									</td>
-									<td class="todo-text message-column" style="width:100%" ng-click="@(detailsCode)" md-cell>
-										@if (usePopup) {
-											<div ng-if="todo.TodoType!='Milestone'" class="todoModal" data-method="EditModal" data-title="Edit to-do" data-Id="{{todo.Id}}">{{todo.Name}}</div>
-											<div ng-if="todo.TodoType=='Milestone'" class="milestoneModal" data-method="EditModal" data-title="Edit milestone" data-Id="{{-todo.Id}}">{{todo.Name}}</div>
-										} else {
-											<input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 400}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />
-											<div class="todo-text" ng-if="model.Selected==todo.Key+'@guid'">
-												<a class="pull-right timeline-button" ng-if="todo.Link!=null" target="_blank" href="{{todo.Link}}" style="margin-top: 4px;margin-right: 2px;"><span class="glyphicon glyphicon-comment"></span></a>
-												<iframe class="keep-background" style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>
-											</div>
-										}
-									</td>
-									<td class="alignCenter hidden-width-1 origin-column" md-cell>
-										<div class="origin-cell" title="{{todo.Origin}}">{{todo.Origin}}</div>
-									</td>
-									<td class="alignCenter createtime-column date-column" style=";" md-cell>
-										{{todo.CreateTime | date:dateFormat}}
-									</td>
-									<td class="alignCenter hidden-width-1 due-column date-column" style=";" md-cell>
-										<md-datepicker ng-model="todo.DueDate" md-placeholder="Due date" ng-click="$scope.@(orderVariable)=$index" ng-change="todo.DueDate=functions.adjustToMidnight(todo.DueDate);functions.sendUpdate(todo)" ng-class="todo.Complete?(todo.DueDate>todo.CompleteTime? 'green' : 'red'):(todo.DueDate>=now? 'green' : 'red')" class="due-date"></md-datepicker>
-									</td>
-									<td class="empty-cell" style="min-width: 15px;" md-cell></td>
-									@if (completion){
-										<td class="alignCenter complete-column date-column" md-cell>{{todo.CompleteTime | date:dateFormat}}</td>
-									}
-									<td class="delete-column" md-cell>
-										<span class="delete-row" ng-click="functions.removeRow($event,todo)"></span>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</md-table-container>
-					<div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
-					<div class="create-row" ng-click="functions.addRow($event,'AngularTodo')" data-toggle="tooltip" data-placement="left" title="New To-do"></div>
-					<div class="gray no-todos empty-search" style="padding: 30px 15px;" ng-if="(@(selector) @(filter)).length==0">
-						@(onempty)
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                                    md-row>
+                                    <td class="todotype-column"><span class="type-icon"></span></td>
+                                    <td class="todo-checkbox-container clickable checkbox-column" style="min-width: 25px;text-align: center;" md-cell>
+                                        <md-checkbox aria-label="Complete" ng-model="todo.Complete" class="md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)"></md-checkbox>
+                                    </td>
+                                    <td class="picture-column owner-column" md-cell>
+                                        <span class="item-wrapper place-right">
+                                            <span onaftersave="functions.sendUpdate(todo)"
+                                                  editable-select="todo.Owner"
+                                                  onshow="loadPossibleOwners(@(recurrenceId))"
+                                                  e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
+                                                <profile-image user="todo.Owner"></profile-image>
+                                            </span>
+                                        </span>
+                                    </td>
+                                    <td class="todo-text message-column" style="width:100%" ng-click="@(detailsCode)" md-cell>
+                                        @if (usePopup) {
+                                            <div ng-if="todo.TodoType!='Milestone'" class="todoModal" data-method="EditModal" data-title="Edit to-do" data-Id="{{todo.Id}}">{{todo.Name}}</div>
+                                            <div ng-if="todo.TodoType=='Milestone'" class="milestoneModal" data-method="EditModal" data-title="Edit milestone" data-Id="{{-todo.Id}}">{{todo.Name}}</div>
+                                        } else {
+                                            <input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 400}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />
+                                            <div class="todo-text" ng-if="model.Selected==todo.Key+'@guid'">
+                                                <a class="pull-right timeline-button" ng-if="todo.Link!=null" target="_blank" href="{{todo.Link}}" style="margin-top: 4px;margin-right: 2px;"><span class="glyphicon glyphicon-comment"></span></a>
+                                                <iframe class="keep-background" style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td class="alignCenter hidden-width-1 origin-column" md-cell>
+                                        <div class="origin-cell" title="{{todo.Origin}}">{{todo.Origin}}</div>
+                                    </td>
+                                    <td class="alignCenter createtime-column date-column" style=";" md-cell>
+                                        {{todo.CreateTime | date:dateFormat}}
+                                    </td>
+                                    <td class="alignCenter hidden-width-1 due-column date-column" style=";" md-cell>
+                                        <md-datepicker ng-model="todo.DueDate" md-placeholder="Due date" ng-click="$scope.@(orderVariable)=$index" ng-change="todo.DueDate=functions.adjustToMidnight(todo.DueDate);functions.sendUpdate(todo)" ng-class="todo.Complete?(todo.DueDate>todo.CompleteTime? 'green' : 'red'):(todo.DueDate>=now? 'green' : 'red')" class="due-date"></md-datepicker>
+                                    </td>
+                                    <td class="empty-cell" style="min-width: 15px;" md-cell></td>
+                                    @if (completion) {
+                                        <td class="alignCenter complete-column date-column" md-cell>{{todo.CompleteTime | date:dateFormat}}</td>
+                                    }
+                                    <td class="delete-column" md-cell>
+                                        <span class="delete-row" ng-click="functions.removeRow($event,todo)"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-table-container>
+                    <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
+                    @*<div class="create-row" ng-click="functions.addRow($event,'AngularTodo')" data-toggle="tooltip" data-placement="left" title="New To-do"></div>*@
+                    <div class="create-row todoModal" data-method="CreateTodo" data-recurrence="{{@(recurrenceId)}}" data-toggle="tooltip" data-placement="left" title="New To-do"></div>
+                    <div class="gray no-todos empty-search" style="padding: 30px 15px;" ng-if="(@(selector) @(filter)).length==0">
+                        @(onempty)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
