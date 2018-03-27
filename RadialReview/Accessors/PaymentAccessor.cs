@@ -34,6 +34,7 @@ using static RadialReview.Utilities.PaymentSpringUtil;
 using RadialReview.Models.Components;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
 	public class PaymentAccessor : BaseAccessor {
@@ -61,7 +62,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-
+		[Obsolete("unused.", true)]
 		public static async Task<InvoiceModel> SendInvoice(string email, long organizationId, long taskId, DateTime executeTime, bool forceUseTest = false, DateTime? calculateTime = null) {
 			//PaymentResult result = null;
 			InvoiceModel invoice = null;
@@ -96,7 +97,7 @@ namespace RadialReview.Accessors {
 					calculateTime = calculateTime ?? DateTime.UtcNow;
 					try {
 						var itemized = CalculateCharge(s, org, plan, calculateTime.Value);
-						invoice = CreateInvoice(s, org, plan, executeTime, itemized);
+						invoice = await CreateInvoice(s, org, plan, executeTime, itemized);
 					} finally {
 
 						tx.Commit();
@@ -139,7 +140,9 @@ namespace RadialReview.Accessors {
 			return true;
 		}
 		public static async Task<PaymentResult> ChargeOrganization(long organizationId, long taskId, bool forceUseTest = false, bool sendReceipt = true, DateTime? executeTime = null) {
+
 			PaymentResult result = null;
+			ChargeResult chargeResult = null;
 			InvoiceModel invoice = null;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -175,13 +178,9 @@ namespace RadialReview.Accessors {
 
 					executeTime = executeTime ?? DateTime.UtcNow.Date;
 					try {
-						var itemized = CalculateCharge(s, org, plan, executeTime.Value);
-						invoice = CreateInvoice(s, org, plan, executeTime.Value, itemized);
-#pragma warning disable CS0618 // Type or member is obsolete
-						result = await ExecuteInvoice(s, invoice, forceUseTest);
-#pragma warning restore CS0618 // Type or member is obsolete
+						chargeResult = await ChargeOrganization_Unsafe(s, org, plan, executeTime.Value, forceUseTest, true);
+						result = chargeResult.Result;
 					} finally {
-
 						tx.Commit();
 						s.Flush();
 					}
@@ -189,15 +188,38 @@ namespace RadialReview.Accessors {
 			}
 			if (sendReceipt) {
 #pragma warning disable CS0618 // Type or member is obsolete
-				await SendReceipt(result, invoice);
+				await SendReceipt(result, chargeResult.Invoice);
 #pragma warning restore CS0618 // Type or member is obsolete
 			}
-
 			return result;
+
 		}
 
+		public class ChargeResult {
+			public InvoiceModel Invoice { get; set; }
+			public PaymentResult Result { get; set; }
+		}
 
-		public static InvoiceModel CreateInvoice(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime, IEnumerable<Itemized> items) {
+		public static async Task<ChargeResult> ChargeOrganization_Unsafe(ISession s, OrganizationModel org, PaymentPlanModel plan, DateTime executeTime, bool forceUseTest, bool firstAttempt) {
+			try {
+				var o = new ChargeResult();
+				var itemized = CalculateCharge(s, org, plan, executeTime);
+				o.Invoice = await CreateInvoice(s, org, plan, executeTime, itemized);
+#pragma warning disable CS0618 // Type or member is obsolete
+				o.Result = await ExecuteInvoice(s, o.Invoice, forceUseTest);
+#pragma warning restore CS0618 // Type or member is obsolete
+				return o;
+			} catch (PaymentException e) {
+				await HooksRegistry.Each<IPaymentHook>((ses, x) => x.PaymentFailedCaptured(ses, org.Id, executeTime, e, firstAttempt));
+				throw;
+			} catch (Exception e) {
+				if (!(e is FallthroughException))
+					await HooksRegistry.Each<IPaymentHook>((ses, x) => x.PaymentFailedUncaptured(ses, org.Id, executeTime, e.Message, firstAttempt));
+				throw;
+			}
+		}
+
+		public static async Task<InvoiceModel> CreateInvoice(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime, IEnumerable<Itemized> items) {
 			var invoice = new InvoiceModel() {
 				Organization = org,
 				InvoiceDueDate = executeTime.Add(TimespanExtensions.OneMonth()).Date
@@ -228,6 +250,10 @@ namespace RadialReview.Accessors {
 			invoice.InvoiceItems = invoiceItems;
 			invoice.AmountDue = invoice.InvoiceItems.Sum(x => x.AmountDue);
 			s.Update(invoice);
+
+			await HooksRegistry.Each<IInvoiceHook>((ses, x) => x.InvoiceCreated(s, invoice));
+
+
 			return invoice;
 		}
 
@@ -235,13 +261,20 @@ namespace RadialReview.Accessors {
 		public static async Task<PaymentResult> ExecuteInvoice(ISession s, InvoiceModel invoice, bool useTest = false) {
 			//invoice = s.Get<InvoiceModel>(invoice.Id);
 			if (invoice.PaidTime != null)
-				throw new PermissionsException("Invoice was already paid");
-
+				throw new FallthroughException("Invoice was already paid");
+			if (invoice.ForgivenBy != null)
+				throw new FallthroughException("Invoice was forgiven");
+			//try {
 			var result = await ChargeOrganizationAmount(s, invoice.Organization.Id, invoice.AmountDue, useTest);
 
 			invoice.TransactionId = result.id;
 			invoice.PaidTime = DateTime.UtcNow;
 			s.Update(invoice);
+
+			await HooksRegistry.Each<IInvoiceHook>((ses, x) => x.UpdateInvoice(s, invoice, new IInvoiceUpdates() { PaidStatusChanged = true }));
+			//}catch(Exception) {
+			//    throw;
+			//}
 
 			return result;
 		}
@@ -346,9 +379,10 @@ namespace RadialReview.Accessors {
 
 			if (NHibernateUtil.GetClass(paymentPlan) == typeof(PaymentPlan_Monthly)) {
 				var plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(paymentPlan);
-				var rangeStart = executeTime.Subtract(TimespanExtensions.OneMonth());
+				var rangeStart = executeTime.Subtract(plan.SchedulerPeriod());// TimespanExtensions.OneMonth());
 				var rangeEnd = executeTime;
-
+				var durationMult = plan.DurationMultiplier();
+				var durationDesc = plan.MultiplierDesc();
 				///HEAVY LIFTING
 				var calc = new UserCalculator(s, org.Id, plan, new DateRange(rangeStart, rangeEnd));
 
@@ -364,8 +398,8 @@ namespace RadialReview.Accessors {
 
 				if (plan.BaselinePrice > 0) {
 					var reviewItem = new Itemized() {
-						Name = "Traction® Tools",
-						Price = plan.BaselinePrice,
+						Name = "Traction® Tools" + durationDesc,
+						Price = plan.BaselinePrice * durationMult,
 						Quantity = 1,
 					};
 					itemized.Add(reviewItem);
@@ -373,8 +407,8 @@ namespace RadialReview.Accessors {
 
 				if (reviewEnabled) {
 					var reviewItem = new Itemized() {
-						Name = "Quarterly Conversation",
-						Price = plan.ReviewPricePerPerson,
+						Name = "Quarterly Conversation" + durationDesc,
+						Price = plan.ReviewPricePerPerson * durationMult,
 						Quantity = calc.NumberQCUsersToChargeFor//allPeopleList.Where(x => !x.IsClient).Count()
 					};
 					if (reviewItem.Quantity != 0) {
@@ -387,8 +421,8 @@ namespace RadialReview.Accessors {
 				}
 				if (l10Enabled) {
 					var l10Item = new Itemized() {
-						Name = "L10 Meeting Software",
-						Price = plan.L10PricePerPerson,
+						Name = "L10 Meeting Software" + durationDesc,
+						Price = plan.L10PricePerPerson * durationMult,
 						Quantity = calc.NumberL10UsersToChargeFor,
 					};
 					if (l10Item.Quantity != 0) {
@@ -409,6 +443,31 @@ namespace RadialReview.Accessors {
 						Quantity = 1,
 					});
 				}
+
+				var discountLookup = new Dictionary<AccountType, string>() {
+                    //{AccountType.Cancelled,"Inactive Account" },
+                    {AccountType.Implementer,"Discount (Implementer)" },
+					{AccountType.Dormant,"Inactive Account" },
+					{AccountType.SwanServices, "Demo Account (Swan Services)" },
+					{AccountType.Other, "Discount (Special Account)" },
+					{AccountType.UserGroup, "Discount (User Group)" },
+					{AccountType.Coach, "Discount (Coach)" }
+
+				};
+
+				if (org != null && discountLookup.ContainsKey(org.AccountType) && itemized.Sum(x => x.Total()) != 0) {
+					var total = itemized.Sum(x => x.Total());
+					itemized.Add(new Itemized() {
+						Name = discountLookup[org.AccountType],//"Discount (Implementer)",
+						Price = -1 * total,
+						Quantity = 1,
+					});
+				}
+
+				if (org != null && org.AccountType == AccountType.Cancelled) {
+					itemized = new List<Itemized>();
+				}
+
 			} else {
 				throw new PermissionsException("Unhandled Payment Plan");
 			}
@@ -416,7 +475,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		[Obsolete("Unsafe")]
+		[Obsolete("Use ExecuteInvoice instead. Unsafe")]
 		public static async Task<PaymentResult> ChargeOrganizationAmount(ISession s, long organizationId, decimal amount, bool forceTest = false) {
 			if (amount == 0) {
 				await EventUtil.Trigger(x => x.Create(s, EventType.PaymentFree, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "No Charge", arg1: 0m));
@@ -460,14 +519,19 @@ namespace RadialReview.Accessors {
 			if (org.AccountType == AccountType.Demo)
 				org.AccountType = AccountType.Paying;
 
-			if (org.PaymentPlan != null)
+			if (org.PaymentPlan != null) {
+				if (org.PaymentPlan.LastExecuted == null) {
+					await HooksRegistry.Each<IPaymentHook>((ses, x) => x.FirstSuccessfulCharge(s, token));
+				}
+				await HooksRegistry.Each<IPaymentHook>((ses, x) => x.SuccessfulCharge(s, token));
 				org.PaymentPlan.LastExecuted = DateTime.UtcNow;
+			}
 
 			return pr;
 		}
 
 
-		[Obsolete("Unsafe")]
+		[Obsolete("Do not use. Use ExecuteInvoice instead. Unsafe.")]
 		public static async Task<PaymentResult> ChargeOrganizationAmount(long organizationId, decimal amount, bool useTest = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -482,9 +546,8 @@ namespace RadialReview.Accessors {
 		public static List<PaymentMethodVM> GetCards(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					if (organizationId != caller.Organization.Id)
+					if (!caller.User.IsRadialAdmin && organizationId != caller.Organization.Id)
 						throw new PermissionsException("Organization Ids do not match");
-
 
 					PermissionsUtility.Create(s, caller).EditCompanyPayment(organizationId);
 					var cards = s.QueryOver<PaymentSpringsToken>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
@@ -705,6 +768,13 @@ namespace RadialReview.Accessors {
 						s.Flush();
 					}
 				}
+				using (var ss = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						await HooksRegistry.Each<IPaymentHook>((ses, x) => x.UpdateCard(ses, token));
+						tx.Commit();
+						s.Flush();
+					}
+				}
 
 				return new PaymentMethodVM(token);
 			}
@@ -736,7 +806,7 @@ namespace RadialReview.Accessors {
 		public static PaymentPlanModel GetPlan(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).Or(x=>x.ManagingOrganization(organizationId),x=>x.CanView(PermItem.ResourceType.UpdatePaymentForOrganization,organizationId));
+					PermissionsUtility.Create(s, caller).Or(x => x.ManagingOrganization(organizationId), x => x.CanView(PermItem.ResourceType.UpdatePaymentForOrganization, organizationId));
 					var org = s.Get<OrganizationModel>(organizationId);
 
 					var plan = s.Get<PaymentPlanModel>(org.PaymentPlan.Id);
@@ -836,14 +906,14 @@ namespace RadialReview.Accessors {
 
 
 		[Obsolete("Dont forget to attach to send this through AttachPlan")]
-		public static PaymentPlan_Monthly GeneratePlan(PaymentPlanType type, DateTime? now = null,DateTime? trialEnd=null) {
+		public static PaymentPlan_Monthly GeneratePlan(PaymentPlanType type, DateTime? now = null, DateTime? trialEnd = null) {
 			var now1 = now ?? DateTime.UtcNow;
 			var day30 = now1.AddDays(30);
 			var day90 = now1.AddDays(90);
 			var basePlan = new PaymentPlan_Monthly() {
-				FreeUntil = trialEnd??day30,
-				L10FreeUntil = trialEnd??day30,
-				ReviewFreeUntil = Math2.Max(day90, trialEnd??DateTime.MinValue),
+				FreeUntil = trialEnd ?? day30,
+				L10FreeUntil = trialEnd ?? day30,
+				ReviewFreeUntil = Math2.Max(day90, trialEnd ?? DateTime.MinValue),
 				PlanCreated = now1,
 				NoChargeForUnregisteredUsers = true,
 			};

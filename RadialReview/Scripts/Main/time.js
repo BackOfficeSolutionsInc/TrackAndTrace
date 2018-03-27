@@ -31,11 +31,11 @@
 		var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
 		var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
 		var dateRegex3 = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
-		
+
 		if (type == 'string' && dateRegex1.test(value)) {
 			return new Date(parseInt(value.substr(6)));
 		} else if (type == 'string' && dateRegex2.test(value)) {
-			var v=value;
+			var v = value;
 			if (v.indexOf("Z", v.length - "Z".length) !== -1)
 				v = v.slice(0, -1);
 			return new Date(v);
@@ -62,24 +62,24 @@
 		}
 		if (type === "string") {
 			var d = convertDateFromString(value);
-			if (d!==false) {
+			if (d !== false) {
 				return Time.toLocalTime(d);
 			}
 			//number string handled below.
 		}
 
 		if (type === "object") {
-			if (typeof(value.Local) === "boolean" && (typeof (value.Date) === "string" || value.Date.getDate !== undefined)) {
+			if (typeof (value.Local) === "boolean" && (typeof (value.Date) === "string" || value.Date.getDate !== undefined)) {
 				var d = value.Date;
 				if (typeof (value.Date) === "string") {
 					d = convertDateFromString(value.Date);
 				}
-				if (value.Local === false && d!==false) {
+				if (value.Local === false && d !== false) {
 					d = Time.toLocalTime(d);
 				}
 				if (d !== false) {
 					return d;
-				}				
+				}
 			}
 			if (value.getDate !== undefined) {
 				console.warn("timezone not applied");
@@ -91,36 +91,7 @@
 			var d = new Date(+value);
 			return Time.toLocalTime(d);
 		}
-
 		return false;
-
-		//if (type == 'string' && dateRegex1.test(value)) {
-		//	var d = new Date(parseInt(value.substr(6)));
-		//	return Time.toLocalTime(d);
-		//	//return new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
-		//} else if (type == 'string' && dateRegex2.test(value)) {
-		//	var d = new Date(value);
-		//	return Time.toLocalTime(d);
-		//	//return  new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-		//} else if (type == 'string' && dateRegex3.test(value)) {
-		//	var d = new Date(value);
-		//	return Time.toLocalTime(d);
-		//	//return new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-		//} else if (type == "object") {
-		//	//It's local, We dont want to convert it.
-		//	if (value.local === true && typeof (value.date) === "string") {
-		//		if (dateRegex1.test(value)) {
-		//			var d = new Date(parseInt(value.substr(6)));
-		//			return d;
-		//		} else {
-		//		}
-		//	}
-		//}
-		//else if (value.getDate !== undefined) {
-		//	console.warn("timezone not applied");
-		//	return new Date(value.getTime());
-		//}
-
 	}
 
 	this.getWeekSinceEpoch = function (day) {
@@ -129,4 +100,8 @@
 		return Math.floor((span.getTime() / oneDay) / 7);
 	}
 
+	this.getDateSinceEpoch = function (week) {
+		var day = 24 * 60 * 60 * 1000 * 7 * week;
+		return new Date(day);
+	};
 }

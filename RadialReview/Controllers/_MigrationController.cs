@@ -34,6 +34,8 @@ using RadialReview.Model.Enums;
 using System.Linq.Expressions;
 using RadialReview.Reflection;
 using RadialReview.Controllers.AbstractController;
+using RadialReview.Variables;
+using RadialReview.Crosscutting.Hooks.Payment;
 
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -2175,47 +2177,90 @@ namespace RadialReview.Controllers {
 
 		[Access(Controllers.AccessLevel.Radial)]
 		[AsyncTimeout(20 * 60 * 1000)]
-		public async Task<String> M11_22_2017(System.Threading.CancellationToken token) {
-			var a = 0;
-			var b = 0;
-			var pageCount = 0;
-			var createTime = new DateTime(2017, 11, 22);
-			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var _VtoModel = s.QueryOver<VtoModel>().List().ToList();
+		public async Task<ActionResult> M11_22_2017(System.Threading.CancellationToken token, Divisor d = null) {
 
-					var _VtoItemString = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques).List().ToList();
+			return await BreakUpAction("M11_22_2017", d, dd => {
 
-					//foreach (var rr in _VtoModel) {
-					//    if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
-					//     && x.MarketingStrategyId == rr.MarketingStrategy.Id
-					//    )) {
-					//        // save new
-					//        VtoStrategyMap _map = new VtoStrategyMap() {
-					//            CreateTime = createTime,
-					//            VtoId = rr.Id,
-					//            MarketingStrategyId = rr.MarketingStrategy.Id,
-					//        };
+				using (var s = HibernateSession.GetDatabaseSessionFactory().OpenSession()) {
+					using (var tx = s.BeginTransaction()) {
+						var _VtoModel = s.QueryOver<VtoModel>().List().ToList();
 
-					//        s.Insert(_map);
-					//        a++;
-					//    }
-					//}
+						var _VtoItemString = s.QueryOver<VtoItem_String>()
+							.Where(Mod<VtoItem_String>(x => x.Id, dd))
+							.Where(x => x.Type == VtoItemType.List_Uniques)
+							.List().ToList();
 
-					foreach (var item in _VtoItemString) {
-						if (item.MarketingStrategyId == null) {
-							item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
-							b++;
+						//foreach (var rr in _VtoModel) {
+						//    if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
+						//     && x.MarketingStrategyId == rr.MarketingStrategy.Id
+						//    )) {
+						//        // save new
+						//        VtoStrategyMap _map = new VtoStrategyMap() {
+						//            CreateTime = createTime,
+						//            VtoId = rr.Id,
+						//            MarketingStrategyId = rr.MarketingStrategy.Id,
+						//        };
 
-							s.Update(item);
+						//        s.Insert(_map);
+						//        a++;
+						//    }
+						//}
+
+						foreach (var item in _VtoItemString) {
+							if (item.MarketingStrategyId == null) {
+								item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
+								//b++;
+
+								s.Update(item);
+							}
 						}
+						tx.Commit();
+						s.Flush();
 					}
-
-					tx.Commit();
-					s.Flush();
 				}
-			}
-			return "VtoStrategyMap Inserted:" + a + ", VtoITemString Inserted:" + b;
+			});
+
+
+			//var a = 0;
+			//var b = 0;
+			//var pageCount = 0;
+			//var createTime = new DateTime(2017, 11, 22);
+			//using (var s = HibernateSession.GetDatabaseSessionFactory().OpenSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+			//		var _VtoModel = s.QueryOver<VtoModel>().List().ToList();
+
+			//		var _VtoItemString = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques).List().ToList();
+
+			//		//foreach (var rr in _VtoModel) {
+			//		//    if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
+			//		//     && x.MarketingStrategyId == rr.MarketingStrategy.Id
+			//		//    )) {
+			//		//        // save new
+			//		//        VtoStrategyMap _map = new VtoStrategyMap() {
+			//		//            CreateTime = createTime,
+			//		//            VtoId = rr.Id,
+			//		//            MarketingStrategyId = rr.MarketingStrategy.Id,
+			//		//        };
+
+			//		//        s.Insert(_map);
+			//		//        a++;
+			//		//    }
+			//		//}
+
+			//		foreach (var item in _VtoItemString) {
+			//			if (item.MarketingStrategyId == null) {
+			//				item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
+			//				b++;
+
+			//				s.Update(item);
+			//			}
+			//		}
+
+			//		tx.Commit();
+			//		s.Flush();
+			//	}
+			//}
+			//return "VtoStrategyMap Inserted:" + a + ", VtoITemString Inserted:" + b;
 		}
 		[Access(Controllers.AccessLevel.Radial)]
 		public String M12_01_2017() {
@@ -2248,6 +2293,69 @@ namespace RadialReview.Controllers {
 			}
 			return "Updated:" + a;
 		}
+
+		[Access(Controllers.AccessLevel.Radial)]
+		public String M01_09_2018() {
+			var a = 0;
+			var b = 0;
+			var pageCount = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var invoices = s.QueryOver<InvoiceModel>().Where(x => x.PaidTime == null && x.DeleteTime == null).List().ToList();
+
+					s.GetSettingOrDefault("M01_09_2018", true);
+
+					var forgive = new[] {
+						AccountType.Implementer,
+						AccountType.Dormant,
+						AccountType.SwanServices,
+						AccountType.Other,
+						AccountType.Coach,
+						AccountType.Cancelled,
+						AccountType.UserGroup,
+					};
+					//Keeps all trial, and paying invoices
+					foreach (var i in invoices) {
+						if (forgive.Contains(i.Organization.AccountType)) {
+							i.DeleteTime = new DateTime(2017, 1, 9);
+							a += 1;
+						}
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "Updated:" + a;
+		}
+
+		[Access(Controllers.AccessLevel.Radial)]
+		public async Task<string> M01_16_2018() {
+			var a = 0;
+			var b = 0;
+			var pageCount = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var orgs = s.QueryOver<OrganizationModel>().Select(Xls => Xls.Id).List<long>().ToList();
+
+					s.GetSettingOrDefault("M01_16_2018", true);
+
+					var f = new SetDelinquentFlag();
+
+					foreach (var i in orgs) {
+						var has = await f.UpdateFlag(s, i);
+						if (has)
+							a += 1;
+						b += 1;
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "Updated: " + a + "/" + b;
+		}
+
 	}
 }
 #pragma warning restore CS0618 // Type or member is obsolete

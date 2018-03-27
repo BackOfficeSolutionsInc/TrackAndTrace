@@ -257,69 +257,75 @@ namespace RadialReview.Accessors {
 			};
 
 		public static Boolean EnsureApplicationExists() {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				/*using (var tx = s.BeginTransaction())
-                {
-                    Temp(s);
-                    tx.Commit();
-                    s.Flush();
-                }*/
-
-				using (var tx = s.BeginTransaction()) {
-					ConstructPositions(s);
-					tx.Commit();
-					s.Flush();
-				}
-				List<QuestionCategoryModel> applicationCategories;
-				using (var tx = s.BeginTransaction()) {
-					applicationCategories = ConstructApplicationCategories(s);
-					tx.Commit();
-					s.Flush();
-				}
-				using (var tx = s.BeginTransaction()) {
-					ConstructApplicationQuestions(s, applicationCategories);
-					tx.Commit();
-					s.Flush();
-				}
-
-				using (var tx = s.BeginTransaction()) {
-					ConstructApplicationTasks(s);
-					tx.Commit();
-					s.Flush();
-
-				}
-				using (var tx = s.BeginTransaction()) {
-					ConstructPhoneNumbers(s);
-					tx.Commit();
-					s.Flush();
-				}
-				using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
-					var found = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
-					if (found == null) {
-						s.Save(new SyncLock() {
-							Id = SyncLock.CREATE_KEY
-						});
-					}
-					tx.Commit();
-					s.Flush();
-				}
-
-
-				// must be last
-				using (var tx = s.BeginTransaction()) {
-					var application = s.Get<ApplicationWideModel>(APPLICATION_ID);
-					if (application == null) {
-						s.Save(new ApplicationWideModel(APPLICATION_ID));
+			if (Config.ShouldUpdateDB()) {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					/*using (var tx = s.BeginTransaction())
+					{
+						Temp(s);
 						tx.Commit();
 						s.Flush();
-						return true;
+					}*/
+
+					using (var tx = s.BeginTransaction()) {
+						ConstructPositions(s);
+						tx.Commit();
+						s.Flush();
 					}
-					return false;
+					List<QuestionCategoryModel> applicationCategories;
+					using (var tx = s.BeginTransaction()) {
+						applicationCategories = ConstructApplicationCategories(s);
+						tx.Commit();
+						s.Flush();
+					}
+					using (var tx = s.BeginTransaction()) {
+						ConstructApplicationQuestions(s, applicationCategories);
+						tx.Commit();
+						s.Flush();
+					}
+
+					using (var tx = s.BeginTransaction()) {
+						ConstructApplicationTasks(s);
+						tx.Commit();
+						s.Flush();
+
+					}
+					using (var tx = s.BeginTransaction()) {
+						ConstructPhoneNumbers(s);
+						tx.Commit();
+						s.Flush();
+					}
+					using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
+						for (var i = 0; i < SyncLock.MAX_SYNC_KEYS; i++) {
+							var found = s.Get<SyncLock>(SyncLock.CREATE_KEY(i), LockMode.Upgrade);
+							if (found == null) {
+								s.Save(new SyncLock() {
+									Id = SyncLock.CREATE_KEY(i)
+								});
+							}
+						}
+						tx.Commit();
+						s.Flush();
+					}
+
+
+					// must be last
+					using (var tx = s.BeginTransaction()) {
+						var application = s.Get<ApplicationWideModel>(APPLICATION_ID);
+						if (application == null) {
+							s.Save(new ApplicationWideModel(APPLICATION_ID));
+							tx.Commit();
+							s.Flush();
+							return true;
+						}
+						return false;
+
+					}
 				}
-
-
 			}
+			return false;
 		}
+
+
 
 		public const string ACCOUNT_AGE = "ACCOUNT_AGE";
 		public const string DAILY_EMAIL_TODO_TASK = "DAILY_EMAIL_TODO_TASK";
@@ -721,4 +727,4 @@ namespace RadialReview.Accessors {
 			}
 		}
 	}
-}
+}

@@ -27,7 +27,7 @@ namespace RadialReview.Engines {
 					var perms = PermissionsUtility.Create(s, caller);
 					var foundUser = UserAccessor.GetUserOrganization(s, perms, id, false, false);
 
-					foundUser.SetPersonallyManaging(DeepAccessor.Users.ManagesUser(s, perms, caller.Id, id));
+					foundUser.SetPersonallyManaging(DeepAccessor.Users.ManagesUser(s, perms, caller.Id, id, true));
 
 					var responsibilities = new List<String>();
 
@@ -63,7 +63,7 @@ namespace RadialReview.Engines {
 					}
 
 					if (perms.IsPermitted(x => x.CanViewUserMeasurables(id))) {
-						var measurables = ScorecardAccessor.GetUserMeasurables(s, perms, id, true, false,includeAdmin:true);
+						var measurables = ScorecardAccessor.GetUserMeasurables(s, perms, id, true, false, includeAdmin: true);
 						model.Measurables = measurables.Where(x => x.AccountableUserId == id).ToList();
 						model.AdminMeasurables = measurables.Where(x => x.AdminUserId == id && x.AccountableUserId != id).ToList();
 						model.CanViewMeasurables = true;

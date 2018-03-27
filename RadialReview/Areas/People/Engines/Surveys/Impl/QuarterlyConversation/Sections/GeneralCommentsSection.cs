@@ -13,7 +13,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
 		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
-			yield return new InputItemIntializer("Comments", SurveyQuestionIdentifier.GeneralComment);
+			if (data.FirstSeenByAbout()) {
+				yield return new InputItemIntializer("Comments", SurveyQuestionIdentifier.GeneralComment);
+			}
 		}
 
 		public ISection InitializeSection(ISectionInitializerData data) {
@@ -23,5 +25,5 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		public void Prelookup(IInitializerLookupData data) {
 			//nothing to do.
 		}
-	}	
+	}
 }

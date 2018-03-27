@@ -10,22 +10,23 @@
 <a target="_blank" href="/account/calculateorganizationcharge/@Model._Org.Id">Calculate Charge</a>
 <hr />
 
-@using (Html.BeginForm())
-{
+@using (Html.BeginForm()) {
 	<div class="row">
 		<div class="col-sm-3">
 			<h3><b><u>Plan</u></b></h3>
 			@Html.EditorForModel()
+			<script>document.getElementById("SchedulePeriod").remove()</script>
+			<label>Period:</label>
+			@Html.EnumDropDownListFor(x => x.SchedulePeriod)
 			<br /><hr />
 			<label>Task Id (delete to create new)</label>@Html.TextBox("TaskId", Model.Task == null ? (long?)null : Model.Task.Id)
 			<hr />
-			@Html.TextBox("OldTaskId", Model.Task == null ? (long?)null : Model.Task.OriginalTaskId,new {type="hidden"})
+			@Html.TextBox("OldTaskId", Model.Task == null ? (long?)null : Model.Task.OriginalTaskId, new { type = "hidden" })
 		</div>
-		<div class="col-sm-4 alignRight @((Model._CurrentTask !=null && Model.Task.Id != Model._CurrentTask.Id)?"grayed":"")" >
+		<div class="col-sm-4 alignRight @((Model._CurrentTask !=null && Model.Task.Id != Model._CurrentTask.Id)?"grayed":"")">
 			<h3><b><u>Task Info</u></b></h3>
 
-			@if (Model.Task != null)
-			{
+			@if (Model.Task != null) {
 				@Html.DisplayFor(x => x.Task)
 			}
 		</div>
@@ -37,17 +38,16 @@
 	<button type="submit">Submit</button>
 }
 
-@using (Html.BeginStyles())
-{
+@using (Html.BeginStyles()) {
 	<style>
 		.alignRight .display-label {
-			padding-right: 0px;	
+			padding-right: 0px;
 		}
 
 		.display-label {
-			 padding-right: 10px;
-			 font-weight: bold;
-		 }
+			padding-right: 10px;
+			font-weight: bold;
+		}
 
 		.display-field {
 			height: 20px;

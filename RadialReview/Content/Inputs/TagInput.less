@@ -1,0 +1,151 @@
+﻿
+
+@color: #7E57C2;
+@color-highlight: #B388FF;
+
+.taginput {
+
+	.token-editor {
+		background: transparent;
+
+		&:hover,
+		&:focus,
+		&[contenteditable=true] {
+			border-color: @color-highlight !important;
+		}
+
+		position: relative;
+		padding: .5em;
+		margin: 0 -0.5em;
+		background: #fff;
+		min-height: 1em;
+		border: solid 1px transparent;
+		font-family: Helvetica;
+		line-height: 1.5em;
+		outline: none;
+		clear: both;
+		cursor: pointer;
+	}
+
+	.token-editor[contenteditable=true] {
+		cursor: text;
+	}
+
+	.token-editor ::selection {
+		background: #ddd;
+	}
+
+	.token-editor > * {
+		min-height: 1em;
+		display: inline-block;
+	}
+
+	.token-editor:hover, .token-editor:focus, .token-editor[contenteditable=true] {
+		border-color: #ddd;
+	}
+
+	.token-editor:not([contenteditable=true]) {
+		line-height: 1.3em;
+	}
+
+	.token-editor:not([contenteditable=true]) > br.newline {
+		content: '';
+		display: block !important;
+		height: 1px !important;
+		min-height: 0 !important;
+		margin: .15em -1px;
+		border-top: dashed 1px #ddd;
+	}
+
+	.token-editor .token {
+		position: relative;
+		padding-left: 2px;
+		padding-right: 1px;
+	}
+
+	.token-editor .token > span {
+		background: #ddd;
+		padding: 1px 4px;
+		border-radius: 3px;
+		font-size: .9em;
+	}
+
+	.token-editor[contenteditable=true] .token > span {
+		background: darkgray;
+		color: #fff;
+	}
+	/*.token-editor .token:after{
+        content : attr(data-content);
+        color:red;
+    }*/
+	.token-editor[contenteditable=true] .token > span:after {
+		content: "\25BE";
+		top: 1px;
+		position: relative;
+		right: -2px;
+		color: lightgrey;
+		cursor: pointer;
+
+		&:hover {
+			color: white;
+		}
+	}
+
+	.token-editor .token:focus {
+		outline: none;
+	}
+
+	.token-editor .token:focus > span {
+		background: #607D8B;
+	}
+
+	.token-editor .token::selection, .token-editor .token > span::selection {
+		background: #ccc;
+	}
+
+	header .token-editor {
+		background: transparent;
+	}
+
+	header .token-editor:hover, header .token-editor:focus, header .token-editor[contenteditable=true] {
+		border-color: @color-highlight;
+	}
+}
+
+.token-editor-auto-complete {
+	min-width: 140px;
+	position: absolute;
+	z-index: 1000000;
+	background-color: white;
+	border-radius: 3px;
+	-webkit-box-shadow: rgba(0,0,0,0.2) 0 0 10px 2px;
+	-moz-box-shadow: rgba(0,0,0,0.2) 0 0 10px 2px;
+	box-shadow: rgba(0,0,0,0.2) 0 0 10px 2px;
+}
+
+.token-editor-auto-complete:not(.show), .token-editor-auto-complete:empty {
+	display: none !important;
+}
+
+.token-editor-auto-complete > div {
+	padding: .5em;
+	cursor: pointer;
+
+	&:hover {
+		background: #f5f5f5;
+	}
+}
+
+.token-editor-auto-complete > div.selected {
+	background: #f5f5f5;
+}
+
+.token-editor-auto-complete > div:first-child {
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+}
+
+.token-editor-auto-complete > div:last-child {
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+}

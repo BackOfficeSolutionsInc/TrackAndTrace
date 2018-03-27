@@ -309,6 +309,17 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+
+		public static List<L10Meeting.L10Meeting_Attendee> GetMeetingAttendesByMeetingId(UserOrganizationModel caller, long recurrenceId, long meetingId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var ratings = s.QueryOver<L10Meeting.L10Meeting_Attendee>().Where(x => x.L10Meeting.Id == meetingId && x.DeleteTime == null).List().ToList();
+					return ratings;
+				}
+			}
+		}
 		#endregion
 	}
 }

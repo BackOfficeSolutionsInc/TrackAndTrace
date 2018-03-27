@@ -22,38 +22,44 @@ $(function () {
 		//var padId = $(todoRow).data("padid");
 		var todo = $(todoRow).data("todo");
 
-	    //var due = new Date(new Date(duedate).toUTCString().substr(0, 16));
+		//var due = new Date(new Date(duedate).toUTCString().substr(0, 16));
 		var due = new Date(duedate);
 		var checked = $(todoRow).find(".todo-checkbox").is(":checked");
 
 		var detailsContents = $("<div class='todoDetails abstract-details-panel'></div>");
 
 		$(detailsContents).append("<span class='expandContract btn-group pull-right'></span>");
-		$(detailsContents).append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
+		//$(detailsContents).append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
 
 		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable on-edit-enabled' data-todo='" + todo + "'><span data-todo='" + todo + "' class='message editable-text '>" + message + "</span></h4></div>");
 		$(detailsContents).append("<iframe class='details todo-details on-edit-enabled' name='embed_readwrite' src='/Todo/Pad/" + todo + "' width='100%' height='100%'></iframe>");
 
 		$(detailsContents).append(
 			"<div class='button-bar'>" +
-				"<div style='height:28px'>" +
-				"<span class='btn-group pull-right'>" +
-					"<span class='btn btn-default btn-xs doneButton on-edit-enabled'><input data-todo='" + todo + "' class='todo-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Complete</span>" +
-				"</span>" +
-				"<span class='expandContract btn-group'>" +
-				"<span class='btn btn-default btn-xs copyButton issuesModal on-edit-enabled' data-method='issuefromtodo' data-todo='" + todo + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
-				"</span>" +
-				"</div>" +
-				"<span class='clearfix'></span>" +
-				"<span class='gray' style='width:75px;display:inline-block'>Assigned to:</span><span style='width:250px;padding-left:10px;' class='assignee on-edit-enabled' data-accountable='" + accountable + "' data-todo='" + todo + "'  ><span data-todo='" + todo + "' class='btn btn-link owner'>" + owner + "</span></span>" +
-				"<div >" +
-					"<span class='gray' style='width:75px;display:inline-block'>Due date:</span>" +
-					"<span style='width:250px;padding-left:10px;' class='duedate on-edit-enabled' data-accountable='" + accountable + "' data-todo='" + todo + "' >" +
-						"<span class='date' style='display:inline-block' data-date='" + dateFormatter(due) + "' data-date-format='m-d-yyyy'>" +
-							"<input type='text' data-todo='" + todo + "' class='form-control datePicker' value='" + dateFormatter(due) + "'/>" +
-						"</span>" +
-					"</span>" +
-				"</div>" +
+			"<div style='height:28px'>" +
+			"<span class='btn-group pull-right'>" +
+			"<span class='btn btn-default btn-xs doneButton on-edit-enabled'><input data-todo='" + todo + "' class='todo-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Complete</span>" +
+			"</span>" +
+			"<span class='expandContract btn-group'>" +
+			"<span class='btn btn-default btn-xs copyButton issuesModal on-edit-enabled' data-method='issuefromtodo' data-todo='" + todo + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
+			"</span>" +
+			"</div>" +
+			"<span class='clearfix'></span>" +
+			"<span class='gray' style='width:75px;display:inline-block'>Assigned to:</span><span style='width:250px;padding-left:10px;' class='assignee on-edit-enabled' data-accountable='" + accountable + "' data-todo='" + todo + "'  ><span data-todo='" + todo + "' class='btn btn-link owner'>" + owner + "</span></span>" +
+			"<div >" +
+			"<span class='gray' style='width:75px;display:inline-block'>Due date:</span>" +
+			"<span style='width:250px;padding-left:10px;' class='duedate on-edit-enabled' data-accountable='" + accountable + "' data-todo='" + todo + "' >" +
+			"<span class='date' style='display:inline-block' data-date='" + dateFormatter(due) + "' data-date-format='m-d-yyyy'>" +
+			"<input type='text' data-todo='" + todo + "' class='form-control datePicker' value='" + dateFormatter(due) + "'/>" +
+			"</span>" +
+			"</span>" +
+			"</div>" +
+			"<div>" +
+			"<span class='gray' style='width:78px;display:inline-block'>Create date:</span>" +
+			"<span style='width:250px;padding-left:21px;'>" + dateFormatter(new Date(createtime)) +
+			"</span>" +
+			"</span>" +
+			"</div>" +
 			"</div>");
 		var w = $(window).width();
 		$("#todoDetails").html("");
@@ -158,7 +164,7 @@ $(function () {
 		$(selector).prop("checked", checked);
 		$(selector2).data("checked", checked);
 		$(selector2).attr("data-checked", checked);
-		
+
 		$.ajax({
 			url: "/l10/UpdateTodoCompletion/" + window.recurrenceId,
 			method: "post",
@@ -313,7 +319,7 @@ function sortTodoByUser(recurId, todoList) {
 }
 
 function constructTodoRow(todo) {
-    debugger;
+	debugger;
 	var red = "";
 	var nowDateStr = new Date();
 	var nowDate = new Date(nowDateStr.getYear() + 1900, nowDateStr.getMonth(), nowDateStr.getDate());
@@ -324,7 +330,7 @@ function constructTodoRow(todo) {
 	var message = todo.message;
 
 	if (message == null)
-	    message = "";
+		message = "";
 
 	if (duedate < nowDate)
 		red = "red";
@@ -338,33 +344,33 @@ function constructTodoRow(todo) {
 	//var date = new Date(new Date(todo.duedate).toUTCString().substr(0, 16));
 	//Accountable user name populated?
 	return '<li class="todo-row dd-item arrowkey"' +
-			'data-createtime="' + todo.createtime + '"' +
-			'data-duedate="' + duedate + '"' +
-			'data-checked="' + todo.checked + '" ' +
-			'data-imageurl="' + todo.imageurl + '" ' +
-			'data-name="' + todo.accountableUser + '" ' +
-			'data-accountable="' + todo.accountableUserId + '" ' +
-			//'data-padid="' + todo.padId + '" ' +
-			'data-todo="' + todo.todo + '" ' +
-			'data-message="' + message + '" ' +
-			'data-details="' + todo.details + '">' +
-			 '  <input data-todo="' + todo.todo + '" class="todo-checkbox on-edit-enabled" type="checkbox" ' + (todo.checked ? "checked" : "") + '/>' +
-			 '  <div class="move-icon noselect dd-handle">' +
-			 '  <span class="outer icon fontastic-icon-three-bars icon-rotate"></span>' +
-			 '  <span class="inner icon fontastic-icon-primitive-square"></span>' +
-			 '  </div>' +
+		'data-createtime="' + todo.createtime + '"' +
+		'data-duedate="' + duedate + '"' +
+		'data-checked="' + todo.checked + '" ' +
+		'data-imageurl="' + todo.imageurl + '" ' +
+		'data-name="' + todo.accountableUser + '" ' +
+		'data-accountable="' + todo.accountableUserId + '" ' +
+		//'data-padid="' + todo.padId + '" ' +
+		'data-todo="' + todo.todo + '" ' +
+		'data-message="' + message + '" ' +
+		'data-details="' + todo.details + '">' +
+		'  <input data-todo="' + todo.todo + '" class="todo-checkbox on-edit-enabled" type="checkbox" ' + (todo.checked ? "checked" : "") + '/>' +
+		'  <div class="move-icon noselect dd-handle">' +
+		'  <span class="outer icon fontastic-icon-three-bars icon-rotate"></span>' +
+		'  <span class="inner icon fontastic-icon-primitive-square"></span>' +
+		'  </div>' +
 
-			 '  <div class="btn-group pull-right">' +
-                    labelIndicator +
-			 '  <span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="' + todo.todo + '" data-recurrence="' + window.recurrenceId + '" data-meeting="' + window.meetingId + '"></span>' +
-			 '  </div>' +
-            '<span class="profile-image">' +
-                profilePicture(todo.imageurl, todo.accountableUser) +
-            '</span>' +
-			'   <div class="message" data-todo=' + todo.todo + '>' + message + '</div>' +
-			'   <div class="todo-details-container"><div class="todo-details" data-todo=' + todo.todo + '>' + todo.details + '</div></div>' +
-			'   <div class="due-date ' + red + '">' + dateFormatter(date) + '</div>' +
-			'</li>';
+		'  <div class="btn-group pull-right">' +
+		labelIndicator +
+		'  <span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="' + todo.todo + '" data-recurrence="' + window.recurrenceId + '" data-meeting="' + window.meetingId + '"></span>' +
+		'  </div>' +
+		'<span class="profile-image">' +
+		profilePicture(todo.imageurl, todo.accountableUser) +
+		'</span>' +
+		'   <div class="message" data-todo=' + todo.todo + '>' + message + '</div>' +
+		'   <div class="todo-details-container"><div class="todo-details" data-todo=' + todo.todo + '>' + todo.details + '</div></div>' +
+		'   <div class="due-date ' + red + '">' + dateFormatter(date) + '</div>' +
+		'</li>';
 }
 
 function setTodoOrder(order) {
@@ -372,7 +378,7 @@ function setTodoOrder(order) {
 	items.detach();
 
 	var len = order.length,
-        temp = [];
+		temp = [];
 
 	for (var i = 0; i < len; i++) {
 		var found = $(items).filter("[data-todo=" + order[i] + "]");
@@ -444,7 +450,7 @@ function updateTodoCompletion(todoId, complete) {
 	$(selector2).data("checked", complete);
 	$(selector2).attr("data-checked", complete);
 	///
-	
+
 	checkFireworks();
 }
 

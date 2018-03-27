@@ -96,6 +96,7 @@ var DataTable = function (settings) {
 
 	if (!settings.container) {
 		console.warn("Container not set for data-table.");
+		settings.container = "#main .body-content";
 	}
 
 	settings.id = settings.id || generateGuid();
@@ -303,7 +304,7 @@ var DataTable = function (settings) {
 			head.append(headerRow);
 			$(table).append(head);
 		} else {
-		    console.warn("No headers. To add a header, supply a 'name' to the cell.");
+			console.warn("No headers. To add a header, supply a 'name' to the cell.");
 		}
 
 

@@ -97,9 +97,13 @@
 			background-color: #ffc;
 			background-color: rgba(255, 255, 0, 0.2);
 		}
-
+		
 		.userType[data-type='Standard']:before {
 			content: "s";
+		}
+
+		.userType[data-type='EmailBlackList']:before {
+			content: "b";
 		}
 
 		.userType[data-type='PlaceholderOnly']:before {
@@ -115,7 +119,7 @@
 		}
 
 		.userType[data-enabled='true']:before {
-			text-transform:lowercase;
+			text-transform: lowercase;
 			color: #333;
 		}
 
@@ -123,7 +127,7 @@
 			color: lightgray;
 		}
 
-		.userroles{
+		.userroles {
 			text-align: right;
 		}
 
@@ -335,7 +339,7 @@
 						<td class="filter-resize-tiny">
 							<input id="input-filter" style="display: inline-block;" type="text" class="form-control" placeholder="Filter by name, position, @RadialReview.Utilities.Config.ManagerName().ToLower() or email..." />
 						</td>
-						<td style="width: 186px; padding-left: 8px; padding-top: 1px; text-align: center;">
+						<td style="width: @(ViewBag.ShowAddClient==true?"186px":"210px"); padding-left: 8px; padding-top: 1px; text-align: center;">
 							<div class="btn-group">
 								<button type="button" class="btn btn-default dropdown-toggle plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="send">
 									Send invites <span class="caret"></span>
@@ -358,13 +362,20 @@
 
 								</ul>
 							</div>
+							@if (ViewBag.ShowAddClient == true) {
 							<div class="btn-group">
 								<button type="button" class="btn btn-default plus dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @*onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")"*@>Add<span class="caret"></span></button>
 								<ul class="dropdown-menu dropdown-menu-right">
-									<li><a href="#" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization",preSubmitCheck:"checkAddUser")"><span class="glyphicon glyphicon-user gray"></span> Add Member</a></li>
+									<li><a href="#" onclick="@Html.ShowModal("Add user", "/User/AddModal", "/nexus/AddManagedUserToOrganization", preSubmitCheck: "checkAddUser")"><span class="glyphicon glyphicon-user gray"></span> Add Member</a></li>
 									<li><a href="#" onclick="@Html.ShowModal("Add client", "/User/AddModal?isClient=true", "/nexus/AddManagedUserToOrganization")"><span class="glyphicon glyphicon-globe gray"></span> Add Client</a></li>
 								</ul>
 							</div>
+							} else {
+								<button type="button" class="btn btn-default plus" aria-haspopup="true" aria-expanded="false"
+										onclick="@Html.ShowModal("Add user", "/User/AddModal", "/nexus/AddManagedUserToOrganization", preSubmitCheck: "checkAddUser")">
+									Add User
+								</button>
+							}
 						</td>
 					</tr>
 				</table>
@@ -393,7 +404,7 @@
 						<th style="width:10px" class="alignCenter"></th>
 					}
 					@if (ViewBag.IsRadialAdmin ?? false) {
-						<th style="min-width: 52px;"></th>
+						<th style="min-width: 77px;"></th>
 					}
 				</tr>
 			</thead>
@@ -432,7 +443,7 @@
 								}
 
 								if (p.EvalOnly) {
-									title += " &amp; " + @RadialReview.Utilities.Config.ReviewName().ToLower() + " only";
+									title += " &amp; people tools only";
 								}
 
 								attrs = @"title=""" + title + @""" data-sort=""" + sort + @"""";
@@ -540,10 +551,11 @@
 								@foreach (var item in Enum.GetValues(typeof(UserRoleType))) {
 									var fi = (UserRoleType)item;
 									var any = p.Roles.Any(x => x.RoleType == fi);
-									score += any?(int)fi:0;
+									score += any ? (int)fi : 0;
 									<span class="userType userType-@fi.ToString() clickable" data-type="@fi.ToString()" data-id="@p.Id" data-enabled="@any.ToJavascript()" onclick="setUserType(this)" title="@fi.ToString()"></span>
 								}
 								<span class="hidden">@(-score)</span>
+								<a href="/account/setasuser?id=@p.Email" style="color:lightcoral" title="Set As User...">(sa)</a>
 								@*@( ? new HtmlString("<span data-type='AccountContact' onlick='setRoleType(this,false)'>C</span>") : new HtmlString("<span data-type='AccountContact' onlick='setRoleType(this,true)'>c</span>"))
 									@(p.Roles.Any(x => x.RoleType == UserRoleType.LeadershipTeamMember) ? new HtmlString("<span data-type='LeadershipTeamMember' onlick='setRoleType(this,false)'>L</span>") : new HtmlString("<span data-type='LeadershipTeamMember' onlick='setRoleType(this,true)'>l</span>"))
 									@(p.Roles.Any(x => x.RoleType == UserRoleType.AccountabilityChartOnly) ? new HtmlString("<span data-type='AccountabilityChartOnly' onlick='setRoleType(this,false)'>A</span>") : new HtmlString("<span data-type='AccountabilityChartOnly' onlick='setRoleType(this,true)'>a</span>"))

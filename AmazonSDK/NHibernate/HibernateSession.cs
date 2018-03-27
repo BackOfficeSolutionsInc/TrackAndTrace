@@ -17,6 +17,10 @@ using RadialReview.App_Start;
 using RadialReview.Utilities.NHibernate;
 using RadialReview.Utilities;
 using RadialReview.Models.Enums;
+using System.Linq.Expressions;
+using FluentNHibernate.Testing.Values;
+using NHibernate.Mapping;
+using System.Linq;
 
 namespace AmazonSDK.NHibernate {
     public static class NHSQL {
@@ -29,15 +33,55 @@ namespace AmazonSDK.NHibernate {
         }
     }
 
+
+
     public class HibernateSession {
+
+        public class RuntimeNames {
+            private Configuration cfg;
+
+            public RuntimeNames(Configuration cfg) {
+                this.cfg = cfg;
+            }
+
+            public string ColumnName<T>(Expression<Func<T, object>> property)
+                where T : class, new() {
+                var accessor = FluentNHibernate.Utils.Reflection
+                    .ReflectionHelper.GetAccessor(property);
+
+                var names = accessor.Name.Split('.');
+
+                var classMapping = cfg.GetClassMapping(typeof(T));
+
+                return WalkPropertyChain(classMapping.GetProperty(names.First()), 0, names);
+            }
+
+            private string WalkPropertyChain(Property property, int index, string[] names) {
+                if (property.IsComposite)
+                    return WalkPropertyChain(((Component)property.Value).GetProperty(names[++index]), index, names);
+
+                return property.ColumnIterator.First().Text;
+            }
+
+            public string TableName<T>() where T : class, new() {
+                return cfg.GetClassMapping(typeof(T)).Table.Name;
+            }
+        }
         private static Dictionary<string, ISessionFactory> factory = new Dictionary<string, ISessionFactory>();
         private static String DbFile = null;
-        /*public static void SetDbFile(string file)
-        {
-            DbFile = file;
-        }*/
+
         private static object lck = new object();
         public static ISession Session { get; set; }
+
+        private static Dictionary<string, RuntimeNames> Names { get; set; }
+
+        public HibernateSession() {
+           Names = new Dictionary<string, RuntimeNames>();
+        }
+
+        public static RuntimeNames GetRuntimeNames(string connectionNameExt = "") {
+            return Names[connectionNameExt];
+        }
 
         public static ISessionFactory GetDatabaseSessionFactory(string connectionNameExt = "") {
             //factory = null;
@@ -47,14 +91,14 @@ namespace AmazonSDK.NHibernate {
                     //ChromeExtensionComms.SendCommand("dbStart");
                     var config = System.Configuration.ConfigurationManager.AppSettings;
                     var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
-
+                    Configuration c;
                     switch (Config.GetEnv()) {
                         case Env.local_sqlite: {
                                 var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
                                 var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
                                 DbFile = file;
                                 try {
-                                    var c = new Configuration();
+                                    c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
                                     factory[connectionNameExt] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
@@ -76,7 +120,7 @@ namespace AmazonSDK.NHibernate {
                             }
                         case Env.local_mysql: {
                                 try {
-                                    var c = new Configuration();
+                                    c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     Console.WriteLine(connectionStrings["DefaultConnectionLocalMysqlScheduler" + connectionNameExt].ConnectionString);
                                     //SetupAudit(c);
@@ -101,14 +145,12 @@ namespace AmazonSDK.NHibernate {
                                     var mbox = e.Message;
                                     if (e.InnerException != null && e.InnerException.Message != null)
                                         mbox = e.InnerException.Message;
-
-                                    //ChromeExtensionComms.SendCommand("dbError",mbox);
                                     throw e;
                                 }
                                 break;
                             }
                         case Env.production: {
-                                var c = new Configuration();
+                                c = new Configuration();
                                 //SetupAudit(c);
                                 factory[connectionNameExt] = Fluently.Configure(c).Database(
                                             MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProductionScheduler" + connectionNameExt].ConnectionString).ShowSql())
@@ -129,23 +171,16 @@ namespace AmazonSDK.NHibernate {
                                 break;
                             }
                         case Env.local_test_sqlite: {
-                                //var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
-                                //var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
-                                //DbFile = file;
-                                //var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
-                                // var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
-
 
                                 string Path = "C:\\UITests";//Config.GetAppSetting("DBPATH");//System.Environment.CurrentDirectory;
                                 if (!Directory.Exists(Path))
                                     Directory.CreateDirectory(Path);
                                 DbFile = Path + "\\_testdb.db";
-                                // string[] appPath = Path.Split(new string[] { "bin" }, StringSplitOptions.None);
                                 AppDomain.CurrentDomain.SetData("DataDirectory", Path);
                                 var connectionString = "Data Source=|DataDirectory|\\_testdb.db";
                                 //var connectionString = "Data Source =" + Path;
                                 try {
-                                    var c = new Configuration();
+                                    c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
                                     factory[connectionNameExt] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
@@ -164,48 +199,14 @@ namespace AmazonSDK.NHibernate {
                                     throw e;
                                 }
                                 break;
-                                //try
-                                //{
-                                //    var c = new Configuration();
-                                //    c.SetProperty("connection.release_mode", "on_close")
-                                //    .SetProperty("dialect", typeof(SQLiteDialect).AssemblyQualifiedName)
-                                //    .SetProperty("connection.driver_class", typeof(SQLite20Driver).AssemblyQualifiedName)
-                                //    ;//.SetProperty("connection.connection_string", "data source=:memory:")
-                                //     //                                    ;//.SetProperty(Environment.ProxyFactoryFactoryClass, typeof(ProxyFactoryFactory).AssemblyQualifiedName);
-
-                                //    //c.SetInterceptor(new NHSQLInterceptor());
-                                //    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString("Data Source=:memory:;Version=3;New=True;"))
-                                //    .Mappings(m =>
-                                //    {
-                                //        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                                //           .Conventions.Add<StringColumnLengthConvention>();
-                                //        m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite");
-                                //        //m.AutoMappings.Add(CreateAutomappings);
-                                //        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-
-                                //    })
-                                //   .ExposeConfiguration(SetupAudit)
-                                //   .ExposeConfiguration(BuildSchema)
-                                //   .BuildSessionFactory();
-                                //}
-                                //catch (Exception e)
-                                //{
-                                //    throw e;
-                                //}
-                                //break;
                             }
-                        /*case "connectionString":
-                            {
-                                factory = Fluently.Configure().
-                            }*/
                         default:
                             throw new Exception("No database type");
                     }
 
-                    //ChromeExtensionComms.SendCommand("dbComplete");
-
+                    Names[connectionNameExt] = new RuntimeNames(c);
                 }
-                // DataCollection.MarkProfile(1);
+
                 return factory[connectionNameExt];
             }
         }

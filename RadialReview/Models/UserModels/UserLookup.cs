@@ -8,10 +8,8 @@ using RadialReview.Properties;
 using Mandrill;
 using Mandrill.Models;
 
-namespace RadialReview.Models.UserModels
-{
-	public class UserLookup : ILongIdentifiable, IHistorical
-	{
+namespace RadialReview.Models.UserModels {
+	public class UserLookup : ILongIdentifiable, IHistorical {
 		//private bool _isClient;
 
 		[Obsolete("Use UserId instead")]
@@ -41,13 +39,16 @@ namespace RadialReview.Models.UserModels
 		public virtual bool _PersonallyManaging { get; set; }
 		public virtual string _ImageUrlSuffix { get; set; }
 
+		public virtual OrganizationModel _Organization { get; set; }
+
+		// public virtual UserOrganizationModel _User { get; set; }
+
 		public virtual bool IsClient { get; set; }
 
 		public virtual WebHookEventType? EmailStatus { get; set; }
 		public virtual bool EvalOnly { get; set; }
 
-		public virtual string ImageUrl(ImageSize size = ImageSize._32)
-		{
+		public virtual string ImageUrl(ImageSize size = ImageSize._32) {
 			return TransformImageSuffix(_ImageUrlSuffix, size);
 		}
 
@@ -59,23 +60,22 @@ namespace RadialReview.Models.UserModels
 			return "/i/userplaceholder";
 		}
 
-		public virtual string GetInitials()
-		{
+		public virtual string GetInitials() {
 			var inits = (Name ?? "").Split(' ').Select(x => x.Trim()).Where(x => !String.IsNullOrEmpty(x)).Select(x => x.Substring(0, 1).ToUpperInvariant()).ToList();
-			while(inits.Count>2)
+			while (inits.Count > 2)
 				inits.RemoveAt(1);
 
 			return string.Join(" ", inits).ToUpperInvariant();
 		}
 
-		public class UserLookupMap : ClassMap<UserLookup>
-		{
-			public UserLookupMap()
-			{
+		public class UserLookupMap : ClassMap<UserLookup> {
+			public UserLookupMap() {
 #pragma warning disable CS0618 // Type or member is obsolete
 				Id(x => x.Id);
 #pragma warning restore CS0618 // Type or member is obsolete
 				Map(x => x.UserId).Index("UserLookup_UserId_IDX");
+				// References(x => x._User).Column("UserId").LazyLoad().ReadOnly();
+				References(x => x._Organization).Column("OrganizationId").ForeignKey("none").Nullable().LazyLoad().ReadOnly();
 				Map(x => x.AttachTime);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);

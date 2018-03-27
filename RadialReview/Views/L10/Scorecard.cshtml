@@ -11,24 +11,24 @@
 <div class="scorecard meeting-page">
 	<div class="row">
 		<div class="col-md-12">
-            <hgroup class="page-header fixed-pos listing">
-                <div class="pull-right">
-                    <div class="btn-group hidden-firefox smallBreak">
-                        <div class="btn btn-default btn-xs" onclick="zoomIn()">
-                            <span class="icon fontastic-icon-zoom-in-2"></span>
-                        </div>
-                        <div class="btn btn-default btn-xs" onclick="zoomOut()">
-                            <span class="icon fontastic-icon-zoom-out-2"></span>
-                        </div>
-                    </div>
-                    @Html.Partial("partial/ButtonBar", Model, new ViewDataDictionary(){{"Links",new Dictionary<string,string>{
+			<hgroup class="page-header fixed-pos listing">
+				<div class="pull-right">
+					<div class="btn-group hidden-firefox smallBreak">
+						<div class="btn btn-default btn-xs" onclick="zoomIn()">
+							<span class="icon fontastic-icon-zoom-in-2"></span>
+						</div>
+						<div class="btn btn-default btn-xs" onclick="zoomOut()">
+							<span class="icon fontastic-icon-zoom-out-2"></span>
+						</div>
+					</div>
+					@Html.Partial("partial/ButtonBar", Model, new ViewDataDictionary(){{"Links",new Dictionary<string,string>{
 						{"href","/L10/ExportScorecard/"+Model.Recurrence.Id+"?type=csv"},
 						{"text","Export Scorecard (.csv)"},
 						{"class","glyphicon glyphicon-save"}
 					}.AsList()}})
-                </div>
-                <h2 class="l10-page-title">@ViewBag.Heading<small></small></h2>
-            </hgroup>
+				</div>
+				<h2 class="l10-page-title">@ViewBag.Heading<small></small></h2>
+			</hgroup>
 				<div class="empty-holder scorecard-empty-holder @(Model.Meeting._MeetingMeasurables.Any() ? "hidden" : "")"></div>
 			<div class="component zoomable component-nobackground" style="margin-bottom:128px;">
 				<div class="clearfix"></div>
@@ -46,32 +46,33 @@
 									<th colspan="5">
 										<div class="btn-group" style="margin:2px 2px;">
 											@if (Model.CanAdmin) {
-											<button type="button" class="btn btn-link btn-xs dropdown-toggle gray" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-												<span class="caret"></span> Edit 
-											  </button>
-											  <ul class="dropdown-menu">
-												<li><a href="#" onclick="@(Model.CanAdmin ? new HtmlString("addDivider(" + Model.Recurrence.Id + ")") : new HtmlString(""))">Add Divider</a></li>
-												<li><a href="#" onclick="@(Model.CanAdmin ? Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/") : new HtmlString(""))">Add Measurable</a></li>
-											  </ul>
+												<button type="button" class="btn btn-link btn-xs dropdown-toggle gray" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+													<span class="caret"></span> Edit
+												</button>
+												<ul class="dropdown-menu">
+													<li><a href="#" onclick="@(Model.CanAdmin ? new HtmlString("addDivider(" + Model.Recurrence.Id + ")") : new HtmlString(""))">Add Divider</a></li>
+													<li><a href="#" onclick="@(Model.CanAdmin ? Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/") : new HtmlString(""))">Add Measurable</a></li>
+												</ul>
 											}
 										</div>
-                                    </th>
-                                    @if(Model.ShowAdmin){
+									</th>
+									@if(Model.ShowAdmin){
 									<th>&nbsp;</th>
 									}
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
-                                    @if (Model.ShowScorecardChart)
-                                    {
+									@if (Model.ShowScorecardChart)
+									{
 									<th>&nbsp;</th>
 									}
+									<th></th>
 									<th></th>
 									@if (i == 0)
 									{
 										foreach (var r in Model.Weeks)
 										{
 											<th class="date @(r.IsCurrentWeek ? "current" : "") test-ignore" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-                                                @TimingUtility.ScorecardRangeStart(0, @*Html.UserOrganization().GetTimeSettings().TimezoneOffset,*@ Model.ScorecardType, r.LocalDate).ToString(TimingUtility.ScorecardFormat1(Model.ScorecardType))
+												@TimingUtility.ScorecardRangeStart(0, @*Html.UserOrganization().GetTimeSettings().TimezoneOffset,*@ Model.ScorecardType, r.LocalDate).ToString(TimingUtility.ScorecardFormat1(Model.ScorecardType))
 
 											</th>
 										}
@@ -79,16 +80,17 @@
 								</tr>
 								<tr>
 									<th colspan="3" class="heading who alignRight accountable" title="Accountable">Acc.@*Accountable*@</th>
-                                    @if (Model.ShowAdmin) { 
+									@if (Model.ShowAdmin) { 
 									<th class="heading who alignLeft "><span class="newLine gray">@*/Admin*@</span></th>
-                                    }
+									}
 									<th class="heading measurable">Measurable</th>
 									<th class="heading target" colspan="2">Goal</th>
 									<th class="heading cumulative-column"></th>
-                                    @if (Model.ShowScorecardChart)
-                                    { 
+									@if (Model.ShowScorecardChart)
+									{ 
 									<th class="heading"></th>
 									}
+									<th></th>
 									<th></th>
 									@if (i == 0){
 										foreach (var r in Model.Weeks)
@@ -107,34 +109,35 @@
 								@foreach (var m in Model.Meeting._MeetingMeasurables.OrderBy(x => x._Ordering).ThenBy(x => x.Measurable.NotNull(z => z.AccountableUser.NotNull(y => y.GetName()))).ThenByDescending(x => x.Measurable.NotNull(y => y.Id))) {
 									ViewBag.Row = row;
 									@Html.Partial("partial/ScorecardRow", new ScorecardRowVM() {
-									   MeetingMeasurable = m,
-									   MeetingId = m.L10Meeting.Id,
-									   RecurrenceId = m.L10Meeting.L10RecurrenceId,
-									   Scores = Model.Scores,
-									   Weeks = Model.Weeks,
-									   IsDivider = m.IsDivider,
-									   ShowAdmin = Model.ShowAdmin,
-									   ShowScorecardChart = Model.ShowScorecardChart
-								   }, new ViewDataDictionary() { { "ShowRow", (i == 0) }, { "Row", row } })
+								   MeetingMeasurable = m,
+								   MeetingId = m.L10Meeting.Id,
+								   RecurrenceId = m.L10Meeting.L10RecurrenceId,
+								   Scores = Model.Scores,
+								   Weeks = Model.Weeks,
+								   IsDivider = m.IsDivider,
+								   ShowAdmin = Model.ShowAdmin,
+								   ShowScorecardChart = Model.ShowScorecardChart
+							   }, new ViewDataDictionary() { { "ShowRow", (i == 0) }, { "Row", row } })
 
 									row += 1;
 								}
 							</tbody>
 						</table>
-						if (i == 0){
+						if (i == 0) {
 							@:</div>
-                    	}
-                    }
+						}
+					}
 				</div>
 			</div>
-           
+		   
 		</div>
 	</div>
+	<span class="sc-chart-container"></span>
 </div>
 <style>
-    td > div.number {
-        display:none;
-    }
+	td > div.number {
+		display:none;
+	}
 	.ui-resizable-e {
 		width: 4px;
 		right: 0;
@@ -176,7 +179,7 @@
 			var data = {
 				ordering: order,
 				recurrenceId: @(Model.Recurrence.Id)
-			};
+				};
 			$.ajax({
 				url: "/L10/UpdateMeasurableOrdering",
 				method: "POST",
@@ -193,7 +196,7 @@
 			placeholder:"xsortable-placeholder",
 			start: function(event, ui) {
 				var plus ='';
-				if(ui.item.hasClass('divider')) 
+				if(ui.item.hasClass('divider'))
 					plus = 'divider';
 				ui.placeholder.addClass(plus);
 			}
@@ -207,14 +210,14 @@
 	function fixHandle() {
 		$(".ui-resizable-e").css("right", -$("#ScorecardTable_Over").scrollLeft());
 	}
-	function scrollRight(){        
-	    if ($(".scroll-right").length>0){
-	        setTimeout(function(){
-	            $(".scroll-right").animate({scrollLeft: $(".scroll-right").width()},500);
-	        },1);
-	    }else{
-	        setTimeout(scrollRight,50);
-	    }
+	function scrollRight(){		
+		if ($(".scroll-right").length>0){
+			setTimeout(function(){
+				$(".scroll-right").animate({scrollLeft: $(".scroll-right").width()},500);
+			},1);
+		}else{
+			setTimeout(scrollRight,50);
+		}
 	}
 
 	setTimeout(function() {
@@ -240,6 +243,6 @@
 	}, 200);
 
 	var Weeks = [@(String.Join(",",Model.Weeks.Select(x=>x.ForWeek.ToJavascriptMilliseconds())))];
-    var includeChart = @(Model.ShowScorecardChart.ToJavascript());
+	var includeChart = @(Model.ShowScorecardChart.ToJavascript());
 
 </script>

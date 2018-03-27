@@ -46,7 +46,7 @@
 
 
 
-	<a href="#meetings">#meetings</a>  <a href="#events">#events</a>
+	<a href="#meetings">#meetings</a>	<a href="#events">#events</a><a href="#invoices">#invoices</a>
 
 	<table class="table table-hover">
 		<thead style="background-color: orange">
@@ -64,19 +64,19 @@
 			@foreach (var m in (List<UserLookup>)ViewBag.Members) {
 				<tr>
 					<td class="alignCenter" style="color:@(m.LastLogin.NotNull(x =>{
-						                         if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
-						                         {
+												 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
+												 {
 													 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(7)))
 													 {
 														 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))){
 															 return "green";
 														 }
 														 return "lightgreen";
-							                         }
+													 }
 													 return "#ef7622";
-						                         }
-						                         return "red";
-					                         })??"darkred")">
+												 }
+												 return "red";
+											 })??"darkred")">
 						@m.LastLogin.NotNull(x => x.ToString())
 					</td>
 					<td class="alignCenter">@m.HasSentInvite.GetIcon() <span style="display: none">@(m.HasSentInvite ? 1 : 0)</span></td>
@@ -85,8 +85,7 @@
 					<td><a href="/Manage/UserDetails/@m.UserId">@m.Name</a></td>
 					<td>@m.Email</td>
 					<td class="alignCenter"><a href="/Account/SetRole/@(m.UserId)?ReturnUrl=%2FDashboard">login</a></td>
-				</tr>
-			}
+				</tr>}
 		</tbody>
 	</table>
 	<div id="meetings"></div>
@@ -118,26 +117,24 @@
 						</td>
 						<td>@(m._MeetingAttendees.NotNull(x => x.Count()))</td>
 						<td style="color:@(m.CompleteTime.NotNull(x=>{
-                                         if (totalMin > 200)
-                                             return "darkred";
+										 if (totalMin > 200)
+											 return "darkred";
 
-                                     if (totalMin > 10){
+									 if (totalMin > 10){
 											if (totalMin > 60)
 											{
 												if (totalMin >80){
 													return "green";
 												}
 												return "lightgreen";
-							                }
+											}
 											return "#ef7622";
-						                }
-						                return "red";
-					                }))">
+										}
+										return "red";
+									}))">
 							@(totalMin + "m")
 						</td>
-					</tr>
-
-				}
+					</tr>}
 			</tbody>
 		</table>
 	} else {
@@ -171,19 +168,33 @@
 		</div>
 	</div>
 
+	<div id="invoices"></div>
+	<br />
+	<br />
+	<br />
+
+	@*<div class="panel panel-default">
+		<div class="panel-heading">Invoices</div>
+		<div class="panel-body">*@
+				<div class="">
+					@{ Html.RenderAction("List", "Invoice", new { id = Model.Organization.Id });}
+				</div>
+				@*</div>
+					</div>*@
 
 
 
 
 
 
-			} else {
-					<h1 class="pull-left">Which</h1>
-					<h1 style="color: #D0D0D0" class="pull-left"><b> NULL</b></h1>
-					<div class="clearfix"></div>
-					<h4 class="pull-left">Server Time</h4>
-					<h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
-			}
+
+						} else {
+							<h1 class="pull-left">Which</h1>
+							<h1 style="color: #D0D0D0" class="pull-left"><b> NULL</b></h1>
+							<div class="clearfix"></div>
+							<h4 class="pull-left">Server Time</h4>
+							<h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
+						}
 <hr />
 
 @using (Html.BeginScripts()) {
@@ -202,7 +213,7 @@
 		});
 
 	</script>
-			}
+}
 
 @using (Html.BeginStyles()) {
 	<style>
@@ -223,4 +234,4 @@
 			color: #888;
 		}
 	</style>
-			}
+}

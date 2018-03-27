@@ -1,0 +1,61 @@
+﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+
+<div class="conclusion meeting-page">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="centered" style="width:65%; max-width: 600px;margin-bottom:128px;	min-width: 330px;">
+				<div class="component">
+					<div class="meeting-manager rating-section">
+						<div class="title" style="font-size: 20px;color: #444;">Ratings (1 to 10)<div style="font-size: 12px;font-weight: lighter;"><small>Ratings less than an 8? Drop it down to the issues list.</small></div></div>
+
+						@*@using (Ajax.BeginForm("EditRanting", new AjaxOptions()
+						{
+							HttpMethod = "POST",
+							//UpdateTargetId = "main-window",
+							LoadingElementDuration = 1000,
+							InsertionMode = InsertionMode.Replace,
+							OnSuccess = "ConclusionSuccess",
+							OnBegin = "OnBeginSubmit"
+						}))
+						{*@
+							@Html.ValidationSummaryMin()
+							@Html.SecuredHiddenFor(x => x.Recurrence.Id)
+							@Html.SecuredHiddenFor(x => x.Meeting.Id)
+							<table style="width: 100%;">
+								@for (var i = 0; i < Model.Meeting._MeetingAttendees.Count; i++)
+								{
+									<tr>
+										<td style="width:50%;"></td>
+										<td style="width: 1px;">
+											@Html.Partial("_ProfilePicture", Model.Meeting._MeetingAttendees[i].User)
+										</td>
+										<td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;text-align: left;">
+											@Model.Meeting._MeetingAttendees[i].User.GetName()
+										</td>
+										<td style="width: 1px;">
+											@Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "0.1", novalidate = "novalidate", type = "number", style = "width:60px", @class = "rt rating", lang = "nb" })
+										</td>
+										<td style="width:50%;"></td>
+									</tr>
+								}
+							</table>
+
+							<input type="hidden" id="conclude_connectionId" name="connectionId" value="" />
+							<div class="alignCenter">
+								 @*<input type="submit" id="conclude_meeting_button" class="btn btn-primary center concludeButton" value="Update" />*@
+
+								@*<input type="button" id="conclude_meeting_button" class="btn btn-primary center concludeButton" onclick="updateVal()" value="Update" />*@
+
+							</div>
+						@*}*@
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+</div>
+<script>
+	
+</script>
