@@ -142,6 +142,9 @@ body {
 .acc-chart svg md-autocomplete * {
   position: inherit;
 }
+.acc-chart svg md-progress-linear {
+  display: none;
+}
 .acc-chart svg md-autocomplete[ng-disabled],
 .acc-chart svg md-autocomplete[ng-disabled] * {
   cursor: not-allowed;
@@ -652,6 +655,10 @@ body {
   fill: #EF7622;
   cursor: move;
   pointer-events: all;
+}
+.acc-fallback .role-row {
+  font-family: 'Roboto', sans-serif;
+  font-size: 10px;
 }
 .acc-fallback.collapsed .acc-buttons rect {
   stroke: none;

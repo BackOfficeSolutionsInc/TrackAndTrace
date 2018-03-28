@@ -40,7 +40,7 @@ namespace RadialReview.Accessors.PDF {
 
 			}
 
-			public class node<N> : IChildren<N> where N : node<N>{
+			public class node<N> : IChildren<N> where N : node<N> {
 
 				public double value { get; set; }
 				public double x { get; set; }
@@ -62,25 +62,69 @@ namespace RadialReview.Accessors.PDF {
 				public compact _compact { get; set; }
 				public string side { get; set; }
 
+				private string DebugNotes { get; set; }
+
+				public string GetDebugNotes() {
+					return DebugNotes ?? "";
+				}
+				public void SetDebugNotes(string notes) {
+					if (DebugNotes != null)
+						DebugNotes += ",";
+					DebugNotes += notes;
+				}
+
 				public node() {
 					children = new List<N>();
 				}
 
 				public class compact {
+
 					public N originalParent { get; set; }
 					public List<N> originalChildren { get; set; }
 					public bool isLeaf { get; set; }
 					public string side { get; set; }
+					public List<N> columnHeads { get; set; }
 
-					public compact() {
+					protected N me { get; set; }
+
+					public compact(N me) {
 						originalChildren = new List<N>();
+						this.me = me;
+					}
+
+					public int? WhichColumn() {
+						var hs = originalParent.children;
+						for (var i = 0; i < hs.Count; i++) {
+							var column = dive(hs[i]);
+							if (column.Any(y => y == me))
+								return i;
+						}
+						return null;
+					}
+
+					protected List<N> dive(N a) {
+						var items = new List<N>();
+						items.Add(a);
+						if (a.children != null) {
+							foreach (var c in a.children) {
+								items.AddRange(dive(c));
+							}
+						}
+						return items;
+
+					}
+
+
+					public int ColumnCount() {
+						return originalParent._compact.columnHeads.Count;
 					}
 
 				}
 			}
 
-			public class nodeWrapper<N> : IChildren<nodeWrapper<N>> where N:node<N> {
+			public class nodeWrapper<N> : IChildren<nodeWrapper<N>> where N : node<N> {
 				public N _self { get; set; }
+
 				public nodeWrapper<N> parent { get; set; }
 				public List<nodeWrapper<N>> children { get; set; }
 				public nodeWrapper<N> A { get; set; }
@@ -91,9 +135,23 @@ namespace RadialReview.Accessors.PDF {
 				public double s { get; set; }
 				public nodeWrapper<N> t { get; set; }
 				public int i { get; set; }
+				public void SetDebugNotes(string notes) {
+					_self.SetDebugNotes(notes);
+				}
+
+				public int? ColumnCount() {
+					if (_self == null || _self._compact == null)
+						return null;
+					return _self._compact.ColumnCount();
+				}
+				public int? WhichColumn() {
+					if (_self == null || _self._compact == null)
+						return null;
+					return _self._compact.WhichColumn();
+				}
 			}
 
-			public class Hierarchy<T,N> where T : Hierarchy<T,N> where N : node<N> {
+			public class Hierarchy<T, N> where T : Hierarchy<T, N> where N : node<N> {
 
 				//public delegate int HierarchySort(node x, node y);
 				public delegate List<N> HierarchyChildren(N x);
@@ -253,9 +311,9 @@ namespace RadialReview.Accessors.PDF {
 					}
 				}
 #pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
-                protected static void d3_layout_hierarchyVisitAfter<T>(T node, Action<T> callback) where T : IChildren<T> {
+				protected static void d3_layout_hierarchyVisitAfter<T>(T node, Action<T> callback) where T : IChildren<T> {
 #pragma warning restore CS0693 // Type parameter has the same name as the type parameter from outer type
-                    var nodes = new Stack<T>();
+					var nodes = new Stack<T>();
 					nodes.Push(node);
 					var nodes2 = new Stack<T>();
 					while (nodes.Any()) {
@@ -280,7 +338,7 @@ namespace RadialReview.Accessors.PDF {
 
 	public partial class D3 {
 		public partial class Layout {
-			public class CompactTree<N> where N : node<N>,new() {
+			public class CompactTree<N> where N : node<N>, new() {
 				public delegate double TreeSeparation(nodeWrapper<N> x, nodeWrapper<N> y);
 				public delegate void SizeNode(node<N> node);
 				public delegate List<link<N>> Links(List<N> nodes);
@@ -299,7 +357,7 @@ namespace RadialReview.Accessors.PDF {
 				}
 
 				private CompactTree() {
-					var hierarchy = new Hierarchy<tree,N>();
+					var hierarchy = new Hierarchy<tree, N>();
 					hierarchy.sort(null);
 					hierarchy.value(null);
 
@@ -325,7 +383,7 @@ namespace RadialReview.Accessors.PDF {
 				}
 
 
-				public class tree : Hierarchy<tree,N>  {
+				public class tree : Hierarchy<tree, N> {
 
 					private CompactTree<N> _ct { get; set; }
 					public Links links { get; set; }
@@ -342,7 +400,7 @@ namespace RadialReview.Accessors.PDF {
 
 						_ct.decompactify(d);
 						if (_ct.compactify) {
-							_ct.compactifyTree(d);
+							_ct.compactifyTree(d, null);
 						}
 						var nodes = _ct.hierarchy.callHierarchy(d);
 						var root0 = nodes[0];
@@ -524,14 +582,15 @@ namespace RadialReview.Accessors.PDF {
 					return nw;
 				}
 
-				private void compactifyTree(N node) {
+				private void compactifyTree(N node, N parent) {
 					if (node.children != null && node.children.Count != 0) {
 
 						var leafs = new List<N>();
 						var newChildren = new List<N>();
 
 						if (node._compact == null) {
-							node._compact = new node<N>.compact();
+							node._compact = new node<N>.compact(node);
+							node._compact.originalParent = parent;
 						}
 						var childs = node.children;
 						node._compact.originalChildren = childs.Select(x => x).ToList();
@@ -562,19 +621,41 @@ namespace RadialReview.Accessors.PDF {
 
 						foreach (var c in node.children) {
 							if (c.children != null && c.children.Count != 0) {
-								compactifyTree(c);
+								compactifyTree(c, node);
 							}
 						}
 						//calculate how to divide up leafs
 						//# Rows and Columns
 						var n = leafs.Count;
 						var sqrtn = Math.Sqrt(n);
-						//var rows = Math.Floor(sqrtn);
+						//
 						//var cols = (int)Math.Ceiling(sqrtn);
-						var cols = (int)Math.Floor(sqrtn);
+						/*var cols = (int)Math.Floor(sqrtn);
 						var rows = (int)Math.Ceiling(sqrtn);
 						if (rows * cols < n)
 							cols += 1;
+							*/
+						int cols;
+						int rows;
+						if (n <= 3) {
+							cols = n;
+							rows = 1;
+						} else if (n > 3 && n < 11) {
+							cols = 2;
+							rows = (int)Math.Ceiling(n / 2.0);
+						} else {
+							cols = (int)Math.Ceiling(sqrtn);
+							rows = (int)Math.Floor(sqrtn);
+						}
+
+						if (rows * cols < n) {
+							rows += 1;
+						}
+
+
+
+
+
 
 						//# branches
 						//var branches = cols;
@@ -587,6 +668,8 @@ namespace RadialReview.Accessors.PDF {
 						for (var ii = 0; ii < cols; ii++) {
 							currentColumnHeads.Add(node);
 						}
+
+						node._compact.columnHeads = currentColumnHeads;
 
 
 						//Create faux column
@@ -603,9 +686,10 @@ namespace RadialReview.Accessors.PDF {
 								colHead.children = new List<N>();
 							colHead.children.Add(child);
 							if (child._compact == null) {
-								child._compact = new node<N>.compact();
+								child._compact = new node<N>.compact(child);
+								child._compact.originalParent = node;
 							}
-							child._compact.originalParent = child.parent;
+							//child._compact.originalParent = child.parent;
 							child.parent = colHead;
 							child._compact.isLeaf = true;
 							if (i % 2 == oddEven) {
@@ -616,7 +700,7 @@ namespace RadialReview.Accessors.PDF {
 								child.side = "right";//added
 							}
 							currentColumnHeads[i] = child;
-							child._compact.originalChildren = new List<N>();
+							//child._compact.originalChildren = new List<N>();
 							child.children = new List<N>();
 							leafNum++;
 							i++;
@@ -660,13 +744,13 @@ namespace RadialReview.Accessors.PDF {
 						d3_layout_treeShift(v);
 						var midpoint = (children[0].z + children[children.Count - 1].z) / 2;
 						if (w != null) {
-							v.z = w.z + separation(v, w);
+							v.z = w.z + separation(v, w) * scaleSeparation(v, w);
 							v.m = v.z - midpoint;
 						} else {
 							v.z = midpoint;
 						}
 					} else if (w != null) {
-						v.z = w.z + separation(v, w);
+						v.z = w.z + separation(v, w) * scaleSeparation(v, w);
 					}
 					v.parent.A = apportion(v, w, v.parent.A ?? siblings[0]);
 				}
@@ -722,7 +806,7 @@ namespace RadialReview.Accessors.PDF {
 							vom = d3_layout_treeLeft(vom);
 							vop = d3_layout_treeRight(vop);
 							vop.a = v;
-							shift = vim.z + sim - vip.z - sip + separation(vim, vip);
+							shift = (vim.z + sim - vip.z - sip + separation(vim, vip)) * scaleSeparation(vim, vip);
 							if (shift > 0) {
 								d3_layout_treeMove(d3_layout_treeAncestor(vim, v, ancestor), v, shift);
 								sip += shift;
@@ -814,19 +898,316 @@ namespace RadialReview.Accessors.PDF {
 					}).ToList();
 				}
 
+				private double scaleSeparation(nodeWrapper<N> a, nodeWrapper<N> b) {
+
+					var aCompact = a.children.Any(x => x._self.NotNull(y => y._compact.side == "left" || y._compact.side == "right"));
+					var bCompact = b.children.Any(x => x._self.NotNull(y => y._compact.side == "left" || y._compact.side == "right"));
+
+
+					var aCompactLeft = a.children.Any(x => x._self.NotNull(y => y._compact.side == "left"));
+					var aCompactRight = a.children.Any(x => x._self.NotNull(y => y._compact.side == "right"));
+					var bCompactLeft = a.children.Any(x => x._self.NotNull(y => y._compact.side == "left"));
+					var bCompactRight = a.children.Any(x => x._self.NotNull(y => y._compact.side == "right"));
+
+					var ab = new[] { a, b };
+
+					//foreach (var i in ab) {
+					//	if (i.NotNull(x => x._self._compact.isLeaf)) {
+					//		i.SetDebugNotes("L");
+					//	}
+					//	if (i == null || i._self == null || i._self._compact == null) {
+					//		i.SetDebugNotes("n");
+					//	}
+					//}
+
+					//if (a.parent == b.parent) {
+					//	if (b.NotNull(x=>x._self._compact.side=="right") && a.NotNull(x => x._self._compact.side == "left")) {
+					//		b.SetDebugNotes(">");
+					//		a.SetDebugNotes("<");
+					//		return 1;
+					//	}
+					//}
+
+
+
+
+					//if (!aCompactLeft && aCompactRight && !bCompact) {
+					//	a.SetDebugNotes("A|");
+					//	b.SetDebugNotes("|A");
+					//	return a.parent == b.parent ? 1 : 0.8;
+					//}
+					//if (!aCompact && !bCompactLeft && bCompactRight) {
+					//	a.SetDebugNotes("B|");
+					//	b.SetDebugNotes("|B");
+					//	return a.parent == b.parent ? 1 : 0.8;
+					//}
+
+
+					//if (a.NotNull(x => x._self._compact.isLeaf) && b.NotNull(x => x._self._compact.isLeaf) && a.parent == b.parent) {
+					//	//if (b.NotNull(x => x._self._compact.side == "right") && a.NotNull(x => x._self._compact.side == "left")) {
+					//	if (a.parent.children.Last() != a) {
+					//		a.SetDebugNotes("x0");
+					//		b.SetDebugNotes("(x0)");
+					//		return 0;
+					//	}
+					//}
+
+					//a.SetDebugNotes("Z|");
+					//b.SetDebugNotes("|Z");
+					return 1;
+				}
 
 				private double d3_layout_treeSeparation(nodeWrapper<N> a, nodeWrapper<N> b) {
-					if (a._self != null && b._self != null &&
-							a._self._compact != null && b._self._compact != null &&
-							a._self._compact.isLeaf && b._self._compact.isLeaf) {
-						if (a._self._compact.side == "right" && b._self._compact.side == "left") {
-							return a.parent == b.parent ? .5 : 1.0;
-						} else if (a._self._compact.side == "left" && b._self._compact.side == "right") {
-							var mult = 1.0; // .6
-							return a.parent == b.parent ? mult : 2 * mult;
+
+
+					//if (a.children.Any() && b.children.Any() && a.children.Any(x => x.NotNull(y => y._self._compact.isLeaf)) && b.children.Any(x => x.NotNull(y => y._self._compact.isLeaf))) {
+					//	return 2;
+					//}
+					var p1 = a.NotNull(x => x._self._compact.originalParent);
+					var p2 = b.NotNull(x => x._self._compact.originalParent);
+					var ppnn = !(p1 == null || p2 == null);
+
+					//if (a.parent.parent == b.parent.parent && a.parent != b.parent && a.NotNull(x => x._self._compact.isLeaf) && b.NotNull(x => x._self._compact.isLeaf)) {
+					//	b.SetDebugNotes("2");
+					//	a.SetDebugNotes("2");
+					//	return 2;
+					//}
+
+					//if (!a.NotNull(x => x._self._compact.isLeaf) && !b.NotNull(x => x._self._compact.isLeaf) && a.NotNull(x => x.children.LastOrDefault()._self._compact.isLeaf) && b.NotNull(x => x.children.FirstOrDefault()._self._compact.isLeaf) && p1 == p2) {
+					//	a.SetDebugNotes("0");
+					//	b.SetDebugNotes("(0)");
+					//	return 0;
+					//}
+
+					//if (a.parent.parent == b.parent.parent && p1 != p2 && ppnn) {
+					//	a.SetDebugNotes("0");
+					//	b.SetDebugNotes("(0)");
+					//	return 0;
+					//}
+
+
+					var isBLeft = b.NotNull(x => x._self._compact.side == "left");
+					var isBRight = b.NotNull(x => x._self._compact.side == "right");
+
+					var isALeft = a.NotNull(x => x._self._compact.side == "left");
+					var isARight = a.NotNull(x => x._self._compact.side == "right");
+
+					var colCount = a.ColumnCount();
+					var curCol = a.WhichColumn();
+					var isFirstCol = new Func<int?, bool>(x => colCount != null && x == 0);
+					var isLastCol = new Func<int?, bool>(x => colCount != null && x == colCount - 1);
+
+					if ((b.NotNull(x => x._self._compact.isLeaf) && b.NotNull(x => x._self._compact.side == "left") && a.NotNull(x => x._self._compact) == null) ||
+						(a.NotNull(x => x._self._compact.isLeaf) && a.NotNull(x => x._self._compact.side == "right") && b.NotNull(x => x._self._compact) == null)) {
+						a.SetDebugNotes("b");
+						//b.SetDebugNotes("(b)");
+						return 1;
+					}
+
+					if (colCount == 3) {
+						if (curCol == 0) {
+							a.SetDebugNotes("h");
+							return 1;
+						}
+						if (curCol == 1) {
+							a.SetDebugNotes("g");
+							return 1;
+						}
+						if (curCol == 2) {
+							a.SetDebugNotes("i");
+							return 2;
 						}
 					}
-					return a.parent == b.parent ? 1 : 2;
+
+
+
+
+					if (a.NotNull(x => x._self._compact.isLeaf) && b.NotNull(x => x._self._compact.isLeaf) && p1 == p2 && ppnn) {
+						//if (b.NotNull(x => x._self._compact.side == "right") && a.NotNull(x => x._self._compact.side == "left")) {
+
+						if (colCount == 4) {
+							if (curCol == 0) {
+								a.SetDebugNotes("q");
+								return 2;//2
+							}
+							if (curCol == 1) {
+								a.SetDebugNotes("d");
+								return .15;//2
+							}
+							if (curCol == 2) {
+								a.SetDebugNotes("m");
+								return .15;//1
+							}
+							if (curCol == 3) {
+								a.SetDebugNotes("p");
+								return 2;//1
+							}
+						}
+
+						if (a.children.Any()) {
+							if (a.children.Last() == a) {
+								a.SetDebugNotes("a");
+								return 1;
+							} else {
+								a.SetDebugNotes("c");
+								return 2;
+							}
+						}
+
+					}
+
+					if (isFirstCol(curCol)) {
+						a.SetDebugNotes("[");
+						//b.SetDebugNotes("([)");
+						return 1;
+					}
+					if (isLastCol(curCol)) {
+
+						if (isBLeft && isARight && p1.parent == p2.parent) {
+
+							/*
+							
+									|
+							 o______o_______o
+							 |		|		|
+							o+o    o+a	   b+o
+							 |		|		|
+							o+o    o+o	   o+o
+
+							*/
+
+							a.SetDebugNotes("j" + a._self.Id);
+							b.SetDebugNotes("(j" + a._self.Id + ")");
+							return .6;
+						}
+
+						if (isBRight && isARight) {
+							/*
+							
+							 |
+							 o______o
+							 |		|
+							o+a		|-b
+							 |
+							o+o
+
+							*/
+							a.SetDebugNotes("k" + a._self.Id);
+							b.SetDebugNotes("(k" + a._self.Id + ")");
+							return 1.5;
+						}
+
+						if (isBLeft && isALeft) {
+
+							/*
+							
+									|
+							  o_____o
+							  |		|
+							a-|    b+o
+							  |		|
+							o-|    o+o
+
+							*/
+							a.SetDebugNotes("k" + a._self.Id);
+							b.SetDebugNotes("(k" + a._self.Id + ")");
+							return 1.5;
+						}
+
+						a.SetDebugNotes("]" + a._self.Id);
+						b.SetDebugNotes("(]" + a._self.Id + ")");
+						return 2;
+					}
+
+					//if (a.children.Any() && a.children[0].children.Any() && b.children.Any() && b.children[0].children.Any()) {
+					//	//b.SetDebugNotes(".25");
+					//	//a.SetDebugNotes(".25");
+					//	//return .25;
+					//}
+
+
+					//if (a.children.Any() && b.children.Any() && a.children.Any(x => x.NotNull(y => y._self._compact.isLeaf ))&& b.children.Any(x => x.NotNull(y => y._self._compact.isLeaf)) {
+					//	return 0;
+					//}
+
+					//if (a.parent.parent == b.parent.parent && a.parent != b.parent) {
+					//	return 2;
+					//}
+
+
+
+					//if (a.parent == b.parent && a.children.Any() && b.children.Any()) {
+					//	return 3;
+					//}
+					//return 1;
+					//	if (a.parent == b.parent) {
+					//		if (b.NotNull(x => x._self._compact.side == "right") && a.NotNull(x => x._self._compact.side == "left")) {
+					//			b.SetDebugNotes(">>");
+					//			a.SetDebugNotes("<<");
+					//			return .5;
+					//		}
+					//	}
+					//}
+
+					if (a.parent == b.parent || (p1 == p2 && ppnn)) {
+						a.SetDebugNotes("1");
+						//b.SetDebugNotes("(1)");
+						return 1;
+					}
+					a.SetDebugNotes("2");
+					//b.SetDebugNotes("(2)");
+					return 2;
+
+					//return a.parent == b.parent ? 1 : 2 /*2*/;
+
+
+					//if (a.children.Count() != 0 && b.children.Count() != 0) {
+					//	return a.parent == b.parent ? 1 : 1;
+					//}
+
+					////
+					//var aCompact = a.children.Any(x => x._self.NotNull(y => y._compact.side == "left" || y._compact.side == "right"));
+					//var bCompact = b.children.Any(x => x._self.NotNull(y => y._compact.side == "left" || y._compact.side == "right"));
+
+
+					//var aCompactLeft = a.children.Any(x => x._self.NotNull(y => y._compact.side == "left"));
+					//var aCompactRight = a.children.Any(x => x._self.NotNull(y => y._compact.side == "right"));
+					//var bCompactLeft = a.children.Any(x => x._self.NotNull(y => y._compact.side == "left"));
+					//var bCompactRight = a.children.Any(x => x._self.NotNull(y => y._compact.side == "right"));
+
+
+					//if (!aCompactLeft && aCompactRight && !bCompact) {
+					//	return a.parent == b.parent ? 1 : 1.5;
+					//}
+					//if (!aCompact && !bCompactLeft && bCompactRight) {
+					//	return a.parent == b.parent ? 1 : 1.5;
+					//}
+					////if (aCompactRight && bCompactLeft || bCompactRight && aCompactLeft) {
+					////	return a.parent == b.parent ? 1 : 1;
+					////}
+					//if (aCompact && bCompact) {
+					//	return 1;//a.parent == b.parent ? .5 : 0.5;
+					//}
+
+					//if (aCompact || bCompact) {
+					//	return a.parent == b.parent ? 1 : 1.5;
+					//}
+
+
+
+					//if (a._self != null && b._self != null &&
+					//		a._self._compact != null && b._self._compact != null &&
+					//		a._self._compact.isLeaf && b._self._compact.isLeaf) {
+					//	if (a._self._compact.side == "right" && b._self._compact.side == "left") {
+					//		return a.parent == b.parent ? .5 : 1.0;
+					//	} else if (a._self._compact.side == "left" && b._self._compact.side == "right") {
+					//		var mult = 1.0; // .6
+					//		return a.parent == b.parent ? mult :2 * mult;
+					//	}
+					//}
+
+
+					return a.parent == b.parent ? 1 : 1.5 /*2*/;
 				}
 
 				private void sizeNode(node<N> node) {

@@ -194,7 +194,7 @@ acapp.directive("ttOverflow", ["$timeout", function ($timeout) {
 					return shorten();
 				});
 				element.on('focus', function () {
-					debugger;
+					//debugger;
 					ngModel.$viewValue = ngModel.$modelValue;
 					ngModel.$render();
 					console.info(ngModel.$viewValue);
@@ -598,7 +598,8 @@ acapp.directive('rolegroupsfallback', function () {
 		"</g>" +
 		"<g>" +
 		"<g ng-repeat='role in group.Roles'  class='role-row' ng-init='rolesIndex=$index'>" +
-		"<text title='{{role.Name}}' class='role' transform='translate(0,{{($index*16)}})'>{{role.Name}}</text>" +
+		"<title>{{role.Name}}</title>"+
+		"<text title='{{role.Name}}' class='role' transform='translate(0,{{($index*16)}})'>{{role.Name | ttOverflowTxt:false:22 }}</text>" +
 		"<text ng-if='::group.Editable!=false' transform='translate(-20,{{($index*16)}})' class='delete-role-row' ng-click=\"deleting(role)\" title='Delete Role' tabindex='-1'>x</text>" +
 		"</g>" +
 		"</g>" +
@@ -1010,15 +1011,15 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			var v = msieversion();
 			if (v >= 11) {
 				fallback = true; //Edge
+				$window.OverrideNodeWidth = 200;
 			} else {
 				fallback = true; //IE
+				$window.OverrideNodeWidth = 200;
 			}
 		}
 
 		var canReorder = function (d) {
 			var res = d.Editable == true && $scope.model.data.CanReorganize;
-			if (res)
-				debugger;
 			return res;
 		}
 		var standardNodeEnter = function (nodeEnter) {
@@ -1204,7 +1205,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			};
 
 			function onClickKey(func) {
-				debugger;
+				//debugger;
 				if (d3.event && (d3.event.keyCode == 13 || d3.event.keyCode == 32))
 					return func;
 				return function (d) { };
@@ -1327,9 +1328,14 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
 			var position = contents.append("g").classed("acc-position", true).attr("width", "200px");//.style("width", "100px").style("height", "100px");
 
-			var posAutoComplete = position.append("text").classed("acc-fallback-hide", true).attr("dy", "23").attr("dx", "6").append("tspan").text(function (d) {
-				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
+			var posAutoComplete = position.append("text").classed("acc-fallback-hide", true).attr("dy", "23").attr("dx", "6");
+			posAutoComplete.append("tspan").text(function (d) {
+				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name | ttOverflowTxt:false:12 }}";
 			});
+			posAutoComplete.append("title").text(function (d) {
+				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}"
+			});
+
 			//.attr("placeholder", "Function")
 			//.attr("md-input-name", function (d) {
 			//	return "searchPosName_" + d.Id;
@@ -1358,8 +1364,12 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
 
 			var owner = contents.append("g").classed("acc-owner", true).attr("transform", "translate(0,25)");
-			var autoComplete = owner.append("text").classed("acc-fallback-hide", true).attr("dy", "18").attr("dx", "6").append("tspan").text(function (d) {
-				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User.Name}}";
+			var autoComplete = owner.append("text").classed("acc-fallback-hide", true).attr("dy", "18").attr("dx", "6");
+			autoComplete.append("tspan").text(function (d) {
+				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User.Name | ttOverflowTxt:false:12 }}";
+			});
+			autoComplete.append("title").text(function (d) {
+				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User.Name}}"
 			});
 
 			//ROLES
@@ -1377,8 +1387,8 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			//	d3.select(this).selectAll(".node-button").transition().style("opacity", 0);
 			//});
 
-			var buttonsBottom = node.append("g")
-				.classed("acc-buttons bottom-bar acc-fallback-ignore", true);
+			var buttonsBottom = node.append("g").classed("acc-buttons bottom-bar acc-fallback-ignore", true);
+
 			var clickAddNode = function (d) {
 				if (d.Id) {
 					addNode(d.Id);
@@ -1387,6 +1397,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 					throw "Add node requires Id"
 				}
 			};
+
 			var clickRemoveNode = function (d) {
 				if (d.Id) {
 					if ((d._children && d._children.length) || (d.children && d.children.length)) {
@@ -1424,7 +1435,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			};
 
 			function onClickKey(func) {
-				debugger;
+				//debugger;
 				if (d3.event && (d3.event.keyCode == 13 || d3.event.keyCode == 32))
 					return func;
 				return function (d) { };
@@ -1448,7 +1459,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 						clickAddNode(d);
 				});
 			var ci = addNodeBtn.append("circle").classed("acc-fallback-ignore", true).attr("r", 10).attr("title", "Add direct report").on("click", clickAddNode);
-			debugger;
+			//debugger;
 			addNodeBtn.append("title").text("Add direct report");
 			addNodeBtn.append("text").attr("transform", "translate(-4.5,4.5)").classed("acc-fallback-ignore", true).text("+").attr("title", "Add direct report").on("click", clickAddNode);
 
@@ -1471,47 +1482,72 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			});
 		}
 
-		var standardNodeUpdate = function (nodeUpdate) {
+		var standardNodeUpdate = function (nodeUpdate,isFallback) {
 			nodeUpdate.select(".acc-rect").attr("width", function (d) {
 				//console.log("update called");
+				if (isFallback) {
+					return 200;
+				}
 				return d.width;
 			}).attr("height", function (d) {
 				return (d.height || 20);
 			});
 
 			nodeUpdate.select(".button.print").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 - 60) + "," + (d.height + 15.5) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+
+				return "translate(" + (w / 2 - 60) + "," + (d.height + 15.5) + ")";
 			}).attr("tabindex", function (d) {
 				return canReorder(d) == false ? "-1" : "0";
 			}).style("display", function (d) {
-				debugger;
+				//debugger;
 				return canReorder(d) == false ? "none" : null;
 			});
 
 			nodeUpdate.select(".button.add").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 - 30) + "," + (d.height + 15.5) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+
+				return "translate(" + (w / 2 - 30) + "," + (d.height + 15.5) + ")";
 			}).attr("tabindex", function (d) {
 				return canReorder(d) == false ? "-1" : "0";
 			}).style("display", function (d) {
-				debugger;
+				//debugger;
 				return canReorder(d) == false ? "none" : null;
 			});
 
 			nodeUpdate.select(".button.remove").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 + 30) + "," + (d.height + 15.5) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+				return "translate(" + (w / 2 + 30) + "," + (d.height + 15.5) + ")";
 			}).attr("tabindex", function (d) {
 				return canReorder(d) == false ? "-1" : "0";
 			}).style("display", function (d) {
-				debugger;
+				//debugger;
 				return canReorder(d) == false ? "none" : null;
 			});
 
 			nodeUpdate.select(".button.minimize").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 - .25) + "," + (d.height + 15.5) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+				return "translate(" + (w / 2 - .25) + "," + (d.height + 15.5) + ")";
 			});
 
 			nodeUpdate.select(".childIndication").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 - .25) + "," + (d.height - 4) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+				return "translate(" + (w / 2 - .25) + "," + (d.height - 4) + ")";
 			}).style("display", function (d) {
 				if (!d.parent)
 					return "none";
@@ -1544,19 +1580,30 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 				});
 
 			nodeUpdate.select(".bounding-box").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 - 12) + "," + (d.height) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+				return "translate(" + (w / 2 - 12) + "," + (d.height) + ")";
 			});
 
 			nodeUpdate.select(".add-role-row").attr("transform", function (d) {
-				return "translate(" + d.width + "," + (d.height - 11) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+				return "translate(" + w + "," + (d.height - 11) + ")";
 			});
 
 			var isFirefox = typeof InstallTrigger !== 'undefined';
 			var safari = isSafari();
 			var fo = nodeUpdate.select(".foreignObject")
 				.attr("width", function (d) {
-					if (isFirefox)
-						return d.width + 20;
+					//debugger;
+					//if (isFirefox)
+					//	return d.width + 20;
+					if (isFallback)
+						return 200;
 					return d.width;
 				});
 			if (isFirefox || safari) {
@@ -1568,14 +1615,15 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 		};
 
 		var fallbackNodeUpdate = function (nodeUpdate) {
-			standardNodeUpdate(nodeUpdate);
+			standardNodeUpdate(nodeUpdate,true);
 
 			nodeUpdate.select(".add-role-row").attr("transform", function (d) {
-				return "translate(" + (d.width - 11) + ",0)";
+				return "translate(" + (/*d.width*/200 - 11) + ",0)";
 			});
 
 			nodeUpdate.select(".acc-buttons rect").attr("width", function (d) {
-				return d.width;
+				
+				return 200;//d.width;
 			}).attr("height", function (d) {
 				return (8);
 			});
