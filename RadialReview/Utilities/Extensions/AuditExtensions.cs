@@ -11,62 +11,60 @@ using NHibernate.Envers.Query;
 
 namespace RadialReview.Utilities.Extensions {
 
-    public static class AuditExtensions {
-        public static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	public static class AuditExtensions {
+		public static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public class Revision<T> {
-            public long RevisionId { get; set; }
-            public DateTime Date { get; set; }
-            public T Object { get; set; }
-        }
+		public class Revision<T> {
+			public long RevisionId { get; set; }
+			public DateTime Date { get; set; }
+			public T Object { get; set; }
+		}
 
-        public class RevisionDiff<T> {
-            public Revision<T> Before { get; set; }
-            public Revision<T> After { get; set; }
-        }
+		public class RevisionDiff<T> {
+			public Revision<T> Before { get; set; }
+			public Revision<T> After { get; set; }
+		}
 
-        public static RevisionDiff<T> FindNearestDiff<T>(this IAuditReader self, object id, Func<T, T, bool> oldNew)
-        {
-            var revisions = self.GetRevisions(typeof(T), id).OrderByDescending(x => x).ToList();
+		public static RevisionDiff<T> FindNearestDiff<T>(this IAuditReader self, object id, Func<T, T, bool> oldNew) {
+			var revisions = self.GetRevisions(typeof(T), id).OrderByDescending(x => x).ToList();
 
-            if (!revisions.Any())
-                return null;
+			if (!revisions.Any())
+				return null;
 
-            var after = self.Find<T>(id, revisions[0]);
+			var after = self.Find<T>(id, revisions[0]);
 
-            if (revisions.Count == 1)
-                return null;
+			if (revisions.Count == 1)
+				return null;
 
-            for (var i = 1; i < revisions.Count; i++) {
-                var before = self.Find<T>(id, revisions[i]);
-                if (oldNew(before, after))
-                    return new RevisionDiff<T>() {
-                        After = new Revision<T> {
-                            Date = self.GetRevisionDate(revisions[i - 1]),
-                            Object = after,
-                            RevisionId = revisions[i - 1]
-                        },
-                        Before = new Revision<T> {
-                            Date = self.GetRevisionDate(revisions[i]),
-                            Object = before,
-                            RevisionId = revisions[i]
-                        },
-                    };
-                after = before;
-            }
+			for (var i = 1; i < revisions.Count; i++) {
+				var before = self.Find<T>(id, revisions[i]);
+				if (oldNew(before, after))
+					return new RevisionDiff<T>() {
+						After = new Revision<T> {
+							Date = self.GetRevisionDate(revisions[i - 1]),
+							Object = after,
+							RevisionId = revisions[i - 1]
+						},
+						Before = new Revision<T> {
+							Date = self.GetRevisionDate(revisions[i]),
+							Object = before,
+							RevisionId = revisions[i]
+						},
+					};
+				after = before;
+			}
 			return null;
-        }
+		}
 
 		//[Obsolete("Does not work",true)]
-        public static IEnumerable<Revision<T>> GetRevisionsBetween<T>(this IAuditReader self,ISession session, object id, DateTime start, DateTime end) where T : class
-        {
+		public static IEnumerable<Revision<T>> GetRevisionsBetween<T>(this IAuditReader self, ISession session, object id, DateTime start, DateTime end) where T : class {
 			if (start > end)
 				throw new ArgumentOutOfRangeException("start", "Start must come before end.");
 			long s;
 			long e;
 
-			start= start.AddSeconds(-1);
-			end= end.AddSeconds(1);
+			start = start.AddSeconds(-1);
+			end = end.AddSeconds(1);
 
 			try {
 				s = self.GetRevisionNumberForDate(start);
@@ -95,16 +93,16 @@ namespace RadialReview.Utilities.Extensions {
 			if (additional.Any()) {
 				revisionIds.Add(additional.Max());
 			}
-            if (!revisionIds.Any())
-                return new List<Revision<T>>();
+			if (!revisionIds.Any())
+				return new List<Revision<T>>();
 			var low = revisionIds.Min();
 			var high = revisionIds.Max();
 
-			var revisionModels = self.CreateQuery().ForHistoryOf<T ,DefaultRevisionEntity>(true).Add(AuditEntity.Id().Eq(id)).Add(AuditEntity.RevisionNumber().Ge(low)).Add(AuditEntity.RevisionNumber().Le(high)).Results();
+			var revisionModels = self.CreateQuery().ForHistoryOf<T, DefaultRevisionEntity>(true).Add(AuditEntity.Id().Eq(id)).Add(AuditEntity.RevisionNumber().Ge(low)).Add(AuditEntity.RevisionNumber().Le(high)).Results();
 
-			return revisionModels.Select(x=>new Revision<T>() {
+			return revisionModels.Select(x => new Revision<T>() {
 				Date = x.RevisionEntity.RevisionDate,
-				RevisionId= x.RevisionEntity.Id,
+				RevisionId = x.RevisionEntity.Id,
 				Object = x.Entity
 			});
 
@@ -154,5 +152,5 @@ namespace RadialReview.Utilities.Extensions {
 
 			//return revisionModels;
 		}
-    }
+	}
 }

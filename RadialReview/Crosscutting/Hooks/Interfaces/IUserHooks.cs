@@ -20,7 +20,7 @@ namespace RadialReview.Utilities.Hooks {
 	}
 
 	interface IDeleteUserOrganizationHook : IHook {
-        Task DeleteUser(ISession s, UserOrganizationModel user);
-        Task UndeleteUser(ISession s, UserOrganizationModel user);
-    }
+		Task DeleteUser(ISession s, UserOrganizationModel user);
+		Task UndeleteUser(ISession s, UserOrganizationModel user);
+	}
 }

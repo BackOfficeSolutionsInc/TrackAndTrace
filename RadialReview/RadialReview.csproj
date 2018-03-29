@@ -162,11 +162,16 @@
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
     <Compile Include="Areas\People\Controllers\ErrorController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
+    <Content Include="Content\Angular\angular-material.css">
+      <DependentUpon>angular-material.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Angular\angular-material.less" />
     <None Include="Content\Chart\metric-graphics.less" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnaylzerGenerators.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\MissL10PastQuarter.cs" />
@@ -918,6 +923,7 @@
     <Compile Include="Utilities\FormulaUtility.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\HashUtil.cs" />
+    <Compile Include="Utilities\Hooks\IMilestoneHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IAccountEvent.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\ICreateIssue.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IHeadlineHook.cs" />
@@ -1831,12 +1837,14 @@
     <Content Include="Views\Headlines\EditModal.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\LocalDateTime.cshtml" />
     <Content Include="Views\L10\Pages.cshtml" />
+    <Content Include="Views\L10\Delete.cshtml" />
     <Content Include="Views\Organization\ResendJoinEmailManual.cshtml" />
     <Content Include="Views\L10\EditRating.cshtml" />
     <Content Include="Views\Scorecard\FormulaPartial.cshtml" />
     <Content Include="Views\ClientSuccess\Close.cshtml" />
     <Content Include="Views\Data\Dashboard.cshtml" />
     <Content Include="Views\Admin\EmployeeCount.cshtml" />
+    <Content Include="Views\Faq\GenerateTokenInstruction.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
     <Content Include="Views\ClientSuccess\HFCategories.cshtml" />
     <None Include="Web.Debug.config">

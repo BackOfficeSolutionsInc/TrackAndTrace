@@ -115,8 +115,10 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Delete() {
-			return Content("<span>You are about to delete this meeting.  Are you sure you want to continue?</span>");
+		public async Task<ActionResult> Delete(long id) {
+			//return Content("<span>You are about to delete this meeting.  Are you sure you want to continue?</span>");
+			var getRecurrence = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id);
+			return PartialView(getRecurrence);
 		}
 
 		//[Access(AccessLevel.UserOrganization)]
@@ -127,7 +129,28 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<JsonResult> Delete(long id) {
+		public async Task<JsonResult> Delete(long id, FormCollection model) {
+
+			var rocksKeys = model.AllKeys.Where(x => x.StartsWith("rocks_"));
+			var rocksIds = rocksKeys.Where(x => model[x].ToBooleanJS()).Select(x => long.Parse(x.Replace("rocks_", ""))).ToList();
+
+			var measurableKeys = model.AllKeys.Where(x => x.StartsWith("measurables_"));
+			var measurableIds = measurableKeys.Where(x => model[x].ToBooleanJS()).Select(x => long.Parse(x.Replace("measurables_", ""))).ToList();
+
+			var getRecurrence = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id);
+
+			var rocks = getRecurrence.Rocks.Where(t => rocksIds.Contains(t.Id));
+			//Archive Rocks
+			foreach (var item in rocks) {
+				await L10Accessor.Remove(GetUser(), item, id);
+			}
+
+			var measurables = getRecurrence.Scorecard.Measurables.Where(t => measurableIds.Contains(t.Id));
+			//Archive Measurables
+			foreach (var item in measurables) {
+				await L10Accessor.Remove(GetUser(), item, id);
+			}
+
 			await L10Accessor.DeleteL10Recurrence(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
@@ -136,6 +159,11 @@ namespace RadialReview.Controllers {
 		public async Task<JsonResult> Undelete(long id) {
 			await L10Accessor.UndeleteL10Recurrence(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		private void AddUnstored(long recurrenceId, L10EditVM model) {
+			ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), recurrenceId);
+
 		}
 
 		private L10EditVM AddExtras(long recurrenceId, L10EditVM model) {
@@ -168,15 +196,14 @@ namespace RadialReview.Controllers {
 				model.SelectedMembers = model.SelectedMembers ?? new long[0];
 				model.SelectedRocks = model.SelectedRocks ?? new long[0];
 			}
-
-			ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), recurrenceId);
+			AddUnstored(recurrenceId, model);
 			return model;
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Edit(long? id = null, string @return = null) {
 			if (id == null)
-				return RedirectToAction("Wizard", new { @return = @return});
+				return RedirectToAction("Wizard", new { @return = @return });
 
 			var recurrenceId = id.Value;
 
@@ -215,8 +242,8 @@ namespace RadialReview.Controllers {
 
 				var now = DateTime.UtcNow.ToJavascriptMilliseconds();
 				try {
-					var initModel = (await DetailsData(id.Value, false, false, now, now, true, removeWeeks:true)).Data;
-					ViewBag.InitialModel =new HtmlString(JsonConvert.SerializeObject(initModel));
+					var initModel = (await DetailsData(id.Value, false, false, now, now, true, removeWeeks: true)).Data;
+					ViewBag.InitialModel = new HtmlString(JsonConvert.SerializeObject(initModel));
 				} catch (Exception e) {
 					int a = 0;
 				}
@@ -303,7 +330,9 @@ namespace RadialReview.Controllers {
 			model.PossibleMembers = allMembers;
 			model.PossibleMeasurables = allMeasurables.Where(x => x != null).ToList();
 
-
+			if (model.Recurrence.Id != 0) {
+				AddUnstored(model.Recurrence.Id, model);
+			}
 			//model.SelectedRocks = model.SelectedRocks ?? new long[0];
 			//model.SelectedMembers = model.SelectedMembers ?? new long[0];
 			//model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
@@ -330,7 +359,7 @@ namespace RadialReview.Controllers {
 			var recurrence = id;
 			var audits = L10Accessor.GetL10Audit(GetUser(), recurrence);
 			var transcripts = TranscriptAccessor.GetRecurrenceTranscript(GetUser(), recurrence);
-			var meetings = L10Accessor.GetL10Meetings(GetUser(), id, false);
+			var meetings = L10Accessor.GetL10Meetings(GetUser(), id, false,true);
 			var list = new List<MeetingTimeline>();
 			var user = GetUser();
 			foreach (var m in meetings) {
@@ -388,7 +417,7 @@ namespace RadialReview.Controllers {
 				end = meeting.CompleteTime,
 			}), JsonRequestBehavior.AllowGet);
 		}
-		
+
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> EditVto(long id) {
 			var vtoId = (await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, false, false, false)).VtoId;
@@ -404,7 +433,7 @@ namespace RadialReview.Controllers {
 			var existingAttendees = string.Join(",", L10Accessor.GetAttendees(GetUser(), meetingId).Select(x => x.Id));
 
 			var obj = UserAccessor.BuildCreateUserVM(GetUser(), ViewBag);
-			var settings = SelectExistingOrCreateUtility.Create<CreateUserOrganizationViewModel>("/User/Search?exclude=" + existingAttendees, "CreateUserOrganizationViewModel", obj, false);
+			var settings = SelectExistingOrCreateUtility.Create<CreateUserOrganizationViewModel>("/User/Search?exclude=" + existingAttendees, "CreateUserOrganizationViewModel", obj, false,multiple:true);
 			ViewBag.meetingId = meetingId;
 			return PartialView(settings);
 		}
@@ -419,7 +448,7 @@ namespace RadialReview.Controllers {
 			var attendees = L10Accessor.GetAttendees(GetUser(), meetingId);
 
 			var obj = ScorecardAccessor.BuildCreateMeasurableVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id));
-			var settings = SelectExistingOrCreateUtility.Create<CreateMeasurableViewModel>("/Measurable/Search?exclude=" + existingIds, "CreateMeasurableViewModel", obj, true);
+			var settings = SelectExistingOrCreateUtility.Create<CreateMeasurableViewModel>("/Measurable/Search?exclude=" + existingIds, "CreateMeasurableViewModel", obj, true, multiple: true);
 			ViewBag.meetingId = meetingId;
 			return PartialView(settings);
 		}
@@ -433,7 +462,7 @@ namespace RadialReview.Controllers {
 			var attendees = L10Accessor.GetAttendees(GetUser(), meetingId);
 
 			var obj = RockAccessor.BuildCreateRockVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id));
-			var settings = SelectExistingOrCreateUtility.Create<CreateRockViewModel>("/Rocks/Search?exclude=" + existingIds, "CreateRockViewModel", obj, true);
+			var settings = SelectExistingOrCreateUtility.Create<CreateRockViewModel>("/Rocks/Search?exclude=" + existingIds, "CreateRockViewModel", obj, true, multiple: true);
 			ViewBag.meetingId = meetingId;
 			return PartialView(settings);
 		}
@@ -450,7 +479,9 @@ namespace RadialReview.Controllers {
 					throw new PermissionsException("Could not add to meeting.");
 				}
 			} else {
-				await L10Accessor.AddAttendee(GetUser(), meetingId, model.SelectedValue.Value);
+				foreach (var userId in model.SelectedValue) {
+					await L10Accessor.AddAttendee(GetUser(), meetingId, userId);
+				}
 			}
 
 			return Json(ResultObject.SilentSuccess());
@@ -470,7 +501,9 @@ namespace RadialReview.Controllers {
 					throw new PermissionsException("Could not add to meeting.");
 				}
 			} else {
-				await L10Accessor.AttachMeasurable(GetUser(), meetingId, model.SelectedValue.Value);
+				foreach (var measurableId in model.SelectedValue) {
+					await L10Accessor.AttachMeasurable(GetUser(), meetingId, measurableId);
+				}
 			}
 
 			return Json(ResultObject.SilentSuccess());
@@ -490,7 +523,9 @@ namespace RadialReview.Controllers {
 					throw new PermissionsException("Could not add to meeting.");
 				}
 			} else {
-				await L10Accessor.AttachRock(GetUser(), meetingId, model.SelectedValue.Value, false);
+				foreach (var rockId in model.SelectedValue) {
+					await L10Accessor.AttachRock(GetUser(), meetingId, rockId, false);
+				}
 			}
 
 			return Json(ResultObject.SilentSuccess());

@@ -16,8 +16,8 @@ namespace RadialReview.Utilities.Hooks {
 		public bool AccountableUserChanged { get; set; }
 	}
 
-    public interface ITodoHook : IHook {
-        Task CreateTodo(ISession s, TodoModel todo);
-		Task UpdateTodo(ISession s, UserOrganizationModel caller, TodoModel todo, ITodoHookUpdates updates);		
+	public interface ITodoHook : IHook {
+		Task CreateTodo(ISession s, TodoModel todo);
+		Task UpdateTodo(ISession s, UserOrganizationModel caller, TodoModel todo, ITodoHookUpdates updates);
 	}
 }

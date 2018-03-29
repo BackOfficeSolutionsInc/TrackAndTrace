@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace RadialReview.Controllers.AbstractController
-{
-    public abstract class BaseExpensiveController : BaseController
-    {
+namespace RadialReview.Controllers.AbstractController {
+	public abstract class BaseExpensiveController : BaseController {
 		// GET: BaseExpensive
 
 		public class Divisor {
@@ -21,7 +19,7 @@ namespace RadialReview.Controllers.AbstractController
 			public int? updates { get; set; }
 
 			public TimeSpan GetDuration() {
-				return TimeSpan.FromMilliseconds(duration??0);
+				return TimeSpan.FromMilliseconds(duration ?? 0);
 			}
 
 			public double GetDurationSeconds() {
@@ -44,14 +42,14 @@ namespace RadialReview.Controllers.AbstractController
 		}
 
 
-		protected async Task<ActionResult> BreakUpAction(string controllerAction,Divisor dd, Action<Divisor> action,  Func<ActionResult> oncomplete=null) {
+		protected async Task<ActionResult> BreakUpAction(string controllerAction, Divisor dd, Action<Divisor> action, Func<ActionResult> oncomplete = null) {
 
 			var start = DateTime.UtcNow;
 			dd = dd ?? new Divisor();
 
 			if (dd.remainder >= dd.divisor) {
 				if (oncomplete == null)
-					return Content("Duration:" + dd.GetDurationSeconds() + "s<br/>Updates: "+dd.updates);
+					return Content("Duration:" + dd.GetDurationSeconds() + "s<br/>Updates: " + dd.updates);
 				else
 					return oncomplete();
 			}
@@ -61,7 +59,7 @@ namespace RadialReview.Controllers.AbstractController
 
 			//real work here...
 			action(dd);
-			
+
 			dd.duration += (DateTime.UtcNow - start).TotalMilliseconds;
 			dd.remainder += 1;
 

@@ -1,11 +1,11 @@
 ﻿<!--<div class="survey-component survey">-->
 <!--<a class="anchor" ></a>-->
-<div class="survey" id="survey-{{::model.Id}}" data-scrollspy-broadcast  ng-if="showSurvey()">
+<div class="survey" id="survey-{{::model.Id}}" data-scrollspy-broadcast ng-if="showSurvey()">
 	<span class="debug-info"><i>--Survey--</i><span>{{model.Name}}-{{model.Sections.length}}</span></span>
 	<div class="title"><!--role="tab"--><!--<a href="" role="button" data-toggle="collapse" data-parent="#surveys" aria-expanded="false" aria-controls="survey-{{::model.Id}}">-->{{model.Name}}<!--</a>--></div>
 	<div class="sections ">
 		<!--collapse id="survey-{{::model.Id}}" role="tabpanel"-->
-		<survey-section ng-repeat="section in model.Sections" section="section" class="survey-component section-{{section.SectionType}}" on-change-response="changeResponse" ></survey-section>
+		<survey-section ng-repeat="section in model.Sections" section="section" class="survey-component section-{{section.SectionType}}" on-change-response="changeResponse"></survey-section>
 	</div>
 </div>
 <!--</div>-->

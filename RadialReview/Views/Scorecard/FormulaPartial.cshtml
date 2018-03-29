@@ -1,6 +1,6 @@
 ﻿@model RadialReview.Controllers.ScorecardController.FormulaParts
 @{
-    var guid = Guid.NewGuid().ToString().Replace("-", "");
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
 }
 @Scripts.Render("~/bundles/taginput")
 @Styles.Render("~/styles/taginput")
@@ -11,180 +11,195 @@
 <div><small><span style="color:lightcoral"><b>CAUTION: </b></span><i style="color:gray">Creating or updating a row formula will overwrite existing data for the entire row.</i></small></div>
 <div class="hidden formulaHints" id="formulaHints">
 
-    <div class="row">
-        <div class="col-md-6">
-            <table>
-                <tbody>
-                    <tr><td style="width:180px"><code>A + B</code></td><td>Addition</td></tr>
-                    <tr><td><code>A - B</code></td><td>Subtraction</td></tr>
-                    <tr><td><code>A * B</code></td><td>Multiplication</td></tr>
-                    <tr><td><code>A / B</code></td><td>Division</td></tr>
-                    <tr><td><code>A ^ B</code></td><td>A to the B th power</td></tr>
-                    <tr><td><code>A ~ B</code></td><td>Ath root of B</td></tr>
-                    <tr><td><code>A % B</code></td><td>Modulo</td></tr>
-                    <tr><td><code>A DIV B</code></td><td>Whole part of division rest</td></tr>
-                    <tr><td><code>SQRT expression</code></td><td>Square root</td></tr>
-                    <tr><td><code>SQR expression</code></td><td>Square product</td></tr>
-                    <tr><td><code>NUMBER</code></td><td>Single integer or float number</td></tr>
-                    <tr><td><code>( expression )</code></td><td>Expression within parentheses</td></tr>
-                    <tr><td><code>PI</code></td><td>Mathematical constant pi = 3.141593</td></tr>
-                    <tr><td><code>expression E+ expression</code></td><td>Exponent, e.g. 10e+43</td></tr>
-                    <tr><td><code>expression E- expression</code></td><td>Inverted Exponent, e.g. 10e-43</td></tr>
-                    <tr><td><code>EULER</code></td><td>Mathematical constant e = 2.718282</td></tr>
-                    <tr><td><code>- expression</code></td><td>Unary minus sign (negative numbers)</td></tr>
-                    <tr><td><code>+ expression</code></td><td>Unary plus sign (positive numbers)</td></tr>
-                    <tr><td><code>EXP expression</code></td><td>e ^ expression</td></tr>
-                    <tr><td><code>LN expression</code></td><td>Natural Logarithm (base e)</td></tr>
-                    <tr><td><code>LOG expression</code></td><td>Logarithm base 10</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="col-md-6">
-            <table>
-                <tbody>
-                    <tr><td style="width:180px"><code>FLOOR expression</code></td><td>Round down to zero accuracy</td></tr>
-                    <tr><td><code>CEIL expression</code></td><td>Round up to zero accuracy</td></tr>
-                    <tr><td><code>ABS expression</code></td><td>Absolute value</td></tr>
-                    <tr><td><code>ROUNDK ( A ; B ) </code></td><td>Round A with B accuracy</td></tr>
-                    <tr><td><code>ROUND expression</code></td><td>Round with zero accuracy</td></tr>
-                    <tr><td><code>TRUNC expression</code></td><td>Trim decimal digits</td></tr>
-                    <tr><td><code>SIN expression</code></td><td>Sine</td></tr>
-                    <tr><td><code>COS expression</code></td><td>Cosine</td></tr>
-                    <tr><td><code>TAN expression</code></td><td>Tangent</td></tr>
-                    <tr><td><code>COT expression</code></td><td>Cotangent</td></tr>
-                    <tr><td><code>SINH expression</code></td><td>Hyperbolic Sine</td></tr>
-                    <tr><td><code>COSH expression</code></td><td>Hyperbolic Cosine </td></tr>
-                    <tr><td><code>TANH expression</code></td><td>Hyperbolic Tangent </td></tr>
-                    <tr><td><code>ARCSIN expression</code></td><td>Inverse Sine</td></tr>
-                    <tr><td><code>ARCCOS expression</code></td><td>Inverse Cosine</td></tr>
-                    <tr><td><code>ARCTAN expression</code></td><td>Inverse Tangent</td></tr>
-                    <tr><td><code>ARCTAN2 ( A ; B ) </code></td><td>Atan2</td></tr>
-                    <tr><td><code>ARCCOT expression</code></td><td>Inverse Cotangent</td></tr>
-                    <tr><td><code>EEX expression</code></td><td>10 ^ expression</td></tr>
-                    <tr><td><code>RAD expression</code></td><td>Angle to radians (360° base)</td></tr>
-                    <tr><td><code>DEG expression</code></td><td>Radians to angle (360° base)</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-md-6">
+			<table>
+				<tbody>
+					<tr><td style="width:180px"><code>A + B</code></td><td>Addition</td></tr>
+					<tr><td><code>A - B</code></td><td>Subtraction</td></tr>
+					<tr><td><code>A * B</code></td><td>Multiplication</td></tr>
+					<tr><td><code>A / B</code></td><td>Division</td></tr>
+					<tr><td><code>A ^ B</code></td><td>A to the B th power</td></tr>
+					<tr><td><code>A ~ B</code></td><td>Ath root of B</td></tr>
+					<tr><td><code>A % B</code></td><td>Modulo</td></tr>
+					<tr><td><code>A DIV B</code></td><td>Whole part of division rest</td></tr>
+					<tr><td><code>SQRT expression</code></td><td>Square root</td></tr>
+					<tr><td><code>SQR expression</code></td><td>Square product</td></tr>
+					<tr><td><code>NUMBER</code></td><td>Single integer or float number</td></tr>
+					<tr><td><code>( expression )</code></td><td>Expression within parentheses</td></tr>
+					<tr><td><code>PI</code></td><td>Mathematical constant pi = 3.141593</td></tr>
+					<tr><td><code>expression E+ expression</code></td><td>Exponent, e.g. 10e+43</td></tr>
+					<tr><td><code>expression E- expression</code></td><td>Inverted Exponent, e.g. 10e-43</td></tr>
+					<tr><td><code>EULER</code></td><td>Mathematical constant e = 2.718282</td></tr>
+					<tr><td><code>- expression</code></td><td>Unary minus sign (negative numbers)</td></tr>
+					<tr><td><code>+ expression</code></td><td>Unary plus sign (positive numbers)</td></tr>
+					<tr><td><code>EXP expression</code></td><td>e ^ expression</td></tr>
+					<tr><td><code>LN expression</code></td><td>Natural Logarithm (base e)</td></tr>
+					<tr><td><code>LOG expression</code></td><td>Logarithm base 10</td></tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="col-md-6">
+			<table>
+				<tbody>
+					<tr><td style="width:180px"><code>FLOOR expression</code></td><td>Round down to zero accuracy</td></tr>
+					<tr><td><code>CEIL expression</code></td><td>Round up to zero accuracy</td></tr>
+					<tr><td><code>ABS expression</code></td><td>Absolute value</td></tr>
+					<tr><td><code>ROUNDK ( A ; B ) </code></td><td>Round A with B accuracy</td></tr>
+					<tr><td><code>ROUND expression</code></td><td>Round with zero accuracy</td></tr>
+					<tr><td><code>TRUNC expression</code></td><td>Trim decimal digits</td></tr>
+					<tr><td><code>SIN expression</code></td><td>Sine</td></tr>
+					<tr><td><code>COS expression</code></td><td>Cosine</td></tr>
+					<tr><td><code>TAN expression</code></td><td>Tangent</td></tr>
+					<tr><td><code>COT expression</code></td><td>Cotangent</td></tr>
+					<tr><td><code>SINH expression</code></td><td>Hyperbolic Sine</td></tr>
+					<tr><td><code>COSH expression</code></td><td>Hyperbolic Cosine </td></tr>
+					<tr><td><code>TANH expression</code></td><td>Hyperbolic Tangent </td></tr>
+					<tr><td><code>ARCSIN expression</code></td><td>Inverse Sine</td></tr>
+					<tr><td><code>ARCCOS expression</code></td><td>Inverse Cosine</td></tr>
+					<tr><td><code>ARCTAN expression</code></td><td>Inverse Tangent</td></tr>
+					<tr><td><code>ARCTAN2 ( A ; B ) </code></td><td>Atan2</td></tr>
+					<tr><td><code>ARCCOT expression</code></td><td>Inverse Cotangent</td></tr>
+					<tr><td><code>EEX expression</code></td><td>10 ^ expression</td></tr>
+					<tr><td><code>RAD expression</code></td><td>Angle to radians (360° base)</td></tr>
+					<tr><td><code>DEG expression</code></td><td>Radians to angle (360° base)</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 
 </div>
 <script>
-    function a@(guid)() {
-        require(['token-editor'], function (TokenEditor) {
-            //debugger;
-            //var autoCompleteItems = [
-            //    { label: 'banana', attrs: { id: '1', color: 'yellow' } },
-            //    { label: 'apple', attrs: { id: '2', color: 'various' } },
-            //    { label: 'orange', attrs: { id: '3', color: 'orange' } },
-            //    { label: 'strawberry', attrs: { id: '4', color: 'red' } },
-            //    { label: 'blueberry', attrs: { id: '5', color: 'blue' } },
-            //    { label: 'apple sauce', attrs: { id: '6', color: 'pale yellow' } },
-            //    { label: 'apple juice', attrs: { id: '7', color: 'pale yellow' } },
-            //];
+	function a@(guid)() {
+		require(['token-editor'], function (TokenEditor) {
+			//debugger;
+			//var autoCompleteItems = [
+			//	{ label: 'banana', attrs: { id: '1', color: 'yellow' } },
+			//	{ label: 'apple', attrs: { id: '2', color: 'various' } },
+			//	{ label: 'orange', attrs: { id: '3', color: 'orange' } },
+			//	{ label: 'strawberry', attrs: { id: '4', color: 'red' } },
+			//	{ label: 'blueberry', attrs: { id: '5', color: 'blue' } },
+			//	{ label: 'apple sauce', attrs: { id: '6', color: 'pale yellow' } },
+			//	{ label: 'apple juice', attrs: { id: '7', color: 'pale yellow' } },
+			//];
 
-            var autoCompleteItems = @Html.ArrayToString(Model.VisibleMeasurables.Where(x=>x.Title !=null).Select(x => new {
-                                   label = x.Title +"<span class='offset'></span>",
-                                   attrs = new { id = x.Id, offset = 0 }
-                               }));
+			var autoCompleteItems = @Html.ArrayToString(Model.VisibleMeasurables.Where(x=>x.Title !=null).Select(x => new {
+								   label = x.Title +"<span class='offset'></span>",
+								   attrs = new { id = x.Id, offset = 0 }
+							   }));
 
-            var emptyEditor = new TokenEditor({
-                //items: autoCompleteItems,
-                value: [@Html.ArrayToString(Model.Values)],
-                //options:{
-                autoComplete:{
-                    minLen: 0,
-                    items: autoCompleteItems,
-                    multiLines:false
-                    //maxResults: 4,
-                    //minScore: 0.0
-                }
-                //}
-            });
+			var emptyEditor = new TokenEditor({
+				//items: autoCompleteItems,
+				value: [@Html.ArrayToString(Model.Values)],
+				//options:{
+				autoComplete:{
+					minLen: 0,
+					items: autoCompleteItems,
+					multiLines:false
+					//maxResults: 4,
+					//minScore: 0.0
+				}
+				//}
+			});
 
-            document.getElementById('@guid').appendChild(emptyEditor.el)
-            emptyEditor.render()
+			document.getElementById('@guid').appendChild(emptyEditor.el)
+			emptyEditor.render()
 
-            setTimeout(function () {
-                emptyEditor.edit(true);
-                emptyEditor.focusEnd();
-            }, 100);
-            // debugger;
-            //$("#modalForm")
-            emptyEditor.on("blur",function(){
-                var json=emptyEditor.toJSON()[0];
-                var builder = "";
-                // debugger;
-                if(typeof(json)!=="undefined"){
-                    for(var i = 0;i<json.length;i++){
-                        var a = json[i];
-                        if (typeof(a)==="string"){
-                            builder+=a;
-                        }else{
-                            builder+="["+a.attrs.id+"("+a.attrs.offset+")]";
-                        }
-                    }
-                }
+			setTimeout(function () {
+				emptyEditor.edit(true);
+				emptyEditor.focusEnd();
+			}, 100);
+			// debugger;
+			//$("#modalForm")
 
-                $("#val-@guid").val(builder);
-            });
+			var updateFormula = function(){
+				if ($("#val-@guid").length==0){
+					clearInterval(formulaInterval);
+					console.log("clearing formula interval");
+					return;
+				}
+				var json=emptyEditor.toJSON()[0];
+				var builder = "";
+				// debugger;
+				if(typeof(json)!=="undefined"){
+					for(var i = 0;i<json.length;i++){
+						var a = json[i];
+						if (typeof(a)==="string"){
+							builder+=a;
+						}else{
+							builder+="["+a.attrs.id+"("+a.attrs.offset+")]";
+						}
+					}
+				}
 
-            $("#@guid").on("click",".token",function(e){
-                if (($(this).width() - e.offsetX)<12){
-                    var result =prompt("Enter week offset", $(this).attr("data-offset"));
-                    if (result!=null){
-                        var num = parseInt(result);
-                        if (""+num != result){
-                            return;
-                        }
+				if ($("#val-@guid").val()!=builder){
+					$("#val-@guid").val(builder);
+					console.log("updated formula to:"+builder);
+				}
+			};
 
-                        $(this).attr("data-offset",num);
-                        //debugger;
-                        var o = "";
-                        if (num!=0){
-                            if (num>0){
-                                o = " (+"+num+")";
-                            }else{
-                                o = " ("+num+")";
-                            }
-                        }
-                        $(this).find(".offset").html(o);
+			var formulaInterval = setInterval(function(){
+				updateFormula();
+			},100);
 
-                    }
-                }
-            });
+			emptyEditor.on("blur",updateFormula);
 
-            //var prefilledValue = [["I would like a ",{"label":"banana","attrs":{"id":"1","color":"yellow"}},", but not an ",{"label":"apple","attrs":{"id":"2","color":"various"}},"."],["A few ",{"label":"strawberry","attrs":{"id":"4","color":"red"}},"s would be nice too!"]];
-            //window.prefilledEditor = new TokenEditor({items: autoCompleteItems, value: prefilledValue});
-            //document.getElementById('prefilled').appendChild( prefilledEditor.el )
-            //prefilledEditor.render()
-            //window.prefilledString = function(){
-            //	document.getElementById('prefilled-json').innerHTML = prefilledEditor.toString();
-            //}
-            //window.prefilledJSON = function(){
-            //	document.getElementById('prefilled-json').innerHTML = JSON.stringify(prefilledEditor.toJSON(), null, "  ")
-            //}
-        });
-    }
+			$("#@guid").on("click",".token",function(e){
+				if (($(this).width() - e.offsetX)<12){
+					var result =prompt("Enter week offset", $(this).attr("data-offset"));
+					if (result!=null){
+						var num = parseInt(result);
+						if (""+num != result){
+							return;
+						}
 
-    function defer@(guid)() {
-        if (window.jQuery)
-            a@(guid)();
-        else
-            setTimeout(function () { defer@(guid)() }, 50);
-    }
-    defer@(guid)();
+						$(this).attr("data-offset",num);
+						//debugger;
+						var o = "";
+						if (num!=0){
+							if (num>0){
+								o = " (+"+num+")";
+							}else{
+								o = " ("+num+")";
+							}
+						}
+						$(this).find(".offset").html(o);
+
+					}
+				}
+			});
+
+			//var prefilledValue = [["I would like a ",{"label":"banana","attrs":{"id":"1","color":"yellow"}},", but not an ",{"label":"apple","attrs":{"id":"2","color":"various"}},"."],["A few ",{"label":"strawberry","attrs":{"id":"4","color":"red"}},"s would be nice too!"]];
+			//window.prefilledEditor = new TokenEditor({items: autoCompleteItems, value: prefilledValue});
+			//document.getElementById('prefilled').appendChild( prefilledEditor.el )
+			//prefilledEditor.render()
+			//window.prefilledString = function(){
+			//	document.getElementById('prefilled-json').innerHTML = prefilledEditor.toString();
+			//}
+			//window.prefilledJSON = function(){
+			//	document.getElementById('prefilled-json').innerHTML = JSON.stringify(prefilledEditor.toJSON(), null, "  ")
+			//}
+		});
+	}
+
+	function defer@(guid)() {
+		if (window.jQuery)
+			a@(guid)();
+		else
+			setTimeout(function () { defer@(guid)() }, 50);
+	}
+	defer@(guid)();
 
 </script>
 
 <style>
-    .formulaHints {
-        padding: 2px 6px;
-        border: 1px solid #ccc;
-        max-height: 50vh;
-        max-height: calc(100vh - 320px);
-        overflow-y: auto;
-        overflow-x: hidden;
-        background-color:#f8f8f8;
-    }
+	.formulaHints {
+		padding: 2px 6px;
+		border: 1px solid #ccc;
+		max-height: 50vh;
+		max-height: calc(100vh - 320px);
+		overflow-y: auto;
+		overflow-x: hidden;
+		background-color:#f8f8f8;
+	}
 </style>

@@ -105,9 +105,12 @@ namespace RadialReview.Accessors {
 			}).ToList();
 
 			scorecardRange = scorecardRange ?? range;
+			bool includeClosedHeadlines = true;
 			DateRange lookupRange = null;
 			if (range != null) {
 				lookupRange = new DateRange(range.StartTime, range.EndTime);
+			} else {
+				includeClosedHeadlines = false;
 			}
 
 			if (fullScorecard) {
@@ -138,7 +141,7 @@ namespace RadialReview.Accessors {
 
 			var measurables = scoresAndMeasurables.MeasurablesAndDividers.Select(x => {
 				if (x.IsDivider) {
-					var m = AngularMeasurable.CreateDivider(x._Ordering, x.Id);
+					var m = AngularMeasurable.CreateDivider(x);
 					m.RecurrenceId = x.L10Recurrence.Id;
 					return m;
 				} else {
@@ -173,7 +176,7 @@ namespace RadialReview.Accessors {
 			recur.Rocks = allRocks.Distinct(x => x.Id);
 			recur.Todos = GetAllTodosForRecurrence(s, perms, recurrenceId, includeClosed: includeHistorical, range: range).Select(x => new AngularTodo(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
 			recur.IssuesList.Issues = GetAllIssuesForRecurrence(s, perms, recurrenceId, includeCompleted: includeHistorical, range: range).Select(x => new AngularIssue(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
-			recur.Headlines = GetAllHeadlinesForRecurrence(s, perms, recurrenceId, includeClosed: includeHistorical, range: range).Select(x => new AngularHeadline(x)).OrderByDescending(x => x.CloseTime ?? DateTime.MaxValue).ToList();
+			recur.Headlines = GetAllHeadlinesForRecurrence(s, perms, recurrenceId, includeClosed: includeClosedHeadlines, range: range).Select(x => new AngularHeadline(x)).OrderByDescending(x => x.CloseTime ?? DateTime.MaxValue).ToList();
 			recur.Notes = recurrence._MeetingNotes.Select(x => new AngularMeetingNotes(x)).ToList();
 
 			recur.ShowSegue = recurrence._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Segue);
@@ -303,9 +306,10 @@ namespace RadialReview.Accessors {
 
 		//[Untested("Vto_Rocks",/* "Is the rock correctly removed in real-time from L10",/* "Is the rock correctly removed in real-time from VTO",*/ "Is rock correctly archived when existing in no meetings?")]
 		public static async Task UnarchiveRock(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long rockId) {
-			perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+			//perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+            perm.AdminL10Recurrence(recurrenceId).EditRock_UnArchive(rockId);
 
-			await RockAccessor.UnArchiveRock(s, perm, rockId);
+            await RockAccessor.UnArchiveRock(s, perm, rockId);
 
 			// attach rock
 			await AttachRock(s, perm, recurrenceId, rockId, false);

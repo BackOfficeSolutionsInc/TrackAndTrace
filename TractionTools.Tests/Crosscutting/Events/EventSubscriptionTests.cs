@@ -4,7 +4,6 @@ using RadialReview.Crosscutting.EventAnalyzers.Events;
 using Newtonsoft.Json;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Models.Enums;
-using RadialReview.Models.Frontend;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

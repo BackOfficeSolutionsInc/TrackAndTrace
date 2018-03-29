@@ -54,8 +54,8 @@ namespace RadialReview.Accessors {
 			Priority = priority;
 		}
 
-		public static IssueCreation CreateL10Issue(string message, string details, long? ownerId, long recurrenceId, long? createdDuringMeeting=null,int priority=0, string modelType = "IssueModel", long modelId = -1, DateTime? now = null) {
-			return new IssueCreation(message, details, ownerId, createdDuringMeeting,priority, recurrenceId, now, modelType, modelId);
+		public static IssueCreation CreateL10Issue(string message, string details, long? ownerId, long recurrenceId, long? createdDuringMeeting = null, int priority = 0, string modelType = "IssueModel", long modelId = -1, DateTime? now = null) {
+			return new IssueCreation(message, details, ownerId, createdDuringMeeting, priority, recurrenceId, now, modelType, modelId);
 		}
 
 
@@ -103,7 +103,7 @@ namespace RadialReview.Accessors {
 
 			if (CreatedDuringMeetingId != null && CreatedDuringMeetingId > 0)
 				perms.ViewL10Meeting(CreatedDuringMeetingId.Value);
-			perms.ViewOrganization(orgId);			
+			perms.ViewOrganization(orgId);
 			if (OwnerId != null)
 				perms.ViewUserOrganization(OwnerId.Value, false);
 
@@ -122,7 +122,7 @@ namespace RadialReview.Accessors {
 			public IssueModel IssueModel { get; set; }
 			public IssueModel.IssueModel_Recurrence IssueRecurrenceModel { get; set; }
 		}
-		
+
 		public static async Task<IssueOutput> CreateIssue(ISession s, PermissionsUtility perms, IssueCreation issueCreator) {
 			//var o = new IssueOutput();
 
@@ -254,7 +254,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		
+
 		public static async Task<IssueOutput> CreateIssue(UserOrganizationModel caller, IssueCreation creation) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -271,33 +271,32 @@ namespace RadialReview.Accessors {
 			long? owner = null, int? priority = null, int? rank = null, bool? awaitingSolve = null, DateTime? now = null) {
 			//using (var s = HibernateSession.GetCurrentSession()) {
 			//	using (var tx = s.BeginTransaction()) {
-            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateIssueMessage(issueRecurrenceId),async s=>{
-					var perms = PermissionsUtility.Create(s, caller);
-					await EditIssue(s, perms, issueRecurrenceId, message, complete, owner, priority, rank, awaitingSolve, now);
-            });
+			await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateIssueMessage(issueRecurrenceId), async s => {
+				var perms = PermissionsUtility.Create(s, caller);
+				await EditIssue(s, perms, issueRecurrenceId, message, complete, owner, priority, rank, awaitingSolve, now);
+			});
 			//		tx.Commit();
 			//		s.Flush();
 			//	}
 			//}
-				}
-        /// <summary>
-        /// SyncAction.UpdateIssueMessage(issue.Issue.Id)
-        /// </summary>
-        /// <param name="s"></param>
-        /// <param name="perms"></param>
-        /// <param name="issueRecurrenceId"></param>
-        /// <param name="message"></param>
-        /// <param name="complete"></param>
-        /// <param name="owner"></param>
-        /// <param name="priority"></param>
-        /// <param name="rank"></param>
-        /// <param name="awaitingSolve"></param>
-        /// <param name="now"></param>
-        /// <returns></returns>
-		public static async Task EditIssue(IOrderedSession s,PermissionsUtility perms, long issueRecurrenceId, string message=null,
-			bool? complete=null, long? owner=null, int? priority=null, int? rank=null, /*bool? delete=null,*/ bool? awaitingSolve=null,
-			DateTime? now = null) 
-		{
+		}
+		/// <summary>
+		/// SyncAction.UpdateIssueMessage(issue.Issue.Id)
+		/// </summary>
+		/// <param name="s"></param>
+		/// <param name="perms"></param>
+		/// <param name="issueRecurrenceId"></param>
+		/// <param name="message"></param>
+		/// <param name="complete"></param>
+		/// <param name="owner"></param>
+		/// <param name="priority"></param>
+		/// <param name="rank"></param>
+		/// <param name="awaitingSolve"></param>
+		/// <param name="now"></param>
+		/// <returns></returns>
+		public static async Task EditIssue(IOrderedSession s, PermissionsUtility perms, long issueRecurrenceId, string message = null,
+			bool? complete = null, long? owner = null, int? priority = null, int? rank = null, /*bool? delete=null,*/ bool? awaitingSolve = null,
+			DateTime? now = null) {
 			now = Math2.Min(DateTime.UtcNow.AddSeconds(3), now ?? DateTime.UtcNow);
 
 			var issue = s.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
@@ -307,7 +306,7 @@ namespace RadialReview.Accessors {
 			var recurrenceId = issue.Recurrence.Id;
 			if (recurrenceId == 0)
 				throw new PermissionsException("Meeting does not exist.");
-			
+
 			perms.EditL10Recurrence(recurrenceId);
 
 			//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
@@ -404,7 +403,7 @@ namespace RadialReview.Accessors {
 			//}
 
 			await HooksRegistry.Each<IIssueHook>((ses, x) => x.UpdateIssue(ses, perms.GetCaller(), issue, updates));
-			
+
 		}
 
 		public static void _UpdateIssueCompletion_Unsafe(ISession s, /*RealTimeUtility rt,*/ IssueModel.IssueModel_Recurrence issue, bool complete, DateTime? now = null) {
@@ -420,19 +419,19 @@ namespace RadialReview.Accessors {
 
 			if (added != null) {
 				s.Update(issue);
-				var others = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.DeleteTime == null && x.Issue.Id == issue.Issue.Id).List().ToList();
+				/*var others = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.DeleteTime == null && x.Issue.Id == issue.Issue.Id).List().ToList();
 
+				//Not sure what I was thinking here...
 				foreach (var o in others) {
 					if (o.Id != issue.Id) {
 						o.MarkedForClose = complete;
 						s.Update(o);
 					}
 					//rt.UpdateRecurrences(o.Recurrence.Id).AddLowLevelAction(x => x.updateModedIssueSolve(o.Id, complete));
-
 					//var recur = new AngularRecurrence(o.Recurrence.Id);
 					//recur.IssuesList.Issues = AngularList.CreateFrom(added.Value ? AngularListType.Add : AngularListType.Remove, new AngularIssue(issue));
 					//rt.UpdateRecurrences(o.Recurrence.Id).Update(recur);
-				}
+				}*/
 			}
 		}
 
@@ -570,81 +569,74 @@ namespace RadialReview.Accessors {
 			viewModel.children = childrenVMs.ToArray();
 		}
 
-        public static IssueModel.IssueModel_Recurrence UnCopyIssue(UserOrganizationModel caller, long parentIssue_RecurrenceId, long childRecurrenceId)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    var now = DateTime.UtcNow;
+		public static IssueModel.IssueModel_Recurrence UnCopyIssue(UserOrganizationModel caller, long parentIssue_RecurrenceId, long childRecurrenceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var now = DateTime.UtcNow;
 
-                    var parent = s.Get<IssueModel.IssueModel_Recurrence>(parentIssue_RecurrenceId);
+					var parent = s.Get<IssueModel.IssueModel_Recurrence>(parentIssue_RecurrenceId);
 
-                    PermissionsUtility.Create(s, caller)
-                        .ViewL10Recurrence(parent.Recurrence.Id)
-                        .ViewIssue(parent.Issue.Id);
+					PermissionsUtility.Create(s, caller)
+						.ViewL10Recurrence(parent.Recurrence.Id)
+						.ViewIssue(parent.Issue.Id);
 
-                    var childRecur = s.Get<L10Recurrence>(childRecurrenceId);
+					var childRecur = s.Get<L10Recurrence>(childRecurrenceId);
 
-                    if (childRecur.Organization.Id != caller.Organization.Id)
-                        throw new PermissionsException("You cannot Uncopy an issue into this meeting.");
-                    if (parent.DeleteTime != null)
-                        throw new PermissionsException("Issue does not exist.");
+					if (childRecur.Organization.Id != caller.Organization.Id)
+						throw new PermissionsException("You cannot Uncopy an issue into this meeting.");
+					if (parent.DeleteTime != null)
+						throw new PermissionsException("Issue does not exist.");
 
-                    var possible = L10Accessor._GetAllL10RecurrenceAtOrganization(s, caller, caller.Organization.Id);
-                    if (possible.All(x => x.Id != childRecurrenceId))
-                    {
-                        throw new PermissionsException("You do not have permission to uncopy this issue.");
-                    }
+					var possible = L10Accessor._GetAllL10RecurrenceAtOrganization(s, caller, caller.Organization.Id);
+					if (possible.All(x => x.Id != childRecurrenceId)) {
+						throw new PermissionsException("You do not have permission to uncopy this issue.");
+					}
 
-                    var getL10RecurrenceChild = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-                        .Where(x => x.DeleteTime == null && x.Recurrence.Id == childRecurrenceId && x.Issue.Id == parent.Issue.Id)
-                        .SingleOrDefault();
+					var getL10RecurrenceChild = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+						.Where(x => x.DeleteTime == null && x.Recurrence.Id == childRecurrenceId && x.Issue.Id == parent.Issue.Id)
+						.SingleOrDefault();
 
-                    if (getL10RecurrenceChild == null)
-                    {
-                        throw new PermissionsException("Issue Recurrence does not exist.");
-                    }
-                    
-                    getL10RecurrenceChild.DeleteTime = now;
-                    s.Update(getL10RecurrenceChild);
+					if (getL10RecurrenceChild == null) {
+						throw new PermissionsException("Issue Recurrence does not exist.");
+					}
 
-                    var viewModel = IssuesData.FromIssueRecurrence(getL10RecurrenceChild);
-                    _UnRecurseCopy(s, viewModel, caller, parent, now);
-                    tx.Commit();
-                    s.Flush();
+					getL10RecurrenceChild.DeleteTime = now;
+					s.Update(getL10RecurrenceChild);
 
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                    var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(childRecurrenceId));
+					var viewModel = IssuesData.FromIssueRecurrence(getL10RecurrenceChild);
+					_UnRecurseCopy(s, viewModel, caller, parent, now);
+					tx.Commit();
+					s.Flush();
 
-                    meetingHub.removeIssueRow(getL10RecurrenceChild.Id);
-                    var issue = s.Get<IssueModel>(parent.Issue.Id);
-                    Audit.L10Log(s, caller, parent.Recurrence.Id, "UnCopyIssue", ForModel.Create(getL10RecurrenceChild), issue.NotNull(x => x.Message) + " Uncopied from " + childRecur.NotNull(x => x.Name));
-                    return getL10RecurrenceChild;
-                }
-            }
-        }
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(childRecurrenceId));
 
-        private static void _UnRecurseCopy(ISession s, IssuesData viewModel, UserOrganizationModel caller, IssueModel.IssueModel_Recurrence copiedFrom, DateTime now)
-        {
-            var children = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-                .Where(x => x.DeleteTime == null && x.ParentRecurrenceIssue.Id == copiedFrom.Id)
-                .List();
-            var childrenVMs = new List<IssuesData>();
-            foreach (var child in children)
-            {
-                child.DeleteTime = now;              
-                s.Update(child);
-                var childVM = IssuesData.FromIssueRecurrence(child);
-                childrenVMs.Add(childVM);
-                _UnRecurseCopy(s, childVM, caller, child, now);
-            }
-            viewModel.children = childrenVMs.ToArray();
-        }
+					meetingHub.removeIssueRow(getL10RecurrenceChild.Id);
+					var issue = s.Get<IssueModel>(parent.Issue.Id);
+					Audit.L10Log(s, caller, parent.Recurrence.Id, "UnCopyIssue", ForModel.Create(getL10RecurrenceChild), issue.NotNull(x => x.Message) + " Uncopied from " + childRecur.NotNull(x => x.Name));
+					return getL10RecurrenceChild;
+				}
+			}
+		}
 
-        public static Csv Listing(UserOrganizationModel caller, long organizationId) {
-            using (var s = HibernateSession.GetCurrentSession()){
-                using (var tx = s.BeginTransaction()){
+		private static void _UnRecurseCopy(ISession s, IssuesData viewModel, UserOrganizationModel caller, IssueModel.IssueModel_Recurrence copiedFrom, DateTime now) {
+			var children = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+				.Where(x => x.DeleteTime == null && x.ParentRecurrenceIssue.Id == copiedFrom.Id)
+				.List();
+			var childrenVMs = new List<IssuesData>();
+			foreach (var child in children) {
+				child.DeleteTime = now;
+				s.Update(child);
+				var childVM = IssuesData.FromIssueRecurrence(child);
+				childrenVMs.Add(childVM);
+				_UnRecurseCopy(s, childVM, caller, child, now);
+			}
+			viewModel.children = childrenVMs.ToArray();
+		}
+
+		public static Csv Listing(UserOrganizationModel caller, long organizationId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					// var p = s.Get<PeriodModel>(period);
 
 					PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
@@ -814,7 +806,7 @@ namespace RadialReview.Accessors {
 			table.Append("</table>");
 			return table;
 		}
-		
+
 		#region Deleted
 		// [Obsolete("Method is broken",true)]
 		//private static void RecurseIssue(StringBuilder sb, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails) {

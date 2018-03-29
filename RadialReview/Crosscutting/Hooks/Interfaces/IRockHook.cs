@@ -15,16 +15,16 @@ namespace RadialReview.Utilities.Hooks {
 		public bool StatusChanged { get; set; }
 		public bool AccountableUserChanged { get; set; }
 
-        public long OriginalAccountableUserId { get; set; }
-        //public static IRockHookUpdates Diff(RockModel old, RockModel
+		public long OriginalAccountableUserId { get; set; }
+		//public static IRockHookUpdates Diff(RockModel old, RockModel
 	}
 
 
 
-	public interface IRockHook :IHook{
+	public interface IRockHook : IHook {
 		Task CreateRock(ISession s, RockModel rock);
 		Task UpdateRock(ISession s, UserOrganizationModel caller, RockModel rock, IRockHookUpdates updates);
-		Task ArchiveRock(ISession s, RockModel rock,bool deleted);
-        Task UnArchiveRock(ISession s, RockModel rock, bool v);
-    }
+		Task ArchiveRock(ISession s, RockModel rock, bool deleted);
+		Task UnArchiveRock(ISession s, RockModel rock, bool v);
+	}
 }

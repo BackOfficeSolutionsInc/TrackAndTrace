@@ -44,10 +44,10 @@ function showHtmlErrorAlert(html, defaultMessage) {
 }
 
 function showAlert(message, alertType, preface, duration) {
-    if (typeof (alertType) === "number" && typeof (preface) === "undefined" && typeof (duration) === "undefined"){
-        duration = alertType;
-        alertType = undefined;
-    }
+	if (typeof (alertType) === "number" && typeof (preface) === "undefined" && typeof (duration) === "undefined") {
+		duration = alertType;
+		alertType = undefined;
+	}
 	else if (typeof (preface) === "number" && typeof (duration) === "undefined")
 		duration = preface;
 

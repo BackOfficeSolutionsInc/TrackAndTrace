@@ -271,7 +271,7 @@ namespace RadialReview.Accessors {
 				return result;
 			}
 		}
-		
+
 		public async Task<CreateOrganizationOutput> CreateOrganization(ISession s, UserModel user, PaymentPlanType planType, DateTime now, OrgCreationData data) {
 			UserOrganizationModel userOrgModel;
 			//OrganizationModel organization;
@@ -360,21 +360,21 @@ namespace RadialReview.Accessors {
 				output.organization.AccountabilityChartId = acChart.Id;
 
 				//if (data.ContactPosition != null) {
-					var supportOrgPos = new OrganizationPositionModel() {
-						Organization = s.Load<OrganizationModel>(output.organization.Id),
-						CreatedBy = userOrgModel.Id,
-						CustomName = "Traction Tools Support",
-					};
-					s.Save(supportOrgPos);
-					var posDur = new PositionDurationModel() {
-						UserId = userOrgModel.Id,
-						Position = supportOrgPos,
-						PromotedBy = userOrgModel.Id,
-						CreateTime = DateTime.UtcNow,
-						OrganizationId = output.organization.Id,
-					};
-					userOrgModel.Positions.Add(posDur);
-					s.Update(userOrgModel);
+				var supportOrgPos = new OrganizationPositionModel() {
+					Organization = s.Load<OrganizationModel>(output.organization.Id),
+					CreatedBy = userOrgModel.Id,
+					CustomName = "Traction Tools Support",
+				};
+				s.Save(supportOrgPos);
+				var posDur = new PositionDurationModel() {
+					UserId = userOrgModel.Id,
+					Position = supportOrgPos,
+					PromotedBy = userOrgModel.Id,
+					CreateTime = DateTime.UtcNow,
+					OrganizationId = output.organization.Id,
+				};
+				userOrgModel.Positions.Add(posDur);
+				s.Update(userOrgModel);
 				//}
 				#endregion
 
@@ -539,7 +539,7 @@ namespace RadialReview.Accessors {
 
 			using (var tx = s.BeginTransaction()) {
 				var org = s.Get<OrganizationModel>(output.organization.Id);
-				await HooksRegistry.Each<IOrganizationHook>((ses, x) => x.CreateOrganization(ses,output.NewUser,org));
+				await HooksRegistry.Each<IOrganizationHook>((ses, x) => x.CreateOrganization(ses, output.NewUser, org));
 				tx.Commit();
 			}
 
@@ -596,7 +596,7 @@ namespace RadialReview.Accessors {
 
 			userOrg.UpdateCache(db);
 
-			await HooksRegistry.Each<ICreateUserOrganizationHook>((ses,x) => x.OnUserOrganizationAttach(ses, userOrg));
+			await HooksRegistry.Each<ICreateUserOrganizationHook>((ses, x) => x.OnUserOrganizationAttach(ses, userOrg));
 
 
 			return userOrg;
@@ -644,7 +644,7 @@ namespace RadialReview.Accessors {
 			}
 			using (var db = HibernateSession.GetCurrentSession()) {
 				using (var tx = db.BeginTransaction()) {
-					await HooksRegistry.Each<ICreateUserOrganizationHook>((ses,x) => x.OnUserOrganizationAttach(ses, userOrg));
+					await HooksRegistry.Each<ICreateUserOrganizationHook>((ses, x) => x.OnUserOrganizationAttach(ses, userOrg));
 					tx.Commit();
 					db.Flush();
 				}
@@ -716,7 +716,7 @@ namespace RadialReview.Accessors {
 					}
 
 					if (teams) {
-						var allTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId && x.DeleteTime==null).List().ToList();
+						var allTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId && x.DeleteTime == null).List().ToList();
 						var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == organizationId).List().ToList();
 						foreach (var user in users) {
 							user.PopulateTeams(allTeams, allTeamDurations);
@@ -847,7 +847,7 @@ namespace RadialReview.Accessors {
 																			NumberFormat? numberFormat = null,
 																			bool? limitFiveState = null,
 																			int? defaultTodoSendTime = null,
-                                                                            bool? allowAddClient =null
+																			bool? allowAddClient = null
 			) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -861,7 +861,7 @@ namespace RadialReview.Accessors {
 					}
 					if (!String.IsNullOrWhiteSpace(organizationName) && org.Name.Standard != organizationName) {
 						org.Name.UpdateDefault(organizationName);
-						var managers = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.Managers && x.DeleteTime==null).List().FirstOrDefault();
+						var managers = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.Managers && x.DeleteTime == null).List().FirstOrDefault();
 						if (managers != null) {
 							managers.Name = Config.ManagerName() + "s at " + organizationName;
 							s.Update(managers);
@@ -936,8 +936,8 @@ namespace RadialReview.Accessors {
 					if (defaultTodoSendTime != null)
 						org.Settings.DefaultSendTodoTime = defaultTodoSendTime.Value;
 
-                    if (allowAddClient != null)
-                        org.Settings.AllowAddClient = allowAddClient.Value;
+					if (allowAddClient != null)
+						org.Settings.AllowAddClient = allowAddClient.Value;
 
 					s.Update(org);
 
@@ -1200,7 +1200,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		[Obsolete("remove",true)]
+		[Obsolete("remove", true)]
 		public static List<RockModel> GetCompanyRocks(ISession s, PermissionsUtility perms, long organizationId) {
 			throw new PermissionsException("cannot view");
 			perms.ViewOrganization(organizationId);
@@ -1256,19 +1256,19 @@ namespace RadialReview.Accessors {
 
 					if (org.Settings.EnableReview != enableReview)
 						await EventUtil.Trigger(x => x.Create(s, enableReview ? EventType.EnableReview : EventType.DisableReview, caller, org));
-                    if (org.Settings.EnablePeople != enablePeople)
-                        await EventUtil.Trigger(x => x.Create(s, enablePeople ? EventType.EnablePeople : EventType.DisablePeople, caller, org));
-                    if (org.Settings.EnableCoreProcess != enableCP)
-                        await EventUtil.Trigger(x => x.Create(s, enableCP ? EventType.EnableCoreProcess : EventType.DisableCoreProcess, caller, org));
+					if (org.Settings.EnablePeople != enablePeople)
+						await EventUtil.Trigger(x => x.Create(s, enablePeople ? EventType.EnablePeople : EventType.DisablePeople, caller, org));
+					if (org.Settings.EnableCoreProcess != enableCP)
+						await EventUtil.Trigger(x => x.Create(s, enableCP ? EventType.EnableCoreProcess : EventType.DisableCoreProcess, caller, org));
 
-                    org.Settings.EnableL10 = enableL10;
+					org.Settings.EnableL10 = enableL10;
 					org.Settings.EnableReview = enableReview;
 					org.Settings.EnablePeople = enablePeople;
 					org.Settings.Branding = branding;
-                    org.Settings.EnableSurvey = enableSurvey;
-                    org.Settings.EnableCoreProcess = enableCP;
+					org.Settings.EnableSurvey = enableSurvey;
+					org.Settings.EnableCoreProcess = enableCP;
 
-                    s.Update(org);
+					s.Update(org);
 
 					tx.Commit();
 					s.Flush();
@@ -1417,70 +1417,70 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-        public static async Task SetFlag(UserOrganizationModel caller, long orgId, OrganizationFlagType type, bool enabled) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var perms = PermissionsUtility.Create(s, caller);
+		public static async Task SetFlag(UserOrganizationModel caller, long orgId, OrganizationFlagType type, bool enabled) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
 
-                    if (enabled) {
-                        await AddFlag(s, perms, orgId, type);
-                    } else {
-                        await RemoveFlag(s, perms, orgId, type);
-                    }
+					if (enabled) {
+						await AddFlag(s, perms, orgId, type);
+					} else {
+						await RemoveFlag(s, perms, orgId, type);
+					}
 
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-        }
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 
-        public static async Task RemoveFlag(UserOrganizationModel caller, long orgId, OrganizationFlagType type) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var perms = PermissionsUtility.Create(s, caller);
-                    await RemoveFlag(s, perms, orgId, type);
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-        }
+		public static async Task RemoveFlag(UserOrganizationModel caller, long orgId, OrganizationFlagType type) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					await RemoveFlag(s, perms, orgId, type);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 
-        public static async Task AddFlag(UserOrganizationModel caller, long orgId, OrganizationFlagType type) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var perms = PermissionsUtility.Create(s, caller);
-                    await AddFlag(s, perms, orgId, type);
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-        }
+		public static async Task AddFlag(UserOrganizationModel caller, long orgId, OrganizationFlagType type) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					await AddFlag(s, perms, orgId, type);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 
-        public static async Task AddFlag(ISession s, PermissionsUtility perms, long orgId, OrganizationFlagType type) {
-            perms.Or(x=>x.ViewOrganization(orgId),x=>x.RadialAdmin(true));
-            var any = s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == orgId && type == x.FlagType && x.DeleteTime == null).RowCount();
-            //var user = s.Get<OrganizationModel>(orgId);
-            if (any == 0) {
-                s.Save(new OrganizationFlag() {
-                    OrganizationId = orgId,
-                    FlagType = type,
-                    
-                });
-                await HooksRegistry.Each<IOrganizationFlagHook>((ses, x) => x.AddFlag(ses, orgId, type));
-            }
-        }
+		public static async Task AddFlag(ISession s, PermissionsUtility perms, long orgId, OrganizationFlagType type) {
+			perms.Or(x => x.ViewOrganization(orgId), x => x.RadialAdmin(true));
+			var any = s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == orgId && type == x.FlagType && x.DeleteTime == null).RowCount();
+			//var user = s.Get<OrganizationModel>(orgId);
+			if (any == 0) {
+				s.Save(new OrganizationFlag() {
+					OrganizationId = orgId,
+					FlagType = type,
 
-        public static async Task RemoveFlag(ISession s, PermissionsUtility perms, long orgId, OrganizationFlagType type) {
-            perms.Or(x => x.ViewOrganization(orgId), x => x.RadialAdmin(true));
-            var any = s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == orgId && type == x.FlagType && x.DeleteTime == null).List().ToList();
-            //var org = s.Get<UserOrganizationModel>(orgId);
-            if (any.Count > 0) {
-                foreach (var a in any) {
-                    a.DeleteTime = DateTime.UtcNow;
-                    s.Update(a);
-                }
-                await HooksRegistry.Each<IOrganizationFlagHook>((ses, x) => x.RemoveFlag(ses, orgId, type));
-            }
-        }
-    }
+				});
+				await HooksRegistry.Each<IOrganizationFlagHook>((ses, x) => x.AddFlag(ses, orgId, type));
+			}
+		}
+
+		public static async Task RemoveFlag(ISession s, PermissionsUtility perms, long orgId, OrganizationFlagType type) {
+			perms.Or(x => x.ViewOrganization(orgId), x => x.RadialAdmin(true));
+			var any = s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == orgId && type == x.FlagType && x.DeleteTime == null).List().ToList();
+			//var org = s.Get<UserOrganizationModel>(orgId);
+			if (any.Count > 0) {
+				foreach (var a in any) {
+					a.DeleteTime = DateTime.UtcNow;
+					s.Update(a);
+				}
+				await HooksRegistry.Each<IOrganizationFlagHook>((ses, x) => x.RemoveFlag(ses, orgId, type));
+			}
+		}
+	}
 }

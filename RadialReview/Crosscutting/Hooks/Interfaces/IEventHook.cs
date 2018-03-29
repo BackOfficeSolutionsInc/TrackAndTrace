@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Crosscutting.Hooks.Interfaces {
-    public interface IEventHook : IHook {
-        Task HandleEventTriggered(ISession s, IEventAnalyzer analyzer, IEventSettings settings);
-    }
+	public interface IEventHook : IHook {
+		Task HandleEventTriggered(ISession s, IEventAnalyzer analyzer, IEventSettings settings);
+	}
 }
