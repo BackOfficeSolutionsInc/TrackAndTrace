@@ -592,6 +592,12 @@
 								bb = $(parent)[0].getBoundingClientRect();
 							}
 
+							if ($(parent).is(".acc-contents")) {
+								//console.log($(parent), $(parent).outerHeight());
+								//debugger;
+							}
+
+
 							var oh = Math.max($(parent).outerHeight(), bb.height / scope.panzoom.scale());
 							var ow = Math.max($(parent).outerWidth(), bb.width / scope.panzoom.scale());
 							if (ow > 0)

@@ -106,6 +106,7 @@ body {
 .node.root-node .node-button.remove {
   display: none;
 }
+.node textarea,
 .node input {
   max-width: 200px;
 }
@@ -203,12 +204,14 @@ body {
 .acc-chart svg .acc-node md-autocomplete button {
   display: none;
 }
+.acc-chart svg .acc-node md-autocomplete textarea,
 .acc-chart svg .acc-node md-autocomplete input {
   text-align: center;
   height: 20px;
   line-height: 20px;
   padding: 0px;
 }
+.acc-chart svg .acc-node md-autocomplete textarea:focus,
 .acc-chart svg .acc-node md-autocomplete input:focus {
   /*text-align: left !important;*/
 }
@@ -264,6 +267,7 @@ body {
 .acc-chart svg .acc-node .acc-position {
   margin: 3px 0px;
 }
+.acc-chart svg .acc-node .acc-position textarea,
 .acc-chart svg .acc-node .acc-position input {
   font-size: 15px;
   /* font-weight: bold; */
@@ -320,6 +324,12 @@ body {
   content: " ";
   margin-left: 8px;
 }
+.acc-chart svg .acc-node .role-groups .role-group ul li.role-row textarea.role {
+  white-space: pre-line;
+  resize: none;
+  min-height: 16px;
+}
+.acc-chart svg .acc-node .role-groups .role-group ul li.role-row textarea.role,
 .acc-chart svg .acc-node .role-groups .role-group ul li.role-row input.role {
   margin-left: -8px;
 }
@@ -467,11 +477,13 @@ body {
 .acc-chart svg .acc-node .acc-roles {
   padding: 5px 10px;
 }
+.acc-chart svg .acc-node textarea,
 .acc-chart svg .acc-node input {
   background-color: transparent;
   border: none;
   width: 100%;
 }
+.acc-chart svg .acc-node textarea:focus,
 .acc-chart svg .acc-node input:focus {
   outline: none;
 }
@@ -513,7 +525,7 @@ body {
   fill: #d5d5d5;
 }
 .acc-chart svg .node-button.print text {
-  transform: translate(-4.2px, 5.3px);
+  transform: translate(-4.9px, 5.3px);
   font-size: 10px;
   fill: gray;
 }
@@ -540,6 +552,7 @@ body {
   display: none;
   pointer-events: none;
 }
+.acc-chart svg .is-dragging textarea,
 .acc-chart svg .is-dragging input {
   pointer-events: none;
 }
@@ -558,6 +571,9 @@ body {
 				fill: lighten(@collapsed-border-color,30%);
 			}
 		}*/
+}
+.acc-chart svg .node.collapsed .childIndication circle {
+  fill: #ad9a8d;
 }
 .acc-chart svg .node.collapsed .ghost.showing circle {
   stroke: #ad9a8d;

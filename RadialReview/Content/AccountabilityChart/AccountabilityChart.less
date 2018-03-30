@@ -93,6 +93,7 @@ html, body {
 		}*/
 	}
 
+	textarea,
 	input {
 		max-width: 200px;
 	}
@@ -213,6 +214,7 @@ html, body {
 				display: none;
 			}
 
+			textarea,
 			input {
 				text-align: center;
 				height: 20px;
@@ -290,6 +292,7 @@ html, body {
 		.acc-position {
 			margin: 3px 0px;
 
+			textarea,
 			input {
 				font-size: 15px;
 				/* font-weight: bold; */
@@ -353,7 +356,13 @@ html, body {
 								margin-left: 8px;
 							}
 						}
+						textarea.role{
+							white-space:pre-line;
+							resize:none;
+							min-height: 16px;
+						}
 
+						textarea.role,
 						input.role {
 							margin-left: -8px;
 						}
@@ -531,7 +540,7 @@ html, body {
 			padding: 5px 10px;
 		}
 
-
+		textarea,
 		input {
 			background-color: transparent;
 			border: none;
@@ -588,7 +597,7 @@ html, body {
 
 
 		&.print text {
-			transform: translate(-4.2px,5.3px);
+			transform: translate(-4.9px,5.3px);
 			font-size: 10px;
 			fill: gray;
 		}
@@ -621,7 +630,8 @@ html, body {
 		display: none;
 		pointer-events: none;
 	}
-
+	
+	.is-dragging textarea,
 	.is-dragging input {
 		pointer-events: none;
 	}
@@ -640,6 +650,11 @@ html, body {
 
 	.node.collapsed {
 
+		.childIndication{
+			circle{
+				fill: @collapsed-border-color;
+			}
+		}
 
 		.ghost.showing {
 			circle {

@@ -2356,6 +2356,29 @@ namespace RadialReview.Controllers {
 			return "Updated: " + a + "/" + b;
 		}
 
+
+		[Access(Controllers.AccessLevel.Radial)]
+		public async Task<string> M03_29_2018() {
+			var a = 0;
+			var b = 0;
+			var pageCount = 0;
+			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var links = s.QueryOver<RoleLink>().List().ToList();
+					s.GetSettingOrDefault("M03_29_2018", true);
+					foreach (var i in links) {
+						if (i.Ordering == null) {
+							i.Ordering = i.Id;
+							s.Update(i);
+							a += 1;
+						}
+					}
+					tx.Commit();
+				}
+			}
+			return "Updated: " + a ;
+		}
+
 	}
 }
 #pragma warning restore CS0618 // Type or member is obsolete
