@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using RadialReview.Accessors;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Json;
+using RadialReview.Properties;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -65,10 +68,36 @@ namespace RadialReview.Api.V1 {
 				}
 
 				return o;
-
 			}
 			throw new Exception("Image is not uploaded");
 		}
+
+		[Route("app/uploadProfilePicture")]
+		[HttpPost]
+		public async Task<UploadImageResult> UploadProfilePicture() {
+
+			var userModel = GetUser().User;
+			var fileKey = System.Web.HttpContext.Current.Request.Files.AllKeys.FirstOrDefault();
+			if (fileKey == null)
+				throw new Exception("No file");
+
+			var file = System.Web.HttpContext.Current.Request.Files[fileKey];
+
+			//you can put your existing save code here
+			if (file != null && file.ContentLength > 0) {
+				// extract only the fielname
+				var _ImageAccessor = new ImageAccessor();
+				var url = await _ImageAccessor.UploadImage(userModel, file.FileName, file.InputStream, UploadType.ProfileImage, true);
+				return new UploadImageResult() {
+					Name = file.FileName,
+					Success = true,
+					Url = url
+				};
+			}
+			throw new Exception("Image is not uploaded");
+		}
+
+
 
 		//[Route("app/roles/{ROLE_ID}")]
 		//[HttpPost]
