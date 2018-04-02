@@ -3337,7 +3337,8 @@ namespace RadialReview.Accessors {
 				}
 
 				var headerSize = GetSize(goalObjects, Unit.FromInch(3.47));
-				Unit pg1Height = baseHeight - headerSize.Height;
+				Unit pg1Height = baseHeight - headerSize.Height + Unit.FromInch(0.51);
+
 				goalsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, goalParagraphs);
 
 
