@@ -55,11 +55,12 @@
 								</md-select>
 							</td>
 							<td md-cell class="picture-column">
-								<span class="item-wrapper place-right">
-									<span class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
-										<profile-image class="" user="rock.Owner"></profile-image>
-									</span>
-								</span>
+                                <span class="item-wrapper place-right picture-icon-cursor">
+                                    <span ng-if="rock.Owner.Managing==true" class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
+                                        <profile-image class="" user="rock.Owner"></profile-image>
+                                    </span>
+                                    <profile-image ng-if="rock.Owner.Managing==false" class="" user="rock.Owner"></profile-image>
+                                </span>
 							</td>
 							<td md-cell class="message-column name" style="width:100%">
 								@if (usePopup) {

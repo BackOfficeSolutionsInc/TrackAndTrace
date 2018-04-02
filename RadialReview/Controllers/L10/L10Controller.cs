@@ -461,8 +461,9 @@ namespace RadialReview.Controllers {
 
 			var attendees = L10Accessor.GetAttendees(GetUser(), meetingId);
 
-			var obj = RockAccessor.BuildCreateRockVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id));
-			var settings = SelectExistingOrCreateUtility.Create<CreateRockViewModel>("/Rocks/Search?exclude=" + existingIds, "CreateRockViewModel", obj, true, multiple: true);
+			var obj = RockAccessor.BuildCreateRockVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id),true,meetingId);
+
+            var settings = SelectExistingOrCreateUtility.Create<CreateRockViewModel>("/Rocks/Search?exclude=" + existingIds, "CreateRockViewModel", obj, true, multiple: true);
 			ViewBag.meetingId = meetingId;
 			return PartialView(settings);
 		}
