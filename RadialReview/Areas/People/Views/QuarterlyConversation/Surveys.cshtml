@@ -1,0 +1,54 @@
+﻿@model List<RadialReview.Areas.People.Controllers.QuarterlyConversationController.SurveyRow>
+@{
+	ViewBag.Title = ViewBag.AboutName + " - Quarterly Conversations";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<h2>@ViewBag.AboutName</h2>
+<h3>Quarterly Conversations</h3>
+<br />
+<div id="table"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+		DataTable({
+			nodataText:"No Quarterly Conversations for this user.",
+			container: "#table",
+			data: @Html.ArrayToString(Model.OrderByDescending(x=>x.DueDate).Select(x => {
+			 return new {
+				 Id = x.SurveyContainerId,
+				 Name = x.Name,
+				 Create = x.CreateTime,
+				 Due = x.DueDate,
+				 Creator = x.Creator,
+				 SunId = x.SunId
+			 };
+		 })),
+			//title
+			cells:[{
+				name:"Name",
+				contents:function(x) {return "<a target='_blank' href='/people/quarterlyconversation/print?surveyContainerId="+x.Id+"&sunId="+x.SunId+"'>"+x.Name+"</a>";},
+				classes:"fullWidth"
+			},{
+				name:"",
+				contents:function(x) {return x.Create;},
+				classes:"nowrap"
+			},{
+				name:"Due",
+				contents:function(x) {return getFormattedDate(x.Due);},
+				classes:"nowrap"
+			},{
+				name:"",
+				contents:function(x) {return x.Creator;},
+				classes:"nowrap"
+			},{
+				name:"",
+				contents:function(x) {return "<a target='_blank' href='/people/quarterlyconversation/print?surveyContainerId="+x.Id+"&sunId="+x.SunId+"'><span class='icon fontastic-icon-print-1 gray clickable'></span></a>";},
+				classes:"nowrap"
+			}
+
+			]
+		});
+	</script>
+}

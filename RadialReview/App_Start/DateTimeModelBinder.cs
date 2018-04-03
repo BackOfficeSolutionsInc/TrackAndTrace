@@ -48,7 +48,7 @@ namespace RadialReview.App_Start {
                     // default for QueryStringValueProvider.
                     bindingContext.ModelState.SetModelValue(bindingContext.ModelName, new ValueProviderResult(date, realDate.ToString("yyyy-MM-dd hh:mm:ss"), System.Globalization.CultureInfo.GetCultureInfoByIetfLanguageTag("en-us")));
 
-                    return realDate;
+                    return realDate.ToUniversalTime();
                 } catch (Exception) {
                     logger.ErrorFormat("Error parsing bound date '{0}' as US format.", date);
 

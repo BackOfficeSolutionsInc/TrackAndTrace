@@ -28,6 +28,7 @@ using NReco.PhantomJS;
 using RadialReview.Properties;
 using PdfSharp.Pdf.IO;
 using System.Collections;
+using RadialReview.Models.Angular.Rocks;
 
 namespace RadialReview.Accessors {
 	public class LayoutHelper {
@@ -89,7 +90,7 @@ namespace RadialReview.Accessors {
 			docs = new List<object>();
 		}
 
-		protected void DrawNumber(XGraphics gfx, XFont font, int? number, DateTime? date, string dateFormat) {
+		protected void DrawNumber(XGraphics gfx, XFont font, int? number, DateTime? date, string dateFormat, string name = null) {
 
 			var wmargin = 35;
 			var hmargin = 22;
@@ -106,7 +107,7 @@ namespace RadialReview.Accessors {
 				//	if (number != null) {
 				//		text += " | ";
 				//	};
-				var text = "" + date.Value.ToString(dateFormat ?? "MM-dd-yyyy");
+				var text = "" + date.Value.ToString(dateFormat ?? "MM-dd-yyyy") + "   " + name ?? "";
 				var gray = new XSolidBrush(XColor.FromArgb(100, 100, 100, 100));
 				var dateFont = new XFont("Arial Narrow", 9, XFontStyle.Regular);
 
@@ -120,7 +121,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public PdfDocument Flatten(string title, bool includeNumber, bool includeDate = true, string dateFormat = null) {
+		public PdfDocument Flatten(string title, bool includeNumber, bool includeDate = true, string dateFormat = null, string name = null) {
 			DateTime now = DateTime.Now;
 			//  filename = filename.ToLower().EndsWith(".pdf")?filename:filename+".pdf";
 			PdfDocument document = new PdfDocument();
@@ -162,7 +163,7 @@ namespace RadialReview.Accessors {
 						page.Orientation = p.Orientation;
 						XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
 
-						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat);
+						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
 
 						pages += 1;
 					}
@@ -185,7 +186,7 @@ namespace RadialReview.Accessors {
 						XGraphics gfx = XGraphics.FromPdfPage(page);
 						gfx.MUH = PdfFontEncoding.Unicode;
 						docRenderer.RenderPage(gfx, idx + 1);
-						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat);
+						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
 						pages += 1;
 					}
 				}
@@ -1083,7 +1084,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void AddRocks(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
+		public static void AddRocks_old(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
 			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -1471,6 +1472,564 @@ namespace RadialReview.Accessors {
 
 				mn++;
 			}
+		}
+
+
+		protected static Section AddTitledPage_rock(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true) {
+			Section section;
+
+			if (addSection || document.LastSection == null) {
+				section = document.AddSection();
+				section.PageSetup.Orientation = orientation;
+			} else {
+				section = document.LastSection;
+			}
+			if (addPageNumber) {
+				//paragraph.AddTab();
+				var paragraph = new Paragraph();
+				paragraph.Format.Alignment = ParagraphAlignment.Right;
+
+				//if (addDate) {
+				///	//paragraph.AddTab();
+				//	paragraph.AddDateField("MM-dd-yyyy");
+				// Add paragraph to footer for odd pages.
+				//section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(-0.2);
+				////}
+				//if (addPageNumber && addDate) {
+				//	paragraph.AddText(" | ");
+				//}
+				if (addPageNumber) {
+					paragraph.AddPageField();
+				}
+				section.Footers.Primary.Add(paragraph);
+
+			}
+
+
+
+			var frame = section.AddTextFrame();
+			frame.Height = Unit.FromInch(.75);
+			frame.Width = Unit.FromInch(7.5);
+			if (orientation == Orientation.Landscape)
+				frame.Width = Unit.FromInch(12);
+			// frame.LineFormat.Color = TableGray;
+			//frame.Left = ShapePosition.Center;
+
+			frame.MarginRight = Unit.FromInch(1);
+			//frame.MarginLeft = Unit.FromInch(1);
+
+
+			var title = frame.AddTable();
+			//title.Borders.Color = TableBlack;
+
+			var size = Unit.FromInch(5.5);
+			if (orientation == Orientation.Landscape)
+				size = Unit.FromInch(8);
+			//size = Unit.FromInch(8);
+			var c = title.AddColumn(size);
+			c.Format.Alignment = ParagraphAlignment.Left;
+			var rr = title.AddRow();
+			rr.Cells[0].AddParagraph(pageTitle);
+			rr.Format.Font.Bold = true;
+			//rr.Format.Font.Size = .4;
+			rr.Format.Font.Name = "Arial Narrow";
+			//rr.Shading.Color = TableGray;
+			rr.HeightRule = RowHeightRule.AtLeast;
+			rr.VerticalAlignment = VerticalAlignment.Center;
+			rr.Height = Unit.FromInch(0.4);
+			rr.Format.Font.Size = Unit.FromInch(.2);
+
+			return section;
+		}
+
+		public static void AddRocks(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
+
+			var section = AddTitledPage_rock(doc, "Quarterly " + caller.Organization.Settings.RockName + " Sheet", Orientation.Landscape, addPageNumber: addPageNumber);
+			Table table;
+			double mult;
+			Row row;
+			int mn;
+			Column column;
+
+			var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
+
+			var addVTO = true;
+
+			if (addVTO && vto != null) {
+				table = section.AddTable();
+				column = table.AddColumn(Unit.FromInch(1));
+				column.Format.Alignment = ParagraphAlignment.Left;
+
+				table.AddColumn(Unit.FromInch(5.0));
+				column.Format.Alignment = ParagraphAlignment.Left;
+
+				row = table.AddRow();
+				var p1 = new Paragraph();
+				p1.AddFormattedText("Future Date:", TextFormat.Bold);
+				row.Cells[0].Add(p1);
+				var p2 = new Paragraph();
+				p2.AddText(vto.QuarterlyRocks.FutureDate.NotNull(x => x.Value.ToString(format)) ?? "");
+				row.Cells[1].Add(p2);
+
+
+				row = table.AddRow();
+				var p3 = new Paragraph();
+				p3.AddFormattedText("Revenue:", TextFormat.Bold);
+				row.Cells[0].Add(p3);
+				var p4 = new Paragraph();
+				p4.AddText(vto.QuarterlyRocks.Revenue ?? "");
+				row.Cells[1].Add(p4);
+
+				row = table.AddRow();
+				var p5 = new Paragraph();
+				p5.AddFormattedText("Profit:", TextFormat.Bold);
+				row.Cells[0].Add(p5);
+				var p6 = new Paragraph();
+				p6.AddText(vto.QuarterlyRocks.Profit ?? "");
+				row.Cells[1].Add(p6);
+
+				row = table.AddRow();
+				var p7 = new Paragraph();
+				p7.AddFormattedText("Measurables:", TextFormat.Bold);
+				row.Cells[0].Add(p7);
+				var p8 = new Paragraph();
+				p8.AddText(vto.QuarterlyRocks.Measurables ?? "");
+				row.Cells[1].Add(p8);
+
+				row = table.AddRow();
+				row.Height = Unit.FromPoint(25);
+			}
+
+
+			if (recur.Rocks.Any(x => x.VtoRock ?? false)) {
+				table = section.AddTable();
+				table.Format.Font.Size = 9;
+
+				table.Style = "Table";
+				table.Rows.LeftIndent = Unit.FromInch(1.25);
+
+				table.LeftPadding = 5;
+				table.RightPadding = 0;
+
+				table.Format.Alignment = ParagraphAlignment.Center;
+				table.Borders.Color = TableBlack;
+
+				mult = 1.0;
+				//column = table.AddColumn(Unit.FromInch(1 + .2 * mult));
+				column = table.AddColumn(Unit.FromInch(5.3 + .45 * mult));
+				column.Format.Alignment = ParagraphAlignment.Center;
+				//Completion
+				//column = table.AddColumn(Unit.FromInch(0.75 * mult));
+				column = table.AddColumn(Unit.FromInch(1.3 + .45 * mult));
+				column.Format.Alignment = ParagraphAlignment.Center;
+
+				row = table.AddRow();
+				row.HeadingFormat = true;
+				row.Format.Alignment = ParagraphAlignment.Right;
+				row.Format.Font.Bold = true;
+				row.Shading.Color = TableGray;
+				row.Height = Unit.FromInch(0.25);
+				row.VerticalAlignment = VerticalAlignment.Center;
+				var com_h = row.Cells[0].AddParagraph("COMPANY ROCKS");
+				com_h.Format.Font.Name = "Arial Narrow";
+				com_h.Format.Font.Size = 10;
+				//com_h.Format.Font.Bold = true;
+				//com_h.Format.Borders.Color = TableBlack;
+				com_h.Format.Alignment = ParagraphAlignment.Center;
+
+
+				var who_h = row.Cells[1].AddParagraph("WHO");
+				who_h.Format.Font.Name = "Arial Narrow";
+				who_h.Format.Font.Size = 10;
+				// who_h.Format.Font.Bold = true;
+				//who_h.Format.Borders.Color = TableBlack;
+				who_h.Format.Alignment = ParagraphAlignment.Center;
+
+				mn = 1;
+
+				//for %completion
+				var getTotalCount_rock_com = recur.Rocks.Where(x => x.VtoRock == true).Count();
+				var getDoneCount_rock_com = recur.Rocks.Where(t => t.Completion == RockState.Complete && t.VtoRock == true).Count();
+				var getCompletionPercentage_rock_com = Convert.ToDouble((Convert.ToDouble(getDoneCount_rock_com) / Convert.ToDouble(getTotalCount_rock_com)));
+				bool isCompletionPercentageDisplayed_com = true;
+
+				//row.Cells[3].AddParagraph("Completion : " + getDoneCount_rock_com + "/" + getTotalCount_rock_com + " - " + string.Format("{0:0.##%}", getCompletionPercentage_rock_com));
+
+				int sr_count = 0;
+
+				foreach (var m in recur.Rocks.Where(x => x.VtoRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
+
+					row = table.AddRow();
+					row.BottomPadding = Unit.FromInch(.05);
+					row.HeadingFormat = false;
+					row.Format.Alignment = ParagraphAlignment.Center;
+
+					row.Format.Font.Bold = false;
+					//row.Format.Font.Size = Unit.FromInch(0.128 * 2.0 / 3.0); // --- 1/16"
+					//row.Shading.Color = TableBlue;
+					row.HeightRule = RowHeightRule.AtLeast;
+					row.VerticalAlignment = VerticalAlignment.Center;
+					row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
+					//row.Cells[0].AddParagraph("" + mn + ".");
+					//row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToString(format)) ?? "Not-set");
+					var status = m.Completion.NotNull(x => x.Value.GetDisplayName());
+					var bold = m.Completion == RockState.AtRisk;
+					Color statusColor = Colors.DarkRed;
+					//Update below also
+					switch (m.Completion) {
+						case RockState.OnTrack:
+							statusColor = Colors.DarkBlue;
+							break;
+						case RockState.AtRisk:
+							statusColor = Colors.DarkRed;
+							break;
+						case RockState.Complete:
+							statusColor = Colors.DarkGreen;
+							break;
+						default:
+							break;
+					}
+					if (quarterlyPrintout) {
+						switch (m.Completion ?? RockState.Indeterminate) {
+							case RockState.Indeterminate:
+								status = "Not Done";
+								bold = true;
+								statusColor = Colors.DarkRed;
+								break;
+							case RockState.AtRisk:
+								status = "Not Done";
+								bold = true;
+								statusColor = Colors.DarkRed;
+								break;
+							case RockState.OnTrack:
+								status = "Not Done";
+								statusColor = Colors.DarkRed;
+								bold = true;
+								break;
+							case RockState.Complete:
+								status = "Done";
+								statusColor = Colors.DarkGreen;
+								break;
+							default:
+								break;
+						}
+					}
+
+					row.Cells[0].AddParagraph("" + (sr_count + 1) + ")  " + m.NotNull(x => x.Name));
+					row.Cells[0].Format.Alignment = ParagraphAlignment.Left;
+
+					row.Cells[1].AddParagraph("" + m.Owner.NotNull(x => x.Name));
+					row.Cells[1].Format.Alignment = ParagraphAlignment.Center;
+					mn++;
+					sr_count++;
+				}
+				//row = table.AddRow();
+				//row.HeightRule = RowHeightRule.AtLeast;
+				//row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0));
+			}
+
+			//add space to file
+			table = section.AddTable();
+			column = table.AddColumn(Unit.FromInch(2));
+			row = table.AddRow();
+			row.Height = Unit.FromPoint(20);
+
+
+			//group by owner name 
+			var getRock = recur.Rocks.Where(t => t.VtoRock == false).GroupBy(x => new { x.Owner.Name }, (key, group) => new {
+				OwnerName = key.Name,
+				Result = group.ToList()
+			}).ToList();
+
+			List<RockPdfModel> rockList = new List<RockPdfModel>();
+			foreach (var item in getRock) {
+				rockList.Add(new RockPdfModel() { OwnerName = item.OwnerName, RockList = item.Result });
+			}
+
+
+			Unit baseHeight = Unit.FromInch(2.8);
+			//Unit baseHeight = Unit.FromInch(5.1);
+
+			//split data
+			var data = splitData(3, rockList);
+
+			for (int l = 0; l < data.Count; l++) {
+
+				List<Cell> cells;
+				List<Table> tables;
+				if (l > 0) {
+					AddPage_Rock(section, doc, vto, data[l], baseHeight, out cells, out tables);
+				} else {
+					AddPage_Rock(section, doc, vto, data[l], baseHeight, out cells, out tables, true);
+				}
+
+				List<int> page_count = new List<int>();
+				List<List<Page>> pageList = new List<List<Page>>();
+				List<List<Row>> rowList = new List<List<Row>>();
+				List<CellDetailsModel> cellDetails = new List<CellDetailsModel>();
+
+				for (int i = 0; i < cells.Count; i++) {
+					Unit fs = 10;
+					var itemObjects = new List<DocumentObject>();
+					var itemsSplits = new List<Page>();
+					var itemRows = new List<Row>();
+					var itemParagraphs = new List<Paragraph>();
+
+					{
+						var goals = data[l][i].RockList.ToList();
+
+						for (var j = 0; j < goals.Count; j++) {
+							var status = goals[j].Completion.NotNull(x => x.Value.GetDisplayName());
+							Color statusColor = Colors.DarkRed;
+							//Update below also
+							switch (goals[j].Completion) {
+								case RockState.OnTrack:
+									statusColor = Colors.DarkBlue;
+									break;
+								case RockState.AtRisk:
+									statusColor = Colors.DarkRed;
+									break;
+								case RockState.Complete:
+									statusColor = Colors.DarkGreen;
+									break;
+								default:
+									break;
+							}
+
+							var r = new Row();
+							//rockTable.AddRow();
+							r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
+							r.HeightRule = RowHeightRule.AtLeast;
+
+							//r.Format.LeftIndent = -2;
+							var p = r.Cells[0].AddParagraph("" + (j + 1) + ")");
+							p.Format.SpaceBefore = Unit.FromPoint(2);
+							p.Format.Font.Size = fs;
+							p.Format.Font.Name = "Arial Narrow";
+							p.Format.Alignment = ParagraphAlignment.Center;
+
+							p = r.Cells[1].AddParagraph(goals[j].Name ?? "");
+							p.Format.SpaceBefore = Unit.FromPoint(2);
+							p.Format.Font.Size = fs;
+							p.Format.Font.Name = "Arial Narrow";
+
+							p = r.Cells[2].AddParagraph(status ?? "");
+							p.Format.SpaceBefore = Unit.FromPoint(2);
+							p.Format.Font.Size = fs;
+							p.Format.Font.Name = "Arial Narrow";
+							p.Format.Font.Color = statusColor;
+
+							itemRows.Add(r);
+							itemParagraphs.Add(p);
+						}
+						//for (var j = 0; j < goals.Count; j++)
+						//{
+						//    var r = new Row();
+						//    //rockTable.AddRow();
+						//    r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
+						//    r.HeightRule = RowHeightRule.AtLeast;
+						//    var p = r.Cells[0].AddParagraph("" + (j + 1) + ".");
+						//    p.Format.SpaceBefore = Unit.FromPoint(2);
+						//    p.Format.Font.Size = fs;
+						//    p.Format.Font.Name = "Arial Narrow";
+						//    p.Format.Alignment = ParagraphAlignment.Right;
+						//    p = r.Cells[1].AddParagraph(goals[j].Name ?? "");
+						//    p.Format.SpaceBefore = Unit.FromPoint(2);
+						//    p.Format.Font.Size = fs;
+						//    p.Format.Font.Name = "Arial Narrow";
+						//    itemRows.Add(r);
+						//    itemParagraphs.Add(p);
+						//}
+
+						//for (var j = 0; j < goals.Count; j++)
+						//{
+						//    var r = new Row();
+						//    //rockTable.AddRow();
+						//    r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
+						//    r.HeightRule = RowHeightRule.AtLeast;
+						//    var p = r.Cells[0].AddParagraph("" + (j + 1) + ".");
+						//    p.Format.SpaceBefore = Unit.FromPoint(2);
+						//    p.Format.Font.Size = fs;
+						//    p.Format.Font.Name = "Arial Narrow";
+						//    p.Format.Alignment = ParagraphAlignment.Right;
+						//    p = r.Cells[1].AddParagraph(goals[j].Name ?? "");
+						//    p.Format.SpaceBefore = Unit.FromPoint(2);
+						//    p.Format.Font.Size = fs;
+						//    p.Format.Font.Name = "Arial Narrow";
+						//    itemRows.Add(r);
+						//    itemParagraphs.Add(p);
+						//}
+
+						//for (var j = 0; j < goals.Count; j++)
+						//{
+						//    var r = new Row();
+						//    //rockTable.AddRow();
+						//    r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
+						//    r.HeightRule = RowHeightRule.AtLeast;
+						//    var p = r.Cells[0].AddParagraph("" + (j + 1) + ".");
+						//    p.Format.SpaceBefore = Unit.FromPoint(2);
+						//    p.Format.Font.Size = fs;
+						//    p.Format.Font.Name = "Arial Narrow";
+						//    p.Format.Alignment = ParagraphAlignment.Right;
+						//    p = r.Cells[1].AddParagraph(goals[j].Name ?? "");
+						//    p.Format.SpaceBefore = Unit.FromPoint(2);
+						//    p.Format.Font.Size = fs;
+						//    p.Format.Font.Name = "Arial Narrow";
+						//    itemRows.Add(r);
+						//    itemParagraphs.Add(p);
+						//}
+
+
+						var headerSize = GetSize(itemObjects, Unit.FromInch(3.39));
+						Unit pg1Height = baseHeight - headerSize.Height;
+						itemsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, itemParagraphs);
+
+						page_count.Add(itemsSplits.Count);
+						//pageList.Add(itemsSplits);
+						//rowList.Add(itemRows);
+
+						cellDetails.Add(new CellDetailsModel() { PageList = itemsSplits, RowList = itemRows });
+
+						itemObjects.Add(tables[i]);
+					}
+					AppendAll(cells[i], itemObjects);
+				}
+
+				var maxPage = page_count.Max();
+
+				var curFirstColumnI = 0;
+				var curSecondColumnI = 0;
+				var curThirdColumnI = 0;
+				var curFourthColumnI = 0;
+
+				for (var p = 0; p < maxPage; p++) {
+
+					for (int i = 0; i < cellDetails.Count; i++) {
+						if (p < cellDetails[i].PageList.Count()) {
+							for (int j = 0; j < cellDetails[i].PageList[p].Count(); j++) {
+								switch (i) {
+									case 0:
+										tables[i].Rows.Add(cellDetails[i].RowList[curFirstColumnI]);
+										curFirstColumnI++;
+										break;
+									case 1:
+										tables[i].Rows.Add(cellDetails[i].RowList[curSecondColumnI]);
+										curSecondColumnI++;
+										break;
+									case 2:
+										tables[i].Rows.Add(cellDetails[i].RowList[curThirdColumnI]);
+										curThirdColumnI++;
+										break;
+									case 3:
+										tables[i].Rows.Add(cellDetails[i].RowList[curFourthColumnI]);
+										curFourthColumnI++;
+										break;
+									default:
+										break;
+								}
+
+							}
+						}
+					}
+
+					if (p + 1 < maxPage) {
+						AddPage_Rock(section, doc, vto, data[l], baseHeight, out cells, out tables);
+						for (int i = 0; i < cells.Count; i++) {
+							AppendAll(cells[i], new DocumentObject[] { tables[i] }.ToList());
+						}
+					}
+				}
+			}
+
+		}
+
+		public static List<List<RockPdfModel>> splitData(int width, List<RockPdfModel> data) {
+			List<List<RockPdfModel>> list = new List<List<RockPdfModel>>();
+
+			// Determine how many lists are required
+			int numberOfLists = (data.Count / width);
+
+			for (int i = 0; i <= numberOfLists; i++) {
+				List<RockPdfModel> new_data = new List<RockPdfModel>();
+				new_data = data.Skip(i * width).Take(width).ToList();
+				if (new_data.Count() > 0)
+					list.Add(new_data);
+			}
+
+			return list;
+		}
+
+
+		private static void AddPage_Rock(Section section, Document doc, AngularVTO vto, List<RockPdfModel> list, Unit height, out List<Cell> cells, out List<Table> tables, bool includeSection = false) {
+
+			//AddTitledPage(doc, "Quarterly " + caller.Organization.Settings.RockName, Orientation.Landscape, addPageNumber: addPageNumber);
+			if (!includeSection) {
+				var table_empty = section.AddTable();
+				table_empty.AddColumn(Unit.FromInch(2.5425));
+				var empty_row = table_empty.AddRow();
+				empty_row.Height = Unit.FromInch(0.55);
+			}
+			//if (includeSection)
+			//section = AddTitledPage(doc, "Quarterly Rocks", Orientation.Landscape);
+
+
+			List<Cell> cells1 = new List<Cell>();
+			List<Table> tables1 = new List<Table>();
+
+			var table = section.AddTable();
+			if (list.Count == 2) {
+				table.Rows.LeftIndent = Unit.FromInch(1.60);
+			} else if (list.Count == 1) {
+				table.Rows.LeftIndent = Unit.FromInch(3.39);
+			}
+
+			foreach (var item in list) {
+				table.AddColumn(Unit.FromInch(3.39));
+			}
+			table.Borders.Color = TableBlack;
+			table.Format.Alignment = ParagraphAlignment.Center;
+			table.LeftPadding = 0;
+
+			var tractionHeader = table.AddRow();
+			tractionHeader.Shading.Color = TableGray;
+			tractionHeader.Height = Unit.FromInch(0.25);
+			//tractionHeader.Height = Unit.FromInch(0.55);
+
+
+
+
+			bool flag = true;
+			Paragraph paragraph;
+
+			for (int i = 0; i < list.Count; i++) {
+				paragraph = tractionHeader.Cells[i].AddParagraph(list[i].OwnerName.ToUpper());
+				paragraph.Format.Font.Name = "Arial Narrow";
+				paragraph.Format.Font.Size = 10;
+				paragraph.Format.Font.Bold = true;
+				paragraph.Format.Alignment = ParagraphAlignment.Center;
+
+				tractionHeader.Cells[i].VerticalAlignment = VerticalAlignment.Center;
+			}
+
+
+			var tractionData = table.AddRow();
+
+			//tractionData.Height = height;
+
+			for (int i = 0; i < list.Count; i++) {
+				cells1.Add(tractionData.Cells[i]);
+				var tbl = new Table();
+				//tbl.Borders.Color = TableBlack;
+				//tbl.Borders.Color = TableBlack;
+				tbl.Borders.Bottom.Color = TableBlack;
+				tbl.AddColumn(Unit.FromInch(.30));
+				tbl.AddColumn(Unit.FromInch(2.08));
+				tbl.AddColumn(Unit.FromInch(1));
+				tables1.Add(tbl);
+			}
+
+			cells = cells1;
+			tables = tables1;
 		}
 
 
@@ -2084,14 +2643,30 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null) {
+		public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null,bool isCoreValues=false) {
 			var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, height.Inch), XGraphicsUnit.Inch, XPageDirection.Downwards);
 			var fontSize = maxFontSize ?? Unit.FromPoint(12);
 			var minSize = minFontSize ?? Unit.FromPoint(8);
-			List<DocumentObject> paragraphsToAdd;
+            var row=new Row();
+
+
+            if (isCoreValues)
+                minSize = Unit.FromPoint(7);
+
+            List<DocumentObject> paragraphsToAdd;
 
 			if (!(cell is Cell || cell is Paragraph || cell is Section))
 				throw new Exception("cant handle:" + cell.NotNull(x => x.GetType()));
+
+
+            if(isCoreValues) {
+                var _cell = (Cell)cell;
+                var _tbl = _cell.Elements.AddTable();
+                Column column = _tbl.AddColumn(Unit.FromInch(2.7));
+                column = _tbl.AddColumn(Unit.FromInch(2.7));
+                 row = _tbl.AddRow();
+            }
+
 
 			while (true) {
 				var curHeight = new Unit(0.0);
@@ -2127,7 +2702,13 @@ namespace RadialReview.Accessors {
 				}
 				fontSize -= Unit.FromPoint(1);
 			}
-			AppendAll(cell, paragraphsToAdd);
+
+            if (fontSize == Unit.FromPoint(7) && isCoreValues) {
+                AppendAll(row.Cells[0], paragraphsToAdd.Take(7).ToList());
+                AppendAll(row.Cells[1], paragraphsToAdd.Skip(7).ToList());
+            }
+            else
+            AppendAll(cell, paragraphsToAdd);
 
 			return fontSize;
 		}
@@ -2289,10 +2870,10 @@ namespace RadialReview.Accessors {
 			AddPage_VtoVision(doc, vto, baseHeight, out coreValuesPanel, out coreFocusPanel, out tenYearPanel, out marketingStrategyPanel, out threeYearPanel);
 
 			var values = vto.Values.ToList();
-			ResizeToFit(coreValuesPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
+            ResizeToFit(coreValuesPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
 				var o = new List<Paragraph>();
 				return OrderedList(values.Select(x => x.CompanyValue), ListType.NumberList1);
-			}, maxFontSize: Unit.FromPoint(10));
+			}, maxFontSize: Unit.FromPoint(10),isCoreValues:true);
 
 
 			ResizeToFit(coreFocusPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
@@ -2470,7 +3051,7 @@ namespace RadialReview.Accessors {
 				if (f != null && f.Item is Paragraph) {
 					var p = (Paragraph)f.Item;
 					if (p.Format.Borders.Top.Color == TableGray) {
-						m.Items = m.Items.Take(m.Items.Count-1).ToList();
+						m.Items = m.Items.Take(m.Items.Count - 1).ToList();
 						marketingParagraphs.Remove(p);
 					}
 				}
@@ -2550,6 +3131,7 @@ namespace RadialReview.Accessors {
 
 			}
 		}
+
 
 		private static void AddPage_VtoVision(Document doc, AngularVTO vto, Unit height,
 			out Cell coreValuePanel, out Cell coreFocusPanel, out Cell tenYearPanel, out Cell marketingStrategyPanel, out Cell threeYearPanel,
@@ -2778,7 +3360,7 @@ namespace RadialReview.Accessors {
 				}
 
 				var headerSize = GetSize(goalObjects, Unit.FromInch(3.47));
-				Unit pg1Height = baseHeight - headerSize.Height;
+				Unit pg1Height = baseHeight - headerSize.Height + Unit.FromInch(0.51);
 				goalsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, goalParagraphs);
 
 
@@ -2945,7 +3527,7 @@ namespace RadialReview.Accessors {
 
 
 		private static void AddPage_VtoTraction(Document doc, AngularVTO vto, Unit height, out Cell oneYear, out Cell quarterlyRocks, out Cell issuesList, out Table issueTable, out Table rockTable, out Table goalTable) {
-			var section = AddVtoPage(doc, vto.Name ?? "", "TRACTION");
+			var section = AddVtoPage(doc, vto._TractionPageName ?? vto.Name ?? "", "TRACTION");
 
 			var table = section.AddTable();
 			table.AddColumn(Unit.FromInch(3.47));
@@ -3017,6 +3599,7 @@ namespace RadialReview.Accessors {
 			public string Name { get; set; }
 			public string Position { get; set; }
 			public List<string> Roles { get; set; }
+			public List<long> NodeId { get; set; }
 
 			public bool isLeaf { get; set; }
 			public string side { get; set; }
@@ -3422,5 +4005,20 @@ namespace RadialReview.Accessors {
 			}
 			return document;
 		}
+
+		public class RockPdfModel {
+			public string OwnerName { get; set; }
+			public List<AngularRock> RockList { get; set; }
+		}
+
+		public class CellDetailsModel {
+			public List<Page> PageList { get; set; }
+			public List<Row> RowList { get; set; }
+		}
 	}
+
+
+
+
+
 }

@@ -76,11 +76,17 @@ namespace RadialReview.Accessors {
 
 		#region Angular
 
-		public static async Task<AngularRecurrence> GetOrGenerateAngularRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false, DateRange scorecardRange = null) {
+        public static async Task<AngularRecurrence> GetOrGenerateAngularRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false, DateRange scorecardRange = null, bool populateManaging = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					var angular = await GetOrGenerateAngularRecurrence(s, perms, recurrenceId, includeScores, includeHistorical, fullScorecard, range, forceIncludeTodoCompletion, scorecardRange);
+
+                    if (populateManaging) {
+                        foreach (var item in angular.Rocks) {
+                            item.Owner.Managing = perms.IsPermitted(x => x.CanAdminMeetingItemsForUser(item.Owner.Id, recurrenceId));                          
+                        }
+		  }
 
 					tx.Commit();
 					s.Flush();
@@ -141,7 +147,7 @@ namespace RadialReview.Accessors {
 
 			var measurables = scoresAndMeasurables.MeasurablesAndDividers.Select(x => {
 				if (x.IsDivider) {
-					var m = AngularMeasurable.CreateDivider(x._Ordering, x.Id);
+					var m = AngularMeasurable.CreateDivider(x);
 					m.RecurrenceId = x.L10Recurrence.Id;
 					return m;
 				} else {
@@ -306,7 +312,8 @@ namespace RadialReview.Accessors {
 
 		//[Untested("Vto_Rocks",/* "Is the rock correctly removed in real-time from L10",/* "Is the rock correctly removed in real-time from VTO",*/ "Is rock correctly archived when existing in no meetings?")]
 		public static async Task UnarchiveRock(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long rockId) {
-			perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+			//perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+            perm.AdminL10Recurrence(recurrenceId).EditRock_UnArchive(rockId);
 
 			await RockAccessor.UnArchiveRock(s, perm, rockId);
 
@@ -356,49 +363,49 @@ namespace RadialReview.Accessors {
                 await ScorecardAccessor.UpdateMeasurable(caller, m.Id, m.Name, m.Direction, m.Target, m.Owner.NotNull(x => (long?)x.Id), m.Admin.NotNull(x => (long?)x.Id));
                 //UpdateArchiveMeasurable(caller, m.Id, m.Name, m.Direction, m.Target, m.Owner.NotNull(x => (long?)x.Id), m.Admin.NotNull(x => (long?)x.Id), connectionId);
             }*/ else if (model.Type == typeof(AngularBasics).Name) {
-				var m = (AngularBasics)model;
-				await UpdateRecurrence(caller, m.Id, m.Name, m.TeamType, connectionId);
-			} else if (model.Type == typeof(AngularHeadline).Name) {
-				var m = (AngularHeadline)model;
-				await HeadlineAccessor.UpdateHeadline(caller, m.Id, m.Name);
-			} else {
-				throw new PermissionsException("Unhandled type: " + model.Type);
-			}
-		}
-		public static async Task UpdateRecurrence(UserOrganizationModel caller, long recurrenceId, string name = null, L10TeamType? teamType = null, string connectionId = null) {
-			using (var rt = RealTimeUtility.Create(connectionId)) {
-				using (var s = HibernateSession.GetCurrentSession()) {
-					using (var tx = s.BeginTransaction()) {
+                var m = (AngularBasics)model;
+                await UpdateRecurrence(caller, m.Id, m.Name, m.TeamType, connectionId);
+            } else if (model.Type == typeof(AngularHeadline).Name) {
+                var m = (AngularHeadline)model;
+                await HeadlineAccessor.UpdateHeadline(caller, m.Id, m.Name);
+            } else {
+                throw new PermissionsException("Unhandled type: " + model.Type);
+            }
+        }
+        public static async Task UpdateRecurrence(UserOrganizationModel caller, long recurrenceId, string name = null, L10TeamType? teamType = null, string connectionId = null) {
+            using (var rt = RealTimeUtility.Create(connectionId)) {
+                using (var s = HibernateSession.GetCurrentSession()) {
+                    using (var tx = s.BeginTransaction()) {
 
-						var perms = PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
-						var recurrence = s.Get<L10Recurrence>(recurrenceId);
+                        var perms = PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
+                        var recurrence = s.Get<L10Recurrence>(recurrenceId);
 
-						if (recurrence.DeleteTime != null)
-							throw new PermissionsException();
+                        if (recurrence.DeleteTime != null)
+                            throw new PermissionsException();
 
-						var angular = new AngularBasics(recurrenceId);
+                        var angular = new AngularBasics(recurrenceId);
 
-						if (name != null && recurrence.Name != name) {
-							recurrence.Name = name;
-							angular.Name = name;
-							await Depristine_Unsafe(s, caller, recurrence);
-						}
+                        if (name != null && recurrence.Name != name) {
+                            recurrence.Name = name;
+                            angular.Name = name;
+                            await Depristine_Unsafe(s, caller, recurrence);
+                        }
 
-						if (teamType != null && recurrence.TeamType != teamType) {
-							recurrence.TeamType = teamType.Value;
-							angular.TeamType = teamType;
-							await Depristine_Unsafe(s, caller, recurrence);
-						}
+                        if (teamType != null && recurrence.TeamType != teamType) {
+                            recurrence.TeamType = teamType.Value;
+                            angular.TeamType = teamType;
+                            await Depristine_Unsafe(s, caller, recurrence);
+                        }
 
-						s.Update(recurrence);
-						rt.UpdateRecurrences(recurrenceId).Update(angular);
+                        s.Update(recurrence);
+                        rt.UpdateRecurrences(recurrenceId).Update(angular);
 
-						tx.Commit();
-						s.Flush();
-					}
-				}
-			}
-		}
-		#endregion
-	}
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            }
+        }
+        #endregion
+    }
 }

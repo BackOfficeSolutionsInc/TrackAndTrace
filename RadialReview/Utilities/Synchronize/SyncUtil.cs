@@ -93,6 +93,24 @@ namespace RadialReview.Utilities.Synchronize {
 			return (caller.GetClientRequestId()) + "_" + action.ToString();
 		}
 
+		//public static async Task<bool> EnsureOnlyRunOnce(UserOrganizationModel caller, SyncAction action, Func<ISession, Task> atomic_on_first_run, Func<ISession, Task> non_atomic_after_first_run) {
+		//	try {
+		//		//First Run
+		//		await Lock(UserActionKey(caller,action),0,(x,y)=> atomic_on_first_run(x));
+		//		return true;
+		//	} catch (SyncException) {
+		//		//Not first run
+		//		using (var s = HibernateSession.GetCurrentSession()) {
+		//			using (var tx = s.BeginTransaction()) {
+		//				await non_atomic_after_first_run(s);
+		//				tx.Commit();
+		//				s.Flush();
+		//				return false;
+		//			}
+		//		}
+		//	}
+		//}
+
 		public static async Task<bool> EnsureStrictlyAfter(UserOrganizationModel caller, SyncAction action, Func<IOrderedSession, Task> atomic, bool noSyncException = false) {
 			return await EnsureStrictlyAfter(caller, x => action, atomic, noSyncException);
 		}
@@ -221,7 +239,14 @@ namespace RadialReview.Utilities.Synchronize {
 		}
 		private static object TEST_LOCK = new object();
 		private static object TEST_UNLOCK = new object();
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="clientUpdateTimeMs"></param>
+		/// <param name="atomic">Your atomic action. tx.Commit() and s.Flush() are called automatically</param>
+		/// <param name="testHooks"></param>
+		/// <returns></returns>
 		public static async Task Lock(string key, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task> atomic, TestHooks testHooks = null) {
 			await Lock(x => key, clientUpdateTimeMs, atomic, testHooks);
 		}
@@ -253,9 +278,10 @@ namespace RadialReview.Utilities.Synchronize {
 							if (found == null) {
 								//Didnt exists. Lets atomically create it
 								//LockMode.Upgrade prevents creating simultaniously 
-								var createLock = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
+								//Use one of the N sync locks available to lock for the creation. You should use N keys so the service doesn't lock up.
+								var createLock = s.Get<SyncLock>(SyncLock.CREATE_KEY(key), LockMode.Upgrade);
 								if (createLock == null)
-									throw new Exception("CreateLock doesnt exist. Call ApplicationAccessor.EnsureExists()");
+									throw new Exception("CreateLock '"+SyncLock.CREATE_KEY(key)+"' doesnt exist. Call ApplicationAccessor.EnsureExists()");
 
 								//was it created in another thread while we were locked?
 								if (s.Get<SyncLock>(key, LockMode.Upgrade) != null) {
@@ -276,7 +302,7 @@ namespace RadialReview.Utilities.Synchronize {
 					Console.WriteLine("Deadlock: " + key);
 					//Try again.
 					await Task.Delay(10);
-				} catch (Exception) {
+				} catch (Exception e) {
 					throw;
 				}
 			}
@@ -455,4 +481,4 @@ namespace RadialReview.Utilities.Synchronize {
 			return existingSyncs.All(x => x.ClientTimestamp - clientTimestamp <= 0);
 		}
 	}
-}
+}

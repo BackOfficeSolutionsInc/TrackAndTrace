@@ -1,0 +1,87 @@
+﻿@model RadialReview.Models.UserModels.TempUserModel
+
+
+
+
+<div class="row">
+	<div class="col-xs-12"><p><strong> This link must be used for registration of @Model.FirstName @Model.LastName only.</strong></p></div>
+	@*<div class="col-xs-12"><p>Do not send this link to anyone else or You should not click this link.</p></div>*@
+	
+</div>
+<div class="smallBreak"></div>
+<div class="row">
+	<div class="col-xs-12">
+		@*Copy below text and email to @Model.Email for registration process.*@
+		<ul>
+			<li>
+				Copy text below
+			</li>
+			<li>
+				Open your favourite email client
+			</li>
+			<li>
+				Send copied text to email  @Model.Email
+			</li>
+			<li style="color:red;">
+				Do not send this link to anyone else
+			</li>
+			<li style="color:red;">
+				You should not click this link
+			</li>
+		</ul>
+
+	</div>
+	<div class="col-xs-12"><p><strong>This will cause issues with your account linking with this user.</strong></p></div>
+</div>
+<div class="smallBreak"></div>
+<div class="row">
+	<div class="row">
+		<a class="pull-right" style="margin-right:11%;" href="javascript:void(0);" onclick="CopyClipboard($('.emailContainer'));">Copy Content</a>
+		<div class="col-xs-12">
+			<div class="emailContainer" style="width:80%;margin-left:10%;border: 1px solid gray;padding: 10px;background-color:#f3f4f4;">
+				@Html.Raw(Model.EmailTemplate)
+				@*<textarea class="form-control">
+		   @Html.Raw(Model.EmailTemplate)
+		</textarea>*@
+
+			</div>
+		</div>
+	</div>
+</div>
+@if (ViewBag.IsRadialAdmin == true) {
+	<div style="color:white;font-size:4px;">https://traction.tools/Account/Register?returnUrl=%2FOrganization%2FJoin%2F@(Model.Guid)</div>
+}
+@Html.Hidden("TempId", "" + Model.Id)
+@Html.HiddenFor(x => x.Guid)
+@Html.HiddenFor(x => x.EmailStatus)
+@Html.HiddenFor(x => x.UserOrganizationId)
+@Html.HiddenFor(x => x.EmailStatusUnseen)
+@Html.HiddenFor(x => x.LastSentByUserId)
+
+<style>
+	.emailContainer a {
+		pointer-events: none;
+	}
+</style>
+
+<script type="text/javascript">
+	function CopyClipboard(element) {
+		//debugger;
+		// creating new textarea element and giveing it id 't'
+		let t = document.createElement('textarea')
+		t.id = 't'
+		// Optional step to make less noise in the page, if any!
+		t.style.height = 0
+		// You have to append it to your page somewhere, I chose <body>
+		document.body.appendChild(t)
+		// Copy whatever is in your div to our new textarea
+		t.value = $(element)[0].innerText
+		// Now copy whatever inside the textarea to clipboard
+		let selector = document.querySelector('#t');
+		selector.select();
+		document.queryCommandEnabled("copy")
+		document.execCommand('copy');
+		// Remove the textarea
+		document.body.removeChild(t);
+	}
+</script>

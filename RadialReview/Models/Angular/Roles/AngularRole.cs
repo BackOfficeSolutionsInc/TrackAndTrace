@@ -14,10 +14,15 @@ namespace RadialReview.Models.Angular.Roles {
 
 		public AngularRole(long id) : base(id) { }
 
-		public AngularRole(RoleModel role) : base(role.Id) {
+
+		public AngularRole(RoleGroupRole role) : this(role.Role,role.Ordering) {
+		}
+
+		public AngularRole(RoleModel role,long? ordering=null) : base(role.Id) {
 			Name = role.Role;
 			// Owner = AngularUser.CreateUser(role.Owner);
 			CreateTime = role.CreateTime;
+			Ordering = ordering;
 			//if (attach != null) {
 			//	AttachType = attach.Type;
 			//	AttachId = attach.Id;
@@ -25,6 +30,7 @@ namespace RadialReview.Models.Angular.Roles {
 			//}
 		}
 		public string Name { get; set; }
+		public long? Ordering { get; set; }
 		//public AngularUser Owner { get; set; }
 
 		public DateTime? CreateTime { get; set; }

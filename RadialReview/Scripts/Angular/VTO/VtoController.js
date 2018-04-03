@@ -63,9 +63,16 @@
 		//var tzoffset = r.updater.tzoffset;
 
 		$scope.functions.sendUpdate = function (self) {
+			Time.eachDate(self, function (d, o, k) {
+				if (k == "FutureDate") { return Time.adjustToMidnight(d); }
+			});
 			var dat = angular.copy(self);
-			r.updater.convertDatesForServer(dat, Time.tzoffset());
-		console.log(self);
+			if (false) {
+				r.updater.convertDatesForServer(dat, Time.tzoffset());
+			} else {
+				console.warn("Dates were not converted for server, please confirm");
+			}
+			console.log(self);
 
 			var url = Time.addTimestamp("/VTO/Update" + self.Type + "?connectionId=" + $scope.connectionId);
 

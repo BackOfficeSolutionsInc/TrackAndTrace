@@ -1029,12 +1029,12 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task<RoleModel> AddRole(UserOrganizationModel caller, Attach attach, string name = null) {
+		public static async Task<RoleModel> AddRole(UserOrganizationModel caller, Attach attach, string name = null,int? insert=null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create()) {
 						var perms = PermissionsUtility.Create(s, caller);
-						var model = await AddRole(s, perms, rt, attach, name);
+						var model = await AddRole(s, perms, rt, attach, name, insert);
 
 						tx.Commit();
 						s.Flush();
@@ -1045,7 +1045,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task<RoleModel> AddRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, Attach attachTo, string name = null) {
+		public static async Task<RoleModel> AddRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, Attach attachTo, string name = null, int? insert = null) {
 
 			perms.EditAttach(attachTo);
 
@@ -1066,9 +1066,9 @@ namespace RadialReview.Accessors {
 			s.Save(r);
 			await HooksRegistry.Each<IRolesHook>((ses, x) => x.CreateRole(ses, r));
 
-			UserTemplateAccessor.AddRoleToAttach_Unsafe(s, perms, orgId, attachTo, r);
+			UserTemplateAccessor.AddRoleToAttach_Unsafe(s, perms, rt, orgId, attachTo, r, insert);
 
-			var updatedRoles = AngularList.CreateFrom(AngularListType.Add, new AngularRole(r));
+			var updatedRoles = AngularList.CreateFrom(AngularListType.Add, new AngularRole(r,insert));
 			rt.UpdateOrganization(orgId).Update(new AngularRoleGroup(attachTo, updatedRoles));
 
 			return r;

@@ -1,22 +1,22 @@
 ﻿@model RadialReview.Models.RegisterViewModel
 @{
-    ViewBag.Title = "Register";
+	ViewBag.Title = "Register";
 	ViewBag.FullLogo = true;
 	ViewBag.NoLogin = true;
 }
 
 @section scripts
 {
-    @Scripts.Render("~/bundles/jqueryval")
-    @*@Scripts.Render("~/bundles/animations")
-    <script type="text/javascript">
-        $(document).ready(function () {
-            circle(200, 220, "glowSpin", 80, 130, 23, -.5, 12, -1, "visible-md visible-lg", "glow2");
-            //circle(230, 300, "c1", 80, 130, 20, -1, 12, 0, "orange");
-            //circle(50, 30, "c2", 90, 100, 10, 1, 10, -1, "orange");
-        });
+	@Scripts.Render("~/bundles/jqueryval")
+	@*@Scripts.Render("~/bundles/animations")
+		<script type="text/javascript">
+			$(document).ready(function () {
+				circle(200, 220, "glowSpin", 80, 130, 23, -.5, 12, -1, "visible-md visible-lg", "glow2");
+				//circle(230, 300, "c1", 80, 130, 20, -1, 12, 0, "orange");
+				//circle(50, 30, "c2", 90, 100, 10, 1, 10, -1, "orange");
+			});
 
-    </script>*@
+		</script>*@
 }
 
 @section styles{
@@ -25,10 +25,10 @@
 			background-color: #ef7622;
 		}
 
-		 .glowSpin {
-			 position: relative;
-			 left: 17% !important;
-		 }
+		.glowSpin {
+			position: relative;
+			left: 17% !important;
+		}
 
 		.glow2 > div {
 			-webkit-box-shadow: 0px 0px 20px 5px #98C7FF; /*rgba(255, 255, 255, .751);*/
@@ -40,8 +40,8 @@
 
 		.orange > div {
 			background-color: rgba(255, 201, 14, .5); /*
-            -webkit-box-shadow: 0px 0px 20px 5px rgba(255, 201, 14, .751);
-            box-shadow: 0px 0px 20px 5px rgba(255, 201, 14,.751);*/
+			-webkit-box-shadow: 0px 0px 20px 5px rgba(255, 201, 14, .751);
+			box-shadow: 0px 0px 20px 5px rgba(255, 201, 14,.751);*/
 		}
 
 		#regTitle {
@@ -51,10 +51,10 @@
 			left: calc(17% + 77px) !important;
 			top: 160px;
 			/*
-                position: absolute;
-                top: 240px;
-                left: 150px;
-                */
+				position: absolute;
+				top: 240px;
+				left: 150px;
+				*/
 			z-index: 100000;
 			color: #FCFDFF;
 			-webkit-text-shadow: 0px 0px 10px #9FA1B9;
@@ -68,7 +68,7 @@
 			left: calc(17% + 193px) !important;
 			top: 241px;
 			/*position: absolute;
-            left: 272px;*/
+			left: 272px;*/
 			z-index: 100000;
 			color: #68759E;
 			font-family: 'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;
@@ -81,38 +81,36 @@
 			text-align: center;
 		}
 
-		.logo-container img {
-			max-height: 33vh;
-			min-height: 250px;
-		}
+			.logo-container img {
+				max-height: 33vh;
+				min-height: 250px;
+			}
 
 		.btn {
 			font-size: 16px;
 		}
 
-		.validation-summary-errors
-		{
-			color:white;
+		.validation-summary-errors {
+			color: white;
 		}
-
 	</style>
 }
 
 @*<div id="regTitle" class="visible-md visible-lg">Radial</div>
-<div id="regSubtitle" class="visible-md visible-lg">@Html.ReviewName()</div>*@
+	<div id="regSubtitle" class="visible-md visible-lg">@Html.ReviewName()</div>*@
 
 @*<div class="welcome">
-	WELCOME TO
-</div>*@
+		WELCOME TO
+	</div>*@
 
 <div class="logo-container">
 	<img src="~/Content/img/TRACTION-TOOLS_large_stacked_wh.png" />
 </div>
 
 
-@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "form_register" }))
 {
-    @Html.HiddenFor(x=>x.ReturnUrl)
+	@Html.HiddenFor(x=>x.ReturnUrl)
 	<fieldset>
 		<div class="row">
 			<div class="col-md-offset-2 col-md-6" style="left: -1px;">
@@ -130,24 +128,24 @@
 					</div>
 				</div>
 				@*@if (Model.IsClient){
-					<div class="form-group">
-						@Html.Label("Organization", new{@class = "col-md-4 control-label"})
-						<div class="col-md-8">
-							<div class="col-xs-12" style="padding: 0 2px 0 0;">
-								@Html.TextBoxFor(m => m.OrganizationName, new{@class = "form-control", placeholder = Html.DisplayNameFor(x => x.fname), autocomplete = "org"})
-							</div>
-							<div class="col-xs-6" style="padding: 0 0 0 2px;">
-								@Html.TextBoxFor(m => m.lname, new{@class = "form-control", placeholder = Html.DisplayNameFor(x => x.lname), autocomplete = "family-name"})
+						<div class="form-group">
+							@Html.Label("Organization", new{@class = "col-md-4 control-label"})
+							<div class="col-md-8">
+								<div class="col-xs-12" style="padding: 0 2px 0 0;">
+									@Html.TextBoxFor(m => m.OrganizationName, new{@class = "form-control", placeholder = Html.DisplayNameFor(x => x.fname), autocomplete = "org"})
+								</div>
+								<div class="col-xs-6" style="padding: 0 0 0 2px;">
+									@Html.TextBoxFor(m => m.lname, new{@class = "form-control", placeholder = Html.DisplayNameFor(x => x.lname), autocomplete = "family-name"})
+								</div>
 							</div>
 						</div>
-					</div>
-				}*@
+					}*@
 				@*<div class="form-group">
-                    @Html.LabelFor(m => m.UserName, new { @class = "col-md-4 control-label" })
-                    <div class="col-md-8">
-                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.UserName) })
-                    </div>
-                </div>*@
+						@Html.LabelFor(m => m.UserName, new { @class = "col-md-4 control-label" })
+						<div class="col-md-8">
+							@Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.UserName) })
+						</div>
+					</div>*@
 				<div class="form-group">
 					@Html.LabelFor(m => m.Email, new { @class = "col-md-4 control-label" })
 					<div class="col-md-8">
@@ -167,27 +165,50 @@
 					</div>
 				</div>
 				@*<div class="form-group">
-                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-4 control-label" })
-                    <div class=" col-md-8">
-                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.ConfirmPassword) })
-                    </div>
-                </div>*@
+						@Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-4 control-label" })
+						<div class=" col-md-8">
+							@Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.ConfirmPassword) })
+						</div>
+					</div>*@
 				<div class="smallBreak"></div>
 				<div class="smallBreak"></div>
 				<div class="row">
 					<div class="col-md-8 col-md-offset-4">
 						<div class="row">
-							<input type="submit" class="btn btn-primary btn-invert col-md-4 col-md-offset-4 col-xs-12" value="Register" />
+							<input type="submit" @*onsubmit="submitform(this)"*@ class="btn btn-primary btn-invert col-md-4 col-md-offset-4 col-xs-12" value="Register" />
 						</div>
-						@if (ViewBag.ReturnUrl != null){
-                            <br />
+						@if (ViewBag.ReturnUrl != null)
+						{
+							<br />
 							<div class="row alignCenter">
-								@Html.ActionLink("Already have a Traction® Tools account? Click here.", "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl,info="Login with your existing credentials to link your accounts" }, htmlAttributes: new { id = "loginLink", @class = "btn btn-link gray", style = "text-decoration: underline;" })
+								@Html.ActionLink("Already have a Traction® Tools account? Click here.", "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl, info = "Login with your existing credentials to link your accounts" }, htmlAttributes: new { id = "loginLink", @class = "btn btn-link gray", style = "text-decoration: underline;" })
 							</div>
 						}
 					</div>
 				</div>
 			</div>
-</div>
+		</div>
 	</fieldset>
+}
+@using (Html.BeginScripts()) {
+<script>
+	$("#form_register").on("submit", function () {
+		var element = $(this);
+		var form = $('#form_register');
+		if (form.valid()) {
+			$("#form_register [type='submit']").attr('disabled', 'disabled');
+			return true;
+		}
+		return false;
+	});
+
+	//function submitform(element) {
+	//	var form = $('#form_register');
+	//	if (form.valid()) {
+	//		$(element).attr('disabled', 'disabled');
+	//		return true;
+	//	}
+	//	return false;
+	//}
+</script>
 }

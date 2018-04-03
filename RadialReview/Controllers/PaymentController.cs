@@ -70,15 +70,16 @@ namespace RadialReview.Controllers {
 				L10PricePerPerson = 10,
 				ReviewPricePerPerson = 2,
 				PlanCreated = DateTime.UtcNow,
+				SchedulePeriod = SchedulePeriodType.Monthly,
 				OrgId = id,
 				_Org = org
 			});
 		}
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult FreeUntil(long id, DateTime date) {
+		public JsonResult FreeUntil(long id, DateTime date) {
 
-			var plan = PaymentAccessor.GetPlan(GetUser(), id); 
+			var plan = PaymentAccessor.GetPlan(GetUser(), id);
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var org = s.Get<OrganizationModel>(id);
@@ -97,7 +98,7 @@ namespace RadialReview.Controllers {
 
 					var fireTime = DateTime.MaxValue;
 					var setDate = false;
-					var result= ResultObject.SilentSuccess();
+					var result = ResultObject.SilentSuccess();
 					//adjust the date
 					if (model.LastExecuted != null) {
 						date = Math2.Max(model.LastExecuted.Value + model.SchedulerPeriod(), date);
@@ -106,7 +107,7 @@ namespace RadialReview.Controllers {
 						result.Refresh = true;
 					}
 
-					model.FreeUntil = Math2.Max(DateTime.UtcNow,date);
+					model.FreeUntil = Math2.Max(DateTime.UtcNow, date);
 
 
 					if (model.FreeUntil.Date > DateTime.UtcNow.Date) {
@@ -128,7 +129,7 @@ namespace RadialReview.Controllers {
 						fireTime = DateTime.UtcNow.Date;
 
 					fireTime = Math2.Max(DateTime.UtcNow.Date, fireTime);
-					
+
 
 					model.Task = new ScheduledTask() {
 						MaxException = 1,
@@ -207,7 +208,7 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-		
+
 		[Access(AccessLevel.Radial)]
 		public ActionResult Errors(int id = 7) {
 			using (var s = HibernateSession.GetCurrentSession()) {

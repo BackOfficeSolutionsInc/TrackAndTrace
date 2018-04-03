@@ -74,9 +74,9 @@ function LineGraph(argsMap) {
 			throw new Error("There is no data to append.");
 		}
 
-		//var numSteps = tempData.values[0].length;
+		var numSteps = tempData.values[0].length;
 		console.log("slide => add num new values: " + numSteps);
-		console.log(tempData.values[0]);
+		console.log(tempData.values[0])
 		tempData.values.forEach(function (dataArrays, i) {
 			var existingDataArrayForIndex = data.values[i];
 			dataArrays.forEach(function (v) {
@@ -85,8 +85,10 @@ function LineGraph(argsMap) {
 				existingDataArrayForIndex.push(v);
 				// shift the front value off to compensate for what we just added
 				existingDataArrayForIndex.shift();
-			});
-		}); // shift domain by number of data elements we just added
+			})
+		})
+
+		// shift domain by number of data elements we just added
 		// == numElements * step
 		data.startTime = new Date(data.startTime.getTime() + (data.step * numSteps));
 		data.endTime = tempData.endTime;
@@ -111,8 +113,10 @@ function LineGraph(argsMap) {
 		handleDataUpdate();
 
 		// fire an event that data was updated
-		$(container).trigger('LineGraph:dataModification');
-	}; /**
+		$(container).trigger('LineGraph:dataModification')
+	}
+
+	/**
 	 * This does a full refresh of the data:
 	 * - x-axis will slide to new range
 	 * - lines will change in place
@@ -121,7 +125,7 @@ function LineGraph(argsMap) {
 		// data is being replaced, not appended so we re-assign 'data'
 		data = processDataMap(newData);
 		// and then we rebind data.values to the lines
-		graph.selectAll("g .lines path").data(data.values);
+		graph.selectAll("g .lines path").data(data.values)
 
 		// redraw (with transition)
 		redrawAxes(true);
@@ -133,37 +137,47 @@ function LineGraph(argsMap) {
 		handleDataUpdate();
 
 		// fire an event that data was updated
-		$(container).trigger('LineGraph:dataModification');
-	};
+		$(container).trigger('LineGraph:dataModification')
+	}
+
+
 	this.switchToPowerScale = function () {
 		yScale = 'pow';
 		redrawAxes(true);
 		redrawLines(true);
 
 		// fire an event that config was changed
-		$(container).trigger('LineGraph:configModification');
-	};
+		$(container).trigger('LineGraph:configModification')
+	}
+
 	this.switchToLogScale = function () {
 		yScale = 'log';
 		redrawAxes(true);
 		redrawLines(true);
 
 		// fire an event that config was changed
-		$(container).trigger('LineGraph:configModification');
-	};
+		$(container).trigger('LineGraph:configModification')
+	}
+
 	this.switchToLinearScale = function () {
 		yScale = 'linear';
 		redrawAxes(true);
 		redrawLines(true);
 
 		// fire an event that config was changed
-		$(container).trigger('LineGraph:configModification');
-	}; /**
+		$(container).trigger('LineGraph:configModification')
+	}
+
+	/**
 	 * Return the current scale value: pow, log or linear
 	 */
 	this.getScale = function () {
 		return yScale;
-	}; /* *************************************************************** */
+	}
+
+
+
+	/* *************************************************************** */
 	/* private variables */
 	/* *************************************************************** */
 	// the div we insert the graph into
@@ -181,15 +195,13 @@ function LineGraph(argsMap) {
 	var data;
 
 	// define dimensions of graph
+	var margin = [-1, -1, -1, -1]; // margins (top, right, bottom, left)
 	var w, h;	 // width & height
-	var margin;
+
 	var transitionDuration = 300;
 
-	//var formatNumber = d3.format(",.0f"); // for formatting integers
-	var tickFormatForLogScale = ",.0f";/*function (d) {
-		
-		return d3.format(",.0f")(d);//formatNumber(d);
-	};*/
+	var formatNumber = d3.format(",.0f") // for formatting integers
+	var tickFormatForLogScale = function (d) { return formatNumber(d) };
 
 	// used to track if the user is interacting via mouse/finger instead of trying to determine
 	// by analyzing various element class names to see if they are visible or not
@@ -204,19 +216,23 @@ function LineGraph(argsMap) {
 		containerId = getRequiredVar(argsMap, 'containerId');
 		container = document.querySelector('#' + containerId);
 
+		// margins with defaults (do this before processDataMap since it can modify the margins)
+		margin[0] = getOptionalVar(argsMap, 'marginTop', 20) // marginTop allows fitting the actions, date and top of axis labels
+		margin[1] = getOptionalVar(argsMap, 'marginRight', 20)
+		margin[2] = getOptionalVar(argsMap, 'marginBottom', 35) // marginBottom allows fitting the legend along the bottom
+		margin[3] = getOptionalVar(argsMap, 'marginLeft', 90) // marginLeft allows fitting the axis labels
 
 		// assign instance vars from dataMap
 		data = processDataMap(getRequiredVar(argsMap, 'data'));
-		margin = data.margin;
-		// margins with defaults (do this before processDataMap since it can modify the margins)
-		
+
 		/* set the default scale */
 		yScale = data.scale;
 
 		// do this after processing margins and executing processDataMap above
 		initDimensions();
 
-		createGraph(); //debug("Initialization successful for container: " + containerId)	
+		createGraph()
+		//debug("Initialization successful for container: " + containerId)	
 
 		// window resize listener
 		// de-dupe logic from http://stackoverflow.com/questions/667426/javascript-resize-event-firing-multiple-times-while-dragging-the-resize-handle/668185#668185
@@ -226,7 +242,11 @@ function LineGraph(argsMap) {
 				clearTimeout(TO);
 			TO = setTimeout(handleWindowResizeEvent, 200); // time in miliseconds
 		});
-	}; /* *************************************************************** */
+	}
+
+
+
+	/* *************************************************************** */
 	/* private methods */
 	/* *************************************************************** */
 
@@ -238,74 +258,82 @@ function LineGraph(argsMap) {
 	 */
 	var processDataMap = function (dataMap) {
 		// assign data values to plot over time
-		var dataValues = getRequiredVar(dataMap, 'charts', "The data object must contain a 'charts' value with a data array.");
-		var startTime = new Date(getRequiredVar(dataMap, 'start', "The data object must contain a 'start' value with the start time in milliseconds since epoch."));
-		var endTime = new Date(getRequiredVar(dataMap, 'end', "The data object must contain an 'end' value with the end time in milliseconds since epoch."));
-		//var step = getRequiredVar(dataMap, 'step', "The data object must contain a 'step' value with the time in milliseconds between each data value.");
-		//var names = getRequiredVar(dataMap, 'names', "The data object must contain a 'names' array with the same length as 'values' with a name for each data value array.");
-		//var displayNames = getOptionalVar(dataMap, 'displayNames', names);
+		var dataValues = getRequiredVar(dataMap, 'values', "The data object must contain a 'values' value with a data array.")
+		var startTime = new Date(getRequiredVar(dataMap, 'start', "The data object must contain a 'start' value with the start time in milliseconds since epoch."))
+		var endTime = new Date(getRequiredVar(dataMap, 'end', "The data object must contain an 'end' value with the end time in milliseconds since epoch."))
+		var step = getRequiredVar(dataMap, 'step', "The data object must contain a 'step' value with the time in milliseconds between each data value.")
+		var names = getRequiredVar(dataMap, 'names', "The data object must contain a 'names' array with the same length as 'values' with a name for each data value array.")
+		var displayNames = getOptionalVar(dataMap, 'displayNames', names);
 		var numAxisLabelsPowerScale = getOptionalVar(dataMap, 'numAxisLabelsPowerScale', 6);
 		var numAxisLabelsLinearScale = getOptionalVar(dataMap, 'numAxisLabelsLinearScale', 6);
 
-		var margin1 = [-1, -1, -1, -1]; // margins (top, right, bottom, left)
-
-		margin1[0] = getOptionalVar(dataMap, 'marginTop', 20); // marginTop allows fitting the actions, date and top of axis labels
-		margin1[1] = getOptionalVar(dataMap, 'marginRight', 20);
-		margin1[2] = getOptionalVar(dataMap, 'marginBottom', 35); // marginBottom allows fitting the legend along the bottom
-		margin1[3] = getOptionalVar(dataMap, 'marginLeft', 90); // marginLeft allows fitting the axis labels
-
-		//var axis = getOptionalVar(dataMap, 'axis', []);
+		var axis = getOptionalVar(dataMap, 'axis', []);
 		// default axis values
-			var hasRightAxis = false;
-			dataValues.forEach(function (v, i) {
+		if (axis.length == 0) {
+			displayNames.forEach(function (v, i) {
 				// set the default to left axis
-				if (!v.axis) {
-					v.axis = "left";
-				} else {
-					
-					if (v.axis == 'right') {
-						hasRightAxis = true;
-					}
+				axis[i] = "left";
+			})
+		} else {
+			var hasRightAxis = false;
+			axis.forEach(function (v) {
+				if (v == 'right') {
+					hasRightAxis = true;
 				}
-				// default colors values
-				if (!v.color)
-					v.color = "black";
-				// default rounding values
-				if (!v.rounding)
-					v.rounding = 0;
-			});
+			})
 			if (hasRightAxis) {
 				// add space to right margin
 				margin[1] = margin[1] + 50;
 			}
+		}
 
-		
+
+		var colors = getOptionalVar(dataMap, 'colors', []);
+		// default colors values
+		if (colors.length == 0) {
+			displayNames.forEach(function (v, i) {
+				// set the default
+				colors[i] = "black";
+			})
+		}
+
 		var maxValues = [];
+		var rounding = getOptionalVar(dataMap, 'rounding', []);
+		// default rounding values
+		if (rounding.length == 0) {
+			displayNames.forEach(function (v, i) {
+				// set the default to 0 decimals
+				rounding[i] = 0;
+			})
+		}
 
 		/* copy the dataValues array, do NOT assign the reference otherwise we modify the original source when we shift/push data */
 		var newDataValues = [];
 		dataValues.forEach(function (v, i) {
-			newDataValues[i] = v;
+			newDataValues[i] = v.slice(0);
+			maxValues[i] = d3.max(newDataValues[i])
+		})
 
-			maxValues[i] = d3.max(newDataValues[i].points,function(p) { return p.value; });
-		});
+
+
+
 		return {
 			"values": newDataValues,
 			"startTime": startTime,
 			"endTime": endTime,
-			//"step": step,
-			//"names": names,
-			//"displayNames": displayNames,
-			//"axis": axis,
-			//"colors": colors,
+			"step": step,
+			"names": names,
+			"displayNames": displayNames,
+			"axis": axis,
+			"colors": colors,
 			"scale": getOptionalVar(dataMap, 'scale', yScale),
 			"maxValues": maxValues,
-			//"rounding": rounding,
+			"rounding": rounding,
 			"numAxisLabelsLinearScale": numAxisLabelsLinearScale,
-			"numAxisLabelsPowerScale": numAxisLabelsPowerScale,
-			"margin" : margin1,
-		};
-	};
+			"numAxisLabelsPowerScale": numAxisLabelsPowerScale
+		}
+	}
+
 	var redrawAxes = function (withTransition) {
 		initY();
 		initX();
@@ -315,31 +343,38 @@ function LineGraph(argsMap) {
 			graph.selectAll("g .x.axis").transition()
 			.duration(transitionDuration)
 			.ease("linear")
-			.call(xAxis); // slide y-axis to updated location
+			.call(xAxis)
+
+			// slide y-axis to updated location
 			graph.selectAll("g .y.axis.left").transition()
 			.duration(transitionDuration)
 			.ease("linear")
-			.call(yAxisLeft);
+			.call(yAxisLeft)
+
 			if (yAxisRight != undefined) {
 				// slide y-axis to updated location
 				graph.selectAll("g .y.axis.right").transition()
 				.duration(transitionDuration)
 				.ease("linear")
-				.call(yAxisRight);
+				.call(yAxisRight)
 			}
 		} else {
 			// slide x-axis to updated location
 			graph.selectAll("g .x.axis")
-			.call(xAxis); // slide y-axis to updated location
+			.call(xAxis)
+
+			// slide y-axis to updated location
 			graph.selectAll("g .y.axis.left")
-			.call(yAxisLeft);
+			.call(yAxisLeft)
+
 			if (yAxisRight != undefined) {
 				// slide y-axis to updated location
 				graph.selectAll("g .y.axis.right")
-				.call(yAxisRight);
+				.call(yAxisRight)
 			}
 		}
-	};
+	}
+
 	var redrawLines = function (withTransition) {
 		/**
 		* This is a hack to deal with the left/right axis.
@@ -363,16 +398,20 @@ function LineGraph(argsMap) {
 				.attr("d", lineFunction)
 				.attr("transform", null);
 		}
-	}; /*
+	}
+
+	/*
 	 * Allow re-initializing the y function at any time.
 	 *  - it will properly determine what scale is being used based on last user choice (via public switchScale methods)
 	 */
 	var initY = function () {
 		initYleft();
 		initYright();
-	};
+	}
+
 	var initYleft = function () {
-		var maxYscaleLeft = calculateMaxY(data, 'left'); //debug("initY => maxYscale: " + maxYscaleLeft);
+		var maxYscaleLeft = calculateMaxY(data, 'left')
+		//debug("initY => maxYscale: " + maxYscaleLeft);
 		var numAxisLabels = 6;
 		if (yScale == 'pow') {
 			yLeft = d3.scale.pow().exponent(0.3).domain([0, maxYscaleLeft]).range([h, 0]).nice();
@@ -385,11 +424,13 @@ function LineGraph(argsMap) {
 			yLeft = d3.scale.linear().domain([0, maxYscaleLeft]).range([h, 0]).nice();
 			numAxisLabels = data.numAxisLabelsLinearScale;
 		}
-		
+
 		yAxisLeft = d3.svg.axis().scale(yLeft).ticks(numAxisLabels, tickFormatForLogScale).orient("left");
-	};
+	}
+
 	var initYright = function () {
-		var maxYscaleRight = calculateMaxY(data, 'right'); // only create the right axis if it has values
+		var maxYscaleRight = calculateMaxY(data, 'right')
+		// only create the right axis if it has values
 		if (maxYscaleRight != undefined) {
 			//debug("initY => maxYscale: " + maxYscaleRight);
 			var numAxisLabels = 6;
@@ -407,7 +448,11 @@ function LineGraph(argsMap) {
 
 			yAxisRight = d3.svg.axis().scale(yRight).ticks(numAxisLabels, tickFormatForLogScale).orient("right");
 		}
-	}; /*
+	}
+
+
+
+	/*
 	 * Whenever we add/update data we want to re-calculate if the max Y scale has changed
 	 */
 	var calculateMaxY = function (data, whichAxis) {
@@ -418,12 +463,16 @@ function LineGraph(argsMap) {
 
 		var maxValuesForAxis = [];
 		data.maxValues.forEach(function (v, i) {
-			if (data.values[i].axis == whichAxis) {
+			if (data.axis[i] == whichAxis) {
 				maxValuesForAxis.push(v);
 			}
-		}); // we now have the max values for the axis we're interested in so get the max of them
+		})
+
+		// we now have the max values for the axis we're interested in so get the max of them
 		return d3.max(maxValuesForAxis);
-	}; /*yai
+	}
+
+	/*
 	 * Allow re-initializing the x function at any time.
 	 */
 	var initX = function () {
@@ -434,7 +483,9 @@ function LineGraph(argsMap) {
 		xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(1);
 		// without ticks
 		//xAxis = d3.svg.axis().scale(x);
-	}; /**
+	}
+
+	/**
 	* Creates the SVG elements and displays the line graph.
 	*
 	* Expects to be called once during instance initialization.
@@ -449,7 +500,9 @@ function LineGraph(argsMap) {
 				.append("svg:g")
 					.attr("transform", "translate(" + margin[3] + "," + margin[0] + ")");
 
-		initX(); // Add the x-axis.
+		initX()
+
+		// Add the x-axis.
 		graph.append("svg:g")
 			.attr("class", "x axis")
 			.attr("transform", "translate(0," + h + ")")
@@ -479,12 +532,11 @@ function LineGraph(argsMap) {
 			.x(function (d, i) {
 				/* 
 				 * Our x value is defined by time and since our data doesn't have per-metric timestamps
-				 * we calculate time as (startTime + the step between mdetrics * the index)
+				 * we calculate time as (startTime + the step between metrics * the index)
 				 *
  				 * We also reach out to the persisted 'data' object for time
  				 * since the 'd' passed in here is one of the children, not the parent object
 				 */
-				
 				var _x = x(data.startTime.getTime() + (data.step * i));
 
 				// verbose logging to show what's actually being done
@@ -493,8 +545,6 @@ function LineGraph(argsMap) {
 				return _x;
 			})
 			.y(function (d, i) {
-
-				
 				if (yScale == 'log' && d < 0.1) {
 					// log scale can't have 0s, so we set it to the smallest value we set on y
 					d = 0.1;
@@ -551,10 +601,14 @@ function LineGraph(argsMap) {
 
 		$(container).mouseleave(function (event) {
 			handleMouseOutGraph(event);
-		});
+		})
+
 		$(container).mousemove(function (event) {
 			handleMouseOverGraph(event);
-		}); // add a line group for each array of values (it will iterate the array of arrays bound to the data function above)
+		})
+
+
+		// add a line group for each array of values (it will iterate the array of arrays bound to the data function above)
 		linesGroup = lines.enter().append("g")
 				.attr("class", function (d, i) {
 					return "line_group series_" + i;
@@ -568,11 +622,9 @@ function LineGraph(argsMap) {
 				})
 				.attr("fill", "none")
 				.attr("stroke", function (d, i) {
-					return d.color;
+					return data.colors[i];
 				})
-				.attr("d", function(d) {
-				return lineFunction(d);
-			}) // use the 'lineFunction' to create the data points in the correct x,y axis
+				.attr("d", lineFunction) // use the 'lineFunction' to create the data points in the correct x,y axis
 				.on('mouseover', function (d, i) {
 					handleMouseOverLine(d, i);
 				});
@@ -604,43 +656,51 @@ function LineGraph(argsMap) {
 		createDateLabel();
 		createLegend();
 		setValueLabelsToLatest();
-	}; /**
+	}
+
+	/**
 	 * Create a legend that displays the name of each line with appropriate color coding
 	 * and allows for showing the current value when doing a mouseOver
 	 */
 	var createLegend = function () {
 
 		// append a group to contain all lines
-		//
 		var legendLabelGroup = graph.append("svg:g")
 				.attr("class", "legend-group")
 			.selectAll("g")
-				.data(data.values).enter().append("g")
+				.data(data.displayNames)
+			.enter().append("g")
 				.attr("class", "legend-labels");
 
 		legendLabelGroup.append("svg:text")
 				.attr("class", "legend name")
 				.text(function (d, i) {
-					return  d.displayName || d.name;
+					return d;
 				})
 				.attr("font-size", legendFontSize)
 				.attr("fill", function (d, i) {
 					// return the color for this row
-					return d.color;
+					return data.colors[i];
 				})
 				.attr("y", function (d, i) {
 					return h + 28;
-				}); // put in placeholders with 0 width that we'll populate and resize dynamically
+				})
+
+
+		// put in placeholders with 0 width that we'll populate and resize dynamically
 		legendLabelGroup.append("svg:text")
 				.attr("class", "legend value")
 				.attr("font-size", legendFontSize)
 				.attr("fill", function (d, i) {
-					return d.color;
+					return data.colors[i];
 				})
 				.attr("y", function (d, i) {
 					return h + 28;
-				}); // x values are not defined here since those get dynamically calculated when data is set in displayValueLabelsForPositionX()
-	};
+				})
+
+		// x values are not defined here since those get dynamically calculated when data is set in displayValueLabelsForPositionX()
+	}
+
 	var redrawLegendPosition = function (animate) {
 		var legendText = graph.selectAll('g.legend-group text');
 		if (animate) {
@@ -656,7 +716,9 @@ function LineGraph(argsMap) {
 				return h + 28;
 			});
 		}
-	}; /**
+	}
+
+	/**
 	 * Create scale buttons for switching the y-axis
 	 */
 	var createScaleButtons = function () {
@@ -699,7 +761,8 @@ function LineGraph(argsMap) {
 				.on('click', function (d, i) {
 					handleMouseClickScaleButton(this, d, i);
 				});
-	};
+	}
+
 	var handleMouseClickScaleButton = function (button, buttonData, index) {
 		if (index == 0) {
 			self.switchToLinearScale();
@@ -724,8 +787,11 @@ function LineGraph(argsMap) {
 			} else {
 				return false;
 			}
-		});
-	}; /**
+		})
+
+	}
+
+	/**
 	 * Create a data label
 	 */
 	var createDateLabel = function () {
@@ -739,8 +805,12 @@ function LineGraph(argsMap) {
 				.attr("font-size", "10")
 				.attr("y", -4)
 				.attr("x", w)
-				.text(date.toDateString() + " " + date.toLocaleTimeString());
-	}; /**
+				.text(date.toDateString() + " " + date.toLocaleTimeString())
+
+	}
+
+
+	/**
 	 * Called when a user mouses over a line.
 	 */
 	var handleMouseOverLine = function (lineData, index) {
@@ -748,7 +818,9 @@ function LineGraph(argsMap) {
 
 		// user is interacting
 		userCurrentlyInteracting = true;
-	}; /**
+	}
+
+	/**
 	 * Called when a user mouses over the graph.
 	 */
 	var handleMouseOverGraph = function (event) {
@@ -761,15 +833,20 @@ function LineGraph(argsMap) {
 			hoverLine.classed("hide", false);
 
 			// set position of hoverLine
-			hoverLine.attr("x1", mouseX).attr("x2", mouseX);
-			displayValueLabelsForPositionX(mouseX); // user is interacting
+			hoverLine.attr("x1", mouseX).attr("x2", mouseX)
+
+			displayValueLabelsForPositionX(mouseX)
+
+			// user is interacting
 			userCurrentlyInteracting = true;
 			currentUserPositionX = mouseX;
 		} else {
 			// proactively act as if we've left the area since we're out of the bounds we want
-			handleMouseOutGraph(event);
+			handleMouseOutGraph(event)
 		}
-	};
+	}
+
+
 	var handleMouseOutGraph = function (event) {
 		// hide the hover-line
 		hoverLine.classed("hide", true);
@@ -781,25 +858,27 @@ function LineGraph(argsMap) {
 		// user is no longer interacting
 		userCurrentlyInteracting = false;
 		currentUserPositionX = -1;
-	}; /*  // if we need to support older browsers without pageX/pageY we can use this
-		var getMousePositionFromEvent = function(e, element) {
-			var posx = 0;
-			var posy = 0;
-			if (!e) var e = window.event;
-			if (e.pageX || e.pageY) 	{
-				posx = e.pageX;
-				posy = e.pageY;
-			}
-			else if (e.clientX || e.clientY) 	{
-				posx = e.clientX + document.body.scrollLeft
-					+ document.documentElement.scrollLeft;
-				posy = e.clientY + document.body.scrollTop
-					+ document.documentElement.scrollTop;
-			}
-			
-			return {x: posx, y: posy};
-		}
-	*/
+	}
+
+	/*  // if we need to support older browsers without pageX/pageY we can use this
+        var getMousePositionFromEvent = function(e, element) {
+            var posx = 0;
+            var posy = 0;
+            if (!e) var e = window.event;
+            if (e.pageX || e.pageY) 	{
+                posx = e.pageX;
+                posy = e.pageY;
+            }
+            else if (e.clientX || e.clientY) 	{
+                posx = e.clientX + document.body.scrollLeft
+                    + document.documentElement.scrollLeft;
+                posy = e.clientY + document.body.scrollTop
+                    + document.documentElement.scrollTop;
+            }
+            
+            return {x: posx, y: posy};
+        }
+    */
 
 	/*
 	* Handler for when data is updated.
@@ -808,13 +887,15 @@ function LineGraph(argsMap) {
 		if (userCurrentlyInteracting) {
 			// user is interacting, so let's update values to wherever the mouse/finger is on the updated data
 			if (currentUserPositionX > -1) {
-				displayValueLabelsForPositionX(currentUserPositionX);
+				displayValueLabelsForPositionX(currentUserPositionX)
 			}
 		} else {
 			// the user is not interacting with the graph, so we'll update the labels to the latest
 			setValueLabelsToLatest();
 		}
-	}; /**
+	}
+
+	/**
 	* Display the data values at position X in the legend value labels.
 	*/
 	var displayValueLabelsForPositionX = function (xPosition, withTransition) {
@@ -834,7 +915,9 @@ function LineGraph(argsMap) {
 		})
 		.attr("x", function (d, i) {
 			labelValueWidths[i] = this.getComputedTextLength();
-		}); // position label names
+		})
+
+		// position label names
 		var cumulativeWidth = 0;
 		var labelNameEnd = [];
 		graph.selectAll("text.legend.name")
@@ -846,7 +929,9 @@ function LineGraph(argsMap) {
 					// store where this ends
 					labelNameEnd[i] = returnX + this.getComputedTextLength() + 5;
 					return returnX;
-				}); // remove last bit of padding from cumulativeWidth
+				})
+
+		// remove last bit of padding from cumulativeWidth
 		cumulativeWidth = cumulativeWidth - 8;
 
 		if (cumulativeWidth > w) {
@@ -867,34 +952,45 @@ function LineGraph(argsMap) {
 		graph.selectAll("text.legend.value")
 		.attr("x", function (d, i) {
 			return labelNameEnd[i];
-		}); // show the date
-		graph.select('text.date-label').text(dateToShow.toDateString() + " " + dateToShow.toLocaleTimeString()); // move the group of labels to the right side
+		})
+
+
+		// show the date
+		graph.select('text.date-label').text(dateToShow.toDateString() + " " + dateToShow.toLocaleTimeString())
+
+		// move the group of labels to the right side
 		if (animate) {
 			graph.selectAll("g.legend-group g")
 				.transition()
 				.duration(transitionDuration)
 				.ease("linear")
-				.attr("transform", "translate(" + (w - cumulativeWidth) + ",0)");
+				.attr("transform", "translate(" + (w - cumulativeWidth) + ",0)")
 		} else {
 			graph.selectAll("g.legend-group g")
-				.attr("transform", "translate(" + (w - cumulativeWidth) + ",0)");
+				.attr("transform", "translate(" + (w - cumulativeWidth) + ",0)")
 		}
-	}; /**
+	}
+
+	/**
 	* Set the value labels to whatever the latest data point is.
 	*/
 	var setValueLabelsToLatest = function (withTransition) {
 		displayValueLabelsForPositionX(w, withTransition);
-	}; /**
+	}
+
+	/**
 	* Convert back from an X position on the graph to a data value from the given array (one of the lines)
 	* Return {value: value, date, date}
 	*/
 	var getValueForPositionXFromData = function (xPosition, dataSeriesIndex) {
-		var d = data.values[dataSeriesIndex]; // get the date on x-axis for the current location
+		var d = data.values[dataSeriesIndex]
+
+		// get the date on x-axis for the current location
 		var xValue = x.invert(xPosition);
 
 		// Calculate the value from this date by determining the 'index'
 		// within the data array that applies to this value
-		/*var index = (xValue.getTime() - data.startTime) / data.step;
+		var index = (xValue.getTime() - data.startTime) / data.step;
 
 
 		if (index >= d.length) {
@@ -906,25 +1002,17 @@ function LineGraph(argsMap) {
 		index = Math.round(index);
 
 		// bucketDate is the date rounded to the correct 'step' instead of interpolated
-		//var bucketDate = new Date(data.startTime.getTime() + data.step * (index + 1)); // index+1 as it is 0 based but we need 1-based for this math
-		*/
+		var bucketDate = new Date(data.startTime.getTime() + data.step * (index + 1)); // index+1 as it is 0 based but we need 1-based for this math
 
-		//var nearest, nearestX;
-		var index = 0;
-		var nearest = Number.MAX_VALUE;
-		for (var i = 0; i < d.points.length; i++) {
-			if (Math.abs(d.points[i].time - xValue) < nearest) {
-				index = i;
-				nearest = d.points[i].time;
-			}
-		}
+		var v = d[index];
 
-		var v = d.points[index];
+		var roundToNumDecimals = data.rounding[dataSeriesIndex];
 
-		var roundToNumDecimals = data.values[dataSeriesIndex].rounding;
+		return { value: roundNumber(v, roundToNumDecimals), date: bucketDate };
+	}
 
-		return { value: roundNumber(v.value, roundToNumDecimals), date:new Date(v.time) /*bucketDate*/ };
-	}; /**
+
+	/**
 	 * Called when the window is resized to redraw graph accordingly.
 	 */
 	var handleWindowResizeEvent = function () {
@@ -960,7 +1048,9 @@ function LineGraph(argsMap) {
 			.transition()
 			.duration(transitionDuration)
 			.ease("linear")
-			.attr("x", w); // redraw the graph with new dimensions
+			.attr("x", w)
+
+		// redraw the graph with new dimensions
 		redrawAxes(true);
 		redrawLines(true);
 
@@ -969,49 +1059,56 @@ function LineGraph(argsMap) {
 
 		// force legend to redraw values
 		setValueLabelsToLatest(true);
-	}; /**
+	}
+
+	/**
 	 * Set height/width dimensions based on container.
 	 */
 	var initDimensions = function () {
 		// automatically size to the container using JQuery to get width/height
-		//
-
 		w = $("#" + containerId).width() - margin[1] - margin[3]; // width
 		h = $("#" + containerId).height() - margin[0] - margin[2]; // height
-
 
 		// make sure to use offset() and not position() as we want it relative to the document, not its parent
 		hoverLineXOffset = margin[3] + $(container).offset().left;
 		hoverLineYOffset = margin[0] + $(container).offset().top;
-	}; /**
+	}
+
+	/**
 	* Return the value from argsMap for key or throw error if no value found
 	*/
 	var getRequiredVar = function (argsMap, key, message) {
 		if (!argsMap[key]) {
 			if (!message) {
-				throw new Error(key + " is required");
+				throw new Error(key + " is required")
 			} else {
-				throw new Error(message);
+				throw new Error(message)
 			}
 		} else {
-			return argsMap[key];
+			return argsMap[key]
 		}
-	}; /**
+	}
+
+	/**
 	* Return the value from argsMap for key or defaultValue if no value found
 	*/
 	var getOptionalVar = function (argsMap, key, defaultValue) {
-		if (argsMap[key]===undefined) {
-			return defaultValue;
+		if (!argsMap[key]) {
+			return defaultValue
 		} else {
-			return argsMap[key];
+			return argsMap[key]
 		}
-	};
+	}
+
 	var error = function (message) {
-		console.log("ERROR: " + message);
-	};
+		console.log("ERROR: " + message)
+	}
+
 	var debug = function (message) {
-		console.log("DEBUG: " + message);
-	}; /* round a number to X digits: num => the number to round, dec => the number of decimals */
+		console.log("DEBUG: " + message)
+	}
+
+	/* round a number to X digits: num => the number to round, dec => the number of decimals */
 	/* private */ function roundNumber(num, dec) {
 		var result = Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
 		var resultAsString = result.toString();

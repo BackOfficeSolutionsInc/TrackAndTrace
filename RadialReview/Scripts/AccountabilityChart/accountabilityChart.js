@@ -16,6 +16,7 @@ var collapseAll = function () {
 function generateAccNodes() {
 	var data = angular.element("[ng-controller]").scope().model.data.Root;
 	var copy = {};
+	var nodeIds = [];
 	function dive(parent, output) {
 		output.x = parent.x;
 		output.y = parent.y;
@@ -28,12 +29,16 @@ function generateAccNodes() {
 		}
 
 		output.Roles = []
+		output.NodeId = []
+		if (parent.Id)
+			nodeIds.push(parent.Id);
 		if (parent.User)
 			output.Name = parent.User.Name;
 		if (parent.Group && parent.Group.Position)
 			output.Position = parent.Group.Position.Name
 		else if (parent.Name)
 			output.Position = parent.Name;
+
 
 		if (parent.Group && parent.Group.RoleGroups) {
 			//Roles
@@ -70,10 +75,11 @@ function generateAccNodes() {
 	}
 
 	dive(data, copy);
+	copy.NodeId = nodeIds;
 	return copy;
 }
 
-var genPdf = function () {
+var genPdf = function (val, nodeId) {
 
 	function compactify(shouldCompact) {
 		angular.element($("[ng-controller]")).scope().$apply(function () {
@@ -87,29 +93,55 @@ var genPdf = function () {
 			{ text: "Height (inches)", name: "ph", type: "text", value: 8.5 },
 			{ text: "Scale to one page", name: "fit", type: "checkbox", value: false },
 			{ text: "Compress Chart", name: "compact", type: "checkbox", value: false, onchange: function () { compactify($(this).is(":checked")); } },
+			{ text: "Department per page", name: "department", type: "checkbox", value: false }
 	];
 
 	var selected = null;
 	var scope = angular.element($("[ng-controller]")).scope();
 	if (scope !== null && scope.search !== null && scope.search.selected !== null) {
 		selected = scope.search.selected.Id;
-		fields.push({
-			text: " ", name: "which", type: "radio", options: [
-				{ value: "full", text: "Full chart", checked: true },
-				{ value: "visible", text: "Only visible" },
-				{ value: "selected", text: "Selected" }
-			]
-		});
+
+		if (!val) {
+
+			fields.push({
+				text: " ", name: "which", type: "radio", options: [
+					{ value: "full", text: "Full chart", checked: true },
+					{ value: "visible", text: "Only visible" },
+					{ value: "selected", text: "Selected" }
+				]
+			});
+		}
+		else {
+			fields.push({
+				text: " ", name: "which", type: "radio", options: [
+					{ value: "full", text: "All Child", checked: true },
+					{ value: "visible", text: "Only visible" },
+					{ value: "selected", text: "Selected" }
+				]
+			});
+		}
 	} else {
-		fields.push({
-			text: " ", name: "which", type: "radio", options: [
-				{ value: "full", text: "Full chart", checked: true },
-				{ value: "visible", text: "Only visible" }
-			]
-		});
+
+		if (!val) {
+			fields.push({
+				text: " ", name: "which", type: "radio", options: [
+					{ value: "full", text: "Full chart", checked: true },
+					{ value: "visible", text: "Only visible" }
+				]
+			});
+		}
+		else {
+			fields.push({
+				text: " ", name: "which", type: "radio", options: [
+					{ value: "full", text: "All Children", checked: true },
+					{ value: "visible", text: "Only visible" }
+				]
+			});
+		}
+
 		fields.push({
 			type: "span",
-			classes:"gray",
+			classes: "gray",
 			text: "Use the search box to create a chart for one person."
 		})
 	}
@@ -119,7 +151,7 @@ var genPdf = function () {
 		fields: fields,
 		success: function (d) {
 			var ajax = {
-				url: "/pdf/ac?fit=" + d.fit + "&pw=" + d.pw + "&ph=" + d.ph+"&compact="+d.compact,
+				url: "/pdf/ac?fit=" + d.fit + "&pw=" + d.pw + "&ph=" + d.ph + "&compact=" + d.compact + "&department=" + d.department,
 				method: "POST",
 				dataType: 'native',
 				xhrFields: {
@@ -144,6 +176,13 @@ var genPdf = function () {
 				ajax.url += "&selected=" + selected;
 			}
 
+			if (nodeId > 0) {
+				ajax.url += "&selected=" + nodeId;
+			}
+			else {
+				ajax.url += "&userCheck=true";
+			}
+
 			$.ajax(ajax);
 		},
 		close: function () {
@@ -155,10 +194,10 @@ var genPdf = function () {
 };
 
 
-//     jQuery Ajax Native Plugin
+//	 jQuery Ajax Native Plugin
 
-//     (c) 2015 Tarik Zakaria Benmerar, Acigna Inc.
-//      jQuery Ajax Native Plugin may be freely distributed under the MIT license.
+//	 (c) 2015 Tarik Zakaria Benmerar, Acigna Inc.
+//	  jQuery Ajax Native Plugin may be freely distributed under the MIT license.
 (function (root, factory) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
@@ -177,16 +216,16 @@ var genPdf = function () {
 	ajaxSettings.responseFields.native = 'responseNative';
 	ajaxSettings.converters['* native'] = true;
 	var support = {},
-        xhrId = 0,
-        xhrSuccessStatus = {
+		xhrId = 0,
+		xhrSuccessStatus = {
 			// file protocol always yields status code 0, assume 200
 			0: 200,
 			// Support: IE9
 			// #1450: sometimes IE returns 1223 when it should be 204
 			1223: 204
-        },
-        xhrCallbacks = {},
-        xhrSupported = jQuery.ajaxSettings.xhr();
+		},
+		xhrCallbacks = {},
+		xhrSupported = jQuery.ajaxSettings.xhr();
 	// Support: IE9
 	// Open requests must be manually aborted on unload (#5280)
 	if (window.ActiveXObject) {
@@ -209,9 +248,9 @@ var genPdf = function () {
 			return {
 				send: function (headers, complete) {
 					var i,
-                        xhr = options.xhr(),
-                        id = ++xhrId,
-                        responses = {};
+						xhr = options.xhr(),
+						id = ++xhrId,
+						responses = {};
 
 					xhr.open(options.type, options.url, options.async, options.username, options.password);
 
@@ -256,10 +295,10 @@ var genPdf = function () {
 									xhr.abort();
 								} else if (type === "error") {
 									complete(
-                                        // file: protocol always yields status 0; see #8605, #14207
-                                        xhr.status,
-                                        xhr.statusText
-                                    );
+										// file: protocol always yields status 0; see #8605, #14207
+										xhr.status,
+										xhr.statusText
+									);
 								} else {
 									// The native response associated with the responseType
 									// Stored in the xhr.response attribute (XHR2 Spec)
@@ -268,11 +307,11 @@ var genPdf = function () {
 									}
 
 									complete(
-                                        xhrSuccessStatus[xhr.status] || xhr.status,
-                                        xhr.statusText,
-                                        responses,
-                                        xhr.getAllResponseHeaders()
-                                    );
+										xhrSuccessStatus[xhr.status] || xhr.status,
+										xhr.statusText,
+										responses,
+										xhr.getAllResponseHeaders()
+									);
 								}
 							}
 						};

@@ -48,6 +48,8 @@ using System.Text.RegularExpressions;
 using SpreadsheetLight;
 using RadialReview.Hooks;
 using System.Net;
+using RadialReview.Models.Application;
+using RadialReview.Variables;
 
 namespace RadialReview.Controllers {
 	public class UserManagementController : BaseController {
@@ -159,20 +161,20 @@ namespace RadialReview.Controllers {
 				user._IsRadialAdmin = user.IsRadialAdmin;
 
 				user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
-                user._ClientOffset = Request.Params.Get("_tz").TryParseInt();
-                user._ClientRequestId = Request.Params.Get("_rid");
+				user._ClientOffset = Request.Params.Get("_tz").TryParseInt();
+				user._ClientRequestId = Request.Params.Get("_rid");
 
-                if (user._ClientTimestamp != null && user._ClientOffset==null) {
-					var diff = (int)(Math.Round((user._ClientTimestamp.Value.ToDateTime()-DateTime.UtcNow).TotalMinutes / 30.0) * 30.0);
+				if (user._ClientTimestamp != null && user._ClientOffset == null) {
+					var diff = (int)(Math.Round((user._ClientTimestamp.Value.ToDateTime() - DateTime.UtcNow).TotalMinutes / 30.0) * 30.0);
 					user._ClientOffset = diff;// Thread.SetData(Thread.GetNamedDataSlot("timeOffset"), diff);
 				}
 
 				HookData.SetData("ConnectionId", Request.Params.Get("connectionId"));
 				HookData.SetData("ClientTimestamp", user._ClientTimestamp);
-                HookData.SetData("ClientTimezone", user._ClientOffset);
-                HookData.SetData("ClientRequestId", user._ClientRequestId);
+				HookData.SetData("ClientTimezone", user._ClientOffset);
+				HookData.SetData("ClientRequestId", user._ClientRequestId);
 
-            }
+			}
 			return user;
 		}
 		public UserOrganizationModel GetUser() {
@@ -340,6 +342,12 @@ namespace RadialReview.Controllers {
 		}
 		#endregion
 
+		protected string ReadBody() {
+			Request.InputStream.Position = 0;
+			var body = new StreamReader(Request.InputStream).ReadToEnd();
+			return body;
+		}
+
 		protected void ManagerAndCanEditOrException(UserOrganizationModel user) {
 			if (!user.IsManagerCanEditOrganization())
 				throw new PermissionsException();
@@ -354,20 +362,20 @@ namespace RadialReview.Controllers {
 		private static string CleanFileName(string fileName) {
 			return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
 		}
-        protected ActionResult Xls(SLDocument document, string name = null) {
+		protected ActionResult Xls(SLDocument document, string name = null) {
 
-            name = name ?? ("export_" + DateTime.UtcNow.ToJavascriptMilliseconds());
-            //name = name;
+			name = name ?? ("export_" + DateTime.UtcNow.ToJavascriptMilliseconds());
+			//name = name;
 
-            Response.Clear();
-            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            Response.AddHeader("Content-Disposition", "attachment; filename="+name+".xlsx");
-            document.SaveAs(Response.OutputStream);
-            Response.End();
-            return new EmptyResult();            
-        }
+			Response.Clear();
+			Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+			Response.AddHeader("Content-Disposition", "attachment; filename=" + name + ".xlsx");
+			document.SaveAs(Response.OutputStream);
+			Response.End();
+			return new EmptyResult();
+		}
 
-        protected ActionResult Pdf(PdfDocument document, string name = null, bool inline = true) {
+		protected ActionResult Pdf(PdfDocument document, string name = null, bool inline = true) {
 			//var stream = new MemoryStream();
 			////try {
 			////	document.Save("C:\\Users\\Clay\\Desktop\\Stuff\\doc.pdf");
@@ -455,10 +463,10 @@ namespace RadialReview.Controllers {
 
 		protected FileResult Pdf(Document document, string name = null, bool inline = true) {
 #pragma warning disable CS0618 // Type or member is obsolete
-            var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
+			var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
 #pragma warning restore CS0618 // Type or member is obsolete
 
-            pdfRenderer.Document = document;
+			pdfRenderer.Document = document;
 
 			pdfRenderer.RenderDocument();
 			if (pdfRenderer.PageCount == 0) {
@@ -529,7 +537,7 @@ namespace RadialReview.Controllers {
 
 				if (isJsonResult) {
 					var exception = new ResultObject(filterContext.Exception);
-                    HttpStatusCode? statusOverride = null;
+					HttpStatusCode? statusOverride = null;
 					if (filterContext.Exception is RedirectException) {
 						var re = ((RedirectException)filterContext.Exception);
 						if (re.Silent != null)
@@ -540,15 +548,15 @@ namespace RadialReview.Controllers {
 						if (re.ForceReload)
 							exception.Refresh = true;
 
-                        if (re.StatusCodeOverride != null) {
-                            statusOverride = re.StatusCodeOverride.Value;
-                        }
+						if (re.StatusCodeOverride != null) {
+							statusOverride = re.StatusCodeOverride.Value;
+						}
 
 					}
 
 					filterContext.ExceptionHandled = true;
 					filterContext.HttpContext.Response.Clear();
-					filterContext.HttpContext.Response.StatusCode = (int)(statusOverride??System.Net.HttpStatusCode.InternalServerError);
+					filterContext.HttpContext.Response.StatusCode = (int)(statusOverride ?? System.Net.HttpStatusCode.InternalServerError);
 					filterContext.HttpContext.Response.TrySkipIisCustomErrors = true;
 					filterContext.Result = new JsonResult() { Data = exception, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 					return;
@@ -619,26 +627,26 @@ namespace RadialReview.Controllers {
 
 			if (string.IsNullOrEmpty(encodingsAccepted))
 				return;
-            if (contentType != null && contentType.ToLower().Contains("pdf"))
-                return;
-            if (contentType != null && contentType.ToLower()=="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                return;
+			if (contentType != null && contentType.ToLower().Contains("pdf"))
+				return;
+			if (contentType != null && contentType.ToLower() == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+				return;
 
-            try {
-			    encodingsAccepted = encodingsAccepted.ToLowerInvariant();
-			    var response = filterContext.HttpContext.Response;
-                if (encodingsAccepted.Contains("deflate")) {
-                    Response.Headers.Remove("Content-Encoding");
-                    response.AppendHeader("Content-Encoding", "deflate");
-                    response.Filter = new DeflateStream(response.Filter, CompressionMode.Compress);
-                } else if (encodingsAccepted.Contains("gzip")) {
-                    Response.Headers.Remove("Content-Encoding");
-                    response.AppendHeader("Content-Encoding", "gzip");
-                    response.Filter = new GZipStream(response.Filter, CompressionMode.Compress);
-                }
-            } catch (Exception) {
-                //I guess just eat it..
-            }
+			try {
+				encodingsAccepted = encodingsAccepted.ToLowerInvariant();
+				var response = filterContext.HttpContext.Response;
+				if (encodingsAccepted.Contains("deflate")) {
+					Response.Headers.Remove("Content-Encoding");
+					response.AppendHeader("Content-Encoding", "deflate");
+					response.Filter = new DeflateStream(response.Filter, CompressionMode.Compress);
+				} else if (encodingsAccepted.Contains("gzip")) {
+					Response.Headers.Remove("Content-Encoding");
+					response.AppendHeader("Content-Encoding", "gzip");
+					response.Filter = new GZipStream(response.Filter, CompressionMode.Compress);
+				}
+			} catch (Exception) {
+				//I guess just eat it..
+			}
 		}
 
 		protected override void OnActionExecuting(ActionExecutingContext filterContext) {
@@ -686,6 +694,19 @@ namespace RadialReview.Controllers {
 									throw new PermissionsException("You must be a " + Config.ManagerName() + " to view this resource.");
 								break;
 							case AccessLevel.Radial:
+								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
+									throw new PermissionsException("You do not have access to this resource.");
+								break;
+							case AccessLevel.RadialData:
+								var ids = s.GetSettingOrDefault(Variable.Names.USER_RADIAL_DATA_IDS, () => "").Split(new[] { ',' }).Select(x=>long.Parse(x)).ToList();
+								var u3 = GetUser(s);
+								if (u3 != null && ids.Contains(u3.Id)) {
+									if (u3.DeleteTime != null)
+										throw new PermissionsException("You're no longer attached to this organization.");
+									if (u3.Organization.DeleteTime != null)
+										throw new PermissionsException("This organization no longer exists.");
+									break;
+								}
 								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
 									throw new PermissionsException("You do not have access to this resource.");
 								break;
@@ -762,16 +783,17 @@ namespace RadialReview.Controllers {
 							filterContext.Controller.ViewBag.ConsoleLog = false;
 							filterContext.Controller.ViewBag.LimitFiveState = true;
 							filterContext.Controller.ViewBag.ShowAC = false;
-                            filterContext.Controller.ViewBag.ShowCoreProcess = false;
-							
+							filterContext.Controller.ViewBag.ShowCoreProcess = false;
+							filterContext.Controller.ViewBag.EvalOnly = false;
+
 
 
 							if (oneUser != null) {
-                                OneUserViewBagSetup(filterContext, s, userOrgsCount, oneUser);
+								OneUserViewBagSetup(filterContext, s, userOrgsCount, oneUser);
 
-                                SetupToolTips(filterContext.Controller.ViewBag, s, oneUser,Request.NotNull(x=>x.Path));
+								SetupToolTips(filterContext.Controller.ViewBag, s, oneUser, Request.NotNull(x => x.Path));
 
-                            } else {
+							} else {
 								var user = GetUserModel(s);
 								filterContext.Controller.ViewBag.Hints = user.Hints;
 								filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;
@@ -812,61 +834,62 @@ namespace RadialReview.Controllers {
 			return version.ToString();
 		}
 
-		private void SetupToolTips(dynamic ViewBag, ISession s, UserOrganizationModel oneUser,string path) {
-            try {
-                var username = oneUser.User.NotNull(x => x.Id);
-                var enabled =  !oneUser.User.NotNull(x=>x.DisableTips);
-                if (username != null && path != null && enabled) {
-                    ViewBag.TooltipsEnabled = true;
-                    ViewBag.Tooltips = SupportAccessor.GetTooltips(username, path);
-                }
-            } catch (Exception e) {
-                //Eat it! Get yourself a fork and feed it.
-            }
-        }
+		private void SetupToolTips(dynamic ViewBag, ISession s, UserOrganizationModel oneUser, string path) {
+			try {
+				var username = oneUser.User.NotNull(x => x.Id);
+				var enabled = !oneUser.User.NotNull(x => x.DisableTips);
+				if (username != null && path != null && enabled) {
+					ViewBag.TooltipsEnabled = true;
+					ViewBag.Tooltips = SupportAccessor.GetTooltips(username, path);
+				}
+			} catch (Exception e) {
+				//Eat it! Get yourself a fork and feed it.
+			}
+		}
 
-        private static void OneUserViewBagSetup(ActionExecutingContext filterContext, ISession s, int userOrgsCount, UserOrganizationModel oneUser) {
-            var name = new HtmlString(oneUser.GetName());
+		private static void OneUserViewBagSetup(ActionExecutingContext filterContext, ISession s, int userOrgsCount, UserOrganizationModel oneUser) {
+			var name = new HtmlString(oneUser.GetName());
 
-            if (userOrgsCount > 1) {
-                name = new HtmlString(oneUser.GetNameAndTitle(1));
-                try {
-                    name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate() + "</span>");
-                } catch (Exception e) {
-                    log.Error(e);
-                }
-            }
-            filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._img);
-            filterContext.Controller.ViewBag.UserInitials = oneUser.GetInitials();
-            filterContext.Controller.ViewBag.UserColor = oneUser.GeUserHashCode();
-            filterContext.Controller.ViewBag.UsersName = oneUser.GetName();
+			if (userOrgsCount > 1) {
+				name = new HtmlString(oneUser.GetNameAndTitle(1));
+				try {
+					name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate() + "</span>");
+				} catch (Exception e) {
+					log.Error(e);
+				}
+			}
+			filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._img);
+			filterContext.Controller.ViewBag.UserInitials = oneUser.GetInitials();
+			filterContext.Controller.ViewBag.UserColor = oneUser.GeUserHashCode();
+			filterContext.Controller.ViewBag.UsersName = oneUser.GetName();
 
-            filterContext.Controller.ViewBag.UserOrganization = oneUser;
-            filterContext.Controller.ViewBag.ConsoleLog = oneUser.User.NotNull(x => x.ConsoleLog);
+			filterContext.Controller.ViewBag.UserOrganization = oneUser;
+			filterContext.Controller.ViewBag.ConsoleLog = oneUser.User.NotNull(x => x.ConsoleLog);
 
-            filterContext.Controller.ViewBag.TaskCount = 0;
+			filterContext.Controller.ViewBag.TaskCount = 0;
 
-            filterContext.Controller.ViewBag.UserName = name;
-            filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
-            filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview && !oneUser.IsClient;
-            filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
-            filterContext.Controller.ViewBag.ShowPeople = oneUser.Organization.Settings.EnablePeople;// && oneUser.IsManager();
-            filterContext.Controller.ViewBag.ShowCoreProcess = oneUser.Organization.Settings.EnableCoreProcess;// && oneUser.IsManager();
+			filterContext.Controller.ViewBag.UserName = name;
+			filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10 && !oneUser.EvalOnly;
+			filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview && !oneUser.IsClient;
+			filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager() && !oneUser.EvalOnly;
+			filterContext.Controller.ViewBag.ShowPeople = oneUser.Organization.Settings.EnablePeople;// && oneUser.IsManager();
+			filterContext.Controller.ViewBag.ShowCoreProcess = oneUser.Organization.Settings.EnableCoreProcess && !oneUser.EvalOnly;// && oneUser.IsManager();
+			filterContext.Controller.ViewBag.EvalOnly = oneUser.EvalOnly;// && oneUser.IsManager();
 
-            filterContext.Controller.ViewBag.ShowAC = PermissionsAccessor.IsPermitted(s, oneUser, x => x.CanView(PermItem.ResourceType.AccountabilityHierarchy, oneUser.Organization.AccountabilityChartId)); // oneUser.Organization.acc && oneUser.IsManager();
+			filterContext.Controller.ViewBag.ShowAC = PermissionsAccessor.IsPermitted(s, oneUser, x => x.CanView(PermItem.ResourceType.AccountabilityHierarchy, oneUser.Organization.AccountabilityChartId)); // oneUser.Organization.acc && oneUser.IsManager();
 
-            var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
-            filterContext.Controller.ViewBag.LimitFiveState = oneUser.Organization.Settings.LimitFiveState;
-            filterContext.Controller.ViewBag.IsRadialAdmin = oneUser.IsRadialAdmin;
-            filterContext.Controller.ViewBag.IsManager = isManager;
-            filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
-            filterContext.Controller.ViewBag.UserId = oneUser.Id;
-            filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
-            filterContext.Controller.ViewBag.Organization = oneUser.Organization;
-            filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);
-        }
+			var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+			filterContext.Controller.ViewBag.LimitFiveState = oneUser.Organization.Settings.LimitFiveState;
+			filterContext.Controller.ViewBag.IsRadialAdmin = oneUser.IsRadialAdmin || (filterContext.Controller.ViewBag.IsRadialAdmin ?? false);
+			filterContext.Controller.ViewBag.IsManager = isManager;
+			filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+			filterContext.Controller.ViewBag.UserId = oneUser.Id;
+			filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
+			filterContext.Controller.ViewBag.Organization = oneUser.Organization;
+			filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);
+		}
 
-        protected override void OnActionExecuted(ActionExecutedContext filterContext) {
+		protected override void OnActionExecuted(ActionExecutedContext filterContext) {
 			HibernateSession.CloseCurrentSession();
 			if (ToValidate.Any()) {
 				var err = "Didn't validate: " + String.Join(",", ToValidate);

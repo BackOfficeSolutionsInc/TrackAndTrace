@@ -19,16 +19,20 @@
 
 
 <div class="row">
-    <div class="col-sm-11">
+	@if (!Model.HideUsers) {
+    <div class="@(Model.ShowPriority?"col-sm-11":"col-sm-12")">
         <div class="form-group">
             @Html.LabelFor(x => x.OwnerId)
             <select name="@Html.NameFor(x => x.OwnerId)" class="select-user form-control" style="width: 100%;height:64px;">
                 @foreach (var u in Model.PossibleUsers.OrderBy(x => x.name)) {
                     <option data-img="@u.imageUrl" value="@u.id" @(u.id == Model.OwnerId ? "selected" : "")>@u.name</option>
-                }
+				}
             </select>
         </div>
     </div>
+	} else {
+		@Html.HiddenFor(x=>x.OwnerId)
+	}
     @if (Model.ShowPriority) {
         <div class="col-sm-1">
             <div class="form-group">

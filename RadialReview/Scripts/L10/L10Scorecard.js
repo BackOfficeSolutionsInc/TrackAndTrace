@@ -21,8 +21,12 @@ $(function () {
 			e.preventDefault();
 		}
 	});
-
 });
+
+function showFormula(id) {
+	showModal("Edit formula", "/scorecard/formulapartial/" + id, "/scorecard/setformula?id=" + id, null, null, function () { showAlert("Formula updated"); });
+}
+
 function blurChangeTimeout(key, self, d, i, executeNow) {
 	if (typeof (executeNow) === "undefined") {
 		executeNow = false;
@@ -322,8 +326,10 @@ function makeXEditable_Scorecard(selector) {
 }
 
 function addMeasurable(data, smallTable) {
-	$("#ScorecardTable tbody").append(data);
-	$("#ScorecardTable_Over tbody").append(smallTable);
+	//$("#ScorecardTable tbody").append(data);
+	//$("#ScorecardTable_Over tbody").append(smallTable);
+	$("#ScorecardTable tbody").prepend(data);
+	$("#ScorecardTable_Over tbody").prepend(smallTable);
 
 	makeXEditable_Scorecard("#ScorecardTable .inlineEdit:not(.editable)");
 	makeXEditable_Scorecard("#ScorecardTable_Over .inlineEdit:not(.editable)");
@@ -473,7 +479,8 @@ function changeInput(event) {
 			var curRow = (+$(this).data("row") - 1);
 			while (true) {
 				var $row = $("tr[data-row=" + curRow + "]");
-				if ($row.length > 0 && !$row.hasClass("divider")) {
+
+				if ($row.length > 0 && !$row.hasClass("divider") && !$row.is("[data-editable='False']")) {
 					found = $(".grid[data-row=" + (curRow) + "][data-col=" + $(this).data("col") + "]");
 					break;
 				}
@@ -489,7 +496,7 @@ function changeInput(event) {
 			var curRow = (+$(this).data("row") + 1);
 			while (true) {
 				var $row = $("tr[data-row=" + curRow + "]");
-				if ($row.length > 0 && !$row.hasClass("divider")) {
+				if ($row.length > 0 && !$row.hasClass("divider") && !$row.is("[data-editable='False']")) {
 					found = $(".grid[data-row=" + (curRow) + "][data-col=" + $(this).data("col") + "]");
 					break;
 				}
@@ -665,6 +672,13 @@ function updateScoresGoals(startWeek, measurableId, s) {
 
 function receiveUpdateScore(newScore) {
 	//console.info(newScore);
+	debugger;
+	if (Array.isArray(newScore)) {
+		newScore.map(function (x) {
+			receiveUpdateScore(x);
+		});
+		return;
+	}
 	$("[data-scoreid='" + newScore.Id + "']").val(newScore.Measured);
 }
 
@@ -718,6 +732,92 @@ function removeDivider(id) {
 function removeMeasurable(id) {
 	console.log("remove measurable " + id);
 	$("tr[data-measurable='" + id + "']").remove();
+}
+
+function onClickScChart(self) {
+	var state = !$(self).is(".selected");
+	$(self).toggleClass("selected", state);
+	var mid = $(self).closest("[data-measurable]").attr("data-measurable");
+	if (state) {
+		addScChart(mid);
+	} else {
+		removeScChart(mid);
+	}
+}
+
+function removeScChart(id) {
+	try {
+		delete addScChart.chart[id];
+		reapplyScChart();
+	} catch (e) {
+	}
+}
+
+function addScChart(id) {
+	var datas = [];
+	var row = $("tr[data-measurable='" + id + "']");
+	row.find(".score input")
+    .map(function (x) {
+    	var v = $(this).attr("data-value");
+    	//v = v === "" ? null : +v;
+    	if (v !== "") {
+    		datas.push({
+    			value: +v,
+    			date: new Date(+$(this).attr("data-week"))
+    		});
+    	} /*else {
+            if (datas.length > 0) {
+                var last = datas[datas.length - 1]
+                datas.push({ value: last.value, date: last.date + 1 });
+            }
+        }*/
+    });
+	// $("td.measurable").first()
+	var name = row.find(".measurable").first().clone().children().filter(function () { return !$(this).is(".edit-formula"); }).text();
+	if (typeof (addScChart.chart) === "undefined")
+		addScChart.chart = {};
+	addScChart.chart[id] = { data: datas, legend: name };
+	reapplyScChart();
+}
+
+function reapplyScChart() {
+	var datas = [];
+	var legends = [];
+	Object.keys(addScChart.chart).map(function (x) {
+		datas.push(addScChart.chart[x].data);
+		legends.push(addScChart.chart[x].legend);
+	});
+
+	var update = {
+		data: datas,
+		legend: legends,
+		area: false,
+		right: 100,
+		top: 30,
+		linked: true,
+		aggregate_rollover: true
+		// chart_type: 'point',
+		//missing_is_hidden: true,
+		//time_frame: 'many-days'
+	};
+
+	if (typeof (addScChart.mainChart) === "undefined") {
+		addScChart.scUpdate = $("body").on("change.reapplyScChart", ".score input", function () {
+			var mid = $(this).closest("[data-measurable]").attr("data-measurable");
+			setTimeout(function () {
+				addScChart(mid);
+			}, 200);
+		});
+		addScChart.mainChart = $(".sc-chart-container").appendGraph(update);
+	} else {
+		addScChart.mainChart.update(update);
+	}
+
+	if (datas.length == 0) {
+		addScChart.mainChart.remove();
+		addScChart.mainChart = undefined;
+		$("body").off(".reapplyScChart");
+	}
 
 }
 

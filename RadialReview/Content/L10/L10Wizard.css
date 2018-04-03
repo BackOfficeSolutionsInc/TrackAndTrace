@@ -1030,6 +1030,9 @@ body,
 .wizard .picture-column {
   padding: 0px !important;
 }
+.wizard .picture-icon-cursor {
+  cursor: pointer;
+}
 .wizard *:focus {
   outline: none;
 }
@@ -2367,6 +2370,15 @@ body,
   color: #a2a2a2;
   float: right;
 }
+@-moz-document url-prefix() {
+  .wizard .wizard-menu .btn-row .btn .glyphicon-triangle-right {
+    top: -15px;
+    left: 1px;
+    font-size: 10px;
+    color: #a2a2a2;
+    float: right;
+  }
+}
 .wizard .wizard-menu .btn-advanced:hover {
   color: darkred;
 }
@@ -2745,4 +2757,19 @@ body,
 #modal input[type=checkbox].blend {
   width: 47px;
   height: 47px;
+}
+body.admin-disabled .user-pane .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
+}
+body.admin-disabled .scorecard-list-container .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
+}
+body.admin-disabled .rock-pane .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
 }

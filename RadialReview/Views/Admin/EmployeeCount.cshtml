@@ -1,0 +1,51 @@
+﻿@model List<RadialReview.Controllers.AdminController.EmpCount>
+@{
+	ViewBag.Title = "EmployeeCount";
+}
+
+<div class="page">
+	<div><a class="clickable" href="?remainder=@(ViewBag.Divisor.remainder-1)">prev</a></div>
+	<div><b>@ViewBag.Divisor.remainder/@ViewBag.Divisor.divisor</b></div>@*&divisor=@(ViewBag.Divisor.divisor)*@
+	<div><a class="clickable" href="?remainder=@(ViewBag.Divisor.remainder+1)">next</a></div>
+</div>
+
+
+@using (Html.BeginScripts()) {
+	<style>
+		.chart{
+			width:700px;
+			height:100%;
+		}
+		.num{
+			color:gray;
+		}
+		.page{
+			position:fixed;
+			right:20px;
+			top:60px;
+			text-align:center;
+			width:70px;
+		}
+	</style>
+	<script>
+		DataTable({
+
+			data: @Html.ArrayToString(Model),
+			//id:function(x){
+			//	return x.title;
+			//},
+			cells:[{
+				contents:function(x){return "<a href='/organization/which/"+x.Id+"'>"+x.Name+"</a><div class='num'>"+x.Id+"</div>";}
+			},
+				{contents:function(x){
+					var graph = $("<span>");
+					setTimeout(function(){
+						$(".chart_"+x.Id).appendGraph(x.chart);
+					},1);
+					return "<div  class='chart chart_"+x.Id+"'></div>";
+				}}
+			]
+		})
+
+	</script>
+}

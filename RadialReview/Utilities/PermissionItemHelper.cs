@@ -20,10 +20,11 @@ using RadialReview.Areas.CoreProcess.Models.MapModel;
 using RadialReview.Models.Components;
 using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Areas.CoreProcess.Models;
+using RadialReview.Models.Interfaces;
 
 namespace RadialReview.Utilities {
 	public partial class PermissionsUtility {
-		
+
 		public void UnsafeAllow(PermItem.AccessLevel level, PermItem.ResourceType resourceType, long id) {
 			string key;
 			switch (level) {
@@ -41,7 +42,7 @@ namespace RadialReview.Utilities {
 			}
 			new CacheChecker(key, this).Execute(() => this);
 			//this.cache[key] = new CacheResult() { };
-		}		
+		}
 
 		public void EnsureAdminExists(PermItem.ResourceType resourceType, long resourceId) {
 			var items = session.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.CanAdmin && x.ResId == resourceId && x.ResType == resourceType).List();
@@ -135,6 +136,7 @@ namespace RadialReview.Utilities {
 				};
 			});
 		}
+
 
 		public List<PermItem> GetAdmins(PermItem.ResourceType resourceType, long resourceId) {
 			CanView(resourceType, resourceId);
@@ -341,7 +343,7 @@ namespace RadialReview.Utilities {
 						var isMember_ids = isMember_idsQ.Select(x => x.Id).List<long>().ToList();
 						return isMember_ids;
 					}
-				case PermItem.ResourceType.CoreProcess: {					                        
+				case PermItem.ResourceType.CoreProcess: {
 						return AsyncHelper.RunSync<List<long>>(() => new ProcessDefAccessor().GetCandidateGroupIds_Unsafe(session, resourceId));
 					}
 				case PermItem.ResourceType.SurveyContainer: {
@@ -357,8 +359,8 @@ namespace RadialReview.Utilities {
 					throw new ArgumentOutOfRangeException("resourceType");
 			}
 		}
-		
-		public IEnumerable<long> GetIdsForResourceThatUserIsMemberOf(PermItem.ResourceType resourceType, long userId,bool ignoreExceptions=false) {
+
+		public IEnumerable<long> GetIdsForResourceThatUserIsMemberOf(PermItem.ResourceType resourceType, long userId, bool ignoreExceptions = false) {
 			try {
 				switch (resourceType) {
 					case PermItem.ResourceType.L10Recurrence:
@@ -386,7 +388,7 @@ namespace RadialReview.Utilities {
 				return new long[] { };
 			}
 		}
-		
+
 		protected bool IsCreator(PermItem.ResourceType resourceType, long resourceId) {
 			switch (resourceType) {
 				case PermItem.ResourceType.L10Recurrence:
@@ -405,11 +407,11 @@ namespace RadialReview.Utilities {
 					throw new ArgumentOutOfRangeException("resourceType");
 			}
 		}
-		
+
 		public IEnumerable<long> GetIdsForResourcesCreatedByUser(PermItem.ResourceType resourceType, long userId) {
 			switch (resourceType) {
 				case PermItem.ResourceType.L10Recurrence:
-					return session.QueryOver<L10Recurrence>().Where(x=>x.CreatedById==userId && x.DeleteTime == null).Select(x=>x.Id).Future<long>();
+					return session.QueryOver<L10Recurrence>().Where(x => x.CreatedById == userId && x.DeleteTime == null).Select(x => x.Id).Future<long>();
 				case PermItem.ResourceType.AccountabilityHierarchy:
 					return new long[] { };
 				case PermItem.ResourceType.UpgradeUsersForOrganization:
@@ -447,7 +449,7 @@ namespace RadialReview.Utilities {
 					throw new ArgumentOutOfRangeException("resourceType");
 			}
 		}
-		
+
 		public IEnumerable<long> GetIdsForResourceForOrganization(PermItem.ResourceType resourceType, long orgId) {
 			switch (resourceType) {
 				case PermItem.ResourceType.L10Recurrence:
@@ -461,12 +463,12 @@ namespace RadialReview.Utilities {
 					};
 				case PermItem.ResourceType.SurveyContainer:
 					return session.QueryOver<SurveyContainer>()
-						.Where(x => x.OrgId==orgId && x.DeleteTime == null)
+						.Where(x => x.OrgId == orgId && x.DeleteTime == null)
 						.Select(x => x.Id)
 						.Future<long>();
 				case PermItem.ResourceType.CoreProcess:
 					return session.QueryOver<ProcessDef_Camunda>()
-						.Where(x => x.OrgId==orgId&& x.DeleteTime == null)
+						.Where(x => x.OrgId == orgId && x.DeleteTime == null)
 						.Select(x => x.Id)
 						.Future<long>();
 				default:

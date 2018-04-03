@@ -44,10 +44,17 @@ namespace RadialReview {
 			AngularMaterial(bundles);
 			People(bundles, angularHelpers_Styles, angularHelpers_Scripts);
 
+			TagInput(bundles);
+			SnackBar(bundles);
+
 			BundleTable.EnableOptimizations = Config.OptimizationEnabled();
 
 
 
+		}
+
+		private static void SnackBar(BundleCollection bundles) {
+			bundles.Add(new StyleBundle("~/styles/snackbar").Include("~/Content/SnackbarAlerts.css"));
 		}
 
 		private static void People(BundleCollection bundles, string[] ngStyles, string[] ngScripts) {
@@ -60,6 +67,22 @@ namespace RadialReview {
 				)));
 			bundles.Add(new StyleBundle("~/styles/people").Include(ngStyles).Include(
 				"~/Content/SnackbarAlerts.css", "~/Content/People/*.css"));
+		}
+
+		private static void TagInput(BundleCollection bundles) {
+			bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/taginput").Include(
+					  "~/Scripts/Inputs/underscore.min.js",
+					  "~/Scripts/Inputs/underscore.string.min.js",
+					  "~/Scripts/Inputs/backbone.min.js",
+					  "~/Scripts/Inputs/backbone.subviews.js",
+					  "~/Scripts/Inputs/liquidmetal.js",
+					  "~/Scripts/Inputs/require.js",
+					  "~/Scripts/Inputs/token-editor.js"
+			)));
+
+			bundles.Add(new StyleBundle("~/styles/taginput").Include(
+			 "~/Content/Inputs/TagInput.css"
+			 ));
 		}
 
 		private static void SetCard(BundleCollection bundles) {
@@ -88,7 +111,8 @@ namespace RadialReview {
 				"~/Scripts/Main/alerts.js",
 				"~/Scripts/Main/clickableclass.js",
 				"~/Scripts/Main/profilepicture.js",
-				"~/Scripts/Main/libraries.js"
+				"~/Scripts/Main/libraries.js",
+				"~/Scripts/Main/chart.js"
 			};
 
 
@@ -109,7 +133,7 @@ namespace RadialReview {
 				"~/Scripts/Main/beta.js"
 			});
 
-			bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/main").Include(list.ToArray())));	
+			bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/main").Include(list.ToArray())));
 
 		}
 
@@ -118,6 +142,9 @@ namespace RadialReview {
 				//"~/bower_components/angular-material-data-table/dist/md-data-table.min.js"
 				//S:\repos\Radial\RadialReview\RadialReview\Scripts\Angular\Helpers\Libraries\angular-material-custom.js
 				"~/Scripts/Angular/Helpers/Libraries/angular-material-custom.js"
+			)));
+			bundles.Add(UpdateMinification(new StyleBundle("~/styles/AngularMaterial").Include(
+				"~/Content/Angular/angular-material.css"
 			)));
 		}
 

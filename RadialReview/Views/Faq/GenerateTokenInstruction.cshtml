@@ -1,0 +1,54 @@
+﻿<div class="doc-section">
+	<h2 id="Generating-a-Token">Generating a Token</h2>
+	<p>To interact with the API you'll need to request a token. This is done with a post request to the server. Tokens are only valid for 2 weeks. After which, a new one must be generated.</p>
+
+	<p>
+		The post request requires three paramemters:
+	</p><ol>
+		<li><b>grant_type</b> which is always "password"</li>
+		<li><b>userName</b> which is your login email</li>
+		<li><b>password</b> which is your login password</li>
+	</ol>
+	<p></p>
+	<p>The post request is delivered to <b>https://traction.tools/Token</b>. The following is a curl.</p>
+	<figure class="highlight">
+		<code>curl -i -X POST -d "grant_type=password" -d "userName=<b>YOUR_USERNAME_HERE</b>" -d "password=<b>YOUR_PASSWORD_HERE</b>" 'https://traction.tools/Token'</code>
+	</figure>
+
+	<p>This will return json that looks similar to the following:</p>
+	<pre style="overflow-x:auto; word-wrap: normal;">{
+  "access_token":"qriivcbIB143adasdVuweqweasdVidi-wqfayefGFa63IiaJasdf325salo10asdf0vaxcve0awRUPph-KDSgqweascvoxzxf-OadsfIadoasdfoc-asdfic_qeisicpapdladsKdiadsioqwekl78VjptVop7aretuasdfkNQIOWNFO123459zxcvasdf6r9shB6BYpyowiGJLMHi3yB3Es5aAYQ2pGstqAJ58XNshdXlW4WhHsbxJ2ggO3hnX4yMKbv4ieEBuZNN7zA8n4KG676RyqfRx_MLUjdYCnslOqEGUf8Ole5a8krPX5EWLcs3qwDB6EH6Icc7Bk48hHdDMeuAn3s5kvGsBK14Fel7p228W9_bdXKhG9ylVZF7mjmcunTa7UijA2nX7pp60tcOVa4jkdZlyui6sqAejGHv-avB2L0n8fVpjHi8nVWlReG",
+  "token_type":"bearer",
+  "expires_in":1209599,
+  "userName":"user@organization.com",
+  ".issued":"Mon, 28 Dec 2015 07:05:37 GMT",
+  ".expires":"Mon, 11 Jan 2016 07:05:37 GMT"
+}</pre>
+
+	<p>The <b>access_token</b> will be used in all future requests. Notice the <b>token_type</b>. It indicates that this access_token is a <b>Bearer</b> token.</p>
+
+
+	<h3 id="Formatting-a-Request">Formating a Request</h3>
+	<p>Once you have your Bearer token. You must add it to the header of all future requests.</p>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">Example: GET a listing scorecard items using CURL</div>
+		<div class="panel-body">
+			<code>curl -i -X GET -H "Authorization:Bearer <b>YOUR_BEARER_TOKEN_HERE</b>" 'https://traction.tools/api/v1/scorecard/user/mine'</code>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading">Example: GET a listing scorecard items using JQuery</div>
+		<div class="panel-body">
+			<code style="word-wrap: normal; white-space:pre; display: block;">$.ajax({
+   url:"https://traction.tools/api/v1/scorecard/user/mine",
+   method: 'GET',
+   headers: {
+     'Accept' : 'application/json',
+     'Authorization' : 'Bearer <b>YOUR_BEARER_TOKEN_HERE</b>'
+   }
+});</code>
+		</div>
+	</div>
+
+</div>

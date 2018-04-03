@@ -1,5 +1,6 @@
 ﻿using NHibernate;
 using NHibernate.Linq;
+using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
@@ -257,73 +258,79 @@ namespace RadialReview.Accessors {
 			};
 
 		public static Boolean EnsureApplicationExists() {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				/*using (var tx = s.BeginTransaction())
-                {
-                    Temp(s);
-                    tx.Commit();
-                    s.Flush();
-                }*/
-
-				using (var tx = s.BeginTransaction()) {
-					ConstructPositions(s);
-					tx.Commit();
-					s.Flush();
-				}
-				List<QuestionCategoryModel> applicationCategories;
-				using (var tx = s.BeginTransaction()) {
-					applicationCategories = ConstructApplicationCategories(s);
-					tx.Commit();
-					s.Flush();
-				}
-				using (var tx = s.BeginTransaction()) {
-					ConstructApplicationQuestions(s, applicationCategories);
-					tx.Commit();
-					s.Flush();
-				}
-
-				using (var tx = s.BeginTransaction()) {
-					ConstructApplicationTasks(s);
-					tx.Commit();
-					s.Flush();
-
-				}
-				using (var tx = s.BeginTransaction()) {
-					ConstructPhoneNumbers(s);
-					tx.Commit();
-					s.Flush();
-				}
-				using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
-					var found = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
-					if (found == null) {
-						s.Save(new SyncLock() {
-							Id = SyncLock.CREATE_KEY
-						});
-					}
-					tx.Commit();
-					s.Flush();
-				}
-
-
-				// must be last
-				using (var tx = s.BeginTransaction()) {
-					var application = s.Get<ApplicationWideModel>(APPLICATION_ID);
-					if (application == null) {
-						s.Save(new ApplicationWideModel(APPLICATION_ID));
+			if (Config.ShouldUpdateDB()) {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					/*using (var tx = s.BeginTransaction())
+					{
+						Temp(s);
 						tx.Commit();
 						s.Flush();
-						return true;
+					}*/
+
+					using (var tx = s.BeginTransaction()) {
+						ConstructPositions(s);
+						tx.Commit();
+						s.Flush();
 					}
-					return false;
+					List<QuestionCategoryModel> applicationCategories;
+					using (var tx = s.BeginTransaction()) {
+						applicationCategories = ConstructApplicationCategories(s);
+						tx.Commit();
+						s.Flush();
+					}
+					using (var tx = s.BeginTransaction()) {
+						ConstructApplicationQuestions(s, applicationCategories);
+						tx.Commit();
+						s.Flush();
+					}
+
+					using (var tx = s.BeginTransaction()) {
+						ConstructApplicationTasks(s);
+						tx.Commit();
+						s.Flush();
+
+					}
+					using (var tx = s.BeginTransaction()) {
+						ConstructPhoneNumbers(s);
+						tx.Commit();
+						s.Flush();
+					}
+					using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
+						for (var i = 0; i < SyncLock.MAX_SYNC_KEYS; i++) {
+							var found = s.Get<SyncLock>(SyncLock.CREATE_KEY(i), LockMode.Upgrade);
+							if (found == null) {
+								s.Save(new SyncLock() {
+									Id = SyncLock.CREATE_KEY(i)
+								});
+							}
+						}
+						tx.Commit();
+						s.Flush();
+					}					
+
+					// must be last
+					using (var tx = s.BeginTransaction()) {
+						var application = s.Get<ApplicationWideModel>(APPLICATION_ID);
+						if (application == null) {
+							s.Save(new ApplicationWideModel(APPLICATION_ID));
+							tx.Commit();
+							s.Flush();
+							return true;
+						}
+						return false;
+
+					}
 				}
-
-
 			}
+			return false;
 		}
+
+
 
 		public const string ACCOUNT_AGE = "ACCOUNT_AGE";
 		public const string DAILY_EMAIL_TODO_TASK = "DAILY_EMAIL_TODO_TASK";
 		public const string DAILY_TASK = "DAILY_TASK";
+		public const string EVENT_FREQUENCY_TASK = "EVENT_FREQUENCY_TASK";
 		//public const string HOURLY_TASK = "DAILY_TASK";
 
 		public static void ConstructApplicationTasks(ISession s) {
@@ -353,7 +360,6 @@ namespace RadialReview.Accessors {
 				}
 			}
 
-
 			var foundDaily = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == DAILY_TASK).List().ToList();
 			if (!foundDaily.Any()) {
 				var b = DateTime.UtcNow.Date.AddMinutes(3);
@@ -369,6 +375,30 @@ namespace RadialReview.Accessors {
 				s.Save(task);
 				task.OriginalTaskId = task.Id;
 				s.Update(task);
+			}
+
+
+			var foundEventFrequency = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == EVENT_FREQUENCY_TASK).List().ToList();
+			foreach (var ii in Enum.GetValues(typeof(EventFrequency))) {
+				var i = (EventFrequency)ii;
+				var url = "/Scheduler/ExecuteEvents?frequency=" + i;
+				var count = foundEventFrequency.Count(x => x.Url == url);
+				if (count == 0) {
+					var b = DateTime.UtcNow.Date;
+					var task = new ScheduledTask() {
+						MaxException = 1,
+						Url = url,
+						NextSchedule = TimeSpan.FromMinutes((int)i),
+						Fire = b,
+						FirstFire = b,
+						TaskName = EVENT_FREQUENCY_TASK,
+						EmailOnException = true
+
+					};
+					s.Save(task);
+					task.OriginalTaskId = task.Id;
+					s.Update(task);
+				}
 			}
 		}
 
@@ -721,4 +751,4 @@ namespace RadialReview.Accessors {
 			}
 		}
 	}
-}
+}

@@ -1,0 +1,61 @@
+﻿@model List<RadialReview.Crosscutting.EventAnalyzers.Models.EventSubscription>
+@{
+    ViewBag.Title = "Index";
+}
+
+@section top{
+	<div class="jumbotron">
+		<h1>Subscriptions</h1>
+	</div>
+}
+
+
+
+
+<div id="table"></div>
+
+<style>
+	.event-name {
+		font-weight:bold;
+		/*min-width:280px;
+		display: inline-block;
+		/*text-align:right;*
+		padding-right:5px;
+		word-break:keep-all ;*/
+	}
+	.event-description{
+		/*word-break:keep-all ;
+		display: inline-block;*/
+	}
+</style>
+
+@using (Html.BeginScripts()) {
+<script>
+	var data = @Html.ArrayToString(Model);
+	DataTable({
+		container: "#table",
+		data: data,
+		nodataText:"No subscriptions",
+		addButton:{text : "New Subscription"},
+		clickAdd:"/Events/Create",
+		clickEdit:"/Events/Edit/{0}",
+		postEdit:"/Events/Edit/{0}",
+		clickRemove: "/Events/Delete/{0}",
+		//cellId:function(d){ return JSON.parse(d.EventSettings).RecurrenceId;},
+		cells:[
+			//{contents:function(d){return JSON.parse(d.EventSettings).RecurrenceId; }},	
+			{contents:function(d){
+				var s =JSON.parse(d.EventSettings); 
+				return "<div class='row'><div class='col-md-4 event-name'>"+s.Name+"</div> <div class='col-md-8 event-description'>"+s.Description+"</div></div>"; 
+			},classes:"fullWidth"},	
+			//{contents:function(d){return JSON.parse(d.EventSettings).Description; },classes:"fullWidth"},	
+			//{contents:function(d){return d.EventType;}},			
+			{edit:true},
+			{remove:true},
+		],
+		nodata:"No subscriptions"
+	});
+
+</script>
+}
+

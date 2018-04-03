@@ -22,31 +22,32 @@ using RadialReview.Models.Application;
 using RadialReview.Utilities;
 using RadialReview.Hooks;
 using RadialReview.Variables;
+using NHibernate;
 
 namespace RadialReview.Controllers {
 	[Authorize]
 	public partial class AccountController : UserManagementController {
 
-        //public AccountController()
-        //    : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
-        //{
-        //}
+		//public AccountController()
+		//    : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
+		//{
+		//}
 
-        //public AccountController(NHibernateUserManager userManager)
-        //{
-        //    UserManager = userManager;
-        //}
-        [Access(AccessLevel.Radial)]
-        public virtual async Task<ActionResult> SetAsUser(string id) {
+		//public AccountController(NHibernateUserManager userManager)
+		//{
+		//    UserManager = userManager;
+		//}
+		[Access(AccessLevel.Radial)]
+		public virtual async Task<ActionResult> SetAsUser(string id) {
 #pragma warning disable CS0618 // Type or member is obsolete
 			var user = _UserAccessor.GetUserByEmail(id.ToLower());
 #pragma warning restore CS0618 // Type or member is obsolete
 			if (user != null) {
-                await SignInAsync(user);
-                return RedirectToAction("Index", "Dashboard");
-            }
-            return Content("Could not set as "+ id);
-        }
+				await SignInAsync(user);
+				return RedirectToAction("Index", "Dashboard");
+			}
+			return Content("Could not set as " + id);
+		}
 
 
 
@@ -77,7 +78,7 @@ namespace RadialReview.Controllers {
 				var nexus = new NexusModel(token) { DateCreated = DateTime.UtcNow, DeleteTime = until, ActionCode = NexusActions.ResetPassword };
 				nexus.SetArgs(user.Id);
 				var result = _NexusAccessor.Put(nexus);
-				
+
 				await Emailer.SendEmail(
 						Mail.To(EmailTypes.ResetPassword, user.Email)
 						.Subject(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName)
@@ -88,7 +89,7 @@ namespace RadialReview.Controllers {
 				log.Info("Resent login information for " + user.Email);
 
 			} else {
-				log.Info("Could not send login information for " + rpvm.Email+". User was null");
+				log.Info("Could not send login information for " + rpvm.Email + ". User was null");
 				TempData["Message"] = ("An error has occurred. Please check that you have the correct email address and try again. Contact us if the problem persists.");
 			}
 			return RedirectToAction("Index", "Home");
@@ -107,7 +108,7 @@ namespace RadialReview.Controllers {
 
 			return View(new ResetPasswordWithTokenViewModel() { Token = id });
 		}
-				
+
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AllowAnonymous]
@@ -165,7 +166,7 @@ namespace RadialReview.Controllers {
 			var userOrgs = GetUserOrganizations(null);
 			ViewBag.Admin = GetUserModel().IsRadialAdmin;
 			ViewBag.ReturnUrl = ReturnUrl;
-			return View(userOrgs.ToList());
+			return View(userOrgs.Where(x => x.DeleteTime == null && x.Organization.DeleteTime == null && x.Organization.AccountType != AccountType.Cancelled).ToList());
 		}
 
 		[Access(AccessLevel.Any)]
@@ -406,7 +407,7 @@ namespace RadialReview.Controllers {
 				UserId = user.Id,
 				ShowScorecardColors = user._StylesSettings.ShowScorecardColors,
 				ReverseScorecard = user.ReverseScorecard,
-                DisableTips = user.DisableTips,
+				DisableTips = user.DisableTips,
 			};
 		}
 
@@ -423,8 +424,8 @@ namespace RadialReview.Controllers {
 				model.SendTodoTime != null,
 				model.SendTodoTime,
 				model.ShowScorecardColors,
-                model.ReverseScorecard,
-                model.DisableTips);
+				model.ReverseScorecard,
+				model.DisableTips);
 			return RedirectToAction("Index", "Home");
 		}
 
@@ -537,45 +538,45 @@ namespace RadialReview.Controllers {
 			return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
 		}
 
-        //
-        // POST: /Account/ExternalLoginConfirmation
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        [Access(AccessLevel.Any)]
-        public ActionResult ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl) {
-            throw new Exception("Fix Default Todo Send Time");
-            //if (User.Identity.IsAuthenticated) {
-            //	return RedirectToAction("Manage");
-            //}
+		//
+		// POST: /Account/ExternalLoginConfirmation
+		[HttpPost]
+		[AllowAnonymous]
+		[ValidateAntiForgeryToken]
+		[Access(AccessLevel.Any)]
+		public ActionResult ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl) {
+			throw new Exception("Fix Default Todo Send Time");
+			//if (User.Identity.IsAuthenticated) {
+			//	return RedirectToAction("Manage");
+			//}
 
-            //if (ModelState.IsValid) {
-            //	// Get the information about the user from the external login provider
-            //	var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-            //	if (info == null) {
-            //		return View("ExternalLoginFailure");
-            //	}
-            //	var user = new UserModel() { UserName = model.UserName };
-            //	//var result = await UserManager.CreateAsync(user);
-            //	var result = await UserAccessor.CreateUser(UserManager, user, info);
-            //	if (result.Succeeded) {
-            //		//result = await UserManager.AddLoginAsync(user.Id, info.Login);
-            //		//if (result.Succeeded)
-            //		//{
-            //		await SignInAsync(user, isPersistent: false);
-            //		return RedirectToLocal(returnUrl);
-            //		//}
-            //	}
-            //	AddErrors(result);
-            //}
+			//if (ModelState.IsValid) {
+			//	// Get the information about the user from the external login provider
+			//	var info = await AuthenticationManager.GetExternalLoginInfoAsync();
+			//	if (info == null) {
+			//		return View("ExternalLoginFailure");
+			//	}
+			//	var user = new UserModel() { UserName = model.UserName };
+			//	//var result = await UserManager.CreateAsync(user);
+			//	var result = await UserAccessor.CreateUser(UserManager, user, info);
+			//	if (result.Succeeded) {
+			//		//result = await UserManager.AddLoginAsync(user.Id, info.Login);
+			//		//if (result.Succeeded)
+			//		//{
+			//		await SignInAsync(user, isPersistent: false);
+			//		return RedirectToLocal(returnUrl);
+			//		//}
+			//	}
+			//	AddErrors(result);
+			//}
 
-            //ViewBag.ReturnUrl = returnUrl;
-            //return View(model);
-        }
+			//ViewBag.ReturnUrl = returnUrl;
+			//return View(model);
+		}
 
-        //
-        // POST: /Account/LogOff
-        [HttpPost]
+		//
+		// POST: /Account/LogOff
+		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[Access(AccessLevel.Any)]
 		public ActionResult LogOff() {
@@ -605,6 +606,61 @@ namespace RadialReview.Controllers {
 		public JsonResult SetHint(bool? hint) {
 			_UserAccessor.SetHints(GetUserModel(), hint.Value);
 			return Json(ResultObject.Success("Hints turned " + (hint.Value ? "on." : "off.")), JsonRequestBehavior.AllowGet);
+		}
+
+
+		public class AppVersionVM {
+			public string VersionId { get; set; }
+			public bool ShowMessage { get; set; }
+			public string Message { get; set; }
+			public string MessageType { get; set; }
+			public string MessageId { get; set; }
+		}
+
+		[Access(AccessLevel.Any)]
+		public async Task<JsonResult> AppVersion(string versionId = null, string deviceId = null, string deviceType = null, string deviceVersion = null, string userId = null) {
+			deviceType = deviceType.ToLower();
+
+			var o = new AppVersionVM() { };
+
+			string userName = null;
+			try {
+				userName = GetUserModel().UserName;
+			} catch (Exception) {
+				//maybe theres no user.
+			}
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					string currentVersion = null;
+
+					switch (deviceType) {
+
+						case "android":
+							currentVersion = s.GetSettingOrDefault("CurrentAndroidVersion", "1.0");
+							break;
+						case "ios":
+							currentVersion = s.GetSettingOrDefault("CurrentIOSVersion", "1.0");
+							break;
+						default:
+							break;
+					}
+
+					if (currentVersion != null) {
+						o.VersionId = currentVersion;
+						if (currentVersion != null && versionId != null && currentVersion.ToLower() != versionId.ToLower()) {
+							o.ShowMessage = true;
+							o.Message = "New version released. Please update.";
+							o.MessageType = "VersionUpdate-" + currentVersion;
+						}
+					}
+
+				}
+			}
+
+			await NotificationAccessor.TryRegisterPhone(userName, deviceId, deviceType, deviceVersion);
+
+			return Json(o, JsonRequestBehavior.AllowGet);
 		}
 
 

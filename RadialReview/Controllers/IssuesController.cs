@@ -9,6 +9,7 @@ using Amazon.IdentityManagement.Model;
 using RadialReview.Accessors;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Json;
+using RadialReview.Models.L10;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 
@@ -119,6 +120,26 @@ namespace RadialReview.Controllers {
 		}
 
 
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> GetCopyModal(long recurrence_issue, long? copyto = null) {
+			var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
+
+			copyto = copyto ?? i.Recurrence.Id;
+			var details = "";
+
+			var model = new CopyIssueVM() {
+				IssueId = i.Issue.Id,
+				Message = i.Issue.Message,
+				Details = details,//i.Issue.Description,
+				ParentIssue_RecurrenceId = i.Id,
+				CopyIntoRecurrenceId = copyto.Value,
+				PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), i.Recurrence.Id).Where(m => m.Id != i.Recurrence.Id).Select(s => new L10Recurrence() { Id = s.Id, Name = s.Name }).ToList()
+			};
+
+			return Json(ResultObject.SilentSuccess(model), JsonRequestBehavior.AllowGet);
+		}
+
 		//[Access(AccessLevel.UserOrganization)]
 		//public PartialViewResult EditModal(long id) {
 		//	var todo = TodoAccessor.GetTodo(GetUser(), id);
@@ -157,7 +178,7 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> CopyModal(CopyIssueVM model) {
-			ValidateValues(model, x => x.ParentIssue_RecurrenceId, x => x.IssueId);
+			//ValidateValues(model, x => x.ParentIssue_RecurrenceId, x => x.IssueId);
 			var issue = IssuesAccessor.CopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
 			model.PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), issue.Recurrence.Id);
 
@@ -165,8 +186,17 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
 
+		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult CreateIssue(long recurrence, long meeting = -1, string issue = null, long? modelId = null, string modelType = null) {
+		public async Task<JsonResult> UnCopyModal(CopyIssueVM model) {
+			var issue = IssuesAccessor.UnCopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
+
+			await IssuesAccessor.EditIssue(GetUser(), model.ParentIssue_RecurrenceId, awaitingSolve: false);
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult CreateIssue(long recurrence, long meeting = -1, string issue = null, long? modelId = null, string modelType = null, bool showUsers = true) {
 			if (meeting != -1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
@@ -197,7 +227,8 @@ namespace RadialReview.Controllers {
 				OwnerId = GetUser().Id,
 				ForModelId = modelId,
 				ForModelType = modelType,
-				ShowPriority = showPriority
+				ShowPriority = showPriority,
+				HideUsers = !showUsers
 			};
 			return PartialView("CreateIssueModal", model);
 		}
@@ -453,6 +484,8 @@ namespace RadialReview.Controllers {
 				name = x.GetName()
 			}).ToList();
 
+			//get Notes
+			s._Notes = await PadAccessor.GetText(s.HeadlinePadId);
 
 			var model = new HeadlineIssueVM() {
 				ByUserId = GetUser().Id,

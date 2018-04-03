@@ -1,0 +1,64 @@
+.toolbar{
+    background:#eee;
+}
+
+.toolbar ul li a{
+    background:white;
+    border-radius:0px!important;
+    min-width:10px;
+    min-height:10px;
+    font-size:10px;
+}
+
+li[data-key="redo"],
+li[data-key="undo"] {
+    display:none;
+}
+
+/*[name='uploadfile']{
+    width:0px !important;
+}*/
+
+body .hyperlink-icon .buttonicon:before {
+    content: "\1f517" !important;
+    position:absolute;
+    top: -3.5px !important;
+    left: 0px;
+    font-size: 16px;
+}
+
+li.separator.acl-write {
+    display: none;
+}
+
+span[style="display:block;"] ~ a[href]{
+	display:none !important;
+}
+
+#editbar{
+height: 28px !important;
+}
+
+button.hyperlink-save {
+    border: 1px solid #ccc;
+    color: transparent;
+    font-size: 0px;
+    height: 26px;
+    width: 53px;
+    padding: 3px;
+    background-color: white;
+}
+
+button.hyperlink-save:after{
+    content:"link";
+    font-size:12px;
+    color: #666;
+    font-weight:normal;
+}
+
+input.hyperlink-url {
+    height: 12px;
+    border: 1px solid #ccc;
+    background-image: none!important;
+}
+
