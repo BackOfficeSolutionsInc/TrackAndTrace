@@ -327,7 +327,7 @@ namespace TractionTools.Tests.TestUtils {
 		protected static string TempFolder;
 
 		public static string GetTempFile() {
-			return Path.Combine(Path.GetTempPath(), "TractionTools");
+			return Path.Combine("c:\\TractionTools-Tests\\", "");
 		}
 
 		public static string GetTestSolutionPath() {

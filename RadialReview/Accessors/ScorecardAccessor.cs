@@ -291,7 +291,7 @@ namespace RadialReview.Accessors {
 			var measurables = GetUserMeasurables(s, perms, userId, true, true, true);
 
 			var scorecardStart = range.StartTime.StartOfWeek(DayOfWeek.Sunday);
-			var scorecardEnd = range.EndTime.AddDays(6).StartOfWeek(DayOfWeek.Sunday);
+			var scorecardEnd = range.EndTime.AddDays(13).StartOfWeek(DayOfWeek.Sunday);
 
 			var scores = await GetUserScoresAndFillIn(s, perms, userId, scorecardStart, scorecardEnd, includeAdmin);
 			return new AngularScorecard(-1, perms.GetCaller(), measurables.Select(x => new AngularMeasurable(x)), scores.ToList(), now, range, includeNextWeek, now);

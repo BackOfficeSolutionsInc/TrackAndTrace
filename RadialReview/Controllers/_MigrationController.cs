@@ -2295,45 +2295,45 @@ namespace RadialReview.Controllers {
 		}
 
 
-        [Access(Controllers.AccessLevel.Radial)]
-        [AsyncTimeout(20 *60 *1000)]
-        public String M13_03_2018() {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var orgs = s.QueryOver<OrganizationModel>().Future();
-                    orgs = orgs.Where(x => x.Settings.EnableReview == false && x.Settings.EnablePeople == false);
-                    var getRocks = s.QueryOver<RockModel>().Where(x => x.DeleteTime == null).Future(); // Where(x => x.OrganizationId == org.Id).List().ToList();
-                    var getRecurenceRock = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null).Future(); // x.ForRock.Id == rock.Id
+		[Access(Controllers.AccessLevel.Radial)]
+		[AsyncTimeout(20 * 60 * 1000)]
+		public String M13_03_2018() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var orgs = s.QueryOver<OrganizationModel>().Future();
+					orgs = orgs.Where(x => x.Settings.EnableReview == false && x.Settings.EnablePeople == false);
+					var getRocks = s.QueryOver<RockModel>().Where(x => x.DeleteTime == null).Future(); // Where(x => x.OrganizationId == org.Id).List().ToList();
+					var getRecurenceRock = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null).Future(); // x.ForRock.Id == rock.Id
 
-                    orgs = orgs.ToList();
-                    getRocks = getRocks.ToList();
-                    getRecurenceRock = getRecurenceRock.ToList();
-                     
-                    int counter = 0;
-                    foreach (var org in orgs) {
-                        var orgRocks = getRocks.Where(x => x.OrganizationId == org.Id).ToList();
+					orgs = orgs.ToList();
+					getRocks = getRocks.ToList();
+					getRecurenceRock = getRecurenceRock.ToList();
 
-                        foreach (var rock in orgRocks) {
-                            var recurenceRocks = getRecurenceRock.Where(x => x.ForRock.Id == rock.Id).ToList();
+					int counter = 0;
+					foreach (var org in orgs) {
+						var orgRocks = getRocks.Where(x => x.OrganizationId == org.Id).ToList();
 
-                            if (!recurenceRocks.Any()) {
-                                rock.DeleteTime = new DateTime(2018, 03, 13); // setting method date
-                                s.Update(rock);
+						foreach (var rock in orgRocks) {
+							var recurenceRocks = getRecurenceRock.Where(x => x.ForRock.Id == rock.Id).ToList();
 
-                                counter++;
-                            }
-                        }
-                    }
+							if (!recurenceRocks.Any()) {
+								rock.DeleteTime = new DateTime(2018, 03, 13); // setting method date
+								s.Update(rock);
 
-                    tx.Commit();
-                    s.Flush();
+								counter++;
+							}
+						}
+					}
 
-                    return "Updated: " + counter;
+					tx.Commit();
+					s.Flush();
 
-                }
-            }
-        }
-    }
+					return "Updated: " + counter;
+
+				}
+			}
+		}
+
 
 		[Access(Controllers.AccessLevel.Radial)]
 		public String M01_09_2018() {
@@ -2417,7 +2417,7 @@ namespace RadialReview.Controllers {
 					tx.Commit();
 				}
 			}
-			return "Updated: " + a ;
+			return "Updated: " + a;
 		}
 
 	}

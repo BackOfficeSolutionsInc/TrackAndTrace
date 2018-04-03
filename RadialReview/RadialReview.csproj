@@ -147,7 +147,6 @@
     <Compile Include="Api\V1\Todo.cs" />
     <Compile Include="Api\V1\Users.cs" />
     <Compile Include="App_Start\DateTimeModelBinder.cs" />
-    <Compile Include="App_Start\EventConfig.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />
@@ -172,6 +171,8 @@
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IMilestoneHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IPositionHooks.cs" />
     <Compile Include="Crosscutting\Hooks\Realtime\Position\RealTime_Positions.cs" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
@@ -2567,8 +2568,6 @@
     <Folder Include="logs\" />
     <Folder Include="Models\Frontend\ViewModels\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
-    <Folder Include="Scripts\Models\" />
-    <Folder Include="Scripts\typings\d3\plugins\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />

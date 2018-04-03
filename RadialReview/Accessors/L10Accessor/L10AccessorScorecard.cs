@@ -323,10 +323,7 @@ namespace RadialReview.Accessors {
 				var periods = TimingUtility.GetPeriods(ts, now1, currentTime, true);
 				//Hides the todo completion % if we're not in this week. Purely asthetic since the calculation is indeed correct.
 				var hideCompletion = new Func<DateTime, bool>(weekStart => currentTime < weekStart);
-
-				//Hides the todo completion % if we're not in this week. Purely asthetic since the calculation is indeed correct.
-				var hideCompletion = new Func<DateTime, bool>(weekStart => currentTime < weekStart);
-
+								
 				if (getScores && (recur.IncludeAggregateTodoCompletion || forceIncludeTodoCompletion)) {
 					var todoScores = CalculateAggregateTodoCompletionScores(ts, todoCompletion, periods, hideCompletion, currentTime);
 					scoreModels.AddRange(todoScores);

@@ -5,7 +5,7 @@
 	var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
 	var selector = ViewBag.Selector as string ?? "(model.Rocks)";
 	var filter = ViewBag.Filter as string ?? " | filter:!!rock.Archived";// | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
-												//var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
+																		 //var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
 
 	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
 	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
@@ -55,12 +55,12 @@
 								</md-select>
 							</td>
 							<td md-cell class="picture-column">
-                                <span class="item-wrapper place-right picture-icon-cursor">
-                                    <span ng-if="rock.Owner.Managing==true" class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
-                                        <profile-image class="" user="rock.Owner"></profile-image>
-                                    </span>
-                                    <profile-image ng-if="rock.Owner.Managing==false" class="" user="rock.Owner"></profile-image>
-                                </span>
+								<span class="item-wrapper place-right picture-icon-cursor">
+									<span ng-if="rock.Owner.Managing!=false" class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
+										<profile-image class="" user="rock.Owner"></profile-image>
+									</span>
+									<profile-image ng-if="rock.Owner.Managing==false" class="" user="rock.Owner"></profile-image>
+								</span>
 							</td>
 							<td md-cell class="message-column name" style="width:100%">
 								@if (usePopup) {
@@ -84,14 +84,14 @@
 							</td>
 						</tr>
 
-                    </tbody>
-                </table>
-                <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
+					</tbody>
+				</table>
+				<div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
 				<div class="create-row create-new-btn" ng-click="functions.showRockSearch($event)" data-toggle="tooltip" data-placement="left" title="New Rock"></div>
 				@*<div class="create-row" ng-click="functions.addRow($event,'AngularRock')" data-toggle="tooltip" data-placement="left" title="New Rock"></div>*@
-                <div class="gray empty-search" style="padding: 15px 15px;" ng-show="(@(selector)  @(filter)).length==0">
-                    No @rockName fit your search criteria.
-                </div>
-        </div>
-    </div>
+				<div class="gray empty-search" style="padding: 15px 15px;" ng-show="(@(selector)  @(filter)).length==0">
+					No @rockName fit your search criteria.
+				</div>
+		</div>
+	</div>
 </div>

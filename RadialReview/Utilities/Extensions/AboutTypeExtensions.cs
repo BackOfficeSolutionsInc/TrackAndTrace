@@ -71,11 +71,12 @@ namespace RadialReview
 
 		public static AboutType Invert(this AboutType self)
 		{
-			var build = AboutType.NoRelationship;
+			var build = AboutType.Invalid;
 			foreach (AboutType flag in self.GetFlags())
 			{
 				switch (flag)
 				{
+					case AboutType.Invalid: build = build | AboutType.Invalid; break;
 					case AboutType.Manager: build = build | AboutType.Subordinate; break;
 					case AboutType.NoRelationship: build = build | AboutType.NoRelationship; break;
 					case AboutType.Peer: build = build | AboutType.Peer; break;

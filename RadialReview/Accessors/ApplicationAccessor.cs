@@ -306,7 +306,7 @@ namespace RadialReview.Accessors {
 						}
 						tx.Commit();
 						s.Flush();
-					}					
+					}
 
 					// must be last
 					using (var tx = s.BeginTransaction()) {
