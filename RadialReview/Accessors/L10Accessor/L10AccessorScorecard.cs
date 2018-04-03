@@ -321,6 +321,8 @@ namespace RadialReview.Accessors {
 				List<TodoModel> todoCompletion = null;
 				todoCompletion = GetAllTodosForRecurrence(s, perm, recurrenceId);
 				var periods = TimingUtility.GetPeriods(ts, now1, currentTime, true);
+				//Hides the todo completion % if we're not in this week. Purely asthetic since the calculation is indeed correct.
+				var hideCompletion = new Func<DateTime, bool>(weekStart => currentTime < weekStart);
 
 				//Hides the todo completion % if we're not in this week. Purely asthetic since the calculation is indeed correct.
 				var hideCompletion = new Func<DateTime, bool>(weekStart => currentTime < weekStart);
