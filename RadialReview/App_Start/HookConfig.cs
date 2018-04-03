@@ -64,6 +64,7 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new RealTime_L10_Milestone());
 			//HooksRegistry.RegisterHook(new TodoEdit())
 			HooksRegistry.RegisterHook(new CascadeScorecardFormulaUpdates());
+			HooksRegistry.RegisterHook(new RealTime_Positions());
 
 			HooksRegistry.RegisterHook(new CascadeScorecardFormulaUpdates());
 

@@ -123,7 +123,7 @@ namespace TractionTools.Tests.API.v0 {
 			MockHttpContext();
 			var attachSeat = seatController.AttachDirectReport(c.Org.E1MiddleNode.Id, result.User.Id);
 
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, result.User.Organization.Id, "TestPosition");
+			var createPosition =await _accessor.EditOrganizationPosition(c.E1, 0, result.User.Organization.Id, "TestPosition");
 
 			// AttachPosition(attachSeat.Id, createPosition.Id);
 			//attach position
@@ -147,7 +147,7 @@ namespace TractionTools.Tests.API.v0 {
 			MockHttpContext();
 			var result = await JoinOrganizationAccessor.CreateUserUnderManager(c.E1, model);
 			var attachSeat = seatController.AttachDirectReport(c.Org.E1MiddleNode.Id, result.User.Id);
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, result.User.Organization.Id, "TestPosition");
+			var createPosition =await _accessor.EditOrganizationPosition(c.E1, 0, result.User.Organization.Id, "TestPosition");
 			//attach position
 			seatController.AttachPosition(attachSeat.Id, createPosition.Id);
 

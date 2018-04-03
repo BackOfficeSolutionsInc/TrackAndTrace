@@ -139,15 +139,15 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult AddModal(
-			long? managerId = null, string name = null, bool isClient = false, long? managerNodeId = null, 
-			bool forceManager = false, bool hideIsManager = false,bool hidePosition=false,long? nodeId=null,bool hideEvalOnly=false,
-            bool forceNoSend=false) {
+			long? managerId = null, string name = null, bool isClient = false, long? managerNodeId = null,
+			bool forceManager = false, bool hideIsManager = false, bool hidePosition = false, long? nodeId = null, bool hideEvalOnly = false,
+			bool forceNoSend = false) {
 
-			var model = UserAccessor.BuildCreateUserVM(GetUser(),ViewBag,managerId, name, isClient, managerNodeId, forceManager, hideIsManager, hidePosition, nodeId, hideEvalOnly, forceNoSend);
+			var model = UserAccessor.BuildCreateUserVM(GetUser(), ViewBag, managerId, name, isClient, managerNodeId, forceManager, hideIsManager, hidePosition, nodeId, hideEvalOnly, forceNoSend);
 			return PartialView(model);
 		}
 
-		
+
 
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult EditModal(long id) {
@@ -267,9 +267,9 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
-		public JsonResult PositionModal(UserPositionViewModel model) {
+		public async Task<JsonResult> PositionModal(UserPositionViewModel model) {
 			if (model.CustomPosition != null) {
-				var orgPos = _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, /*model.CustomPositionId,*/ model.CustomPosition);
+				var orgPos = await _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, /*model.CustomPositionId,*/ model.CustomPosition);
 				model.PositionId = orgPos.Id;
 			}
 
@@ -488,6 +488,6 @@ namespace RadialReview.Controllers {
 			await UserAccessor.SetRole(GetUser(), user, type, enabled);
 			return Json(enabled, JsonRequestBehavior.AllowGet);
 		}
-		
+
 	}
 }

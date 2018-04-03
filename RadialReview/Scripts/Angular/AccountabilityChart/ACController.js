@@ -1016,48 +1016,48 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			//console.log("------------------");
 		});
 
+	$scope.roleFocused = false;
+	$rootScope.$on("RoleFocused", function (event) {
+		$scope.roleFocused = true;
+	});
+	$rootScope.$on("RoleBlurred", function (event) {
 		$scope.roleFocused = false;
-		$rootScope.$on("RoleFocused", function (event) {
-			$scope.roleFocused = true;
-		});
-		$rootScope.$on("RoleBlurred", function (event) {
-			$scope.roleFocused = false;
-		});
-		//END ULTRA HACK
-		$scope.functions.selectedItemChange = function (node) {
-			d3.select(".selected").classed("selected", false).attr("filter", null);
-			if (node) {
-				$rootScope.$emit("SelectNode", node.Id);
+	});
+	//END ULTRA HACK
+	$scope.functions.selectedItemChange = function (node) {
+		d3.select(".selected").classed("selected", false).attr("filter", null);
+		if (node) {
+			$rootScope.$emit("SelectNode", node.Id);
+		}
+	};
+	$scope.functions.selectedItemChange_UpdateNode = function (id) {
+		console.log("selectedItemChange_UpdateNode");
+		if (!$scope.suspendUpdate) {
+			console.log("..sending update");
+			$scope.functions.sendUpdate($scope.model.Lookup['AngularAccountabilityNode_' + id + '']);
+		} else {
+			console.log("..applying update");
+			try {
+				$scope.$eval("model.data.search.searchPos[" + id + "]=$scope.model.Lookup['AngularAccountabilityNode_" + id + "'].Group.Position.Name");
+			} catch (e) {
+				console.error("Silly position update " + e)
 			}
-		};
-		$scope.functions.selectedItemChange_UpdateNode = function (id) {
-			console.log("selectedItemChange_UpdateNode");
-			if (!$scope.suspendUpdate) {
-				console.log("..sending update");
-				$scope.functions.sendUpdate($scope.model.Lookup['AngularAccountabilityNode_' + id + '']);
-			} else {
-				console.log("..applying update");
-				try {
-					$scope.$eval("search.searchPos_" + id + "=$scope.model.Lookup['AngularAccountabilityNode_" + id + "'].Group.Position.Name");
-				} catch (e) {
-					console.error("Silly position update " + e)
-				}
+		}
+	};
+	$scope.functions.selectedItemChange_UpdateUser = function (id) {
+		console.log("selectedItemChange_UpdateUser");
+		if (!$scope.suspendUpdate) {
+			console.log("..sending update");
+			$scope.functions.sendUpdate($scope.model.Lookup['AngularAccountabilityNode_' + id + '']);
+		} else {
+			console.log("..applying update");
+			try {
+				$scope.$eval("search.searchText_" + id + "=$scope.model.Lookup['AngularAccountabilityNode_" + id + "'].User.Name");
+			} catch (e) {
+				console.error("Silly user update " + e)
 			}
-		};
-		$scope.functions.selectedItemChange_UpdateUser = function (id) {
-			console.log("selectedItemChange_UpdateUser");
-			if (!$scope.suspendUpdate) {
-				console.log("..sending update");
-				$scope.functions.sendUpdate($scope.model.Lookup['AngularAccountabilityNode_' + id + '']);
-			} else {
-				console.log("..applying update");
-				try {
-					$scope.$eval("search.searchText_" + id + "=$scope.model.Lookup['AngularAccountabilityNode_" + id + "'].User.Name");
-				} catch (e) {
-					console.error("Silly user update " + e)
-				}
-			}
-		};
+		}
+	};
 
 		//TREE EVENT FUNCTIONS
 		$scope.nodeWatch = function (node) {
@@ -1233,37 +1233,37 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
 			var position = contents.append("xhtml:div").classed("acc-position", true);
 
-			var posAutoComplete = position.append("md-autocomplete")
-				.attr("placeholder", "Function")
-				.attr("tt-md-overflow", "14")
-				.attr("tt-md-clear-no-match", "true")
-				.attr("md-input-name", function (d) {
-					return "searchPosName_" + d.Id;
-				}).attr("ng-disabled", function (d) {
-					if (d.Editable == false)
-						return "true";
-					return null;
-				})
-				.attr("md-blur", function (d) {
-					return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"search.searchPos_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
-				})
-				.attr("md-selected-item", function (d) {
-					return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
-				}).attr("md-item-text", function (d) {
-					return "pitem.Name";
-				}).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
-				.attr("md-search-text", function (d) { return "search.searchPos_" + d.Id; })
-				.attr("ng-class", function (d) {
-					return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && search.searchPos_" + d.Id + " }";
-				}).attr("ng-attr-title", function (d) {
-					return "{{(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null)?'Invalid: Position does not exist.':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
-				})
-				.attr("md-selected-item-change", function (d) {
-					return "functions.fixName(" + d.Id + ",'search.searchPos_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
-				}).attr("md-no-cache", "true");
+		var posAutoComplete = position.append("md-autocomplete")
+			.attr("placeholder", "Function")
+			.attr("tt-md-overflow", "14")
+			.attr("tt-md-clear-no-match", "true")
+			.attr("md-input-name", function (d) {
+				return "searchPosName_" + d.Id;
+			}).attr("ng-disabled", function (d) {
+				if (d.Editable == false)
+					return "true";
+				return null;
+			})
+			.attr("md-blur", function (d) {
+				return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"model.data.search.searchPos[" + d.Id + "]\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
+			})
+			.attr("md-selected-item", function (d) {
+				return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
+			}).attr("md-item-text", function (d) {
+				return "pitem.Name";
+			}).attr("md-items", function (d) { return "pitem in search.queryPositions(model.data.search.searchPos[" + d.Id + "])"; })
+            .attr("md-search-text", function (d) { return "model.data.search.searchPos[" + d.Id + "]"; })
+			.attr("ng-class", function (d) {
+				return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && model.data.search.searchPos[" + d.Id + "] }";
+			}).attr("ng-attr-title", function (d) {
+				return "{{(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null)?'Invalid: Position does not exist.':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
+			})
+			.attr("md-selected-item-change", function (d) {
+				return "functions.fixName(" + d.Id + ",'model.data.search.searchPos[" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
+			}).attr("md-no-cache", "true");
 
-			//Is this even used? vvv
-			posAutoComplete.append("md-item-template").append("span").attr("md-highlight-text", function (d) { return "search.searchPos_" + d.Id; }).attr("md-highlight-flags", "^i").text("{{pitem.Name}}{{pitem.Create}}");
+		//Is this even used? vvv
+		posAutoComplete.append("md-item-template").append("span").attr("md-highlight-text", function (d) { return "model.data.search.searchPos[" + d.Id + "]"; }).attr("md-highlight-flags", "^i").text("{{pitem.Name}}{{pitem.Create}}");
 
 
 			var owner = contents.append("xhtml:div").classed("acc-owner", true);
@@ -1534,21 +1534,21 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			//	return null;
 			//})
 			//.attr("md-blur", function (d) {
-			//	return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"search.searchPos_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
+		//	return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"model.data.search.searchPos[" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
 			//})
 			//.attr("md-selected-item", function (d) {
 			//	return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
 			//}).attr("md-item-text", function (d) {
 			//	return "pitem.Name";
-			//}).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
-			//.attr("md-search-text", function (d) { return "search.searchPos_" + d.Id; })
+		//}).attr("md-items", function (d) { return "pitem in search.queryPositions(model.data.search.searchPos[" + d.Id + "])"; })
+		//.attr("md-search-text", function (d) { return "model.data.search.searchPos[" + d.Id + "]"; })
 			//.attr("ng-class", function (d) {
-			//	return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && search.searchPos_" + d.Id + " }";
+		//	return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && model.data.search.searchPos[" + d.Id + "] }";
 			//}).attr("ng-attr-title", function (d) {
 			//	return "{{(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null)?'Invalid: Position does not exist.':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
 			//})
 			//.attr("md-selected-item-change", function (d) {
-			//	return "functions.fixName(" + d.Id + ",'search.searchPos_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
+		//	return "functions.fixName(" + d.Id + ",'model.data.search.searchPos[" + d.Id + "]',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
 			//}).attr("md-no-cache", "true");
 
 
@@ -1624,7 +1624,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			};
 
 			function onClickKey(func) {
-				//debugger;
+			//debugger;
 				if (d3.event && (d3.event.keyCode == 13 || d3.event.keyCode == 32))
 					return func;
 				return function (d) { };
@@ -1648,7 +1648,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 						clickAddNode(d);
 				});
 			var ci = addNodeBtn.append("circle").classed("acc-fallback-ignore", true).attr("r", 10).attr("title", "Add direct report").on("click", clickAddNode);
-			//debugger;
+		//debugger;
 			addNodeBtn.append("title").text("Add direct report");
 			addNodeBtn.append("text").attr("transform", "translate(-4.5,4.5)").classed("acc-fallback-ignore", true).text("+").attr("title", "Add direct report").on("click", clickAddNode);
 

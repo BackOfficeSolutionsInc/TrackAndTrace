@@ -37,7 +37,7 @@ namespace TractionTools.Tests.API.v1 {
 			positionController.MockUser(c.E1);
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
+			var createPosition =await _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
 			MockHttpContext();
 			await posAccessor.AddPositionToUser(c.E1, c.E1.Id, createPosition.Id);
 			var getMinePosition = positionController.GetMinePosition();
@@ -53,7 +53,7 @@ namespace TractionTools.Tests.API.v1 {
 			positionController.MockUser(c.E1);
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
+			var createPosition =await _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
 			var result = await positionController.AddPositionRoles(createPosition.Id, new TitleModel() { title="Test Position"});
             CompareModelProperties(/*APIResult.PositionApiTests_v0_TestUpdatePositionRoles*/ result);
             var getRole = RoleAccessor.GetRoleById(c.E1, result.Id);
