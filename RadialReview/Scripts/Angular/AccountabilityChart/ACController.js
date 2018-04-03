@@ -194,7 +194,7 @@ acapp.directive("ttOverflow", ["$timeout", function ($timeout) {
 					return shorten();
 				});
 				element.on('focus', function () {
-					debugger;
+					//debugger;
 					ngModel.$viewValue = ngModel.$modelValue;
 					ngModel.$render();
 					console.info(ngModel.$viewValue);
@@ -316,11 +316,15 @@ acapp.directive('rolegroups', function () {
 			onDeleteRole: '&onDeleteRole',
 		},
 		controller: ["$scope", "$http", "$timeout", "$element", "$rootScope", function ($scope, $http, $timeout, $element, $rootScope) {
-			$scope.addRoleToNode = function (group) {
+			$scope.addRoleToNode = function (group, insert,name) {
+				if (!insert) 
+					insert = "null"
+				if (!name)
+					name = "";
 				var attachType = group.AttachType;
 				var attachId = group.AttachId;
 				var _clientTimestamp = new Date().getTime();
-				$http.post("/Accountability/AddRole/?aid=" + attachId + "&atype=" + attachType + "&_clientTimestamp=" + _clientTimestamp, {})
+				$http.post("/Accountability/AddRole/?aid=" + attachId + "&atype=" + attachType + "&insert=" + insert + "&name=" + encodeURI(name) + "&_clientTimestamp=" + _clientTimestamp, {})
 					.error(function (data) {
 						showJsonAlert(data, true, true);
 					});
@@ -352,8 +356,14 @@ acapp.directive('rolegroups', function () {
 				$scope.onUpdate()(r);
 			};
 			$scope.deleting = function (r) {
+				r.Hide = true;
 				$scope.onDeleteRole()(r);
 			};
+
+			$scope.excludeHidden = function (v, i, a) {
+				return !(v.Hide == true);
+			};
+
 			$scope.focusing = function () {
 				$rootScope.$emit("RoleFocused");
 			}
@@ -361,21 +371,75 @@ acapp.directive('rolegroups', function () {
 				$rootScope.$emit("RoleBlurred");
 			}
 			$scope.checkCreateRole = function (evt, r, group, index) {
+
+				//function atFirstLine(){
+				//	//var self = getSelf();
+				//	//if (self[0].selectionStart == self[0].selectionEnd) {
+				//	//	var i = self.val().indexOf("\n");
+				//	//	if (i==-1)
+				//	//	if (self[0].selectionStart
+				//	//}
+				//}
+
+				function atEnd() {
+					var self = getSelf();
+					var len = (r.Name).length;
+					return len == self[0].selectionStart && len == self[0].selectionEnd;
+				}
+				function atBeginning() {
+					var self = getSelf();
+					debugger;
+					return 0 == self[0].selectionStart && 0 == self[0].selectionEnd;
+				}
+				function getListing() {
+					return $($element).find("[data-group=" + group.Id + "] input,[data-group=" + group.Id + "] textarea");
+				}
+				function getSelf() {
+					return $(getListing()[index]);
+				}
+				function getAfter() {
+					var listing = $(getListing());
+					if (index != listing.length - 1) {
+						return $(listing[index + 1]);
+					}
+					return null;
+				}
+				function getBefore() {
+					var listing = $(getListing());
+					if (index != 0) {
+						return $(listing[index - 1]);
+					}
+					return null;
+				}
+				if (evt.which === 13) {
+					if (group.Editable != false) {
+						evt.preventDefault();
+					}
+				}
+
 				$timeout(function () {
 					var origLength = group.Roles.length;
 					var depth = 0;
 					if (evt.which === 13) {
+						//Enter key
 						//var isLast = index === origLength - 1
 						if (/*isLast &&*/ group.Editable != false) {
-							$scope.addRoleToNode(group);
+							var self = getSelf();
+							var before = r.Name.substr(0, self[0].selectionStart);
+							var after = r.Name.substr(self[0].selectionEnd);
+							r.Name = before;
+							$scope.updating(r);
+							$scope.addRoleToNode(group,index+1,after);
 							depth = 0;
 							var setFocus = function () {
 								try {
 									if (depth == 100)
 										return;
 									if (origLength < group.Roles.length) {
-										console.log("focusing");
-										$($($element).find("[data-group=" + group.Id + "] input")[index + 1]).focus();
+										var that = getAfter();
+										that.focus();
+										$(that)[0].setSelectionRange(0, 0);
+										$timeout(function () { $(that)[0].setSelectionRange(0, 0); }, 0);
 									} else {
 										depth += 1;
 										$timeout(setFocus, 20);
@@ -387,6 +451,7 @@ acapp.directive('rolegroups', function () {
 							$timeout(setFocus, 20);
 						}
 					} else if (evt.which == 8) {
+						//Backspace
 						if (r.Name == "" || typeof (r.Name) === "undefined" || r.Name == null) {
 							$scope.deleting(r);
 							if (origLength != 1) {
@@ -396,9 +461,7 @@ acapp.directive('rolegroups', function () {
 											return;
 										if (origLength > group.Roles.length) {
 											console.log("focusing");
-
-											$($($element).find("[data-group=" + group.Id + "] input")[index - 1]).focus();
-											//$("[data-group=" + group.Id + "]").find("input:nth-child(" + (index) + ")").focus();
+											getBefore().focus();
 										} else {
 											depth += 1;
 											$timeout(setFocus, 20);
@@ -411,27 +474,104 @@ acapp.directive('rolegroups', function () {
 							} else {
 								$($element).find("[data-group=" + group.Id + "] .add-role-row").focus();
 							}
-						}
-					} else if (evt.which == 38) {
-						if (index > 0) {
-							var that = $($($element).find("[data-group=" + group.Id + "] input")[index - 1]);
-							$(that).focus();
+						} else if (getSelf().val() == r.Name && index > 0) {
+							var before = getBefore();
+							var len = before.val().length;
+							var newName = (before.val() + getSelf().val());
+							var rb = group.Roles[index - 1];
+							rb.Name = newName;
+							$scope.updating(rb);
+							before.focus();
+							$scope.deleting(r);
+
+							$(before)[0].setSelectionRange(len, len);
 							$timeout(function () {
+								$(before)[0].setSelectionRange(len, len);
+							}, 0);
+						}
+
+
+					} else if (evt.which == 38) {
+						var self = getSelf();
+						//up key
+						if (index > 0) {
+							var that = getBefore();
+							var refocus = function(){
+								$(that).focus();
 								var len = $(that).val().length * 2;
 								$(that)[0].setSelectionRange(len, len);
-							}, 0);
+								$timeout(function () {
+									var len = $(that).val().length * 2;
+									$(that)[0].setSelectionRange(len, len);
+								}, 0);
+							};
+							try {
+								window.requestAnimationFrame(refocus);
+							} catch (e) { 
+								refocus();
+							}
 						}
 					} else if (evt.which == 40) {
-						if (index < origLength - 1) {
-							var that = $($($element).find("[data-group=" + group.Id + "] input")[index + 1]);
-							$(that).focus();
-							$timeout(function () {
+						//down key
+						var refocus = function () {
+							if (index < origLength - 1) {
+								var that = getAfter();
+								$(that).focus();
 								var len = $(that).val().length * 2;
 								$(that)[0].setSelectionRange(len, len);
-							}, 0);
-						} else {
-							var id = $($($element).find("[data-group=" + group.Id + "] input")).closest("g.node").attr("data-id");
-							$scope.$emit("ExpandNode", id);
+								$timeout(function () {
+									var len = $(that).val().length * 2;
+									$(that)[0].setSelectionRange(len, len);
+								}, 0);
+							} else {
+								var id = $($($element).find("[data-group=" + group.Id + "] input,[data-group=" + group.Id + "] textarea")).closest("g.node").attr("data-id");
+								$scope.$emit("ExpandNode", id);
+							}
+						};
+						try {
+							window.requestAnimationFrame(refocus);
+						} catch (e) {
+							refocus();
+						}
+					} else if (evt.which == 46) {
+						//Delete key
+						//Delete self if empty...
+						if ((r.Name == "" || typeof (r.Name) === "undefined" || r.Name == null) && index != origLength - 1) {
+							$scope.deleting(r);
+							if (origLength != 1) {
+								var setFocus = function () {
+									try {
+										if (depth == 100)
+											return;
+										if (origLength > group.Roles.length) {
+											var that = getSelf();
+											that.focus();
+											$(that)[0].setSelectionRange(0, 0);
+											$timeout(function () {$(that)[0].setSelectionRange(0, 0);}, 0);
+										} else {
+											depth += 1;
+											$timeout(setFocus, 20);
+										}
+									} catch (e) {
+										console.error(e);
+									}
+								}
+								$timeout(setFocus, 20);
+							} else {
+								$($element).find("[data-group=" + group.Id + "] .add-role-row").focus();
+							}
+						} else if (index < origLength - 1) {
+							var self = getSelf();
+							if (r.Name == getSelf().val()) {
+								var that = getAfter();
+								var afterV = that.val();
+								var len = getSelf().val().length;
+								$scope.deleting(group.Roles[index+1]);
+								r.Name = getSelf().val() + afterV;
+								$(self)[0].setSelectionRange(len, len);
+								$timeout(function () {$(self)[0].setSelectionRange(len, len);}, 1);
+								$scope.updating(r);
+							}
 						}
 					}
 				}, 1);
@@ -444,9 +584,10 @@ acapp.directive('rolegroups', function () {
 		"<div ng-if='::group.Editable!=false' class='add-role-row' ng-class='{tinyRow:(groups.length==1 && group.AttachType==\"Position\")}' ng-click='newRoleButton(group)' style='opacity:0;'> <div class='circle' title='Add Role'>+</div> </div>" +
 		"</div>" +
 		"<ul>" +
-		"<li ng-repeat='role in group.Roles'  class='role-row' >" +
+		"<li ng-repeat='role in group.Roles | orderBy:\"Ordering\" | filter:excludeHidden'  class='role-row' >" +
 		//"<tt-role tt-overflow='18'  ng-model='role'></tt-role>" +
-		"<input tt-overflow='18' ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
+		"<textarea textarea-resize ng-trim='false' ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\"></textarea>" +
+		//"<input tt-overflow='18' ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
 		"<div title='{{role.Name}}' class='role' ng-show='::group.Editable==false'>{{role.Name | ttOverflowTxt:false:18 }}</div>" +
 		"<span ng-if='::group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\" title='Delete Role' tabindex='-1'></span>" +
 		"</li>" +
@@ -458,7 +599,54 @@ acapp.directive('rolegroups', function () {
 		"</div>"
 	};
 	return directive;
-});
+}).directive('textareaResize', ["$rootScope", "$timeout", function ($rootScope, $timeout) {
+	return {
+		link: function (scope, elem) {
+			var evt=null;
+			if (elem.attr('isResized') !== "true") {
+				var self = this;
+				self.canRefresh = false;
+				scope.resize = $(elem).autoResize({
+					extraSpace:2,
+					minHeight:"14px",
+					//useOriginalHeight: true,
+					style:{"width":"165px"},
+					onResize: function () {
+						if (self.canRefresh) {
+							for (var i = 1; i < 750; i += 250) {
+								//$rootScope.$emit("RefreshTree");
+								$timeout(function () {
+									console.warn("refreshing");
+									$rootScope.$emit("RefreshTree");
+								}, i);
+							}
+						}
+					}
+				});
+				scope.resize.data("AutoResizer").el.on("focus.autoResize", function () {
+					//debugger;
+					self.canRefresh = true;
+				});
+				elem.attr('isResized', 'true');
+
+				unbindEvt = $rootScope.$on("RefreshTree", function (event, id) {
+					try{
+						scope.resize.data("AutoResizer").check();
+					}catch(e){
+					}
+				});
+			}
+
+			scope.$on(
+				"$destroy",
+				function handleDestroyEvent() {
+					scope.resize.data("AutoResizer").destroy();
+					unbindEvt();
+				}
+			);
+		}
+	};
+}]);
 acapp.directive('rolegroupsfallback', function () {
 	var directive = {
 		restrict: 'A',
@@ -518,6 +706,7 @@ acapp.directive('rolegroupsfallback', function () {
 				$rootScope.$emit("RoleBlurred");
 			}
 			$scope.checkCreateRole = function (evt, r, group, index) {
+				evt.preventDefault();
 				$timeout(function () {
 					var origLength = group.Roles.length;
 					var depth = 0;
@@ -597,8 +786,9 @@ acapp.directive('rolegroupsfallback', function () {
 		"<g ng-if='::group.Editable!=false' transform='translate(200,0)' class='add-role-row acc-fallback-ignore' ng-class='{tinyRow:(groups.length==1 && group.AttachType==\"Position\")}' ng-click='newRoleButton(group)' style='opacity:1;'> <circle class='acc-fallback-ignore' cx='3' cy='-4' fill='#ff0000' r='6'></circle><text>+</text> </g>" +
 		"</g>" +
 		"<g>" +
-		"<g ng-repeat='role in group.Roles'  class='role-row' ng-init='rolesIndex=$index'>" +
-		"<text title='{{role.Name}}' class='role' transform='translate(0,{{($index*16)}})'>{{role.Name}}</text>" +
+		"<g ng-repeat='role in group.Roles | orderBy:\"Ordering\"'  class='role-row' ng-init='rolesIndex=$index'>" +
+		"<title>{{role.Name}}</title>"+
+		"<text title='{{role.Name}}' class='role' transform='translate(0,{{($index*16)}})'>{{role.Name | ttOverflowTxt:false:22 }}</text>" +
 		"<text ng-if='::group.Editable!=false' transform='translate(-20,{{($index*16)}})' class='delete-role-row' ng-click=\"deleting(role)\" title='Delete Role' tabindex='-1'>x</text>" +
 		"</g>" +
 		"</g>" +
@@ -1010,20 +1200,20 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			var v = msieversion();
 			if (v >= 11) {
 				fallback = true; //Edge
+				$window.OverrideNodeWidth = 200;
 			} else {
 				fallback = true; //IE
+				$window.OverrideNodeWidth = 200;
 			}
 		}
 
 		var canReorder = function (d) {
 			var res = d.Editable == true && $scope.model.data.CanReorganize;
-			if (res)
-				debugger;
 			return res;
 		}
 		var standardNodeEnter = function (nodeEnter) {
 
-			var rect = nodeEnter.append("rect").attr("class", "acc-rect")
+			var rect = nodeEnter.append("rect").attr("class", "acc-rect acc-fallback-ignore")
 				.attr("width", 0).attr("height", 0).attr("x", 0).attr("rx", 2).attr("ry", 2);
 
 			var node = nodeEnter.append("foreignObject")
@@ -1204,7 +1394,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			};
 
 			function onClickKey(func) {
-				debugger;
+				//debugger;
 				if (d3.event && (d3.event.keyCode == 13 || d3.event.keyCode == 32))
 					return func;
 				return function (d) { };
@@ -1214,7 +1404,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			var expandNode = function (d) {
 			};
 
-			var childIndication = nodeEnter.append("g").classed("childIndication", true).attr("transform", "translate(99.75,75)")
+			var childIndication = nodeEnter.append("g").classed("childIndication", true).attr("transform", "translate(100,75)")
 			childIndication.append("circle").attr("r", function (d) {
 				if (d.Id) {
 					if ((d._children && d._children.length) || (d.children && d.children.length)) {
@@ -1327,9 +1517,14 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
 			var position = contents.append("g").classed("acc-position", true).attr("width", "200px");//.style("width", "100px").style("height", "100px");
 
-			var posAutoComplete = position.append("text").classed("acc-fallback-hide", true).attr("dy", "23").attr("dx", "6").append("tspan").text(function (d) {
-				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
+			var posAutoComplete = position.append("text").classed("acc-fallback-hide", true).attr("dy", "23").attr("dx", "6");
+			posAutoComplete.append("tspan").text(function (d) {
+				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name | ttOverflowTxt:false:12 }}";
 			});
+			posAutoComplete.append("title").text(function (d) {
+				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}"
+			});
+
 			//.attr("placeholder", "Function")
 			//.attr("md-input-name", function (d) {
 			//	return "searchPosName_" + d.Id;
@@ -1358,8 +1553,12 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
 
 			var owner = contents.append("g").classed("acc-owner", true).attr("transform", "translate(0,25)");
-			var autoComplete = owner.append("text").classed("acc-fallback-hide", true).attr("dy", "18").attr("dx", "6").append("tspan").text(function (d) {
-				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User.Name}}";
+			var autoComplete = owner.append("text").classed("acc-fallback-hide", true).attr("dy", "18").attr("dx", "6");
+			autoComplete.append("tspan").text(function (d) {
+				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User.Name | ttOverflowTxt:false:12 }}";
+			});
+			autoComplete.append("title").text(function (d) {
+				return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User.Name}}"
 			});
 
 			//ROLES
@@ -1377,8 +1576,8 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			//	d3.select(this).selectAll(".node-button").transition().style("opacity", 0);
 			//});
 
-			var buttonsBottom = node.append("g")
-				.classed("acc-buttons bottom-bar acc-fallback-ignore", true);
+			var buttonsBottom = node.append("g").classed("acc-buttons bottom-bar acc-fallback-ignore", true);
+
 			var clickAddNode = function (d) {
 				if (d.Id) {
 					addNode(d.Id);
@@ -1387,6 +1586,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 					throw "Add node requires Id"
 				}
 			};
+
 			var clickRemoveNode = function (d) {
 				if (d.Id) {
 					if ((d._children && d._children.length) || (d.children && d.children.length)) {
@@ -1424,7 +1624,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			};
 
 			function onClickKey(func) {
-				debugger;
+				//debugger;
 				if (d3.event && (d3.event.keyCode == 13 || d3.event.keyCode == 32))
 					return func;
 				return function (d) { };
@@ -1448,7 +1648,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 						clickAddNode(d);
 				});
 			var ci = addNodeBtn.append("circle").classed("acc-fallback-ignore", true).attr("r", 10).attr("title", "Add direct report").on("click", clickAddNode);
-			debugger;
+			//debugger;
 			addNodeBtn.append("title").text("Add direct report");
 			addNodeBtn.append("text").attr("transform", "translate(-4.5,4.5)").classed("acc-fallback-ignore", true).text("+").attr("title", "Add direct report").on("click", clickAddNode);
 
@@ -1471,47 +1671,72 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			});
 		}
 
-		var standardNodeUpdate = function (nodeUpdate) {
+		var standardNodeUpdate = function (nodeUpdate,isFallback) {
 			nodeUpdate.select(".acc-rect").attr("width", function (d) {
 				//console.log("update called");
+				if (isFallback) {
+					return 200;
+				}
 				return d.width;
 			}).attr("height", function (d) {
 				return (d.height || 20);
 			});
 
 			nodeUpdate.select(".button.print").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 - 60) + "," + (d.height + 15.5) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+
+				return "translate(" + (w / 2 - 60) + "," + (d.height + 15.5) + ")";
 			}).attr("tabindex", function (d) {
 				return canReorder(d) == false ? "-1" : "0";
 			}).style("display", function (d) {
-				debugger;
+				//debugger;
 				return canReorder(d) == false ? "none" : null;
 			});
 
 			nodeUpdate.select(".button.add").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 - 30) + "," + (d.height + 15.5) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+
+				return "translate(" + (w / 2 - 30) + "," + (d.height + 15.5) + ")";
 			}).attr("tabindex", function (d) {
 				return canReorder(d) == false ? "-1" : "0";
 			}).style("display", function (d) {
-				debugger;
+				//debugger;
 				return canReorder(d) == false ? "none" : null;
 			});
 
 			nodeUpdate.select(".button.remove").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 + 30) + "," + (d.height + 15.5) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+				return "translate(" + (w / 2 + 30) + "," + (d.height + 15.5) + ")";
 			}).attr("tabindex", function (d) {
 				return canReorder(d) == false ? "-1" : "0";
 			}).style("display", function (d) {
-				debugger;
+				//debugger;
 				return canReorder(d) == false ? "none" : null;
 			});
 
 			nodeUpdate.select(".button.minimize").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 - .25) + "," + (d.height + 15.5) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+				return "translate(" + (w / 2 - .25) + "," + (d.height + 15.5) + ")";
 			});
 
 			nodeUpdate.select(".childIndication").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 - .25) + "," + (d.height - 4) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+				return "translate(" + (w / 2 - .25) + "," + (d.height - 4) + ")";
 			}).style("display", function (d) {
 				if (!d.parent)
 					return "none";
@@ -1544,19 +1769,30 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 				});
 
 			nodeUpdate.select(".bounding-box").attr("transform", function (d) {
-				return "translate(" + (d.width / 2 - 12) + "," + (d.height) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+				return "translate(" + (w / 2 - 12) + "," + (d.height) + ")";
 			});
 
 			nodeUpdate.select(".add-role-row").attr("transform", function (d) {
-				return "translate(" + d.width + "," + (d.height - 11) + ")";
+				var w = d.width;
+				if (isFallback) {
+					w = 200;
+				}
+				return "translate(" + w + "," + (d.height - 11) + ")";
 			});
 
 			var isFirefox = typeof InstallTrigger !== 'undefined';
 			var safari = isSafari();
 			var fo = nodeUpdate.select(".foreignObject")
 				.attr("width", function (d) {
-					if (isFirefox)
-						return d.width + 20;
+					//debugger;
+					//if (isFirefox)
+					//	return d.width + 20;
+					if (isFallback)
+						return 200;
 					return d.width;
 				});
 			if (isFirefox || safari) {
@@ -1568,14 +1804,15 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 		};
 
 		var fallbackNodeUpdate = function (nodeUpdate) {
-			standardNodeUpdate(nodeUpdate);
+			standardNodeUpdate(nodeUpdate,true);
 
 			nodeUpdate.select(".add-role-row").attr("transform", function (d) {
-				return "translate(" + (d.width - 11) + ",0)";
+				return "translate(" + (/*d.width*/200 - 11) + ",0)";
 			});
 
 			nodeUpdate.select(".acc-buttons rect").attr("width", function (d) {
-				return d.width;
+				
+				return 200;//d.width;
 			}).attr("height", function (d) {
 				return (8);
 			});

@@ -57,7 +57,6 @@ namespace RadialReview.Accessors.PDF.JS {
 		public static CompactTree<N>.tree Update<N>(N root, Func<N, double> heightFunc=null, TreeSettings settings = null) where N : node<N>, new() {
 			var Settings = settings ?? new TreeSettings();
 			var tree = CompactTree<N>.call();
-			tree.compactify(Settings.compact);//added
 			tree.sort((a, b) => {
 				if (b != null && a != null) {
 					var diff = a.order - b.order;
@@ -67,6 +66,8 @@ namespace RadialReview.Accessors.PDF.JS {
 				}
 				return 0;
 			});
+			tree.compactify(Settings.compact);//added
+		
 			tree.nodeSize(Settings.nodeSize);
 			
 			var maxDepth = 0;
