@@ -640,9 +640,15 @@ namespace RadialReview.Accessors.PDF {
 						if (n <= 3) {
 							cols = n;
 							rows = 1;
-						} else if (n > 3 && n < 11) {
+						} else if (3 < n && n < 11) {
 							cols = 2;
 							rows = (int)Math.Ceiling(n / 2.0);
+						} else if (11 <= n && n <= 28) {
+							cols = 4;
+							rows = (int)Math.Ceiling(n / 4.0);
+						} else if (28<= n && n <= 42) {
+							cols = 6;
+							rows = (int)Math.Ceiling(n / 6.0);
 						} else {
 							cols = (int)Math.Ceiling(sqrtn);
 							rows = (int)Math.Floor(sqrtn);
