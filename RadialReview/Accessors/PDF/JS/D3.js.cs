@@ -210,7 +210,7 @@ namespace RadialReview.Accessors.PDF {
 					return v;
 				}
 
-				public List<N> callHierarchy(N root) {
+				public List<N> callHierarchy(N root,bool sort=true) {
 					var stack = new Stack<N>();
 					stack.Push(root);
 					var nodes = new List<N>();
@@ -239,9 +239,11 @@ namespace RadialReview.Accessors.PDF {
 					}
 					d3_layout_hierarchyVisitAfter(root, n => {
 						var childs = n.children;
-						if (_sort != null && childs != null) {
-							Comparison<N> compare = _sort;
-							childs.Sort(_sort);
+						if (sort) {
+							if (_sort != null && childs != null) {
+								Comparison<N> compare = _sort;
+								childs.Sort(_sort);
+							}
 						}
 						var parent = n.parent;
 						if (_value != null && parent != null)
@@ -399,10 +401,24 @@ namespace RadialReview.Accessors.PDF {
 					public List<N> call(N d, object i = null) {
 
 						_ct.decompactify(d);
+						//Calls some sorting
+						d3_layout_hierarchyVisitAfter(d, n => {
+							var childs = n.children;
+							if (_sort != null && childs != null) {
+								Comparison<N> compare = _sort;
+								childs.Sort(_sort);
+							}
+							var parent = n.parent;
+							if (_value != null && parent != null)
+								parent.value += n.value;
+						});
+
+						//compactify if needed.
 						if (_ct.compactify) {
 							_ct.compactifyTree(d, null);
 						}
-						var nodes = _ct.hierarchy.callHierarchy(d);
+						var nodes = _ct.hierarchy.callHierarchy(d,false);
+
 						var root0 = nodes[0];
 						var root1 = _ct.wrapTree(root0);
 
@@ -701,9 +717,11 @@ namespace RadialReview.Accessors.PDF {
 							if (i % 2 == oddEven) {
 								child._compact.side = "left";
 								child.side = "left";//added
+								child.SetDebugNotes("i=" + leafNum);
 							} else {
 								child._compact.side = "right";
 								child.side = "right";//added
+								child.SetDebugNotes("i=" + leafNum);
 							}
 							currentColumnHeads[i] = child;
 							//child._compact.originalChildren = new List<N>();

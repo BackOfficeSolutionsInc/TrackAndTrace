@@ -17,7 +17,7 @@ using static RadialReview.Accessors.PDF.JS.Tree;
 namespace RadialReview.Accessors.PDF {
 	public class AccountabilityChartPDF {
 
-		public const bool DEBUG = false;
+		public const bool DEBUG = true;
 		public const string FONT = "Arial";
 
 		public class ACNode : D3.Layout.node<ACNode> {
