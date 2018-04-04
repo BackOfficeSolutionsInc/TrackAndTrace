@@ -2774,3 +2774,6 @@ body,
   margin-top: -8px;
   bottom: auto;
 }
+#modal .milestone-table-modal .milestone-duedate-cell .milestone-duedate {
+  height: 35px;
+}
