@@ -31,18 +31,13 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 				}
 				$scope.lastValue = $scope.score.Measured;
 			}
-
 			var currWeekNumber = Time.getWeekSinceEpoch(new Date().addDays(13));
-
 			var scorecardColor = function (s) {
 				if (!s)
 					return "";
-
 				if (s.Measurable && s.Measurable.IsDivider)
 					return "";
-
 				var v = s.Measured;
-
 				var useMeasurableTarget = s.ForWeek >= currWeekNumber
 				var goal = undefined;
 				var altgoal = undefined;
@@ -171,7 +166,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 							if (!curRow) {
 								break;
 							}
-						  //  curRow += 1;
+							//  curRow += 1;
 						}
 					}
 					var keycode = event.which;
@@ -282,7 +277,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 		template: "<span ng-if='score.hidden' ng-click='score.hidden=false'>hidden</span>" +
 				  "<input ng-if='!score.hidden' data-goal='{{score.Target}}' data-alt-goal='{{score.AltTarget}}' data-goal-dir='{{score.Direction}}'" +
 				  " data-row='{{$parent.$index}}' data-col='{{$index}}'" +
-				  " type='text' placeholder='' ng-model-options='{debounce:{\"default\":300,\"blur\":0}}' ng-disabled='measurable.Disabled'" +
+				  " type='text' placeholder='' ng-model-options1='{debounce:{\"default\":300,\"blur\":0}}' ng-disabled='measurable.Disabled'" +
 				  " ng-model='score.Measured'" +
 				  " class='grid rt1 ww_{{::week.ForWeekNumber}} {{scoreColor}} scrollOver'" +
 				  " data-scoreid='{{::Id}}' data-measurable='{{::measurable.Id}}' data-week='{{::week.ForWeekNumber}}'" +

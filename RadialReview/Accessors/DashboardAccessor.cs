@@ -240,10 +240,10 @@ namespace RadialReview.Accessors {
 
 				}
 			}
-			foreach (var tile in tiles) {
-				tile.ForUser = null;
-				tile.Dashboard = null;
-			}
+			//foreach (var tile in tiles) {
+			//	tile.ForUser = null;
+			//	tile.Dashboard = null;
+			//}
 			return tiles;
 		}
 

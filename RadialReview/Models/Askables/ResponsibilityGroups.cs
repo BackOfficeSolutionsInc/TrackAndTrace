@@ -6,6 +6,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
 using RadialReview.Utilities;
+using System.Web.Script.Serialization;
 
 namespace RadialReview.Models.Askables {
 	[DataContract]
@@ -29,8 +30,12 @@ namespace RadialReview.Models.Askables {
 
 		public abstract String GetGroupType();
 
+		[ScriptIgnore]
+		[IgnoreDataMember]
 		public virtual OrganizationModel Organization { get; set; }
 		//public virtual long OrganizationId { get; set; }
+		[ScriptIgnore]
+		[IgnoreDataMember]
 		public virtual IList<ResponsibilityModel> Responsibilities { get; set; }
 		protected virtual Boolean? _Editable { get; set; }
 

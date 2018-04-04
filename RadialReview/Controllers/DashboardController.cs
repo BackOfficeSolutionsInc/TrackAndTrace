@@ -36,6 +36,7 @@ using RadialReview.Models.Angular.Headlines;
 using RadialReview.Models.Enums;
 using static RadialReview.Accessors.DashboardAccessor;
 using RadialReview.Models;
+using NHibernate;
 
 namespace RadialReview.Controllers {
 	[SessionState(SessionStateBehavior.ReadOnly)]
@@ -127,6 +128,9 @@ namespace RadialReview.Controllers {
 				startEnd += "&start=" + startRange.ToJsMs();//start;
 															//if (end != null)
 				startEnd += "&end=" + endRange.ToJsMs();//end;
+
+				output.Scorecard = await ScorecardAccessor.GetAngularScorecardForUser(caller, caller.Id, dateRange,true,true,null,false);
+				output.Scorecard.Weeks = null;
 
 				output.LoadUrls.Add(new AngularString(-15291127 * userId, $"/DashboardData/UserScorecardData/{dashboardId}?userId={userId}&completed={completed}&fullScorecard={fullScorecard}" + startEnd));
 			}
@@ -443,6 +447,26 @@ namespace RadialReview.Controllers {
 			public int y { get; set; }
 			public long id { get; set; }
 		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult TestTile() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var t = s.Get<TileModel>(1L);
+					return Json(t, JsonRequestBehavior.AllowGet);
+				}
+			}
+		}
+		[Access(AccessLevel.Radial)]
+		public JsonResult TestUser() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					//var t = s.Get<TileModel>(1L);
+					return Json(GetUser(), JsonRequestBehavior.AllowGet);
+				}
+			}
+		}
+
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Tiles(long id) {
 			var dashboardId = id;

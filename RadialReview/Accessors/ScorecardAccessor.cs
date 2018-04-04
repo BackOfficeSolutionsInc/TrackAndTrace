@@ -272,11 +272,11 @@ namespace RadialReview.Accessors {
 			return await ScorecardAccessor.GetAngularScorecardForUser(caller, userId, new DateRange(scorecardStart, scorecardEnd), true, now: DateTime.UtcNow);
 		}
 
-		public static async Task<AngularScorecard> GetAngularScorecardForUser(UserOrganizationModel caller, long userId, DateRange range, bool includeAdmin = true, bool includeNextWeek = true, DateTime? now = null) {
+		public static async Task<AngularScorecard> GetAngularScorecardForUser(UserOrganizationModel caller, long userId, DateRange range, bool includeAdmin = true, bool includeNextWeek = true, DateTime? now = null,bool includeScores=true) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					var scorecard = await GetAngularScorecardForUser(s, perms, userId, range, includeAdmin, includeNextWeek, now);
+					var scorecard = await GetAngularScorecardForUser(s, perms, userId, range, includeAdmin, includeNextWeek, now, includeScores);
 					//Commit is required!
 					tx.Commit();
 					s.Flush();
@@ -287,14 +287,16 @@ namespace RadialReview.Accessors {
 		}
 
 		[Obsolete("Commit after calling this")]
-		private static async Task<AngularScorecard> GetAngularScorecardForUser(ISession s, PermissionsUtility perms, long userId, DateRange range, bool includeAdmin = true, bool includeNextWeek = true, DateTime? now = null) {
+		private static async Task<AngularScorecard> GetAngularScorecardForUser(ISession s, PermissionsUtility perms, long userId, DateRange range, bool includeAdmin = true, bool includeNextWeek = true, DateTime? now = null,bool includeScores=true) {
 			var measurables = GetUserMeasurables(s, perms, userId, true, true, true);
 
-			var scorecardStart = range.StartTime.StartOfWeek(DayOfWeek.Sunday);
-			var scorecardEnd = range.EndTime.AddDays(13).StartOfWeek(DayOfWeek.Sunday);
-
-			var scores = await GetUserScoresAndFillIn(s, perms, userId, scorecardStart, scorecardEnd, includeAdmin);
-			return new AngularScorecard(-1, perms.GetCaller(), measurables.Select(x => new AngularMeasurable(x)), scores.ToList(), now, range, includeNextWeek, now);
+			List<ScoreModel> scores = null;
+			if (includeScores) {
+				var scorecardStart = range.StartTime.StartOfWeek(DayOfWeek.Sunday);
+				var scorecardEnd = range.EndTime.AddDays(13).StartOfWeek(DayOfWeek.Sunday);
+				scores = (await GetUserScoresAndFillIn(s, perms, userId, scorecardStart, scorecardEnd, includeAdmin)).ToList();
+			}
+			return new AngularScorecard(-1, perms.GetCaller(), measurables.Select(x => new AngularMeasurable(x)), scores, now, range, includeNextWeek, now);
 		}
 
 		public static List<MeasurableModel> GetVisibleMeasurables(ISession s, PermissionsUtility perms, long organizationId, bool loadUsers) {
