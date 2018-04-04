@@ -177,7 +177,7 @@ $(function () {
 
 	refreshCurrentIssueDetails();
 	fixIssueDetailsBoxSize();
-	$("body").on("click", ".issues-list>.issue-row:not(.undoable)", function (evt) {
+    $("body").on("click", ".issues-list>.issue-row:not(.undoable)", function (evt) {
 		if ($(evt.target).hasClass("rank123"))
 			return;
 		if ($(evt.target).hasClass("issue-checkbox"))
@@ -196,8 +196,8 @@ $(function () {
 		var w = $(window).width();
 
 
-		if (tempRowId == currentIssuesDetailsId && w > modalWidth)
-			return;
+		//if (tempRowId == currentIssuesDetailsId && w > modalWidth)
+		//	return;
 		currentIssuesDetailsId = tempRowId;
 
 		var createtime = $(issueRow).data("createtime");
