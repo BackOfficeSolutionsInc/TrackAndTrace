@@ -26,6 +26,8 @@ using SpreadsheetLight;
 using static RadialReview.Accessors.IssuesAccessor;
 using RadialReview.Utilities.Synchronize;
 using RadialReview.Utilities.NHibernate;
+using RadialReview.Models.VTO;
+using RadialReview.Models.Angular.VTO;
 
 namespace RadialReview.Accessors {
 
@@ -267,13 +269,19 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+
+		public enum IssueCompartment {
+			ShortTerm = 1,
+			LongTerm = 2,
+		}
+
 		public static async Task EditIssue(UserOrganizationModel caller, long issueRecurrenceId, string message = null, bool? complete = null,
-			long? owner = null, int? priority = null, int? rank = null, bool? awaitingSolve = null, DateTime? now = null) {
+			long? owner = null, int? priority = null, int? rank = null, bool? awaitingSolve = null, DateTime? now = null, IssueCompartment? compartment = null) {
 			//using (var s = HibernateSession.GetCurrentSession()) {
 			//	using (var tx = s.BeginTransaction()) {
 			await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateIssueMessage(issueRecurrenceId), async s => {
 				var perms = PermissionsUtility.Create(s, caller);
-				await EditIssue(s, perms, issueRecurrenceId, message, complete, owner, priority, rank, awaitingSolve, now);
+				await EditIssue(s, perms, issueRecurrenceId, message, complete, owner, priority, rank, awaitingSolve, now, compartment);
 			});
 			//		tx.Commit();
 			//		s.Flush();
@@ -296,7 +304,7 @@ namespace RadialReview.Accessors {
 		/// <returns></returns>
 		public static async Task EditIssue(IOrderedSession s, PermissionsUtility perms, long issueRecurrenceId, string message = null,
 			bool? complete = null, long? owner = null, int? priority = null, int? rank = null, /*bool? delete=null,*/ bool? awaitingSolve = null,
-			DateTime? now = null) {
+			DateTime? now = null, IssueCompartment? status = null) {
 			now = Math2.Min(DateTime.UtcNow.AddSeconds(3), now ?? DateTime.UtcNow);
 
 			var issue = s.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
@@ -359,51 +367,120 @@ namespace RadialReview.Accessors {
 				updates.RankChanged = true;
 			}
 
-			//_ProcessDeleted(s, issue, delete);
+			if (status != null) {
+				if (status == IssueCompartment.ShortTerm && issue.DeleteTime != null) {
+					updates.CompartmentChanged = true;
+					await MoveIssueFromVtoViaIssueRecurrenceId(s, perms, issue.Id);
+				} else if (status == IssueCompartment.LongTerm && issue.DeleteTime == null) {
+					updates.CompartmentChanged = true;
+					MoveIssueToVto(s, perms, issue.Id, perms.GetCaller().NotNull(x=>x.GetClientRequestId()));
+				}
+
+			}
 
 			var now1 = DateTime.UtcNow;
-			//bool IsIssueStatusUpdated = false;
 			if (complete != null) {
-				//using (var rt = RealTimeUtility.Create(connectionId)) {
-				//}
 				if (complete.Value && issue.CloseTime == null) {
 					updates.CompletionChanged = true;
-					//		updatesText.Add("Marked Closed");
 				} else if (!complete.Value && issue.CloseTime != null) {
 					updates.CompletionChanged = true;
-					//		updatesText.Add("Marked Open");
 				}
 				_UpdateIssueCompletion_Unsafe(s, issue, complete.Value, now1);
 			}
+
 
 
 			if (awaitingSolve != null && awaitingSolve != issue.AwaitingSolve) {
 				issue.AwaitingSolve = awaitingSolve.Value;
 				s.Update(issue);
 				updates.AwaitingSolveChanged = true;
-				//	group.updateIssueAwaitingSolve(issue.Id, awaitingSolve.Value);
-
 			}
-			//group.update(new AngularUpdate() { new AngularIssue(issue) });
-
-
-			//var updatedText = "Updated Issue \"" + issue.Issue.Message + "\" \n " + String.Join("\n", updatesText);
-			//Audit.L10Log(s, caller, recurrenceId, "UpdateIssue", ForModel.Create(issue), updatedText);
-
-			//if (IsMessageChange) {
-			//	// Webhook event trigger
-			//	//?added await
-			//	await HooksRegistry.Each<IIssueHook>((ses, x) => x.UpdateMessage(ses, issue));
-			//}
-
-			//// Webhook register Marking complete for TODO
-			//if (IsIssueStatusUpdated) {
-			//	//?added await
-			//	await HooksRegistry.Each<IIssueHook>((ses, x) => x.UpdateCompletion(ses, issue));
-			//}
 
 			await HooksRegistry.Each<IIssueHook>((ses, x) => x.UpdateIssue(ses, perms.GetCaller(), issue, updates));
 
+		}
+		//GetClientRequestId()
+
+		public static VtoItem_String MoveIssueToVto(ISession s, PermissionsUtility perm, long issue_recurrence, string connectionId) {
+			using (var rt = RealTimeUtility.Create(connectionId)) {
+				var recurIssue = s.Get<IssueModel.IssueModel_Recurrence>(issue_recurrence);
+				
+				recurIssue.Rank = 0;
+				recurIssue.Priority = 0;
+				recurIssue.DeleteTime = DateTime.UtcNow;
+				s.Update(recurIssue);
+
+				var recur = s.Get<L10Recurrence>(recurIssue.Recurrence.Id);
+
+				//remove from list
+				rt.UpdateRecurrences(recur.Id).AddLowLevelAction(x => x.removeIssueRow(recurIssue.Id));
+				var arecur = new AngularRecurrence(recur.Id);
+				arecur.IssuesList.Issues = AngularList.CreateFrom(AngularListType.Remove, new AngularIssue(recurIssue));
+				rt.UpdateRecurrences(recur.Id).Update(arecur);
+				//
+
+
+				perm.EditVTO(recur.VtoId);
+				var vto = s.Get<VtoModel>(recur.VtoId);
+
+				var str = VtoAccessor.AddString(s, perm, recur.VtoId, VtoItemType.List_Issues,
+					(v, list) => new AngularVTO(v.Id) { Issues = list },
+					true, forModel: ForModel.Create(recurIssue), value: recurIssue.Issue.Message);
+
+				return str;
+			}
+		}
+
+		public async static Task<IssueModel.IssueModel_Recurrence> MoveIssueFromVtoViaIssueRecurrenceId(ISession s, PermissionsUtility perms, long issue_recurrence) {
+			var modelType = ForModel.GetModelType<IssueModel.IssueModel_Recurrence>();
+			var found = s.QueryOver<VtoItem_String>().Where(x => x.DeleteTime == null && x.ForModel.ModelId == issue_recurrence && x.ForModel.ModelType == modelType).Take(1).SingleOrDefault();
+
+			return await MoveIssueFromVto(s, perms, found.Id);
+		}
+
+
+		public async static Task<IssueModel.IssueModel_Recurrence> MoveIssueFromVto(ISession s, PermissionsUtility perm, long vtoIssue) {
+			var now = DateTime.UtcNow;
+			var vtoIssueStr = s.Get<VtoItem_String>(vtoIssue);
+
+			IssueModel.IssueModel_Recurrence issueRecur;
+			perm.EditVTO(vtoIssueStr.Vto.Id);
+
+			vtoIssueStr.DeleteTime = now;
+			s.Update(vtoIssueStr);
+
+			if (vtoIssueStr.ForModel != null) {
+				if (vtoIssueStr.ForModel.ModelType != ForModel.GetModelType<IssueModel.IssueModel_Recurrence>())
+					throw new PermissionsException("ModelType was unexpected");
+				issueRecur = s.Get<IssueModel.IssueModel_Recurrence>(vtoIssueStr.ForModel.ModelId);
+
+				var recur = s.Get<L10Recurrence>(issueRecur.Recurrence.Id);
+
+				perm.EditL10Recurrence(issueRecur.Recurrence.Id);
+
+				issueRecur.DeleteTime = null;
+				s.Update(issueRecur);
+				//Add back to issues list (does not need to be added below. CreateIssue calls this.
+				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+				var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(issueRecur.Recurrence.Id));
+				meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(issueRecur), recur.OrderIssueBy);
+			} else {
+				var vto = s.Get<VtoModel>(vtoIssueStr.Vto.Id);
+				if (vto.L10Recurrence == null)
+					throw new PermissionsException("Expected L10Recurrence was null");
+				var creation = IssueCreation.CreateL10Issue(vtoIssueStr.Data, null, perm.NotNull(x=>x.GetCaller().Id), vto.L10Recurrence.Value);
+				var issue = await IssuesAccessor.CreateIssue(s, perm, creation);
+				var recur = s.Get<L10Recurrence>(vto.L10Recurrence.Value);
+
+				issueRecur = issue.IssueRecurrenceModel;
+			}
+			//Remove from vto
+			var vtoHub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+			var group = vtoHub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoIssueStr.Vto.Id));
+			vtoIssueStr.Vto = null;
+			group.update(new AngularUpdate() { AngularVtoString.Create(vtoIssueStr) });
+			
+			return issueRecur;
 		}
 
 		public static void _UpdateIssueCompletion_Unsafe(ISession s, /*RealTimeUtility rt,*/ IssueModel.IssueModel_Recurrence issue, bool complete, DateTime? now = null) {
