@@ -9,4 +9,5 @@ git config --global alias.unmerged "branch --list '[^(z/old/)]*' --no-merged"
 git config --global alias.features "branch --list 'feature/*'"
 git config --global alias.bugs "branch --list 'bug/*'"
 git config --global alias.patchs "branch --list 'patch/*'"
+git config --global alias.hub "!explorer https://github.com/radialreview/RadialReview"
 
