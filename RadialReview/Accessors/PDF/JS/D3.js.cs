@@ -84,6 +84,7 @@ namespace RadialReview.Accessors.PDF {
 					public bool isLeaf { get; set; }
 					public string side { get; set; }
 					public List<N> columnHeads { get; set; }
+					public int? ColumnNumber { get; set; }
 
 					protected N me { get; set; }
 
@@ -93,6 +94,7 @@ namespace RadialReview.Accessors.PDF {
 					}
 
 					public int? WhichColumn() {
+						return ColumnNumber;
 						var hs = originalParent.children;
 						for (var i = 0; i < hs.Count; i++) {
 							var column = dive(hs[i]);
@@ -393,7 +395,7 @@ namespace RadialReview.Accessors.PDF {
 					public tree(CompactTree<N> ct) {
 						_ct = ct;
 					}
-
+					
 					public List<N> nodes(N d, object i = null) {
 						return call(d, i);
 					}
@@ -401,23 +403,25 @@ namespace RadialReview.Accessors.PDF {
 					public List<N> call(N d, object i = null) {
 
 						_ct.decompactify(d);
-						//Calls some sorting
-						d3_layout_hierarchyVisitAfter(d, n => {
-							var childs = n.children;
-							if (_sort != null && childs != null) {
-								Comparison<N> compare = _sort;
-								childs.Sort(_sort);
-							}
-							var parent = n.parent;
-							if (_value != null && parent != null)
-								parent.value += n.value;
-						});
-
+						
 						//compactify if needed.
 						if (_ct.compactify) {
+							//sort first...
+							d3_layout_hierarchyVisitAfter(d, n => {
+								var childs = n.children;
+								if (_sort != null && childs != null) {
+									Comparison<N> compare = _sort;
+									childs.Sort(_sort);
+								}
+								var parent = n.parent;
+								if (_value != null && parent != null)
+									parent.value += n.value;
+							});
+
+							//Compactify
 							_ct.compactifyTree(d, null);
 						}
-						var nodes = _ct.hierarchy.callHierarchy(d,false);
+						var nodes = _ct.hierarchy.callHierarchy(d,!_ct.compactify);
 
 						var root0 = nodes[0];
 						var root1 = _ct.wrapTree(root0);
@@ -675,9 +679,7 @@ namespace RadialReview.Accessors.PDF {
 						}
 
 
-
-
-
+						
 
 						//# branches
 						//var branches = cols;
@@ -711,6 +713,7 @@ namespace RadialReview.Accessors.PDF {
 								child._compact = new node<N>.compact(child);
 								child._compact.originalParent = node;
 							}
+							child._compact.ColumnNumber = i;
 							//child._compact.originalParent = child.parent;
 							child.parent = colHead;
 							child._compact.isLeaf = true;
@@ -1140,7 +1143,7 @@ namespace RadialReview.Accessors.PDF {
 
 						a.SetDebugNotes("]" + a._self.Id);
 						b.SetDebugNotes("(]" + a._self.Id + ")");
-						return 2;
+						return 1;
 					}
 
 					//if (a.children.Any() && a.children[0].children.Any() && b.children.Any() && b.children[0].children.Any()) {

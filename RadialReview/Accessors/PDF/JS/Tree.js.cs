@@ -57,15 +57,15 @@ namespace RadialReview.Accessors.PDF.JS {
 		public static CompactTree<N>.tree Update<N>(N root, Func<N, double> heightFunc=null, TreeSettings settings = null) where N : node<N>, new() {
 			var Settings = settings ?? new TreeSettings();
 			var tree = CompactTree<N>.call();
-			tree.sort((a, b) => {
-				if (b != null && a != null) {
-					var diff = a.order - b.order;
-					if (diff == 0)
-						return Math.Sign(a.Id - b.Id);
-					return diff;
-				}
-				return 0;
-			});
+			//tree.sort((a, b) => {
+			//	if (b != null && a != null) {
+			//		var diff = a.order - b.order;
+			//		if (diff == 0)
+			//			return Math.Sign(a.Id - b.Id);
+			//		return diff;
+			//	}
+			//	return 0;
+			//});
 			tree.compactify(Settings.compact);//added
 		
 			tree.nodeSize(Settings.nodeSize);
