@@ -783,7 +783,7 @@ namespace RadialReview.Accessors {
 		public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting, bool addPageNumber = false) {
 			//CreateDoc(caller,"THE LEVEL 10 MEETING");
 			var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™", addPageNumber: addPageNumber);
-			var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS. All Rights Reserved.");
+			var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS and Traction® Tools. All Rights Reserved.");
 			p.Format.Font.Size = 8;
 			p.Format.Font.Color = TableGray;
 			p.Format.LeftIndent = Unit.FromPoint(0);
@@ -2643,29 +2643,29 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null,bool isCoreValues=false) {
+		public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null, bool isCoreValues = false) {
 			var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, height.Inch), XGraphicsUnit.Inch, XPageDirection.Downwards);
 			var fontSize = maxFontSize ?? Unit.FromPoint(12);
 			var minSize = minFontSize ?? Unit.FromPoint(8);
-            var row=new Row();
+			var row = new Row();
 
 
-            if (isCoreValues)
-                minSize = Unit.FromPoint(7);
+			if (isCoreValues)
+				minSize = Unit.FromPoint(7);
 
-            List<DocumentObject> paragraphsToAdd;
+			List<DocumentObject> paragraphsToAdd;
 
 			if (!(cell is Cell || cell is Paragraph || cell is Section))
 				throw new Exception("cant handle:" + cell.NotNull(x => x.GetType()));
 
 
-            if(isCoreValues) {
-                var _cell = (Cell)cell;
-                var _tbl = _cell.Elements.AddTable();
-                Column column = _tbl.AddColumn(Unit.FromInch(2.7));
-                column = _tbl.AddColumn(Unit.FromInch(2.7));
-                 row = _tbl.AddRow();
-            }
+			if (isCoreValues) {
+				var _cell = (Cell)cell;
+				var _tbl = _cell.Elements.AddTable();
+				Column column = _tbl.AddColumn(Unit.FromInch(2.7));
+				column = _tbl.AddColumn(Unit.FromInch(2.7));
+				row = _tbl.AddRow();
+			}
 
 
 			while (true) {
@@ -2703,12 +2703,11 @@ namespace RadialReview.Accessors {
 				fontSize -= Unit.FromPoint(1);
 			}
 
-            if (fontSize == Unit.FromPoint(7) && isCoreValues) {
-                AppendAll(row.Cells[0], paragraphsToAdd.Take(7).ToList());
-                AppendAll(row.Cells[1], paragraphsToAdd.Skip(7).ToList());
-            }
-            else
-            AppendAll(cell, paragraphsToAdd);
+			if (fontSize == Unit.FromPoint(7) && isCoreValues) {
+				AppendAll(row.Cells[0], paragraphsToAdd.Take(7).ToList());
+				AppendAll(row.Cells[1], paragraphsToAdd.Skip(7).ToList());
+			} else
+				AppendAll(cell, paragraphsToAdd);
 
 			return fontSize;
 		}
@@ -2870,10 +2869,10 @@ namespace RadialReview.Accessors {
 			AddPage_VtoVision(doc, vto, baseHeight, out coreValuesPanel, out coreFocusPanel, out tenYearPanel, out marketingStrategyPanel, out threeYearPanel);
 
 			var values = vto.Values.ToList();
-            ResizeToFit(coreValuesPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
+			ResizeToFit(coreValuesPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
 				var o = new List<Paragraph>();
 				return OrderedList(values.Select(x => x.CompanyValue), ListType.NumberList1);
-			}, maxFontSize: Unit.FromPoint(10),isCoreValues:true);
+			}, maxFontSize: Unit.FromPoint(10), isCoreValues: true);
 
 
 			ResizeToFit(coreFocusPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
