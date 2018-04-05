@@ -324,10 +324,22 @@ namespace RadialReview.Accessors {
 			};
 			var o = new DashboardAndTiles(d);
 
-			o.Tiles.Add(new TileModel(0, 0 * TILE_HEIGHT, 6, 2 * TILE_HEIGHT, "Scorecard", TileTypeBuilder.L10Scorecard(id), d, now));
-			o.Tiles.Add(new TileModel(0, 2 * TILE_HEIGHT, 2, 3 * TILE_HEIGHT, "Rocks", TileTypeBuilder.L10Rocks(id), d, now));
-			o.Tiles.Add(new TileModel(2, 2 * TILE_HEIGHT, 2, 3 * TILE_HEIGHT, "To-dos", TileTypeBuilder.L10Todos(id), d, now));
-			o.Tiles.Add(new TileModel(4, 2 * TILE_HEIGHT, 2, 3 * TILE_HEIGHT, "Issues", TileTypeBuilder.L10Issues(id), d, now));
+			var counts = L10Accessor.GetMeasurableCount(s, perms, id);
+			//2 is for header and footer...
+			var scHeight = (int)Math.Ceiling(2.0 + Math.Ceiling((counts.Measurables)*18.0/19.0)+ Math.Round(counts.Dividers/5.0));
+			var scCount = (double)scHeight / (double)TILE_HEIGHT;
+
+
+			var nonScHeight = (int)Math.Max(3 * TILE_HEIGHT, Math.Ceiling((5.0 - scCount) * TILE_HEIGHT));
+			var issueHeight = (int)Math.Ceiling(0.5 * nonScHeight);
+
+
+			//						  x, y							w						   h
+			o.Tiles.Add(new TileModel(0, 0,							6,					scHeight, "Scorecard", TileTypeBuilder.L10Scorecard(id), d, now));
+			o.Tiles.Add(new TileModel(0, scHeight,					2,				 nonScHeight, "Rocks", TileTypeBuilder.L10Rocks(id), d, now));
+			o.Tiles.Add(new TileModel(2, scHeight,					2,				 nonScHeight, "To-dos", TileTypeBuilder.L10Todos(id), d, now));
+			o.Tiles.Add(new TileModel(4, scHeight,					2,				 issueHeight, "Issues", TileTypeBuilder.L10Issues(id), d, now));
+			o.Tiles.Add(new TileModel(4, scHeight + issueHeight,	2,	 nonScHeight-issueHeight, "People Headlines", TileTypeBuilder.L10PeopleHeadlines(id), d, now));
 
 			return o;
 		}
