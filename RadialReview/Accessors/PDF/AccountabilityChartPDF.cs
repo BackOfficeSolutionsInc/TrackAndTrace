@@ -80,7 +80,7 @@ namespace RadialReview.Accessors.PDF {
 				width = settings.baseWidth - settings.hSeparation,
 				height = settings.baseHeight,
 				hasHiddenChildren = aanode.HasChildren() && aanode.collapsed,
-				order = aanode.order??0,
+				order = aanode.order ?? 0,
 
 			};
 
@@ -238,6 +238,12 @@ namespace RadialReview.Accessors.PDF {
 
 			var linePad = 12 * pageProps.scale / 6.0;
 
+			var shouldDrawLine = true;
+			if (!(me.Roles != null && me.Roles.Any())/*&&me.Position==null && me.Name ==null*/) {
+				shouldDrawLine = false;
+				linePad = 0;
+			}
+
 			var tf = new XTextFormatter(gfx);
 
 			tf.Alignment = XParagraphAlignment.Center;
@@ -275,7 +281,8 @@ namespace RadialReview.Accessors.PDF {
 			//var size = positionWrapper.Size;
 			//ch += 12 * pageProps.scale / 6.0;
 
-			if (me.height > ch) {
+
+			if (shouldDrawLine && me.height > ch) {
 				gfx.DrawLine(XPens.Black, x + pad, y + ch, x + (me.width - 2 * pad), y + ch);
 			}
 
@@ -413,7 +420,7 @@ namespace RadialReview.Accessors.PDF {
 
 				DrawLine(gfx, pageProps, points);
 				if (DEBUG) {
-					gfx.DrawString(sideL + "_" + tx + "_" + tyy, tempFont, XBrushes.Red, tx+2, tyy-2);
+					gfx.DrawString(sideL + "_" + tx + "_" + tyy, tempFont, XBrushes.Red, tx + 2, tyy - 2);
 					var tempFont2 = new XFont("Times New Roman", Math.Max(1, 15 * pageProps.scale), XFontStyle.Bold);
 					gfx.DrawString(me.GetDebugNotes(), tempFont2, XBrushes.HotPink, tx + 2, tyy - 4);
 				}
