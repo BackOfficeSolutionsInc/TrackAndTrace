@@ -129,7 +129,7 @@ namespace RadialReview.Controllers {
 							return TitlePage(model);
 						}
 					default:
-						throw new MeetingException("Page doesn't exist", MeetingExceptionType.Error);
+						throw new MeetingException(id,"Page doesn't exist", MeetingExceptionType.Error);
 				}
 			} catch (MeetingException e) {
 				if (e.MeetingExceptionType == MeetingExceptionType.Unstarted) {
