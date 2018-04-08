@@ -115,7 +115,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult Remove(long id) {
 
-			var user = _UserAccessor.GetUserOrganization(GetUser(), id, true, true, PermissionType.DeleteEmployees);
+			var user = UserAccessor.GetUserOrganization(GetUser(), id, true, true, PermissionType.DeleteEmployees);
 			var sideeffect = _UserAccessor.SideEffectRemove(GetUser(), id);
 
 			var model = new RemoveUserVM() {
@@ -131,7 +131,6 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
 		public async Task<JsonResult> Remove(RemoveUserVM model) {
-			//var user = _UserAccessor.GetUserOrganization(GetUser(), , true, true);
 			var result = await _UserAccessor.RemoveUser(GetUser(), model.UserId, DateTime.UtcNow);
 			return Json(result);
 		}
@@ -152,35 +151,53 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult EditModal(long id) {
 			var userId = id;
-			var found = _UserAccessor.GetUserOrganization(GetUser(), userId, true, false, PermissionType.ChangeEmployeePermissions);
-
-			/*var strictHierarchy = GetUser().Organization.StrictHierarchy;
-            List<SelectListItem> potentialManagers = new List<SelectListItem>();
-            if (!strictHierarchy)
-                potentialManagers=_OrganizationAccessor.GetOrganizationManagers(GetUser(),GetUser().Organization.Id)
-                                                .ToSelectList(x=>x.GetName()+x.GetTitles(3, GetUser().Id).Surround(" (",")"), x=>x.Id)
-                                                .ToList();
-            if ()
-            {
-                potentialManagers.Add(new SelectListItem() { Selected = false, Text = "[Manage Organization]", Value = "-3" });
-            }*/
-
+			var found = UserAccessor.GetUserOrganization(GetUser(), userId, true, false, PermissionType.ChangeEmployeePermissions);
 
 			var managers = _UserAccessor.GetManagers(GetUser(), id);
 
 			var model = new EditUserOrganizationViewModel() {
 				IsManager = found.ManagerAtOrganization,
-				//ManagerId = managers.FirstOrDefault().NotNull(x => x.Id),
-				//PotentialManagers=potentialManagers,
-				//StrictlyHierarchical = strictHierarchy,
 				UserId = userId,
 				CanSetManagingOrganization = GetUser().ManagingOrganization && userId != GetUser().Id,
 				ManagingOrganization = found.ManagingOrganization
 			};
-
-
 			return PartialView("EditModal", model);
 		}
+
+
+		public class EditUserDetailsVM{
+			public long Id { get; set; }
+			public string First { get; set; }
+			public string Last { get; set; }
+			public string ImageUrl { get; set; }
+		}
+
+		[HttpGet]
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult EditUserDetails(long id) {
+
+			var user = UserAccessor.GetUserOrganization(GetUser(), id, false, false);
+
+			var model = new EditUserDetailsVM {
+				First = user.GetFirstName(),
+				Last = user.GetLastName(),
+				ImageUrl = user.GetImageUrl()
+			};
+
+			return PartialView(model);
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public async Task<JsonResult> EditUserDetails(EditUserDetailsVM model, HttpPostedFileBase image) {
+			var userId = model.Id;
+
+			await UserAccessor.EditUser(GetUser(), userId, model.First, model.Last,image);
+			if (System.Web.HttpContext.Current.Request.Files.AllKeys.Any()) {
+			}
+			return Json(model);
+		}
+
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
@@ -214,7 +231,7 @@ namespace RadialReview.Controllers {
 
 
 
-			var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false);
+			var user = UserAccessor.GetUserOrganization(GetUser(), userId, false, false);
 			if (user.IsClient)
 				throw new PermissionsException("Cannot edit positions of a client.", true);
 
@@ -232,7 +249,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult PositionModal(long userId, long id = 0) {
-			var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false);
+			var user = UserAccessor.GetUserOrganization(GetUser(), userId, false, false);
 #pragma warning disable CS0618 // Type or member is obsolete
 			var pos = user.Positions.FirstOrDefault(x => x.Id == id);
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -285,7 +302,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Teams(long id) {
 			var userId = id;
 			var teams = TeamAccessor.GetUsersTeams(GetUser(), userId);
-			var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).Execute();//.PersonallyManaging(GetUser());
+			var user = UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).Execute();//.PersonallyManaging(GetUser());
 
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
 			user.SetPersonallyManaging(members.Any(x => x.UserId == userId && x._PersonallyManaging));//.Hydrate().PersonallyManaging(GetUser()).Execute();
@@ -317,7 +334,7 @@ namespace RadialReview.Controllers {
 		public PartialViewResult TeamModal(long userId, long id = 0) {
 			var teams = TeamAccessor.GetUsersTeams(GetUser(), userId);
 			var aliveTeams = teams.ToListAlive();
-			var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).Execute();
+			var user = UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).Execute();
 #pragma warning disable CS0618 // Type or member is obsolete
 			var team = user.Teams.FirstOrDefault(x => x.Id == id);
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -355,7 +372,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public ActionResult Managers(long id) {
 			var userId = id;
-			var user = _UserAccessor.GetUserOrganization(GetUser(), id, false, false).Hydrate().Managers().PersonallyManaging(GetUser()).Execute();
+			var user = UserAccessor.GetUserOrganization(GetUser(), id, false, false).Hydrate().Managers().PersonallyManaging(GetUser()).Execute();
 
 			if (user.IsClient)
 				throw new PermissionsException("Cannot edit " + Config.ManagerName() + "s of a client.", true);
@@ -396,40 +413,12 @@ namespace RadialReview.Controllers {
 			return PartialView(model);
 		}
 
-		//[Access(AccessLevel.Manager)]
-		//[HttpPost]
-		//[Obsolete("Cannot remove manager like this", true)]
-		//public JsonResult DeleteManager(long id) {
-		//	_UserAccessor.RemoveManager(GetUser(), id, DateTime.UtcNow);
-		//	return Json(ResultObject.Success("Removed " + Config.ManagerName() + ".").ForceRefresh());
-		//}
-		//[Access(AccessLevel.Manager)]
-		//[HttpPost]
-		//[Obsolete("Cannot remove manager like this", true)]
-		//public JsonResult RemoveManager(long userId, long managerId) {
-		//	_UserAccessor.RemoveManager(GetUser(), userId, managerId, DateTime.UtcNow);
-		//	return Json(ResultObject.Success("Removed " + Config.ManagerName() + "."));
-		//}
-		//[Access(AccessLevel.Manager)]
-		//[HttpPost]
-		//[Obsolete("Cannot add manager like this", true)]
-		//public JsonResult AddManager(AddManagerViewModel model) {
-		//	_UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId, DateTime.UtcNow);
-		//	return Json(ResultObject.Success("Added " + Config.ManagerName() + "."));
-		//}
-		//[Access(AccessLevel.Manager)]
-		//[HttpPost]
-		//[Obsolete("Cannot remove manager like this", true)]
-		//public JsonResult SwapManager(long oldManagerId, long newManagerId, long userId) {
-		//	_UserAccessor.SwapManager(GetUser(), userId, oldManagerId, newManagerId, DateTime.UtcNow);
-		//	return Json(ResultObject.Success("Swapped user."));
-		//}
 		#endregion
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Reviews(long id) {
 			var userId = id;
-			ViewBag.ForUser = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false, PermissionType.ViewReviews).GetName();
+			ViewBag.ForUser = UserAccessor.GetUserOrganization(GetUser(), userId, false, false, PermissionType.ViewReviews).GetName();
 			var reviews = _ReviewAccessor.GetReviewsForUser(GetUser(), userId, 0, 1000, DateTime.MinValue, false);
 			return View(reviews);
 		}
@@ -450,7 +439,6 @@ namespace RadialReview.Controllers {
 			} catch (LoginException) {
 				return "";
 			}
-			//return Content(UserAccessor.GetStyles(GetUserModel().Id), "text/css");
 		}
 
 		[HttpGet]

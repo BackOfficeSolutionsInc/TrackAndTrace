@@ -1,29 +1,30 @@
 ﻿/*
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///  obj ={																																		///
-///	  title:,																																///
-///	  icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}					///
-///	  fields: [{																																///
-///		  name: (optional)																													///
-///		  text: (optional)																													///
-///		  type: <text,textarea,checkbox,radio,span,div,header,h1,h2,h3,h4,h5,h6,number,date,datetime,time,file,yesno,label,select>(optional)	///
-///				   (if type=radio or select) options:[{text,value},...]																			///
-///		  value: (optional)																													///
-///		  placeholder: (optional)																											///
-///		  classes: (optional)																												///
-///	  },...],																																///
-///		 contents: jquery object (optional, overrides fields)																					///
-///	  pushUrl:"",																															///
-///	  success:function(formData,contentType),																								///
-///	  complete:function,																														///
-///	  cancel:function,																														///  
-///	  reformat: function,																													///
-///	  validation: function(data),																											///
-///	  noCancel: bool																															///
-///  }																																			///
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///  obj ={																																			///
+///	  title:,																																		///
+///	  icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}							///
+///	  fields: [{																																	///
+///		  name: (optional)																															///
+///		  text: (optional)																															///
+///		  type: <text,textarea,checkbox,radio,span,div,header,h1,h2,h3,h4,h5,h6,number,date,datetime,time,file,yesno,label,select,file>(optional)	///
+///				   (if type=radio or select) options:[{text,value},...]																				///
+///		  value: (optional)																															///
+///		  placeholder: (optional)																													///
+///		  classes: (optional)																														///
+///	  },...],																																		///
+///		 contents: jquery object (optional, overrides fields)																						///
+///	  pushUrl:"",																																	///
+///	  success:function(formData,contentType),																										///
+///	  complete:function,																															///
+///	  cancel:function,																																///
+///	  reformat: function,																															///
+///	  validation: function(data),																													///
+///	  noCancel: bool																																///
+///  }																																				///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
-function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel) {
+function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel, contentType) {
+	debugger;
 	$("#modal").modal("hide");
 	$("#modal-icon").attr("class", "");
 	$("#modal #class-container").attr("class", "");
@@ -67,7 +68,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 					return;
 				}
 				_bindModal(modal, title, callback, validation, function (formData) {
-					_submitModal(formData, pushUrl, onSuccess, null, false);
+					_submitModal(formData, pushUrl, onSuccess, null, false, contentType);
 				});
 			}
 		}
@@ -187,7 +188,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 
 
 	contentType = null;
-	
+
 
 	var runAfter = [];
 	if (!obj.contents) {
@@ -218,14 +219,14 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 function FormFields(fields, options) {
 
 	var runAfter = [];
-	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img", "select", "readonly","subform"];
-	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "file", "select", "readonly","subform"];
+	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img", "select", "readonly", "subform"];
+	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "file", "select", "readonly", "subform"];
 	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "div"];
 	var anyFields = ""
 
 	var defaultLabelColumnClass = options.labelColumnClass || "col-sm-2";
 	var defaultValueColumnClass = options.valueColumnClass || "col-sm-10";
-	
+
 	var genInput = function (type, name, eid, placeholder, value, others, classes, tag) {
 		others = others || "";
 		classes = classes || "form-control blend";
@@ -259,7 +260,7 @@ function FormFields(fields, options) {
 						console.warn("option has no value " + fieldName + "," + oid);
 					}
 					var optionId = eid + "_" + oid;
-					var selected = option.checked || option.value==selectedValue ||false;
+					var selected = option.checked || option.value == selectedValue || false;
 					if (selected)
 						selected = "selected";
 					var optionText = option.text || option.value;
@@ -319,76 +320,72 @@ function FormFields(fields, options) {
 					value = value.toISOString().substring(0, 10);
 				}
 
-					if (type == "file")
+				if (type == "file")
 					options.contentType = 'enctype="multipart/form-data"';
 
-					if (tags.indexOf(type) != -1) {
-						var txt = value || text;
-						input = "<" + type + " name=" + escapeString(name) + '" id="' + eid + '" class="' + classes + '">' + txt + '</' + type + '>';
-					} else if (type == "textarea") {
-						input = '<textarea class="form-control blend verticalOnly ' + classes + '" rows=5 name="' + escapeString(name) + '" id="' + eid + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
-					} else if (type == "date" /*|| type=="datetime"*/) {
-						var guid = generateGuid();
-						var curName = name;
-						var curVal = originalValue;
-						var localize = field.localize;
-						input = '<div class="date-container date-' + guid + ' ' + classes + '" id="' + eid + '"></div>';
-						runAfter.push(function () {
-							var dateGenFunc = generateDatepicker;
-							if (localize == true)
-								dateGenFunc = generateDatepickerLocalize;
-							dateGenFunc('.date-' + guid, curVal, curName, eid);
-						});
-					} else if (type == "yesno") {
-						var selectedYes = (value == true) ? 'checked="checked"' : "";
-						var selectedNo = (value == true) ? "" : 'checked="checked"';
-						input = '<div class="form-group input-yesno ' + classes + '">' +
-									'<label for="true" class="col-xs-4 control-label"> Yes </label>' +
-									'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "true", selectedYes) + '</div>' +
-									'<label for="false" class="col-xs-1 control-label"> No </label>' +
-									'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "false", selectedNo) + '</div>' +
-								'</div>';
-					} else if (type == "img") {
-						input = "<img src='" + field.src + "' class='" + classes + "'/>";
-					} else if (type == "radio") {
-						if (field.options != null && field.options.length > 0) {
-							var fieldName = name;
-							input = "<fieldset id='group_" + fieldName + "'><table>";
-							for (var oid in field.options) {
-								if (arrayHasOwnIndex(field.options, oid)) {
-									var option = field.options[oid];
-									if (!option.value) {
-										console.warn("option has no value " + fieldName + "," + oid);
-									}
-									var radioId = eid + "_" + oid;
-									var selected = option.checked || false;
-									if (selected)
-										selected = "checked";
-									var radio = genInput("radio", fieldName, radioId, null, option.value, selected, option.classes || " ");
-									var optionText = option.text || option.value;
-
-									input += '<tr class="form-group">' +
-												'<td><label for="' + radioId + '" class="pull-right ' + (option.labelColumnClass || "") + ' control-label" style="padding-right:10px;">' + optionText + '</label></td>' +
-												'<td><div class="' + (option.valueColumnClass || "") + '" style="padding-top: 5px;">' + radio + '</div></td>' +
-											 '</tr>';
+				if (tags.indexOf(type) != -1) {
+					var txt = value || text;
+					input = "<" + type + " name=" + escapeString(name) + '" id="' + eid + '" class="' + classes + '">' + txt + '</' + type + '>';
+				} else if (type == "textarea") {
+					input = '<textarea class="form-control blend verticalOnly ' + classes + '" rows=5 name="' + escapeString(name) + '" id="' + eid + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
+				} else if (type == "date" /*|| type=="datetime"*/) {
+					var guid = generateGuid();
+					var curName = name;
+					var curVal = originalValue;
+					var localize = field.localize;
+					input = '<div class="date-container date-' + guid + ' ' + classes + '" id="' + eid + '"></div>';
+					runAfter.push(function () {
+						var dateGenFunc = generateDatepicker;
+						if (localize == true)
+							dateGenFunc = generateDatepickerLocalize;
+						dateGenFunc('.date-' + guid, curVal, curName, eid);
+					});
+				} else if (type == "yesno") {
+					var selectedYes = (value == true) ? 'checked="checked"' : "";
+					var selectedNo = (value == true) ? "" : 'checked="checked"';
+					input = '<div class="form-group input-yesno ' + classes + '">' +
+								'<label for="true" class="col-xs-4 control-label"> Yes </label>' +
+								'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "true", selectedYes) + '</div>' +
+								'<label for="false" class="col-xs-1 control-label"> No </label>' +
+								'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "false", selectedNo) + '</div>' +
+							'</div>';
+				} else if (type == "img") {
+					input = "<img src='" + field.src + "' class='" + classes + "'/>";
+				} else if (type == "radio") {
+					if (field.options != null && field.options.length > 0) {
+						var fieldName = name;
+						input = "<fieldset id='group_" + fieldName + "'><table>";
+						for (var oid in field.options) {
+							if (arrayHasOwnIndex(field.options, oid)) {
+								var option = field.options[oid];
+								if (!option.value) {
+									console.warn("option has no value " + fieldName + "," + oid);
 								}
+								var radioId = eid + "_" + oid;
+								var selected = option.checked || false;
+								if (selected)
+									selected = "checked";
+								var radio = genInput("radio", fieldName, radioId, null, option.value, selected, option.classes || " ");
+								var optionText = option.text || option.value;
+								input += '<tr class="form-group">' +
+											'<td><label for="' + radioId + '" class="pull-right ' + (option.labelColumnClass || "") + ' control-label" style="padding-right:10px;">' + optionText + '</label></td>' +
+											'<td><div class="' + (option.valueColumnClass || "") + '" style="padding-top: 5px;">' + radio + '</div></td>' +
+										 '</tr>';
 							}
-							input += "</table></fieldset>";
-						} else {
-							console.warn("radio field requires an 'options' array");
 						}
-					} else if (type == "select") {
-					input = genSelect(name,field.options,eid,classes,value);
-				}
-				else if (type == "readonly") {
+						input += "</table></fieldset>";
+					} else {
+						console.warn("radio field requires an 'options' array");
+					}
+				} else if (type == "select") {
+					input = genSelect(name, field.options, eid, classes, value);
+				} else if (type == "readonly") {
 					tag = "span";
 					input = "<div class='" + classes + "' style='padding-top:7px;'>" + value + "</div>";
-				}
-				else if (type == "subform") {
+				} else if (type == "subform") {
 					var oldOnChange = onchange;
 					var subforms = field.subforms;
 					var o = options;
-
 					if (!subforms) {
 						console.warn("Did you forget the subforms property?");
 					}
@@ -396,7 +393,7 @@ function FormFields(fields, options) {
 					for (var key in subforms) {
 						if (subforms.hasOwnProperty(key)) {
 							var s = subforms[key];
-							opts.push({text : key, value : key});
+							opts.push({ text: key, value: key });
 						}
 					};
 					var ii;
@@ -409,21 +406,20 @@ function FormFields(fields, options) {
 					} else {
 						ii = $(genSelect(name, opts, eid, classes, value)).wrapAll('<div>').parent();
 					}
-					//debugger;
 					ii.addClass("subform-container");
 					ii.append("<div class='subform-contents' style='padding-top:15px;'></div>");
 					input = ii.wrapAll('<div>').parent().html();
 
 					onchange = function () {
 						var val = $(this).val();
-						var subfields =  subforms[val];
+						var subfields = subforms[val];
 
 						var subform = $(this).closest(".subform-container").find(".subform-contents");
 						var result = FormFields(subfields, o);
 						var contents = result.html;
 						subform.html(contents);
 						var rrunafter = result.runAfter;
-						if (typeof(oldOnChange)==="function")
+						if (typeof (oldOnChange) === "function")
 							oldOnChange();
 
 						setTimeout(function () {
@@ -437,8 +433,7 @@ function FormFields(fields, options) {
 					runAfter.push(function () {
 						onchange.bind($("[name='" + iname + "']"))();
 					});
-
-				}else {
+				} else {
 					input = genInput(type, name, eid, placeholder, value, null, classes);
 				}
 
@@ -469,7 +464,7 @@ function FormFields(fields, options) {
 	return {
 		html: builder,
 		runAfter: runAfter,
-		contentType : contentType,
+		contentType: contentType,
 	};
 
 }

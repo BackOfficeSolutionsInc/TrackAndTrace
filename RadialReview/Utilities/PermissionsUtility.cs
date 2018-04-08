@@ -153,27 +153,36 @@ namespace RadialReview.Utilities {
 			throw new PermissionsException();
 		}
 
+		public PermissionsUtility EditUserModel(long userId) {
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var userOrg = session.Get<UserOrganizationModel>(userId);
+			if (userOrg.User != null) {
+				if (caller.User.Id == userOrg.User.Id)
+					return this;
+				if (CanEditPermitted(PermItem.ResourceType.EditDeleteUserDataForOrganization, userOrg.Organization.Id))
+					return this;
+			}
+
+			if (userOrg.TempUser != null) {
+				if (IsPermitted(x => x.CanAddUserToOrganization(userOrg.Organization.Id)))
+					return this;
+				if (CanEditPermitted(PermItem.ResourceType.EditDeleteUserDataForOrganization, userOrg.Organization.Id))
+					return this;
+			}
+
+			throw new PermissionsException();
+		}
+
+
+
 		public PermissionsUtility EditUserOrganization(long userId) {
 			if (caller.Id == userId)
 				return this;
 
 			return ManagesUserOrganization(userId, false);
 
-			/*
-            if (IsRadialAdmin(caller))
-                return this;
-
-            var user = session.Get<UserOrganizationModel>(userId);
-            if (IsManagingOrganization(user.Organization.Id))
-                return this;
-
-            if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userId))
-                return this;
-            //caller.AllSubordinates.Any(x => x.Id == userId) && caller.IsManager()) //IsManager may be too much
-            //return this;
-            //Could do some cascading here if we want.
-
-            throw new PermissionsException("You don't manage this user.");*/
 		}
 
 		public PermissionsUtility ViewUserOrganization(long userOrganizationId, Boolean sensitive, params PermissionType[] alsoCheck) {
@@ -187,16 +196,10 @@ namespace RadialReview.Utilities {
 
 					if (IsManagingOrganization(userOrg.Organization.Id))
 						return this;
-
 					if (sensitive) {
-						/*if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
-                            return this;*/
 						if (userOrganizationId == caller.Id)
 							return this;
-
 						return ManagesUserOrganization(userOrganizationId, false);
-						/*if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
-                            return this;*/
 					} else {
 						if (userOrg.Organization.Id == caller.Organization.Id)
 							return this;
@@ -269,6 +272,10 @@ namespace RadialReview.Utilities {
 			//}, PermissionType.ManageEmployees);
 		}
 
+		public PermissionsUtility CanAddUserToOrganization(long orgId) {
+			return CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, orgId);
+		}
+
 		public PermissionsUtility ManagesUserOrganizationOrSelf(long userOrganizationId) {
 			if (userOrganizationId == caller.Id)
 				return this;
@@ -276,13 +283,20 @@ namespace RadialReview.Utilities {
 		}
 
 		public PermissionsUtility RemoveUser(long userId) {
+
 			return TryWithOverrides(y => {
 				var found = session.Get<UserOrganizationModel>(userId);
-				if (caller.ManagingOrganization && caller.Organization.Id == found.Organization.Id)
-					return this;
 
-				if (caller.Organization.ManagersCanRemoveUsers)
-					return ManagesUserOrganization(userId, true);
+				//try {
+					return CanEdit(PermItem.ResourceType.EditDeleteUserDataForOrganization, found.Organization.Id);
+				//} catch (Exception) {
+				//}
+
+				//if (caller.ManagingOrganization && caller.Organization.Id == found.Organization.Id)
+				//	return this;
+
+				//if (caller.Organization.ManagersCanRemoveUsers)
+				//	return ManagesUserOrganization(userId, true);
 
 				throw new PermissionsException("You cannot remove this user.");
 			}, PermissionType.EditEmployeeDetails);
@@ -384,7 +398,7 @@ namespace RadialReview.Utilities {
 		}
 		#endregion
 
-		//#region Group
+		#region Group
 		//public PermissionsUtility EditGroup(long groupId) {
 		//	if (IsRadialAdmin(caller))
 		//		return this;
@@ -404,7 +418,7 @@ namespace RadialReview.Utilities {
 		//		return this;
 		//	throw new PermissionsException();
 		//}
-		//#endregion
+		#endregion
 
 		#region Application
 		public PermissionsUtility EditApplication(long forId) {

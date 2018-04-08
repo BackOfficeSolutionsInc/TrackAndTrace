@@ -17,7 +17,7 @@ namespace RadialReview.Api.V1 {
         [Route("users/{USER_ID:long}")]
         [HttpGet]
         public AngularUser GetUser(long USER_ID) {
-            return AngularUser.CreateUser(new UserAccessor().GetUserOrganization(GetUser(), USER_ID, false, false));
+            return AngularUser.CreateUser(UserAccessor.GetUserOrganization(GetUser(), USER_ID, false, false));
         }
         [Route("users/mine")]
         [HttpGet]

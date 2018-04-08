@@ -102,6 +102,31 @@ namespace RadialReview.Utilities {
 			});
 		}
 
+		public bool CanViewPermitted(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null, string exceptionMessage = null) {
+			try {
+				CanView(resourceType, resourceId, defaultAction, exceptionMessage);
+				return true;
+			} catch (PermissionsException e) {
+				return false;
+			}
+		}
+		public bool CanEditPermitted(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null, string exceptionMessage = null) {
+			try {
+				CanEdit(resourceType, resourceId, defaultAction, exceptionMessage);
+				return true;
+			} catch (PermissionsException e) {
+				return false;
+			}
+		}
+		public bool CanAdminPermitted(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null, string exceptionMessage = null) {
+			try {
+				CanAdmin(resourceType, resourceId, defaultAction, exceptionMessage);
+				return true;
+			} catch (PermissionsException e) {
+				return false;
+			}
+		}
+
 
 		public PermissionsUtility CanView(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null, string exceptionMessage = null) {
 			return CheckCacheFirst("CanView_" + resourceType, resourceId).Execute(() => {
@@ -403,6 +428,8 @@ namespace RadialReview.Utilities {
 					return creator.Is<UserOrganizationModel>() && creator.ModelId == caller.Id;
 				case PermItem.ResourceType.UpdatePaymentForOrganization:
 					return false;
+				case PermItem.ResourceType.EditDeleteUserDataForOrganization:
+					return false;
 				default:
 					throw new ArgumentOutOfRangeException("resourceType");
 			}
@@ -415,6 +442,8 @@ namespace RadialReview.Utilities {
 				case PermItem.ResourceType.AccountabilityHierarchy:
 					return new long[] { };
 				case PermItem.ResourceType.UpgradeUsersForOrganization:
+					return new long[] { };
+				case PermItem.ResourceType.EditDeleteUserDataForOrganization:
 					return new long[] { };
 				case PermItem.ResourceType.CoreProcess:
 					return session.QueryOver<ProcessDef_Camunda>()
@@ -444,6 +473,8 @@ namespace RadialReview.Utilities {
 				case PermItem.ResourceType.SurveyContainer:
 					return session.Get<SurveyContainer>(resourceId).OrgId;
 				case PermItem.ResourceType.UpdatePaymentForOrganization:
+					return resourceId;
+				case PermItem.ResourceType.EditDeleteUserDataForOrganization:
 					return resourceId;
 				default:
 					throw new ArgumentOutOfRangeException("resourceType");

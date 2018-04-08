@@ -363,6 +363,7 @@ namespace RadialReview.Models {
 
 		[Display(Name = "managerCanAddQuestions", ResourceType = typeof(DisplayNameStrings))]
 		public virtual Boolean ManagersCanEdit { get; set; }
+		[Obsolete("Do not use, use PermItem (EditDeleteUserDataForOrganization) instead.")]
 		public virtual Boolean ManagersCanRemoveUsers { get; set; }
 		public virtual bool StrictHierarchy { get; set; }
 
