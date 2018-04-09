@@ -149,9 +149,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
 		$scope.functions.adjustToMidnight = function (date) {
 			//adjusts local time to end of day local time
-
 			return Time.adjustToMidnight(date);
-
 		}
 
 		$scope.$watch('model.LoadUrls.length', function (newValue, oldValue) {
@@ -316,7 +314,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 					url += "&end=" + dateToNumber(range.endDate);
 				if (firstLoad)
 					url += "&fullScorecard=true";
-
 				loadDataFromUrl(url);
 			}
 		}
@@ -330,6 +327,24 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 				} else {
 					return 0;
 				}
+			};
+		}
+
+		$scope.functions.orderMeasurables = function (scorecard) {
+			var dict = {};
+			if (scorecard.MeasurableOrder) {
+				for (var i in scorecard.MeasurableOrder) {
+					var m = scorecard.MeasurableOrder[i];
+					dict[m.MeasurableId] = m.Ordering;
+				}
+			}
+			return function (a) {
+				debugger;
+				if (a.Id in dict)
+					return dict[a.Id];
+				if (a.Ordering)
+					return a.Ordering;
+				return a.Id;
 			};
 		}
 
@@ -650,8 +665,8 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		var updateDebounce = {};
 		$scope.functions.sendUpdateDebounce = function (self, args) {
 			function debounce(key, func, wait, immediate) {
-				if (!(key in updateDebounce)){
-					updateDebounce[key]=null;
+				if (!(key in updateDebounce)) {
+					updateDebounce[key] = null;
 				}
 				var timeout = updateDebounce[key];
 				return function () {
