@@ -38,7 +38,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			$scope.ScoreLookup = $scope.ScoreLookup || {};
 			var luArr = [];
 			if (data.Scorecard != null && data.Scorecard.Scores != null) {
-
 				luArr.push(data.Scorecard.Scores);
 			}
 
@@ -65,7 +64,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 								var foundKey = $scope.ScoreLookup[value.ForWeek][value.Measurable.Id];
 								var newKey = value.Key;
 								if (typeof (foundKey) !== "undefined" && foundKey.localeCompare(value.Key) > 0) {
-									debugger;
 									newKey = foundKey;
 								}
 								$scope.ScoreLookup[value.ForWeek][value.Measurable.Id] = newKey;
@@ -149,9 +147,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
 		$scope.functions.adjustToMidnight = function (date) {
 			//adjusts local time to end of day local time
-
 			return Time.adjustToMidnight(date);
-
 		}
 
 		$scope.$watch('model.LoadUrls.length', function (newValue, oldValue) {
@@ -333,7 +329,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			};
 		}
 
-
 		$scope.functions.reload(true, $scope.model.dataDateRange, true);
 
 		$scope.functions.setHtml = function (element, data) {
@@ -341,6 +336,10 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			$compile(newstuff)($scope); // loads the angular stuff in the new markup
 			$scope.$apply();
 		};
+
+		//$scope.functions.fixedHeader = function (self, $event) {
+		//	debugger;
+		//}
 
 		$scope.functions.setPage = function (page) {
 			//console.info("should we be here?")
@@ -537,9 +536,8 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 					if ($scope.model.Attendees[i].Managing) {
 						attendes.push($scope.model.Attendees[i]);
 					}
-
 				}
-				//$scope.possibleOwners[id] = $scope.model.Attendees;
+
 				$scope.possibleOwners[id] = attendes;
 				$scope.possibleOwners[id];
 			} else {
@@ -650,8 +648,8 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		var updateDebounce = {};
 		$scope.functions.sendUpdateDebounce = function (self, args) {
 			function debounce(key, func, wait, immediate) {
-				if (!(key in updateDebounce)){
-					updateDebounce[key]=null;
+				if (!(key in updateDebounce)) {
+					updateDebounce[key] = null;
 				}
 				var timeout = updateDebounce[key];
 				return function () {
@@ -733,10 +731,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
 			if (self.Direction == "Between" || self.Direction == -3) {
 				icon = "info";
-				//fields.unshift({
-				//	type: "label",
-				//	value: "Update historical goals?"
-				//});
 				fields.push({
 					type: "number",
 					text: "Lower-Boundary",
@@ -765,9 +759,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
 					$scope.$apply(function () {
 						m.Modifiers = model.unitType;
-						//$scope.model.Lookup[m.Key].Modifiers = model.unitType;
 
-						//debugger;
 						$scope.functions.sendUpdate(m, {
 							"historical": model.history,
 							"Lower": low,
@@ -800,9 +792,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			$http.post(url, dat).error(function (data) {
 				showJsonAlert(data, false, true);
 				self.Archived = origArchive;
-				//self.Hide = false;
 			}).finally(function () {
-				// reload
 				$scope.functions.reload(true, $scope.model.dataDateRange, false);
 			});
 		};
@@ -812,7 +802,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			var _clientTimestamp = new Date().getTime();
 			var origArchive = self.Archived;
 			self.Archived = false;
-			//self.Hide = true;
 
 			$(".editable-wrap").remove();
 
@@ -820,10 +809,8 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
 			$http.post(url, dat).error(function (data) {
 				showJsonAlert(data, false, true);
-				//self.Hide = false;
 				self.Archived = origArchive;
 			}).finally(function () {
-				// reload
 				$scope.functions.reload(true, $scope.model.dataDateRange, false);
 			});
 		};
@@ -865,10 +852,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		$scope.ShowSearch = false;
 		$scope.functions.showUserSearch = function (event) {
 			$scope.functions.showModal("Add Attendee", "/L10/AddAttendee?meetingId=" + $scope.recurrenceId, "/L10/AddAttendee");
-			//$scope.ShowSearch = true;
-			//$timeout(function () {
-			//	$(".user-list-container .livesearch-container input").focus();
-			//}, 1);
 		};
 		$scope.functions.showMeasurableSearch = function (event) {
 			$scope.functions.showModal("Add Measurable", "/L10/AddMeasurableModal?meetingId=" + $scope.recurrenceId, "/L10/AddMeasurableModal");
@@ -893,12 +876,10 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		}
 
 		$scope.functions.blurSearch = function (self, noHide) {
-			//$timeout(function () {
 			angular.element(".searchresultspopup").addClass("ng-hide");
 			self.visible = false;
 			$scope.ShowSearch = false;
 			$scope.model.Search = '';
-			//}, 300);
 		}
 
 		$scope.userSearchCallback = function (params) {
@@ -970,14 +951,11 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		};
 
 		function decideOnDate(week, selector) {
-			//console.log(selector.ScorecardWeekDay);
-			//console.log(week.LocalDate);
-			//console.log(week.ForWeek);
 
 			var forWeek = new Date(70, 0, 4);
 			forWeek.setDate(forWeek.getDate() + 7 * (week.ForWeekNumber - 1));
 			forWeek = new Date(+forWeek - 1);
-			//forWeek = week.ForWeek;
+
 			var dat = $scope.functions.startOfWeek(forWeek, selector.ScorecardWeekDay);
 
 			if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
@@ -993,7 +971,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			return $filter('date')(date, selector.DateFormat1);
 		};
 		$scope.functions.bottomDate = function (week, selector) {
-			// debugger;
 			var dat = decideOnDate(week, selector);
 			var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6, false/*!(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
 			if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
@@ -1017,5 +994,138 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(day);
 		}
 
-	}])
+	}
+]);
+
+
+
+angular.module('L10App').directive('fixHeadWidth', ["$interval", function ($interval) {
+	return {
+		link: function (scope, element, attr) {
+			var token = $interval(function () {
+
+				var parent = element.closest("[fix-head-parent]");
+				var loc = parent.find("[fix-head-location]");
+
+				var w = Math.max(loc.width(), element.width() );
+
+				if (w > 0) {
+					$interval.cancel(token);
+					loc.width(w+3);
+				}
+
+
+			}, 100);
+		}
+	};
+}]);
+
+
+
+angular.module('L10App').directive('fixHeadScroller', ["$timeout", function ($timeout) {
+	return {
+		link: function (scope, element, attr) {
+			var firstGen = true;
+
+			element.bind('scroll', function (evt) {
+
+
+				var parent = element.closest("[fix-head-parent]");
+
+				if (firstGen) {
+					$timeout(function () {
+						var left = parent.find("[fix-head-scroller='left']")[0].scrollLeft;
+						parent.find("[fix-head]").each(function (a, b) {
+							var e = $(b);
+							var p = e.position();
+							var c = e.clone();
+							c.removeAttr("fix-head");
+							c.attr("fix-head-clone", true);
+							c.css({
+								position: "absolute",
+								left: p.left + left,
+								heigth: e.height(),
+								width: e.width(),
+								fontFamily: e.css("fontFamily"),
+								fontSize: e.css("fontSize"),
+								color: e.css("color"),
+								backgroundColor: e.css("backgroundColor"),
+								fontWeight: e.css("fontWeight"),
+								top: p.top,
+							});
+
+							c.data("top", p.top);
+
+							var parent = e.closest("[fix-head-parent]");
+							var f = parent.find("[fix-head-location]");
+							f.append(c);
+
+
+						});
+					}, 1);
+					firstGen = false;
+				}
+
+
+
+
+				var f = parent.find("[fix-head-location]");
+
+				if (f.length) {
+
+					var sTop = this.scrollTop;
+					var sLeft = this.scrollLeft;
+					var type = this.getAttribute("fix-head-scroller");
+
+
+					var throttle = function (func, limit) {
+						var lastFunc;
+						var lastRan;
+						return function () {
+							var context = this;
+							var args = arguments;
+							if (!lastRan) {
+								func.apply(context, args)
+								lastRan = Date.now()
+							} else {
+								$timeout.cancel(lastFunc);
+								lastFunc = $timeout(function () {
+									if ((Date.now() - lastRan) >= limit) {
+										func.apply(context, args);
+										lastRan = Date.now();
+									}
+								}, limit - (Date.now() - lastRan))
+							}
+						}
+					};
+
+					throttle(function () {
+						var g = {};
+
+						//var parent = element.closest("[fix-head-parent]");
+						//var loc = parent.find("[fix-head-location]");
+
+						if (type == "left")
+							g.left = -sLeft;
+						if (type == "top")
+							g.top = sTop;
+						f.css(g);
+					}, 500)();
+				}
+
+			});
+		}
+	};
+}]);
+
+angular.module('L10App').directive('fixHead', ["$timeout", function ($timeout) {
+	return {
+		link: function (scope, element, attr) {
+			$timeout(function () {
+
+
+			}, 100);
+		}
+	};
+}]);
 
