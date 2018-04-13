@@ -511,7 +511,14 @@ namespace RadialReview.Accessors.PDF {
 
 		private static void ACDrawEllipse(XGraphics gfx, ACNode root, PageProp pageProps, double[] origin = null, bool above = false) {
 			origin = origin ?? new[] { 0.0, 0.0 };
+
 			var x = root.x + root.width / 2.0 - origin[0];
+			if (root.side == "left") {
+				x = root.x + root.width - origin[0];
+			} else if (root.side == "right") {
+				x = root.x - origin[0];
+			}
+
 			var y = root.y - origin[1];
 
 			var mult = 1;

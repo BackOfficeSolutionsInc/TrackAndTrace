@@ -89,6 +89,8 @@ namespace RadialReview {
 						return f(obj);
 					} catch (NullReferenceException) {
 						return default(R);
+					} catch (ArgumentNullException) {
+						return default(R);
 					}
 				} else {
 					return default(R);

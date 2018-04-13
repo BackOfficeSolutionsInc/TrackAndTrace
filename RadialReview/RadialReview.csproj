@@ -128,6 +128,7 @@
     <Compile Include="Accessors\PDF\JS\D3.js.cs" />
     <Compile Include="Accessors\PDF\DocumentPlacer.cs" />
     <Compile Include="Accessors\PDF\JS\Tree.js.cs" />
+    <Compile Include="Accessors\PDF\PdfAccessor_VTO.cs" />
     <Compile Include="Accessors\ReportAccessor.cs" />
     <Compile Include="Accessors\SearchAccessor.cs" />
     <Compile Include="Accessors\StatsAccessor.cs" />
@@ -401,7 +402,7 @@
     <Compile Include="Accessors\OxyplotAccessor.cs" />
     <Compile Include="Accessors\PadAccessor.cs" />
     <Compile Include="Accessors\PaymentAccessor.cs" />
-    <Compile Include="Accessors\PdfAccessor.cs" />
+    <Compile Include="Accessors\PDF\PdfAccessor.cs" />
     <Compile Include="Accessors\PeriodAccessor.cs" />
     <Compile Include="Accessors\PermissionsAccessor.cs" />
     <Compile Include="Accessors\PhoneAccessor.cs" />
@@ -953,6 +954,7 @@
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PaymentSpringUtil.cs" />
+    <Compile Include="Utilities\PdfResizer.cs" />
     <Compile Include="Utilities\Pdf\PdfWordWrapper.cs" />
     <Compile Include="Utilities\PermissionItemHelper.cs" />
     <Compile Include="Utilities\Productivity\ChromeExtensionComms.cs" />

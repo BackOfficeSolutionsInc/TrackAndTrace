@@ -6,263 +6,236 @@ using System.Text.RegularExpressions;
 using static RadialReview.Accessors.PdfAccessor;
 using MigraDoc.DocumentObjectModel;
 
-namespace RadialReview.Utilities.Pdf
-{
-    /// <summary>
-    /// PdfWordWrapper
-    /// wraps text to a specified line width for PDFsharp.
-    /// Programmed by Huysentruit Wouter
-    /// © Copyright by Fastload-Media.be
-    /// </summary>
-    public class PdfWordWrapper
-    {
-        public enum Alignment { Left, Center, Right, Justify }
+namespace RadialReview.Utilities.Pdf {
+	/// <summary>
+	/// PdfWordWrapper
+	/// wraps text to a specified line width for PDFsharp.
+	/// Programmed by Huysentruit Wouter
+	/// © Copyright by Fastload-Media.be
+	/// </summary>
+	public class PdfWordWrapper {
+		public enum Alignment { Left, Center, Right, Justify }
 
-        private enum BlockType { Text, Space, LineBreak }
+		private enum BlockType { Text, Space, LineBreak }
 
-        private class Block
-        {
-            public Block(string text, BlockType type, XFont font, XBrush brush, YSize size, double descent)
-            {
-                this.Text = text;
-                this.Type = type;
-                this.Font = font;
-                this.Brush = brush;
-                this.Size = size;
-                this.Descent = descent;
-            }
+		private class Block {
+			public Block(string text, BlockType type, XFont font, XBrush brush, YSize size, double descent) {
+				this.Text = text;
+				this.Type = type;
+				this.Font = font;
+				this.Brush = brush;
+				this.Size = size;
+				this.Descent = descent;
+			}
 
-            public string Text;
-            public BlockType Type;
-            public XFont Font;
-            public XBrush Brush;
-            public YSize Size;
-            public double Descent;
-            public double X = 0;
-        }
+			public string Text;
+			public BlockType Type;
+			public XFont Font;
+			public XBrush Brush;
+			public YSize Size;
+			public double Descent;
+			public double X = 0;
+		}
 
-        private class Line
-        {
-            public List<Block> Blocks = new List<Block>();
-            public YSize Size = new YSize(0, 0);
-            public double Descent = 0;
-        }
+		private class Line {
+			public List<Block> Blocks = new List<Block>();
+			public YSize Size = new YSize(0, 0);
+			public double Descent = 0;
+		}
 
-        private XGraphics graphics;
-        private Unit width;
-        private List<Block> blocks = new List<Block>();
-        private List<Line> lines = new List<Line>();
-        private bool needsProcessing = false;
-        private YSize size = new YSize(0, 0);
+		private XGraphics graphics;
+		private Unit width;
+		private List<Block> blocks = new List<Block>();
+		private List<Line> lines = new List<Line>();
+		private bool needsProcessing = false;
+		private YSize size = new YSize(0, 0);
 
-        public PdfWordWrapper(XGraphics graphics, Unit width)
-        {
-            if (graphics == null)
-                throw new ArgumentNullException("graphics");
+		public PdfWordWrapper(XGraphics graphics, Unit width) {
+			if (graphics == null)
+				throw new ArgumentNullException("graphics");
 
-            this.graphics = graphics;
-            this.width = width;
-        }
+			this.graphics = graphics;
+			this.width = width;
+		}
 
-        private void CreateBlocks(string text, XFont font, XBrush brush)
-        {
-            Unit spaceWidth = Unit.FromPoint(graphics.MeasureString("X X", font).Width - graphics.MeasureString("XX", font).Width);
-            Unit lineHeight = font.GetHeight();
-            Unit descent = -(lineHeight * font.Metrics.Descent / font.Metrics.XHeight);
+		private void CreateBlocks(string text, XFont font, XBrush brush) {
+			Unit spaceWidth = Unit.FromPoint(graphics.MeasureString("X X", font).Width - graphics.MeasureString("XX", font).Width);
+			Unit lineHeight = font.GetHeight();
+			Unit descent = -(lineHeight * font.Metrics.Descent / font.Metrics.XHeight);
 
-            Regex regex = new Regex(@"(\s)|(\S+)");
-            text = text.Replace('\r', '\n');
+			Regex regex = new Regex(@"(\s)|(\S+)");
+			text = text.Replace('\r', '\n');
 
-            foreach (Match match in regex.Matches(text))
-            {
-                string value = match.Groups[0].Value;
+			foreach (Match match in regex.Matches(text)) {
+				string value = match.Groups[0].Value;
 
-                if ((value == null) || (value == ""))
-                    continue;
+				if ((value == null) || (value == ""))
+					continue;
 
-                if (value == " ")
-                {
-                    var _size = graphics.MeasureString(value, font);
-                    YSize size = new YSize(Unit.FromPoint(_size.Width), Unit.FromPoint(_size.Height));
-                    size.Width = spaceWidth;
-                    size.Height = lineHeight;
-                    blocks.Add(new Block(value, BlockType.Space, font, null, size, descent));
-                    continue;
-                }
+				if (value == " ") {
+					var _size = graphics.MeasureString(value, font);
+					YSize size = new YSize(Unit.FromPoint(_size.Width), Unit.FromPoint(_size.Height));
+					size.Width = spaceWidth;
+					size.Height = lineHeight;
+					blocks.Add(new Block(value, BlockType.Space, font, null, size, descent));
+					continue;
+				}
 
-                if (value == "\n")
-                {
-                    blocks.Add(new Block(value, BlockType.LineBreak, null, null, new YSize(0, lineHeight), descent));
-                    continue;
-                }
+				if (value == "\n") {
+					blocks.Add(new Block(value, BlockType.LineBreak, null, null, new YSize(0, lineHeight), descent));
+					continue;
+				}
 
-                YSize blockSize = new YSize(graphics.MeasureString(value, font));
+				YSize blockSize = new YSize(graphics.MeasureString(value, font));
 
-                while (blockSize.Width > width)
-                {
-                    for (int i = value.Length - 1; i > 0; i--)
-                    {
-                        string part = value.Substring(0, i);
+				while (blockSize.Width > width) {
+					for (int i = value.Length - 1; i > 0; i--) {
+						string part = value.Substring(0, i);
 
-                        blockSize = new YSize(graphics.MeasureString(part, font));
-                        blockSize.Height = lineHeight;
+						blockSize = new YSize(graphics.MeasureString(part, font));
+						blockSize.Height = lineHeight;
 
-                        if (blockSize.Width > width)
-                            continue;
+						if (blockSize.Width > width)
+							continue;
 
-                        blocks.Add(new Block(part, BlockType.Text, font, brush, blockSize, descent));
+						blocks.Add(new Block(part, BlockType.Text, font, brush, blockSize, descent));
 
-                        value = value.Substring(i, value.Length - i);
-                        // *** This is the bug fix *** variable 'i' needs to get the value of the new length of the shortened string
-                        i = value.Length + 1;  //  will be decremented by 1 on next iteration
-                        
-                        if (value.Length == 0)
-                        {
-                            blockSize = YSize.Empty;
-                            break;
-                        }
-                    }
-                }
+						value = value.Substring(i, value.Length - i);
+						// *** This is the bug fix *** variable 'i' needs to get the value of the new length of the shortened string
+						i = value.Length + 1;  //  will be decremented by 1 on next iteration
 
-                if (value.Length > 0)
-                    blocks.Add(new Block(value, BlockType.Text, font, brush, blockSize, descent));
-            }
+						if (value.Length == 0) {
+							blockSize = YSize.Empty;
+							break;
+						}
+					}
+				}
 
-            needsProcessing = true;
-        }
+				if (value.Length > 0)
+					blocks.Add(new Block(value, BlockType.Text, font, brush, blockSize, descent));
+			}
 
-        public void Process()
-        {
-            Line line = new Line();
-            bool lineBreak = false;
+			needsProcessing = true;
+		}
 
-            size.Width = width;
-            size.Height = 0;
+		public void Process() {
+			Line line = new Line();
+			bool lineBreak = false;
 
-            foreach (Block block in blocks)
-            {
-                if (((line.Size.Width + block.Size.Width) > width) || lineBreak)
-                {   // Create a new line...
-                    // Skip space at the end of a line
-                    if (line.Blocks.Count > 0)
-                    {
-                        Block lastBlock = line.Blocks[line.Blocks.Count - 1];
-                        if (lastBlock.Type == BlockType.Space)
-                        {
-                            line.Size.Width -= lastBlock.Size.Width;
-                            line.Blocks.Remove(lastBlock);
-                        }
-                    }
+			size.Width = width;
+			size.Height = 0;
 
-                    // Add line to list
-                    lines.Add(line);
+			foreach (Block block in blocks) {
+				if (((line.Size.Width + block.Size.Width) > width) || lineBreak) {   // Create a new line...
+																					 // Skip space at the end of a line
+					if (line.Blocks.Count > 0) {
+						Block lastBlock = line.Blocks[line.Blocks.Count - 1];
+						if (lastBlock.Type == BlockType.Space) {
+							line.Size.Width -= lastBlock.Size.Width;
+							line.Blocks.Remove(lastBlock);
+						}
+					}
 
-                    // Create new line
-                    line = new Line();
+					// Add line to list
+					lines.Add(line);
 
-                    // Skip space at beginning of a new line
-                    if (block.Type == BlockType.Space)
-                        continue;
+					// Create new line
+					line = new Line();
 
-                    lineBreak = false;
-                }
+					// Skip space at beginning of a new line
+					if (block.Type == BlockType.Space)
+						continue;
 
-                block.X = line.Size.Width;
-                line.Size.Width += block.Size.Width;
-                line.Blocks.Add(block);
+					lineBreak = false;
+				}
 
-                if (block.Descent > line.Descent)
-                    line.Descent = block.Descent;
+				block.X = line.Size.Width;
+				line.Size.Width += block.Size.Width;
+				line.Blocks.Add(block);
 
-                if (block.Size.Height > line.Size.Height)
-                {
-                    size.Height -= line.Size.Height;
-                    size.Height += block.Size.Height;
-                    line.Size.Height = block.Size.Height;
-                }
+				if (block.Descent > line.Descent)
+					line.Descent = block.Descent;
 
-                if (block.Type == BlockType.LineBreak)
-                    lineBreak = true;
-            }
+				if (block.Size.Height > line.Size.Height) {
+					size.Height -= line.Size.Height;
+					size.Height += block.Size.Height;
+					line.Size.Height = block.Size.Height;
+				}
 
-            if (line.Blocks.Count > 0)
-                lines.Add(line);
+				if (block.Type == BlockType.LineBreak)
+					lineBreak = true;
+			}
 
-            // Override the measured width
-            size.Width = width;
+			if (line.Blocks.Count > 0)
+				lines.Add(line);
 
-            foreach (Line l in lines)
-                size.Height += l.Descent;
+			// Override the measured width
+			size.Width = width;
 
-            needsProcessing = false;
-        }
+			foreach (Line l in lines)
+				size.Height += l.Descent;
 
-        public void Clear()
-        {
-            blocks.Clear();
-            lines.Clear();
-            needsProcessing = false;
-        }
+			needsProcessing = false;
+		}
 
-        public void Add(string text, XFont font, XBrush brush)
-        {
-            CreateBlocks(text, font, brush);
-        }
+		public void Clear() {
+			blocks.Clear();
+			lines.Clear();
+			needsProcessing = false;
+		}
 
-        public void Draw(XGraphics g, double x, double y, Alignment align)
-        {
-            if (needsProcessing)
-                Process();
+		public void Add(string text, XFont font, XBrush brush) {
+			CreateBlocks(text, font, brush);
+		}
 
-            double lineOffsetX = 0;
-            double lineOffsetY = 0;
-            double justifySpacing = 0;
-            double justifyOffsetX = 0;
+		public void Draw(XGraphics g, double x, double y, Alignment align) {
+			if (needsProcessing)
+				Process();
 
-            foreach (Line line in lines)
-            {
-                lineOffsetY += line.Size.Height;
+			double lineOffsetX = 0;
+			double lineOffsetY = 0;
+			double justifySpacing = 0;
+			double justifyOffsetX = 0;
 
-                if (align == Alignment.Center)
-                    lineOffsetX = (size.Width - line.Size.Width) / 2;
+			foreach (Line line in lines) {
+				lineOffsetY += line.Size.Height;
 
-                if (align == Alignment.Right)
-                    lineOffsetX = size.Width - line.Size.Width;
+				if (align == Alignment.Center)
+					lineOffsetX = (size.Width - line.Size.Width) / 2;
 
-                if (align == Alignment.Justify)
-                {
-                    int spaceCount = 0;
-                    foreach (Block block in line.Blocks)
-                        if (block.Type == BlockType.Space)
-                            spaceCount++;
+				if (align == Alignment.Right)
+					lineOffsetX = size.Width - line.Size.Width;
 
-                    justifyOffsetX = 0;
-                    justifySpacing = (size.Width - line.Size.Width) / (double)spaceCount;
-                }
+				if (align == Alignment.Justify) {
+					int spaceCount = 0;
+					foreach (Block block in line.Blocks)
+						if (block.Type == BlockType.Space)
+							spaceCount++;
 
-                foreach (Block block in line.Blocks)
-                {
-                    if (block.Type == BlockType.LineBreak)
-                        continue;
+					justifyOffsetX = 0;
+					justifySpacing = (size.Width - line.Size.Width) / (double)spaceCount;
+				}
 
-                    if (block.Type == BlockType.Space)
-                    {
-                        if (align == Alignment.Justify)
-                            justifyOffsetX += justifySpacing;
-                        continue;
-                    }
+				foreach (Block block in line.Blocks) {
+					if (block.Type == BlockType.LineBreak)
+						continue;
 
-                    g.DrawString(block.Text, block.Font, block.Brush, x + block.X + lineOffsetX + justifyOffsetX, y + lineOffsetY);
-                }
+					if (block.Type == BlockType.Space) {
+						if (align == Alignment.Justify)
+							justifyOffsetX += justifySpacing;
+						continue;
+					}
 
-                lineOffsetY += line.Descent;
-            }
-        }
+					g.DrawString(block.Text, block.Font, block.Brush, x + block.X + lineOffsetX + justifyOffsetX, y + lineOffsetY);
+				}
 
-        public YSize Size
-        {
-            get { return size; }
-        }
-    }
+				lineOffsetY += line.Descent;
+			}
+		}
+
+		public YSize Size {
+			get { return size; }
+		}
+	}
 
 }
