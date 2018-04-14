@@ -636,6 +636,34 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 				.then(function () { }, showAngularError);
 		};
 
+
+		var updateDebounce = {};
+		$scope.functions.sendUpdateDebounce = function (self, args) {
+			function debounce(key, func, wait, immediate) {
+				if (!(key in updateDebounce)) {
+					updateDebounce[key] = null;
+				}
+				var timeout = updateDebounce[key];
+				return function () {
+					var context = this, args = arguments;
+					var later = function () {
+						timeout = null;
+						if (!immediate) func.apply(context, args);
+					};
+					var callNow = immediate && !timeout;
+					clearTimeout(timeout);
+					updateDebounce[key] = setTimeout(later, wait);
+					if (callNow) func.apply(context, args);
+				};
+			};
+			debounce(self.Key, function () {
+				console.warn("debounce sent");
+				$scope.functions.sendUpdate(self, args);
+			}, 300)();
+		};
+
+
+
 		$scope.functions.checkFutureAndSend = function (self) {
 			var m = self;
 			var icon = { title: "Update options" };

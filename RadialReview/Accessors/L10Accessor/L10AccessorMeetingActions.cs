@@ -777,10 +777,14 @@ namespace RadialReview.Accessors {
 			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
+					//var perms = PermissionsUtility.
 					if (recurrenceId == -3) {
-						var recurs = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.User.Id == caller.Id)
+						var recurs = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null)
+							.WhereRestrictionOn(x=>x.User.Id).IsIn(caller.UserIds)
 							.Select(x => x.L10Recurrence.Id)
 							.List<long>().ToList();
+						//Hey.. this doesnt grab all visible meetings.. it should be adjusted when we know that GetVisibleL10Meetings_Tiny is optimized
+						//GetVisibleL10Meetings_Tiny(s, perms, caller.Id);
 						foreach (var r in recurs) {
 							hub.Groups.Add(connectionId, MeetingHub.GenerateMeetingGroupId(r));
 						}

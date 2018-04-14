@@ -275,6 +275,7 @@ namespace RadialReview.Utilities.Synchronize {
 							}
 							key = keySelector(s);
 							var found = s.Get<SyncLock>(key, LockMode.Upgrade);
+							
 							if (found == null) {
 								//Didnt exists. Lets atomically create it
 								//LockMode.Upgrade prevents creating simultaniously 
