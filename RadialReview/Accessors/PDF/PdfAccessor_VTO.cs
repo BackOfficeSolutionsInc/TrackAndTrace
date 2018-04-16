@@ -10,10 +10,141 @@ using VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment;
 using RadialReview.Utilities;
 
 namespace RadialReview.Accessors {
+
+
 	public partial class PdfAccessor {
+		public static bool DEBUGGER = false;
+
+		public class VtoVisionDocumentGenerator : IDocumentGenerator {
+
+			public const string LEFT_COLUMN = "LEFT_COLUMN";
+			public const string RIGHT_COLUMN = "RIGHT_COLUMN";
+
+
+			public static Unit LEFT_TITLE_WIDTH = Unit.FromInch(1.66);
+			public static Unit LEFT_CONTENT_WIDTH = Unit.FromInch(5.33);
+			public static Unit RIGHT_WIDTH = Unit.FromInch(3.4);
+
+			public static Unit PAGE1_HEIGHT = Unit.FromInch(5.5);
+			public static Unit PAGE2_HEIGHT = Unit.FromInch(7);
+
+			/*
+				var leftTitleWidth = Unit.FromInch(1.66);
+				var leftContentWidth = Unit.FromInch(5.33);
+
+				var leftWidth = leftTitleWidth + leftContentWidth;
+				var rightWidth = Unit.FromInch(3.4); 
+			 */
+
+
+			public class VtoVisionPageGenerator : IPageGenerator {
+				public int Page { get; set; }
+				public AngularVTO vto { get; set; }
+
+				public VtoVisionPageGenerator(int page, AngularVTO vto) {
+					Page = page;
+					this.vto = vto;
+				}
+
+				protected Unit GetHeight() {
+					if (Page == 0) {
+						return PAGE1_HEIGHT;
+					}
+					return PAGE2_HEIGHT;
+				}
+
+				public Action<Section> GetDrawer(IEnumerable<string> requiredSections, IEnumerable<IDrawInstruction> instructions) {
+
+					return new Action<Section>(section => {
+						if (Page == 0) {
+							AddVtoPageToSection(section, vto.Name ?? "", "VISION");
+						}
+
+						var TableGray = new Color(100, 100, 100, 100);
+						var TableBlack = new Color(0, 0, 0);
+						var vision = section.AddTable();
+						vision.Style = "Table";
+						vision.Borders.Color = TableBlack;
+						vision.Borders.Width = 1;
+						vision.Rows.LeftIndent = 0;
+						vision.LeftPadding = 0;
+						vision.RightPadding = 0;
+
+						var hasLeft = requiredSections.Contains(LEFT_COLUMN);
+						var hasRight = requiredSections.Contains(RIGHT_COLUMN);
+
+						if (hasLeft && hasRight) {
+							vision.AddColumn(LEFT_TITLE_WIDTH + LEFT_CONTENT_WIDTH);
+							vision.AddColumn(RIGHT_WIDTH);
+							var row = vision.AddRow();
+
+							//add core value, core focus, 10yr target, and strategy
+							foreach (var c in instructions.Where(x => x.ViewBox.GetName() == LEFT_COLUMN)) {
+								row.Cells[0].Elements.Add(c.Contents);
+							}
+
+							//Add three year column
+							foreach (var c in instructions.Where(x => x.ViewBox.GetName() == RIGHT_COLUMN)) {
+								row.Cells[1].Elements.Add(c.Contents);
+							}
+						} else if (hasLeft) {
+							vision.AddColumn(LEFT_TITLE_WIDTH + LEFT_CONTENT_WIDTH + RIGHT_WIDTH);
+							var row = vision.AddRow();
+							//add core value, core focus, 10yr target, and strategy
+							foreach (var c in instructions.Where(x => x.ViewBox.GetName() == LEFT_COLUMN)) {
+								row.Cells[0].Elements.Add(c.Contents);
+							}
+						} else if (hasRight) {
+							vision.AddColumn(LEFT_TITLE_WIDTH + LEFT_CONTENT_WIDTH + RIGHT_WIDTH);
+							var row = vision.AddRow();
+							//Add three year column
+							foreach (var c in instructions.Where(x => x.ViewBox.GetName() == RIGHT_COLUMN)) {
+								row.Cells[0].Elements.Add(c.Contents);
+							}
+						}
+
+					});
+				}
+
+				public IEnumerable<INamedViewBox> GetViewBoxes(IEnumerable<string> requiredSections) {
+					var hasLeft = requiredSections.Contains(LEFT_COLUMN);
+					var hasRight = requiredSections.Contains(RIGHT_COLUMN);
+					if (hasLeft && hasRight) {
+						yield return new NamedViewBox(LEFT_COLUMN, LEFT_TITLE_WIDTH + LEFT_CONTENT_WIDTH, GetHeight());
+						yield return new NamedViewBox(RIGHT_COLUMN, RIGHT_WIDTH, GetHeight());
+						yield break;
+					}
+
+					var fullWidth = LEFT_TITLE_WIDTH + LEFT_CONTENT_WIDTH + RIGHT_WIDTH;
+
+					if (hasLeft) {
+						yield return new NamedViewBox(LEFT_COLUMN, fullWidth, GetHeight());
+						yield break;
+					}
+					if (hasRight) {
+						yield return new NamedViewBox(RIGHT_COLUMN, fullWidth, GetHeight());
+						yield break;
+					}
+					yield break;
+				}
+			}
+
+			public AngularVTO vto { get; set; }
+
+			public VtoVisionDocumentGenerator(AngularVTO vto) {
+				this.vto = vto;
+			}
+
+			public IPageGenerator GetPageLayout(int page) {
+				return new VtoVisionPageGenerator(page, vto);
+			}
+		}
+
+
+
 		public static void AddVTO(Document doc, AngularVTO vto, string dateformat) {
 			if (vto.IncludeVision)
-				AddVtoVision(doc, vto, dateformat);
+				AddVtoVision_Intermediate(doc, vto, dateformat);
 			AddVtoTraction(doc, vto, dateformat);
 		}
 
@@ -21,6 +152,12 @@ namespace RadialReview.Accessors {
 			Section section;
 
 			section = doc.AddSection();
+			AddVtoPageToSection(section, docName, pageName);
+
+			return section;
+		}
+
+		private static void AddVtoPageToSection(Section section, string docName, string pageName) {
 			section.PageSetup.Orientation = Orientation.Landscape;
 			section.PageSetup.PageFormat = PageFormat.Letter;
 
@@ -107,20 +244,70 @@ namespace RadialReview.Accessors {
 			var ft = p.AddFormattedText(pageName, TextFormat.Bold | TextFormat.Underline);
 			ft.Font.Size = 20;
 			ft.Font.Name = "Arial Narrow";
-
-
-
-			return section;
 		}
 
+		private static Cell FormatParagraph(string title, Cell cell, RangedVariables vars) {
 
-		private static Cell FormatParagraph(Cell cell, ResizeVariables vars) {
-			cell.Format.Font.Size = vars.Get("FontSize");
-			cell.Borders.Top.Width = vars.Get("Spacer");
-			cell.Borders.Bottom.Width = vars.Get("Spacer");
-			cell.Borders.Color = Colors.Transparent;
+			var table = new Table();
+			cell.Elements.Add(table);
+			table.AddColumn(VtoVisionDocumentGenerator.LEFT_TITLE_WIDTH);
+			table.AddColumn(VtoVisionDocumentGenerator.LEFT_CONTENT_WIDTH);
+			table.Rows.LeftIndent = 0;
+			table.LeftPadding = 0;
+			table.RightPadding = 0;
 
-			return cell;
+			table.Borders.Bottom.Width = 1;
+			table.Borders.Bottom.Color = TableBlack;
+
+			var row = table.AddRow();
+			var titleCell = row.Cells[0];
+			titleCell.Borders.Bottom.Color = TableBlack;
+			titleCell.Borders.Right.Color = TableBlack;
+			titleCell.Borders.Bottom.Width = 1;
+			titleCell.Format.Font.Bold = true;
+			titleCell.Format.Font.Size = 14;
+			titleCell.Shading.Color = TableGray;
+
+			/*
+				 row.Borders.Bottom.Color = TableBlack;
+				row.Borders.Right.Color = TableBlack;
+				cvTitle.Shading.Color = TableGray;
+				cvTitle.Format.Font.Bold = true;
+				cvTitle.Format.Font.Size = 14;
+				cvTitle.Format.Font.Name = "Arial Narrow";
+				cvTitle.AddParagraph(vto.CoreValueTitle ?? "CORE VALUES");
+				cvTitle.Format.Alignment = ParagraphAlignment.Center;
+				row.VerticalAlignment = VerticalAlignment.Center;
+			 */
+
+
+			titleCell.AddParagraph(title);
+
+			titleCell.VerticalAlignment = VerticalAlignment.Center;
+			titleCell.Format.Alignment = ParagraphAlignment.Center;
+
+
+			var contentsTable = new Table();
+
+			//contentsTable.Rows.LeftIndent = 0;
+			//contentsTable.LeftPadding = 0;
+			//contentsTable.RightPadding = 0;
+
+			contentsTable.AddColumn(VtoVisionDocumentGenerator.LEFT_CONTENT_WIDTH);
+			var contentCell = contentsTable.AddRow().Cells[0];
+			row.Cells[1].Elements.Add(contentsTable);
+			AddPadding(vars, contentCell);
+
+			return contentCell;
+		}
+
+		private static void AddPadding(RangedVariables vars, Cell contentCell) {
+			contentCell.Format.Font.Size = vars.Get("FontSize");
+			contentCell.Borders.Left.Width = 0;
+			contentCell.Borders.Right.Width = 0;
+			contentCell.Borders.Top.Width = vars.Get("Spacer");
+			contentCell.Borders.Bottom.Width = vars.Get("Spacer");
+			contentCell.Borders.Color = Colors.Transparent;
 		}
 
 		private static void AppendCoreValues(Cell cell, AngularVTO vto) {
@@ -160,28 +347,111 @@ namespace RadialReview.Accessors {
 			cell.Add(tenYear);
 		}
 
-		private static void AppendMarketStrategies(Cell cell, AngularVTO vto, ResizeVariables vars) {
+		#region Old
+		private static void AppendMarketStrategies(Cell cell, AngularVTO vto, RangedVariables vars) {
 			//cell.AddParagraph("MarketStrategy");
 			//var marketingStrategyPanel = new ResizableElement(leftContentWidth, (c, v) => { AppendMarketStrategy(FormatParagraph(c, v), vto); });
 			var strats = vto.NotNull(x => x.Strategies.ToList()) ?? new List<AngularStrategy>();
 			var addSpaceBefore = true;
 
-			var stratCount = Math.Round(vars.Get("NumberOfStrategies"));
+			var stratCount = strats.Count();//Math.Min(strats.Count(),Math.Round(vars.Get("NumberOfStrategies")));
 
-			for (var i = 0; i < Math.Min(strats.Count(),stratCount); i++) {
+			for (var i = 0; i < stratCount; i++) {
 				var strat = strats[i];
 				var isFirst = i == 0;
 				var isLast = i == strats.Count() - 1;
 				var isOnly = strats.Count() == 1;
 
-				AppendMarketStrategy(cell,strat, isFirst,isLast, isOnly, ref addSpaceBefore);
+				AppendMarketStrategy(cell, strat, isFirst, isLast, isOnly, ref addSpaceBefore);
+			}
+		}
+		#endregion
+
+
+
+		private class MarketingStrategyHint : Hint {
+
+			public class MSHintGroup {
+				public Table InnerTable { get; set; }
+				public Cell TitleCell { get; set; }
+				public string Title { get; set; }
+				public int Rows = 0;
+
+				public MSHintGroup(string title) {
+					Title = title;
+				}
+
+
 			}
 
+			public MarketingStrategyHint(string viewBox, MSHintGroup group, params IElement[] elements) : base(viewBox, elements) {
+				Group = group;
+			}
+
+			public MSHintGroup Group { get; set; }
+
+			public override void DrawElement(Table elementContents, Cell viewBoxContainer) {
+				Row row;
+				if (Group.InnerTable == null) {
+					Group.InnerTable = new Table();
+					var t = Group.InnerTable;
+					t.Rows.LeftIndent = 0;
+					t.LeftPadding = 0;
+					t.RightPadding = 0;
+
+					if (PdfAccessor.DEBUGGER) {
+						t.Borders.Width = 1;
+						t.Borders.Color = Colors.Red;
+					}
+					t.AddColumn(VtoVisionDocumentGenerator.LEFT_TITLE_WIDTH);
+					t.AddColumn(viewBoxContainer.Column.Width - VtoVisionDocumentGenerator.LEFT_TITLE_WIDTH);
+					viewBoxContainer.Elements.Add(t);
+					row = t.AddRow();
+					AppendRowTitle(row, Group.Title);
+					Group.TitleCell = row.Cells[0];
+				} else {
+					row = Group.InnerTable.AddRow();
+				}
+				Group.TitleCell.MergeDown = Group.Rows;
+
+				Group.Rows += 1;
+
+				base.DrawElement(elementContents, row.Cells[1]);
+			}
+
+			//public override void Draw(Table viewBoxContainer, INamedViewBox viewBox, RangedVariables pageVariables) {
+			//	if (Row == null) {
+			//	}
+			//	base.Draw(viewBoxContainer, viewBox, pageVariables);
+			//}
 		}
 
+
+		private static IEnumerable<IHint> GenerateMarketingStrategyHints(string viewBoxName, string title, AngularVTO vto) {
+			if (vto.NotNull(x => x.Strategies) != null) {
+
+				var stratCount = vto.Strategies.Count();
+				var spaceBefore = true;
+				var group = new MarketingStrategyHint.MSHintGroup(title);
+				for (var i = 0; i < stratCount; i++) {
+					var strat = vto.Strategies.ElementAt(i);
+					var isFirst = i == 0;
+					var isLast = i == stratCount - 1;
+					var isOnly = stratCount == 1;
+					yield return new MarketingStrategyHint(viewBoxName, group, new ResizableElement((c, v) => {
+						AddPadding(v, c);
+
+						AppendMarketStrategy(c, strat, isFirst, isLast, isOnly, ref spaceBefore);
+					}, widthOverride: VtoVisionDocumentGenerator.LEFT_CONTENT_WIDTH));
+				}
+
+			}
+		}
+
+
 		private static void AppendMarketStrategy(Cell cell, AngularStrategy strat, bool isFirst, bool isLast, bool isOnly, ref bool addSpaceBefore) {
-			
-			
+
+
 			var fs = 7;
 			var paragraphs = new List<Paragraph>();
 			//Add spacer
@@ -265,6 +535,39 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		private static IEnumerable<IHint> GenerateThreeYearHints(AngularVTO vto, string dateFormat) {
+			//cell.AddParagraph("TenYear");
+
+			var header = new ResizableElement((c, v) => {
+				var fs = v.Get("FontSize");
+				var paragraphs = AddVtoSectionHeader(vto.ThreeYearPicture, fs, dateFormat);
+				foreach (var a in paragraphs)
+					c.Add(a);
+
+				var p = new Paragraph();
+				p.AddFormattedText("What does it look like?", TextFormat.Bold | TextFormat.Underline);
+				p.Format.Font.Name = "Arial Narrow";
+				p.Format.Font.Size = fs;
+				c.Add(p);
+			});
+
+			yield return new Hint(VtoVisionDocumentGenerator.RIGHT_COLUMN, header);
+
+			var looksLike = vto.ThreeYearPicture.LooksLike.Where(x => !string.IsNullOrWhiteSpace(x.Data)).Select(x => x.Data).ToList();
+			var listing = OrderedList(looksLike, ListType.BulletList1);
+
+			var looksLikeHints = listing.Select((ll, i) => {
+				return new StaticElement((c, v) => {
+					c.Add(ll.Clone());
+				});
+			}).Select(x => {
+				return new Hint(VtoVisionDocumentGenerator.RIGHT_COLUMN, x);
+			});
+
+			foreach (var h in looksLikeHints)
+				yield return h;
+		}
+
 		private static void AppendRowTitle(Row row, string title) {
 			var cvTitle = row.Cells[0];
 			row.Borders.Bottom.Color = TableBlack;
@@ -279,7 +582,7 @@ namespace RadialReview.Accessors {
 		}
 
 		[Obsolete("Only for private or test use")]
-		public static void AddVtoVision(Document doc, AngularVTO vto, string dateformat) {
+		public static void AddVtoVision_Intermediate(Document doc, AngularVTO vto, string dateformat) {
 			var TableGray = new Color(100, 100, 100, 100);
 			var TableBlack = new Color(0, 0, 0);
 
@@ -308,18 +611,22 @@ namespace RadialReview.Accessors {
 			var elements = new List<ResizableElement>();
 			ResizableElement coreValuesPanel = null, coreFocusPanel = null, tenYearPanel = null, marketingStrategyPanel = null;
 
-			coreValuesPanel = new ResizableElement(leftContentWidth, (c, v) => { AppendCoreValues(FormatParagraph(c, v), vto); });
-			coreFocusPanel = new ResizableElement(leftContentWidth, (c, v) => { AppendCoreFocus(FormatParagraph(c, v), vto); });
-			tenYearPanel = new ResizableElement(leftContentWidth, (c, v) => { AppendTenYear(FormatParagraph(c, v), vto); });
-			marketingStrategyPanel = new ResizableElement(leftContentWidth, (c, v) => { AppendMarketStrategies(FormatParagraph(c, v), vto, v); });
+			var coreValueTitle = vto.NotNull(x => x.CoreValueTitle) ?? "CORE VALUES";
+			var coreFocusTitle = vto.NotNull(x => x.CoreFocus.CoreFocusTitle) ?? "CORE FOCUS™";
+			var tenYearTitle = vto.NotNull(x => x.TenYearTargetTitle) ?? "10-YEAR TARGET™";
+			var marketingStrategyTitle = vto.NotNull(x => x.Strategy.MarketingStrategyTitle) ?? "MARKETING STRATEGY";
+
+			coreValuesPanel = new ResizableElement((c, v) => { AppendCoreValues(FormatParagraph(coreValueTitle, c, v), vto); });
+			coreFocusPanel = new ResizableElement((c, v) => { AppendCoreFocus(FormatParagraph(coreFocusTitle, c, v), vto); });
+			tenYearPanel = new ResizableElement((c, v) => { AppendTenYear(FormatParagraph(tenYearTitle, c, v), vto); });
+			marketingStrategyPanel = new ResizableElement((c, v) => { AppendMarketStrategies(FormatParagraph(marketingStrategyTitle, c, v), vto, v); });
 			//var marketingStrategyElements = new List<ResizableElement>();
 
 			var stratCount = vto.NotNull(x => x.Strategies.Count());
 
-			var vars = new ResizeVariables();
+			var vars = new RangedVariables();
 			vars.Add("FontSize", 10, 6, 10);
 			vars.Add("Spacer", Unit.FromInch(.25), Unit.FromInch(.05), Unit.FromInch(5));
-			vars.Add("NumberOfStrategies", stratCount, 0, stratCount+1.5);
 
 			if (showCoreValue)
 				elements.Add(coreValuesPanel);
@@ -331,9 +638,9 @@ namespace RadialReview.Accessors {
 				elements.Add(marketingStrategyPanel);
 
 
-			var optimized = PdfOptimzer.OptimizeHeights(Unit.FromInch(5.5), elements, vars);
+			var optimized = ViewBoxOptimzer.Optimize(leftContentWidth, Unit.FromInch(5.5), elements, vars);
 
-			var f = optimized.Fit.Fits;
+			var f = optimized.FitResults.Fits;
 
 			vision.AddColumn(leftWidth);
 			vision.AddColumn(rightWidth);
@@ -350,7 +657,7 @@ namespace RadialReview.Accessors {
 					var r = left.AddRow();
 					AppendRowTitle(r, vto.NotNull(x => x.CoreValueTitle) ?? "CORE VALUES");
 					r.Cells[1].Elements.Add(t);
-				}, optimized.Variables);
+				}, leftContentWidth, optimized.Variables);
 			}
 
 			if (showCoreValue) {
@@ -358,7 +665,7 @@ namespace RadialReview.Accessors {
 					var r = left.AddRow();
 					AppendRowTitle(r, vto.NotNull(x => x.CoreFocus.CoreFocusTitle) ?? "CORE FOCUS™");
 					r.Cells[1].Elements.Add(t);
-				}, optimized.Variables);
+				}, leftContentWidth, optimized.Variables);
 			}
 
 			if (showTenYearPanel) {
@@ -366,7 +673,7 @@ namespace RadialReview.Accessors {
 					var r = left.AddRow();
 					AppendRowTitle(r, vto.NotNull(x => x.TenYearTargetTitle) ?? "10-YEAR TARGET™");
 					r.Cells[1].Elements.Add(t);
-				}, optimized.Variables);
+				}, leftContentWidth, optimized.Variables);
 			}
 
 			if (showMarketingStrategy) {
@@ -377,9 +684,9 @@ namespace RadialReview.Accessors {
 					c.Borders.Bottom.Width = 0;
 					c.Elements.Add(t);
 
-				}, optimized.Variables);
+				}, leftContentWidth, optimized.Variables);
 			}
-
+			#region hide
 			/*
 			AddPage_VtoVision(doc, vto, baseHeight, out coreValuesPanel, out coreFocusPanel, out tenYearPanel, out marketingStrategyPanel, out threeYearPanel);
 
@@ -607,8 +914,80 @@ namespace RadialReview.Accessors {
 				}
 
 			}*/
+			#endregion
 
 		}
+
+		public static void AddVtoVision(Document doc, AngularVTO vto, string dateFormat) {
+
+			var visionLayoutGenerator = new VtoVisionDocumentGenerator(vto);
+
+			var vars = new RangedVariables();
+			vars.Add("FontSize", 10, 6, 10);
+			vars.Add("Spacer", Unit.FromInch(.25), Unit.FromInch(.05), Unit.FromInch(5));
+
+
+			var coreValueTitle = vto.NotNull(x => x.CoreValueTitle) ?? "CORE VALUES";
+			var coreFocusTitle = vto.NotNull(x => x.CoreFocus.CoreFocusTitle) ?? "CORE FOCUS™";
+			var tenYearTitle = vto.NotNull(x => x.TenYearTargetTitle) ?? "10-YEAR TARGET™";
+			var marketingStrategyTitle = vto.NotNull(x => x.Strategy.MarketingStrategyTitle) ?? "MARKETING STRATEGY";
+
+			var coreValuesPanel = new ResizableElement((c, v) => { AppendCoreValues(FormatParagraph(coreValueTitle, c, v), vto); });
+			var coreFocusPanel = new ResizableElement((c, v) => { AppendCoreFocus(FormatParagraph(coreFocusTitle, c, v), vto); });
+			var tenYearPanel = new ResizableElement((c, v) => { AppendTenYear(FormatParagraph(tenYearTitle, c, v), vto); });
+			var marketingStrategyPanel = GenerateMarketingStrategyHints(VtoVisionDocumentGenerator.LEFT_COLUMN, marketingStrategyTitle, vto);
+
+			var hints = new List<IHint>();
+			hints.Add(new Hint(VtoVisionDocumentGenerator.LEFT_COLUMN, coreValuesPanel));
+			hints.Add(new Hint(VtoVisionDocumentGenerator.LEFT_COLUMN, coreFocusPanel));
+			hints.Add(new Hint(VtoVisionDocumentGenerator.LEFT_COLUMN, tenYearPanel));
+			hints.AddRange(marketingStrategyPanel);
+
+			hints.AddRange(GenerateThreeYearHints(vto, dateFormat));
+
+
+			/*
+			var looksList = vto.ThreeYearPicture.LooksLike.Where(x => !string.IsNullOrWhiteSpace(x.Data)).Select(x => x.Data).ToList();
+
+			var threeYearSectionHeader = AddVtoSectionHeader(vto.ThreeYearPicture, fs, dateFormat);
+
+
+			var threeYearParagraphs = new List<Paragraph>();
+			{
+				var fs = 10;
+				threeYearParagraphs.AddRange();
+				var p = new Paragraph();
+				p.AddFormattedText("What does it look like?", TextFormat.Bold | TextFormat.Underline);
+				p.Format.Font.Name = "Arial Narrow";
+				p.Format.Font.Size = fs;
+				threeYearParagraphs.Add(p);
+				threeYearParagraphs.AddRange(OrderedList(looksList, ListType.BulletList1));
+			}
+
+			var threeYearPages = SplitHeights(Unit.FromInch(3.4), new[] { Unit.FromInch(5.15), Unit.FromInch(5.7) }, threeYearParagraphs, null, null, stillTooBig: x => {
+				var i = (Paragraph)x.Unmodified.Item;
+				var baseSize = i.Format.Font.Size;
+				var o = new Paragraph();
+				var size = ResizeToFit(o, x.MaximumWidth, x.MaximumHeight, (d, s) => {
+					i.Format.Font.Size = s;
+					return i.AsList();
+				}, 5, baseSize);
+
+				o.Format.Font.Size = size;
+
+				return new ItemHeight() {
+					Item = o,
+					Height = GetSize(o, x.MaximumWidth).Height
+				};
+			});*/
+
+
+			var result = LayoutOptimizer.Optimize(visionLayoutGenerator, hints, vars);
+
+			LayoutOptimizer.Draw(doc, result);
+		}
+
+
 
 
 		#region ignore
