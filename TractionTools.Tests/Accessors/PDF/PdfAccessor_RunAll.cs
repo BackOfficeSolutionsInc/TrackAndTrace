@@ -5,27 +5,26 @@ using RadialReview.Accessors;
 using RadialReview.Controllers;
 using TractionTools.Tests.TestUtils;
 using System.Threading.Tasks;
+using static RadialReview.Accessors.PdfAccessor;
 
 namespace TractionTools.Tests.Accessors {
-    [TestClass]
-    public class PdfAccessor_RunAll : BaseTest {
-        [TestMethod]
-        public async Task VTO()
-        {
+	[TestClass]
+	public class PdfAccessor_RunAll : BaseTest {
+		[TestMethod]
+		public async Task VTO() {
 
-            MockHttpContext();
-            var r = await L10Utility.CreateRecurrence("VTO");
-            var d = PdfAccessor.CreateDoc(r.Creator, "d");
+			MockHttpContext();
+			var r = await L10Utility.CreateRecurrence("VTO");
+			var d = PdfAccessor.CreateDoc(r.Creator, "d");
 
-            var avto = VtoAccessor.GetAngularVTO(r.Creator, r.Recur.VtoId);
-
-            PdfAccessor.AddVTO(d, avto, "MM-dd-yyyy");
-        }
-        [TestMethod]
-        public async Task QuarterlyPrintout()
-        {
-            var r = await L10Utility.CreateRecurrence("QuarterlyPrintout");
-            var d = PdfAccessor.CreateDoc(r.Creator, "d");
+			var avto = VtoAccessor.GetAngularVTO(r.Creator, r.Recur.VtoId);
+			var settings = new VtoPdfSettings();
+			await PdfAccessor.AddVTO(d, avto, "MM-dd-yyyy", settings);
+		}
+		[TestMethod]
+		public async Task QuarterlyPrintout() {
+			var r = await L10Utility.CreateRecurrence("QuarterlyPrintout");
+			var d = PdfAccessor.CreateDoc(r.Creator, "d");
 
 			//var ctrl = new QuarterlyController();
 
@@ -36,6 +35,6 @@ namespace TractionTools.Tests.Accessors {
 			//});
 
 
-        }
-    }
+		}
+	}
 }

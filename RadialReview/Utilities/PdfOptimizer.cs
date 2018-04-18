@@ -12,8 +12,46 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using static RadialReview.Utilities.ViewBoxOptimzer;
+using MigraDoc.DocumentObjectModel.Internals;
+using System.Threading.Tasks;
 
 namespace RadialReview.Utilities {
+
+
+	public class Container : Table {
+
+		public Cell Contents { get; private set; }
+
+		public Container(Unit width) {
+			Rows.LeftIndent = 0;
+			LeftPadding = 0;
+			RightPadding = 0;
+
+			if (PdfAccessor.DEBUGGER) {
+				Borders.Width = .1;
+				Borders.Color = Colors.Red;
+				Borders.Style = BorderStyle.Dot;
+			}
+
+			AddColumn(width);
+			var r=AddRow();
+			Contents =r.Cells[0];
+		}
+
+		public void Add(DocumentObject a) {
+			Contents.Elements.Add(a);
+		}
+
+		// User-defined conversion from Digit to double
+		public static implicit operator Cell(Container d) {
+			return d.Contents;
+		}
+
+		public Paragraph AddParagraph(string v) {
+			return Contents.Elements.AddParagraph(v);
+		}
+	}
+
 	public class RangedVariables {
 		public class Variable {
 			public Variable(Unit value, Unit lower, Unit upper, Unit? initial = null) {
@@ -105,7 +143,7 @@ namespace RadialReview.Utilities {
 	public class StaticElement : ResizableElement {
 		public Dictionary<Unit, Unit> CalculatedHeights { get; private set; }
 
-		public StaticElement(Action<Cell, RangedVariables> draw, PageSetup setup = null) : base(draw, setup) {
+		public StaticElement(Action<ResizeContext> draw, PageSetup setup = null) : base(draw, setup) {
 			CalculatedHeights = new Dictionary<Unit, Unit>();
 		}
 
@@ -117,35 +155,39 @@ namespace RadialReview.Utilities {
 		}
 	}
 
+	public class ResizeContext {
+		public Container Container { get; set; }
+		public RangedVariables Variables { get; set; }
+		public LayoutOptimizer.PageLayoutResults Page { get; internal set; }
+		public IHint Hint { get; set; }
+
+		//public IElement This { get; set; }
+	}
+
 	public class ResizableElement : IElement, IElementOverrideWidth {
 
-		public Action<Cell, RangedVariables> Draw { get; set; }
+		public Action<ResizeContext> Draw { get; set; }
 		public PageSetup Setup { get; set; }
 		public Unit? WidthOverride { get; set; }
 
-		public ResizableElement(Action<Cell, RangedVariables> draw, PageSetup setup = null,Unit? widthOverride=null) {
+		public IHint Hint { get; set; }
+
+		public ResizableElement(Action<ResizeContext> draw, PageSetup setup = null,Unit? widthOverride=null) {
 			Draw = draw;
 			Setup = setup;
 			WidthOverride = widthOverride;
 		}
 
-		public void AddToDocument(Action<Table> adder, Unit width, RangedVariables vars) {
-			var t = new Table();
-
-			t.Rows.LeftIndent = 0;
-			t.LeftPadding = 0;
-			t.RightPadding = 0;
-
-			if (PdfAccessor.DEBUGGER) {
-				t.Borders.Width = 1;
-				t.Borders.Color = Colors.Red;
-			}
-
-			t.AddColumn(WidthOverride??width);// Unit.FromInch(1.5));
-			var r = t.AddRow();
-			var cell = r.Cells[0];
-			Draw(cell, vars);
-			adder(t);
+		public void AddToDocument(Action<Container> adder, Unit width, RangedVariables vars) {
+			var c = new Container(WidthOverride ?? width);
+			var ctx = new ResizeContext() {
+				Container = c,
+				Variables = vars,
+				Hint = Hint,
+				//This = this,
+			};
+			Draw(ctx);
+			adder(c);
 		}
 
 		public virtual Unit CalcHeight(Unit width, RangedVariables vars) {
@@ -163,14 +205,20 @@ namespace RadialReview.Utilities {
 			sec.PageSetup.LeftMargin = Unit.FromInch(0);
 			sec.PageSetup.RightMargin = Unit.FromInch(0);
 
-			var t = sec.AddTable();
+			var t = new Container(width);
+			sec.Add(t);
 
-			t.AddColumn(width);// Unit.FromInch(1.5));
-			var r = t.AddRow();
+			//t.AddColumn(width);// Unit.FromInch(1.5));
+			//var r = t.AddRow();
+			//var cell = r.Cells[0];
 
-			var cell = r.Cells[0];
-
-			Draw(cell, vars);
+			var ctx = new ResizeContext() {
+				Container = t,
+				Variables = vars,
+				Hint = Hint,
+				//This = this
+			};
+			Draw(ctx);
 
 			var render = new DocumentRenderer(doc);
 			render.PrepareDocument();
@@ -334,7 +382,7 @@ namespace RadialReview.Utilities {
 
 	public interface IPageGenerator {
 		IEnumerable<INamedViewBox> GetViewBoxes(IEnumerable<string> requiredViewBoxs);
-		Action<Section> GetDrawer(IEnumerable<string> requiredViewBoxes, IEnumerable<IDrawInstruction> instructions);
+		Task Draw(Section section, IEnumerable<string> requiredViewBoxes, IEnumerable<IDrawInstruction> instructions);
 	}
 
 	public interface INamedViewBox {
@@ -361,14 +409,14 @@ namespace RadialReview.Utilities {
 
 	public interface IDrawInstruction {
 		INamedViewBox ViewBox { get; }
-		Table Contents { get; }
+		Container Contents { get; }
 
 	}
-
+	
 	public interface IHint {
 		string ForViewBox();
 		IEnumerable<IElement> GetElements();
-		void Draw(Table viewBoxContainer, INamedViewBox viewBox, RangedVariables pageVariables);
+		void Draw(Container viewBoxContainer, INamedViewBox viewBox, RangedVariables pageVariables);
 	}
 
 	public class Hint : IHint {
@@ -381,20 +429,23 @@ namespace RadialReview.Utilities {
 		public Hint(string viewBox, params IElement[] elements) {
 			ViewBoxName = viewBox;
 			Elements = elements;
+
+			foreach (var e in elements) {
+				e.Hint = this;
+			}
 		}
+
 		public string ForViewBox() { return ViewBoxName; }
 		public IEnumerable<IElement> GetElements() { return Elements.ToList(); }
 
-		public virtual void DrawElement(Table elementContents, Cell viewBoxContainer) {
-			viewBoxContainer.Elements.Add(elementContents);
+		public virtual void DrawElement(Container contents, Cell viewBoxContainer) {
+			viewBoxContainer.Elements.Add(contents);
 		}
 
-		public virtual void Draw(Table viewBoxContainer, INamedViewBox viewBox, RangedVariables pageVariables) {
+		public virtual void Draw(Container viewBoxContainer, INamedViewBox viewBox, RangedVariables pageVariables) {
 			foreach (var element in GetElements()) {
-				element.AddToDocument(new Action<Table>(x => {
-					var row = viewBoxContainer.AddRow();
-					var cell = row.Cells[0];
-					DrawElement(x, cell);
+				element.AddToDocument(new Action<Container>(x => {
+					DrawElement(x, viewBoxContainer);
 				}), viewBox.GetWidth(), pageVariables);
 			}
 		}
@@ -405,8 +456,9 @@ namespace RadialReview.Utilities {
 	}
 
 	public interface IElement {
+		IHint Hint { get; set; }
 		Unit CalcHeight(Unit width, RangedVariables v);
-		void AddToDocument(Action<Table> adder, Unit width, RangedVariables vars);
+		void AddToDocument(Action<Container> adder, Unit width, RangedVariables vars);
 	}
 
 
@@ -449,7 +501,7 @@ namespace RadialReview.Utilities {
 		}
 
 		public class Instruction : IDrawInstruction {
-			public Table Contents { get; set; }
+			public Container Contents { get; set; }
 			public INamedViewBox ViewBox { get; set; }
 		}
 
@@ -460,28 +512,30 @@ namespace RadialReview.Utilities {
 				var docPage = doc.AddSection();
 				var docLayout = page.Layout;
 
-				var pageViewBoxTable = new Dictionary<string, Table>();
+				var pageViewBoxContainer = new Dictionary<string, Container>();
 
 				var allViewBoxes = docLayout.GetViewBoxes(page.RequiredViewBoxes).ToList();
 				var viewBoxLookup = allViewBoxes.ToDictionary(x => x.GetName(), x => x);
 				
 				//Create content containers
 				foreach (var viewBox in allViewBoxes) {
-					var table = new Table();
-					table.Rows.LeftIndent = 0;
-					table.LeftPadding = 0;
-					table.RightPadding = 0;
-
-					table.AddColumn(viewBox.GetWidth());
-					pageViewBoxTable[viewBox.GetName()] = table;
+					pageViewBoxContainer[viewBox.GetName()] = new Container(viewBox.GetWidth()); 
 				}
 
 				//Draw hints on content container
 				foreach (var pageHint in page.HintsOnPage) {
 					var viewBoxName = pageHint.ForViewBox();
-					var viewBoxContents = pageViewBoxTable[viewBoxName];
+					var viewBoxContents = pageViewBoxContainer[viewBoxName];
 					var pageVariables = page.GetVariables(viewBoxName);
 					var viewBox = viewBoxLookup[viewBoxName];
+
+					//var ctx = new ResizeContext() {
+					//	Container = viewBoxContents,
+					//	Hint=pageHint,
+					//	Variables = pageVariables,
+					//	Page = page,
+					//};
+
 					//Draw elements on content container
 					pageHint.Draw(viewBoxContents, viewBox, pageVariables);
 				}
@@ -489,14 +543,14 @@ namespace RadialReview.Utilities {
 				//Add content containers to the page
 				var instructions = new List<Instruction>();
 				foreach (var viewBox in allViewBoxes) {
-					var viewBoxContent = pageViewBoxTable[viewBox.GetName()];
+					var viewBoxContent = pageViewBoxContainer[viewBox.GetName()];
 					instructions.Add(new Instruction() {
 						Contents = viewBoxContent,
 						ViewBox = viewBox,
 					});
 				}
 
-				page.Layout.GetDrawer(page.RequiredViewBoxes, instructions)?.Invoke(docPage);
+				page.Layout.Draw(docPage, page.RequiredViewBoxes, instructions);
 			}
 		}
 
@@ -583,6 +637,7 @@ namespace RadialReview.Utilities {
 
 						for (var i = remainingViewBoxHints.Count(); i >= 0; i--) {
 							var pageHints = remainingViewBoxHints.Take(i);
+							
 							var hintElements = pageHints.SelectMany(x => x.GetElements());
 							var varClone = vars.CloneReset();
 							var results = ViewBoxOptimzer.Optimize(h, w, hintElements, varClone);

@@ -11,6 +11,8 @@ using RadialReview.Models.Angular.CompanyValue;
 using RadialReview.Accessors;
 using System.Linq;
 using MigraDoc.DocumentObjectModel.Tables;
+using static RadialReview.Accessors.PdfAccessor;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.PDF {
 	[TestClass]
@@ -20,8 +22,8 @@ namespace TractionTools.Tests.PDF {
 		public void TestSectionOptimzer_Element() {
 
 
-			var r = new ResizableElement((c, v) => {
-				c.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg");
+			var r = new ResizableElement(c=> {
+				c.Container.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg");
 			});
 
 			var w = Unit.FromInch(1.5);
@@ -44,8 +46,8 @@ namespace TractionTools.Tests.PDF {
 			var w = Unit.FromInch(1.5);
 			for (var i = 0; i < 5; i++) {
 
-				var item = new ResizableElement((c, v) => {
-					c.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg");
+				var item = new ResizableElement(c => {
+					c.Container.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg");
 				});
 				items.Add(item);
 			}
@@ -73,9 +75,9 @@ namespace TractionTools.Tests.PDF {
 		[TestCategory("PDF")]
 		public void TestSectionOptimzer() {
 			var w = Unit.FromInch(1.5);
-			var item = new ResizableElement((c, v) => {
-				c.Format.Font.Size = v.Get("FontSize");
-				c.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg");
+			var item = new ResizableElement(c => {
+				c.Container.Format.Font.Size = c.Variables.Get("FontSize");
+				c.Container.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg");
 			});
 
 			var vars = new RangedVariables();
@@ -106,9 +108,9 @@ namespace TractionTools.Tests.PDF {
 			for (var i = 0; i < 3; i++) {
 				vars.Add("FontSize" + i, 7, 5, 20);
 				var ii = i;
-				var item = new ResizableElement((c, v) => {
-					c.Format.Font.Size = v.Get("FontSize" + ii);
-					c.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg");
+				var item = new ResizableElement(c => {
+					c.Container.Format.Font.Size = c.Variables.Get("FontSize" + ii);
+					c.Container.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg");
 				});
 				items.Add(item);
 			}
@@ -154,35 +156,35 @@ namespace TractionTools.Tests.PDF {
 
 			var WIDTH = Unit.FromInch(1);
 
-			items.Add(new ResizableElement((c, v) => {
-				c.Format.Font.Size = v.Get("FontSize");
-				var p = c.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg");
-				c.Format.SpaceBefore = v.Get("Space") - 1;
-				c.Format.SpaceAfter = v.Get("Space") - 1;
+			items.Add(new ResizableElement(c=> {
+				c.Container.Format.Font.Size = c.Variables.Get("FontSize");
+				var p = c.Container.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg");
+				c.Container.Format.SpaceBefore = c.Variables.Get("Space") - 1;
+				c.Container.Format.SpaceAfter = c.Variables.Get("Space") - 1;
 
 			}));
 
-			items.Add(new ResizableElement((c, v) => {
-				c.Format.Font.Size = v.Get("FontSize");
-				var p = c.AddParagraph("asdg asdg asdg asdg asdg ");
-				c.Format.SpaceBefore = v.Get("Space");
-				c.Format.SpaceAfter = v.Get("Space") - 1;
+			items.Add(new ResizableElement(c => {
+				c.Container.Format.Font.Size = c.Variables.Get("FontSize");
+				var p = c.Container.AddParagraph("asdg asdg asdg asdg asdg ");
+				c.Container.Format.SpaceBefore = c.Variables.Get("Space");
+				c.Container.Format.SpaceAfter = c.Variables.Get("Space") - 1;
 			}));
 
 
-			items.Add(new ResizableElement((c, v) => {
-				c.Format.Font.Size = v.Get("FontSize");
-				var p = c.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asasdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asasdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asasdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asasdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg as");
-				c.Format.SpaceBefore = v.Get("Space");
-				c.Format.SpaceAfter = v.Get("Space") - 1;
+			items.Add(new ResizableElement(c => {
+				c.Container.Format.Font.Size = c.Variables.Get("FontSize");
+				var p = c.Container.AddParagraph("asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asasdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asasdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asasdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asasdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg asdg as");
+				c.Container.Format.SpaceBefore = c.Variables.Get("Space");
+				c.Container.Format.SpaceAfter = c.Variables.Get("Space") - 1;
 			}));
 
-			items.Add(new ResizableElement((c, v) => {
-				c.Format.Font.Size = v.Get("FontSize");
-				var p = c.AddParagraph("asdg asdg");
-				c.Format.SpaceBefore = v.Get("Space");
-				c.Format.SpaceAfter = v.Get("Space") - 1;
-				c.Borders.Bottom.Width = 1;
+			items.Add(new ResizableElement(c => {
+				c.Container.Format.Font.Size = c.Variables.Get("FontSize");
+				var p = c.Container.AddParagraph("asdg asdg");
+				c.Container.Format.SpaceBefore = c.Variables.Get("Space");
+				c.Container.Format.SpaceAfter = c.Variables.Get("Space") - 1;
+				c.Container.Borders.Bottom.Width = 1;
 			}));
 
 
@@ -264,52 +266,48 @@ namespace TractionTools.Tests.PDF {
 				public const double HEIGHT = 3.25;
 
 
-				public Action<MigraDoc.DocumentObjectModel.Section> GetDrawer(IEnumerable<string> forNamedSections,IEnumerable<IDrawInstruction> instructions) {
+				public async Task Draw(MigraDoc.DocumentObjectModel.Section section, IEnumerable<string> forNamedSections, IEnumerable<IDrawInstruction> instructions) {
 					var hasA = forNamedSections.Contains("A");
 					var hasB = forNamedSections.Contains("B");
-					var instructionLookup = instructions.ToDictionary(x=>x.ViewBox.GetName(),x=>x);
+					var instructionLookup = instructions.ToDictionary(x => x.ViewBox.GetName(), x => x);
 					if (hasA && hasB) {
-						return new Action<MigraDoc.DocumentObjectModel.Section>(section => {
-							var table = section.AddTable();
-							table.AddColumn(Unit.FromInch(1));
-							table.AddColumn(Unit.FromInch(WIDTH));
-							table.AddColumn(Unit.FromInch(WIDTH));
-							table.AddColumn(Unit.FromInch(1));
+						var table = section.AddTable();
+						table.AddColumn(Unit.FromInch(1));
+						table.AddColumn(Unit.FromInch(WIDTH));
+						table.AddColumn(Unit.FromInch(WIDTH));
+						table.AddColumn(Unit.FromInch(1));
 
-							var r = table.AddRow();
-							r.Cells[0].AddParagraph("'A' Block");
-							var aContent = instructionLookup["A"];
-							r.Cells[1].Elements.Add(aContent.Contents);
-							var bContent = instructionLookup["B"];
-							r.Cells[2].Elements.Add(bContent.Contents);
-							r.Cells[3].AddParagraph("'B' Block");
-						});
+						var r = table.AddRow();
+						r.Cells[0].AddParagraph("'A' Block");
+						var aContent = instructionLookup["A"];
+						r.Cells[1].Elements.Add(aContent.Contents);
+						var bContent = instructionLookup["B"];
+						r.Cells[2].Elements.Add(bContent.Contents);
+						r.Cells[3].AddParagraph("'B' Block");
+						return;
 					}
 					if (hasA) {
-						return new Action<MigraDoc.DocumentObjectModel.Section>(section => {
-							var table = section.AddTable();
-							table.AddColumn(Unit.FromInch(1));
-							table.AddColumn(Unit.FromInch(WIDTH * 2));
+						var table = section.AddTable();
+						table.AddColumn(Unit.FromInch(1));
+						table.AddColumn(Unit.FromInch(WIDTH * 2));
 
-							var r = table.AddRow();
-							var aContent = instructionLookup["A"];
-							r.Cells[0].AddParagraph("'A' Block");
-							r.Cells[1].Elements.Add(aContent.Contents);
-						});
+						var r = table.AddRow();
+						var aContent = instructionLookup["A"];
+						r.Cells[0].AddParagraph("'A' Block");
+						r.Cells[1].Elements.Add(aContent.Contents);
+						return;
 					}
 					if (hasB) {
-						return new Action<MigraDoc.DocumentObjectModel.Section>(section => {
-							var table = section.AddTable();
-							table.AddColumn(Unit.FromInch(WIDTH * 2));
-							table.AddColumn(Unit.FromInch(1));
-							var r = table.AddRow();
-							var bContent = instructionLookup["B"];
-							r.Cells[0].Elements.Add(bContent.Contents);
-							r.Cells[1].AddParagraph("'B' Block");
-						});
+						var table = section.AddTable();
+						table.AddColumn(Unit.FromInch(WIDTH * 2));
+						table.AddColumn(Unit.FromInch(1));
+						var r = table.AddRow();
+						var bContent = instructionLookup["B"];
+						r.Cells[0].Elements.Add(bContent.Contents);
+						r.Cells[1].AddParagraph("'B' Block");
+						return;
 					}
-
-					return new Action<MigraDoc.DocumentObjectModel.Section>(section => { });
+					return;
 
 				}
 
@@ -372,17 +370,17 @@ namespace TractionTools.Tests.PDF {
 
 		//}
 
-		private IEnumerable<IElement> HintElements(string Section,int Length) {
+		private IEnumerable<IElement> HintElements(string Section, int Length) {
 			for (var i = 0; i < Length; i++)
-				yield return new ResizableElement((c, v) => {
-					c.Borders.Width = 1;
+				yield return new ResizableElement(c => {
+					c.Container.Borders.Width = 1;
 					if (Section == "A") {
-						c.AddParagraph("asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf");
+						c.Container.AddParagraph("asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf");
 					} else {
-						c.AddParagraph("qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer");
+						c.Container.AddParagraph("qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer qwer");
 					}
-					c.Format.SpaceBefore = v.Get("Space");
-					c.Format.SpaceAfter = v.Get("Space");
+					c.Container.Format.SpaceBefore = c.Variables.Get("Space");
+					c.Container.Format.SpaceAfter = c.Variables.Get("Space");
 				});
 		}
 
@@ -419,42 +417,94 @@ namespace TractionTools.Tests.PDF {
 		public void TestSectionOptimzer_Vto() {
 
 			var vto = new AngularVTO();
+			var j = 0;
 
-			vto.Values = new List<AngularCompanyValue>() {
-				new AngularCompanyValue() {CompanyValue ="First" },
-				new AngularCompanyValue() {CompanyValue ="Second" },
-				new AngularCompanyValue() {CompanyValue ="Third" },
-				new AngularCompanyValue() {CompanyValue ="Fourth" },
+			var pageDir = new[] {
+				new { cv = 4,pic = 40, strat = 3, colors= false },
+				new { cv = 16,pic = 40, strat = 3, colors= false },
+				new { cv = 4,pic = 40, strat = 2, colors= false },
+				new { cv = 4,pic = 10, strat = 2, colors= false },
+				new { cv = 4,pic = 10, strat = 3, colors= true  },
 			};
+			foreach (var pd in pageDir) {
+				vto.Values = new List<AngularCompanyValue>() {
+					new AngularCompanyValue() {CompanyValue ="First" },
+					new AngularCompanyValue() {CompanyValue ="Second" },
+					new AngularCompanyValue() {CompanyValue ="Third" },
+					new AngularCompanyValue() {CompanyValue ="Fourth" },
+					new AngularCompanyValue() {CompanyValue ="Fifth" },
+					new AngularCompanyValue() {CompanyValue ="Sixth" },
+					new AngularCompanyValue() {CompanyValue ="Seventh" },
+					new AngularCompanyValue() {CompanyValue ="Eighth" },
+					new AngularCompanyValue() {CompanyValue ="Ninth" },
+					new AngularCompanyValue() {CompanyValue ="Tenth" },
+					new AngularCompanyValue() {CompanyValue ="Eleventh" },
+					new AngularCompanyValue() {CompanyValue ="Twelvth" },
+					new AngularCompanyValue() {CompanyValue ="Thirteenth" },
+					new AngularCompanyValue() {CompanyValue ="Fourteenth" },
+					new AngularCompanyValue() {CompanyValue ="Fifteenth" },
+					new AngularCompanyValue() {CompanyValue ="Sixteenth" },
+				};
 
-			vto.TenYearTarget = "An amazing ten year goal";
+				vto.Values = vto.Values.Take(pd.cv).ToList();
 
-			vto.Strategies = new List<AngularStrategy>() {
-				new AngularStrategy() { Title="Strat1", Guarantee ="Love it or your money back",ProvenProcess ="Our Process",TargetMarket ="All those companies with people in them that pay us moneys, lets make it a longer title to test it out and see if things wrap correctly..." },
-				new AngularStrategy() { Title="Strat2", Guarantee ="Love it or your money back",ProvenProcess ="Our Process",TargetMarket ="All those companies with people in them that pay us moneys" },
-				//new AngularStrategy() { Title="Strat3", Guarantee ="Love it or your money back",ProvenProcess ="Our Process",TargetMarket ="All those companies with people in them that pay us moneys" },
-				//new AngularStrategy() { Title="Strat4", Guarantee ="Love it or your money back",ProvenProcess ="Our Process",TargetMarket ="All those companies with people in them that pay us moneys" },
-				//new AngularStrategy() { Title="Strat5", Guarantee ="Love it or your money back",ProvenProcess ="Our Process",TargetMarket ="All those companies with people in them that pay us moneys" }
-			};
+				vto.TenYearTarget = "An amazing ten year goal";
 
+				var strats = new List<AngularStrategy>() {
+					new AngularStrategy() { Title="Strat1", Guarantee ="Love it or your money back",ProvenProcess ="Our Process",TargetMarket ="All those companies with people in them that pay us moneys, lets make it a longer title to test it out and see if things wrap correctly..." },
+					new AngularStrategy() { Title="Strat2", Guarantee ="i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ",ProvenProcess ="Our Process",TargetMarket ="All those companies with people in them that pay us moneys" },
+					new AngularStrategy() { Title="Strat3", Guarantee ="Love it or your money back",ProvenProcess ="Our Process",TargetMarket ="All those companies with people in them that pay us moneys" },
+				};
 
-			vto.ThreeYearPicture = new AngularThreeYearPicture();
+				vto.Strategies = strats.Take(pd.strat).ToList();
 
-			var ll = new List<AngularVtoString>();
-			for (var i = 0; i < 10; i++) {
-				ll.Add(new AngularVtoString() { Data = "It looks like a big company", });
-				ll.Add(new AngularVtoString() { Data = "There are lots of people", });
-				ll.Add(new AngularVtoString() { Data = "and customers", });
+				vto.CoreFocus = new AngularCoreFocus() {
+					Purpose = "Create Freedom & Simplify the Lives of Leaders.",
+					Niche = "The Best Software for EOS."
+				};
+
+				vto.ThreeYearPicture = new AngularThreeYearPicture();
+
+				var ll = new List<AngularVtoString>();
+				for (var i = 0; i < 10; i++) {
+					ll.Add(new AngularVtoString() { Data = "It looks like a big company with lots of employees and benefits for the workers", });
+					ll.Add(new AngularVtoString() { Data = "There are lots of people", });
+					ll.Add(new AngularVtoString() { Data = "and customers", });
+					ll.Add(new AngularVtoString() { Data = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", });
+				}
+
+				vto.ThreeYearPicture.LooksLike = ll.Take(pd.pic);
+				vto.Name = "Awesome VTO";
+
+				//PdfAccessor.AddVtoVision_Intermediate(doc, vto, null);
+
+				VtoPdfSettings[] settings = new VtoPdfSettings[] { null };
+
+				if (pd.colors) {
+					settings = new[] {
+						null,
+						new VtoPdfSettings() {
+							FillColor = Color.FromArgb(100, 239, 118, 34),
+							BorderColor = Color.FromArgb(255, 239, 118, 34),
+							ImageUrl = "https://s3.amazonaws.com/Radial/base/Logos/TRACTION-TOOLS_Signature.png"
+						}, new VtoPdfSettings() {
+							FillTextColor = Colors.Red,
+							FillColor = Color.FromArgb(255, 118, 239, 34),
+							ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/All.png"
+						}, new VtoPdfSettings() {
+							FillColor = Color.FromArgb(255, 34, 118, 239),
+							ImageUrl = "https://cataas.com/cat?height=150&width=100"
+						}
+					};
+				}
+
+				foreach (var s in settings) {
+					var doc = new Document();
+					PdfAccessor.AddVtoVision(doc, vto, null, s);
+					Save(doc, "TestSectionOptimzer_Vto_" + j + "+TYP"+pd.pic+"+Strat"+pd.strat+(pd.colors?"_colors":"")+".pdf");
+					j++;
+				}
 			}
-
-			vto.ThreeYearPicture.LooksLike = ll;
-
-
-			var doc = new Document();
-			//PdfAccessor.AddVtoVision_Intermediate(doc, vto, null);
-			PdfAccessor.AddVtoVision(doc, vto, null);
-
-			Save(doc, "TestSectionOptimzer_Vto.pdf");
 
 		}
 

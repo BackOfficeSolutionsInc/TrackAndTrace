@@ -12,6 +12,7 @@ using RadialReview.Accessors.PDF;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Angular.Accountability;
 using System.Threading.Tasks;
+using static RadialReview.Accessors.PdfAccessor;
 
 namespace RadialReview.Controllers {
 	public class QuarterlyController : BaseController {
@@ -64,11 +65,12 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
-		public ActionResult PrintVTO(long id) {
+		public async Task<ActionResult> PrintVTO(long id) {
 			var vto = VtoAccessor.GetAngularVTO(GetUser(), id);
 			var doc = PdfAccessor.CreateDoc(GetUser(), vto.Name + " Vision/Traction Organizer");
 
-			PdfAccessor.AddVTO(doc, vto, GetUser().GetOrganizationSettings().GetDateFormat());
+			var settings = new VtoPdfSettings();
+			await PdfAccessor.AddVTO(doc, vto, GetUser().GetOrganizationSettings().GetDateFormat(), settings);
 			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
 
 			var merger = new DocumentMerger();
@@ -114,7 +116,10 @@ namespace RadialReview.Controllers {
 			if (vto && angRecur.VtoId.HasValue && angRecur.VtoId > 0) {
 				//vtoModel 
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout1");
-				PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat());
+
+				var settings = new VtoPdfSettings();
+
+				await PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat(), settings);
 				anyPages = true;
 				merger.AddDoc(doc);
 			}

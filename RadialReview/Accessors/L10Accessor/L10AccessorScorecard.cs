@@ -295,7 +295,6 @@ namespace RadialReview.Accessors {
 				scoreModels = scoresF.ToList();
 				if (scoreModels.Any() || range != null) {
 
-
 					var rangeTemp = range;
 					if (rangeTemp == null) {
 						var minDate = Math2.Max(new DateTime(2013, 1, 1), scoreModels.Select(x => x.ForWeek).Min());
