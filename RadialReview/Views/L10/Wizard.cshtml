@@ -49,6 +49,10 @@ if (ViewBag.NoTitleBar ?? false) {
         @if (!(ViewBag.CanEdit??false)) {
 			@:$("body").addClass("edit-disabled");
         		}
+
+        @if (!(ViewBag.CanAdmin ?? false)) {
+			@:$("body").addClass("admin-disabled");
+        		}
     </script>
 
     @Scripts.Render("~/bundles/meeting")

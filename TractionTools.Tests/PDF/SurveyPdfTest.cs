@@ -258,21 +258,25 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 			}
 			{
 				var survey = SurveyAccessor.GetSurvey(c.Middle, c.Middle, e2, surveyContainerId);
-				var rockSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
-				var value1 = rockSection.GetItemContainers().Skip(1).First();
-				SurveyAccessor.UpdateAngularSurveyResponse(c.Middle, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").Last().Key);
+				var rockSection = survey.GetSections().FirstOrDefault(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				Assert.IsTrue(rockSection == null);
+				//var value1 = rockSection.GetItemContainers().Skip(1).First();
+				//SurveyAccessor.UpdateAngularSurveyResponse(c.Middle, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").Last().Key);
 			}
 			{
 				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, e2, surveyContainerId);
-				var rockSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
-				var value1 = rockSection.GetItemContainers().First();
-				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").First().Key);
+				var rockSection = survey.GetSections().FirstOrDefault(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				Assert.IsTrue(rockSection == null);
+				//var value1 = rockSection.GetItemContainers().First();
+				//SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").First().Key);
 			}
 			{
 				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, e2, surveyContainerId);
-				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
-				var value1 = valuesSection.GetItemContainers().Last();
-				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, longText1);
+				var valuesSection = survey.GetSections().FirstOrDefault(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				Assert.IsTrue(valuesSection == null);
+				//Values??
+				//var value1 = valuesSection.GetItemContainers().Last();
+				//SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, longText1);
 			}
 			{
 				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, e2, surveyContainerId);

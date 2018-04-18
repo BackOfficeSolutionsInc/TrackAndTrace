@@ -83,6 +83,14 @@ namespace RadialReview
 			}
 		}
 
+		public static string ToDescription(this LessGreater self, decimal goal, decimal? alternate=null) {
+			var alt = alternate ?? goal;
+			if (self == LessGreater.Between)
+				return "Between " + goal + " and " + alt;
+			return self.GetDescription() + " " + goal;
+
+		}
+
 		public static string ToSymbol(this LessGreater self)
 		{
 			switch (self)

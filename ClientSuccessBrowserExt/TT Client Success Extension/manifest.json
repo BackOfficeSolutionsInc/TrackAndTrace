@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "TT Client Success",
+  "description": "Client success plugin for Traction Tools",
+  "version": "1.1",
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": true
+  },
+  "browser_action": {
+   "default_icon": "gray.png",
+   "default_title": "Traction Tools Client Success"
+  }, 
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  },
+  "permissions": [
+    "activeTab",
+    "https://*/*",
+    "http://*/*",
+    "tabs",  
+	"storage",
+    "nativeMessaging",
+	"background",
+	"input"
+   ],
+   "web_accessible_resources": [
+        "inject.css",		
+        "jquery.js",
+		"options.js",
+		"options.html"
+    ]  
+}

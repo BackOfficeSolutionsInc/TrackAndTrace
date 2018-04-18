@@ -38,18 +38,21 @@ namespace RadialReview.Models.Angular.Scorecard {
 
 			ReverseScorecard = reverseScorecard;
 			Measurables = measurables;
-			Scores = scores.Select(x => new AngularScore(x, null, false)).ToList();
+			if (scores != null) {
+				Scores = scores.Select(x => new AngularScore(x, null, false)).ToList();
+			}
 
 			DateFormat1 = TimingUtility.ScorecardFormat1(settings.GetTimeSettings().Period);
 			DateFormat2 = TimingUtility.ScorecardFormat2(settings.GetTimeSettings().Period);
 
 			//var allMeasurables = measurableGroups.SelectMany(x => x.Measurables);
-
-			foreach (var s in Scores) {
-				var found = Measurables.FirstOrDefault(x => x.Id == s.Measurable.Id);
-				if (found != null) {
-					s.Measurable.Ordering = found.Ordering;
-					s.Measurable.RecurrenceId = found.RecurrenceId;
+			if (scores != null) {
+				foreach (var s in Scores) {
+					var found = Measurables.FirstOrDefault(x => x.Id == s.Measurable.Id);
+					if (found != null) {
+						s.Measurable.Ordering = found.Ordering;
+						s.Measurable.RecurrenceId = found.RecurrenceId;
+					}
 				}
 			}
 

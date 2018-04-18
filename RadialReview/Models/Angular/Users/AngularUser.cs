@@ -87,4 +87,4 @@ namespace RadialReview.Models.Angular.Users {
 		public DateTime? CreateTime { get; set; }
 
 	}
-}
+}

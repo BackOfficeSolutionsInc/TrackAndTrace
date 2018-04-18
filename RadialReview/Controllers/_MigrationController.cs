@@ -2294,6 +2294,47 @@ namespace RadialReview.Controllers {
 			return "Updated:" + a;
 		}
 
+
+		[Access(Controllers.AccessLevel.Radial)]
+		[AsyncTimeout(20 * 60 * 1000)]
+		public String M13_03_2018() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var orgs = s.QueryOver<OrganizationModel>().Future();
+					orgs = orgs.Where(x => x.Settings.EnableReview == false && x.Settings.EnablePeople == false);
+					var getRocks = s.QueryOver<RockModel>().Where(x => x.DeleteTime == null).Future(); // Where(x => x.OrganizationId == org.Id).List().ToList();
+					var getRecurenceRock = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null).Future(); // x.ForRock.Id == rock.Id
+
+					orgs = orgs.ToList();
+					getRocks = getRocks.ToList();
+					getRecurenceRock = getRecurenceRock.ToList();
+
+					int counter = 0;
+					foreach (var org in orgs) {
+						var orgRocks = getRocks.Where(x => x.OrganizationId == org.Id).ToList();
+
+						foreach (var rock in orgRocks) {
+							var recurenceRocks = getRecurenceRock.Where(x => x.ForRock.Id == rock.Id).ToList();
+
+							if (!recurenceRocks.Any()) {
+								rock.DeleteTime = new DateTime(2018, 03, 13); // setting method date
+								s.Update(rock);
+
+								counter++;
+							}
+						}
+					}
+
+					tx.Commit();
+					s.Flush();
+
+					return "Updated: " + counter;
+
+				}
+			}
+		}
+
+
 		[Access(Controllers.AccessLevel.Radial)]
 		public String M01_09_2018() {
 			var a = 0;
@@ -2356,7 +2397,31 @@ namespace RadialReview.Controllers {
 			return "Updated: " + a + "/" + b;
 		}
 
+
+		[Access(Controllers.AccessLevel.Radial)]
+		public async Task<string> M03_29_2018() {
+			var a = 0;
+			var b = 0;
+			var pageCount = 0;
+			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var links = s.QueryOver<RoleLink>().List().ToList();
+					s.GetSettingOrDefault("M03_29_2018", true);
+					foreach (var i in links) {
+						if (i.Ordering == null) {
+							i.Ordering = i.Id;
+							s.Update(i);
+							a += 1;
+						}
+					}
+					tx.Commit();
+				}
+			}
+			return "Updated: " + a;
+		}
+
 	}
+
 }
 #pragma warning restore CS0618 // Type or member is obsolete
 #pragma warning restore CS0219 // Variable is assigned but its value is never used

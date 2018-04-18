@@ -30,8 +30,8 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation {
 		private IEnumerable<ISectionInitializer> _sectionBuilders() {
 			yield return new ValueSection();
 			yield return new RoleSection();
-			yield return new RockSection(QuarterRange);// new DateRange(QuarterRange.AddDays(-7),QuarterRange.AddDays(65)));
-													   //yield return new RockCompletionSection();
+			//yield return new RockSection(QuarterRange);// new DateRange(QuarterRange.AddDays(-7),QuarterRange.AddDays(65)));
+			yield return new RockCompletionSection();
 			yield return new LeadershipAssessmentSection(false);
 			yield return new ManagementAssessmentSection(false);
 			yield return new GeneralCommentsSection();

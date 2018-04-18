@@ -39,6 +39,8 @@ using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Utilities.CoreProcess;
+using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
+using RadialReview.Crosscutting.EventAnalyzers.Models;
 
 namespace RadialReview.Utilities {
 	//[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -1663,9 +1665,79 @@ namespace RadialReview.Utilities {
 			});
 		}
 
+
+		public PermissionsUtility EditRock_UnArchive(long rockId) {
+			return CheckCacheFirst("EditRock", rockId).Execute(() => {
+
+				if (IsRadialAdmin(caller))
+					return this;
+
+				var rock = session.Get<RockModel>(rockId);
+
+				var recurrenceIds = session.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+					.Where(x => x.DeleteTime != null && x.ForRock.Id == rock.Id)
+					.Select(x => x.L10Recurrence.Id).List<long>();
+
+				var acceptedRecurrenceIds = recurrenceIds.Where(rid => {
+					try {
+						EditL10Recurrence(rid);
+						return true;
+					} catch (Exception) {
+						return false;
+					}
+				});
+
+				if (acceptedRecurrenceIds.Any())
+					return this;
+
+				if (rock.OrganizationId != caller.Organization.Id)
+					throw new PermissionsException() { NoErrorReport = true };
+
+
+				if (caller.Organization.Settings.EmployeesCanEditSelf && rock.ForUserId == caller.Id)
+					return this;
+
+				var editSelf = caller.Organization.Settings.ManagersCanEditSelf;
+				return ManagesUserOrganization(rock.ForUserId, !editSelf, PermissionType.EditEmployeeDetails);
+			});
+		}
+
 		public PermissionsUtility EditMilestone(long milestoneId) {
 			var rockId = session.Get<Milestone>(milestoneId).RockId;
 			return EditRock(rockId);
+		}
+
+		public PermissionsUtility CanAdminMeetingItemsForUser(long userId, long recurrenceId) {
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var user = session.Get<UserOrganizationModel>(userId);
+
+			ViewUserOrganization(userId, false);
+
+			var obj = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x =>
+			x.DeleteTime == null
+			&& x.L10Recurrence.Id == recurrenceId
+			&& x.User.Id == userId).Take(1).SingleOrDefault();
+
+			if (obj == null) {
+				throw new PermissionsException("User is not attendee.");
+			}
+
+			CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId);
+
+			var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf
+				|| (user.IsManager() && user.Organization.Settings.ManagersCanEditSelf);
+
+			if (IsPermitted(x => x.ManagesUserOrganization(userId, !canEditSelf))) {
+				return this;
+			}
+
+			if (!user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
+				return this;
+			}
+
+			throw new PermissionsException("You do not manage this user.") { NoErrorReport = true };
 		}
 
 		public PermissionsUtility CanViewUserRocks(long userId) {
@@ -1772,8 +1844,6 @@ namespace RadialReview.Utilities {
 			}
 			throw new PermissionsException("Unknown 'by' type");
 		}
-
-
 
 		#endregion
 
@@ -2102,6 +2172,25 @@ namespace RadialReview.Utilities {
 
 		#endregion
 
+		#region Events
+		public PermissionsUtility SubscribeToEvent(long subscriberUserId, IEventAnalyzerGenerator analyzer) {
+			var permChecked = false;
+			Self(subscriberUserId);
+			if (analyzer is IEventAnalyzerGenerator) {
+				ViewL10Recurrence(((IRecurrenceEventAnalyerGenerator)analyzer).RecurrenceId);
+				permChecked = true;
+			}
+
+			if (permChecked)
+				return this;
+			throw new PermissionsException("no permissions were checked");
+		}
+		public PermissionsUtility ViewEvent(long eventId, IEventAnalyzerGenerator analyzer) {
+			var evt = session.Get<EventSubscription>(eventId);
+			return SubscribeToEvent(evt.SubscriberId, analyzer);
+		}
+		#endregion
+
 		public PermissionsUtility InValidPermission() {
 			if (Config.IsLocal()) {
 				return this;
@@ -2258,7 +2347,6 @@ namespace RadialReview.Utilities {
 				return Self(forModel.ModelId);
 			throw new PermissionsException();
 		}
-
 
 		public PermissionsUtility Self(long userId) {
 			if (IsRadialAdmin(caller))

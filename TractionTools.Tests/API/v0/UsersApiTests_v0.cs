@@ -93,7 +93,7 @@ namespace TractionTools.Tests.API.v0 {
 			userController.MockUser(c.E1);
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
+			var createPosition =await _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
 			MockHttpContext();
 			posAccessor.AddPositionToUser(c.E1, c.E1.Id, createPosition.Id);
 			var getPosition = userController.GetUserPositions(c.E1.Id);

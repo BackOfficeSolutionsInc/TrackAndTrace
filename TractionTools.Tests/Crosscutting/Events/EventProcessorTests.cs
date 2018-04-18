@@ -8,6 +8,8 @@ using RadialReview.Crosscutting.EventAnalyzers.Events;
 using RadialReview.Crosscutting.EventAnalyzers.Searchers;
 using RadialReview.Models.L10;
 using RadialReview.Utilities.DataTypes;
+using System.Threading.Tasks;
+using TractionTools.Tests.TestUtils;
 
 namespace TractionTools.Tests.Crosscutting.Events {
 
@@ -40,7 +42,7 @@ namespace TractionTools.Tests.Crosscutting.Events {
 	}
 
 	[TestClass]
-	public class EventProcessorTests {
+	public class EventProcessorTests : BaseTest {
 
 		private class TestThresh : IThreshold {
 			public LessGreater Direction { get; set; }
@@ -157,139 +159,145 @@ namespace TractionTools.Tests.Crosscutting.Events {
 
 
 		[TestMethod]
-		public void TestDaysWithoutL10() {
+		public async Task TestDaysWithoutL10() {
 
-			var evtGen = new DaysWithoutL10();
+			var evtGen = new DaysWithoutL10(1);
 
 			Assert.AreEqual(15, evtGen.GetNumberOfFailsToTrigger(null));
 			Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
 			Assert.IsTrue(evtGen.IsEnabled(null));
 			Assert.AreEqual(1, evtGen.GetFireThreshold(null).Threshold);
 			Assert.AreEqual(LessGreater.LessThan, evtGen.GetFireThreshold(null).Direction);
-
-			var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
-			var meetings = new List<L10Meeting>() {
+			DbQuery(async s => {
+				var settings = new BaseEventSettings(s, 0, new DateTime(2017, 1, 14));
+				var meetings = new List<L10Meeting>() {
 				new L10Meeting() { StartTime = new DateTime(2017,1,1) },
 				new L10Meeting() { StartTime = new DateTime(2017,1,2) },
 				new L10Meeting() { StartTime = new DateTime(2017,1,8) },
 				new L10Meeting() { StartTime = new DateTime(2017,1,15) },
 				new L10Meeting() { StartTime = new DateTime(2017,2,15) },
 			};
-			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-			settings.SetLookup(new SearchLeadershipL10RecurrenceIds(), settings, new List<long> { 0 });
+				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+				settings.SetLookup(new SearchLeadershipL10RecurrenceIds(), settings, new List<long> { 0 });
 
 
-			Assert.IsTrue(EventProcessor.ShouldTrigger(settings, evtGen));
+				Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
-			settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
-			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-			settings.SetLookup(new SearchLeadershipL10RecurrenceIds(), settings, new List<long> { 0 });
-			Assert.IsFalse(EventProcessor.ShouldTrigger(settings, evtGen));
+				settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
+				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+				settings.SetLookup(new SearchLeadershipL10RecurrenceIds(), settings, new List<long> { 0 });
+				Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
+			});
 		}
 
 
 
 		[TestMethod]
-		public void TestAverageMeetingRatingBelowForWeeksInARow() {
-			var evtGen = new AverageMeetingRatingBelowForWeeksInARow();
+		public async Task TestAverageMeetingRatingBelowForWeeksInARow() {
+			var evtGen = new AverageMeetingRatingBelowForWeeksInARow(1);
 
 			Assert.AreEqual(2, evtGen.GetNumberOfFailsToTrigger(null));
 			Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
 			Assert.IsTrue(evtGen.IsEnabled(null));
 			Assert.AreEqual(7, evtGen.GetFireThreshold(null).Threshold);
 			Assert.AreEqual(LessGreater.LessThanOrEqual, evtGen.GetFireThreshold(null).Direction);
-
-			var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
-			var meetings = new List<L10Meeting>() {
+			DbQuery(async s => {
+				var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
+				var meetings = new List<L10Meeting>() {
 				new L10Meeting() { StartTime = new DateTime(2017,1,1) , AverageMeetingRating = new Ratio(10,1)},
 				new L10Meeting() { StartTime = new DateTime(2017,1,2) , AverageMeetingRating = new Ratio(10,1)},
 				new L10Meeting() { StartTime = new DateTime(2017,1,8) , AverageMeetingRating = new Ratio(7,1)},
 				new L10Meeting() { StartTime = new DateTime(2017,1,15) , AverageMeetingRating = new Ratio(7,1)},
 				new L10Meeting() { StartTime = new DateTime(2017,2,15) , AverageMeetingRating = new Ratio(10,1)},
 			};
-			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-			settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
+				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 
+				Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
-			Assert.IsTrue(EventProcessor.ShouldTrigger(settings, evtGen));
-
-			settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
-			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-			settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
-			Assert.IsFalse(EventProcessor.ShouldTrigger(settings, evtGen));
+				settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
+				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
+				Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
+			});
 		}
 
 		[TestMethod]
-		public void TestTodoCompletionConsecutiveWeeks() {
-			var evtGen = new TodoCompletionConsecutiveWeeks();
+		public async Task TestTodoCompletionConsecutiveWeeks() {
+			var evtGen = new TodoCompletionConsecutiveWeeks(1);
 
 			Assert.AreEqual(2, evtGen.GetNumberOfFailsToTrigger(null));
 			Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
 			Assert.IsTrue(evtGen.IsEnabled(null));
 			Assert.AreEqual(.5m, evtGen.GetFireThreshold(null).Threshold);
 			Assert.AreEqual(LessGreater.LessThanOrEqual, evtGen.GetFireThreshold(null).Direction);
-
-			var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
-			var meetings = new List<L10Meeting>() {
+			DbQuery(async s => {
+				var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
+				var meetings = new List<L10Meeting>() {
 				new L10Meeting() { StartTime = new DateTime(2017,1,1) , TodoCompletion = new Ratio(.8m,1)},
 				new L10Meeting() { StartTime = new DateTime(2017,1,2) , TodoCompletion = new Ratio(.8m,1)},
 				new L10Meeting() { StartTime = new DateTime(2017,1,8) , TodoCompletion = new Ratio(.5m,1)},
 				new L10Meeting() { StartTime = new DateTime(2017,1,15) , TodoCompletion= new Ratio(.5m,1)},
 				new L10Meeting() { StartTime = new DateTime(2017,2,15) , TodoCompletion= new Ratio(.8m,1)},
 			};
-			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-			settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
+				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 
 
-			Assert.IsTrue(EventProcessor.ShouldTrigger(settings, evtGen));
+				Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
-			settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
-			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-			settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
-			Assert.IsFalse(EventProcessor.ShouldTrigger(settings, evtGen));
+				settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
+				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
+				Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
+			});
+
 		}
 
 		[TestMethod]
-		public void TestConsecutiveLateStarts() {
-			var evtGen = new ConsecutiveLateStarts();
+		public async Task TestConsecutiveLateStarts() {
+			var evtGen = new ConsecutiveLateStarts(1);
 
 			Assert.AreEqual(2, evtGen.GetNumberOfFailsToTrigger(null));
 			Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
 			Assert.IsTrue(evtGen.IsEnabled(null));
 			Assert.AreEqual(5m, evtGen.GetFireThreshold(null).Threshold);
 			Assert.AreEqual(LessGreater.GreaterThan, evtGen.GetFireThreshold(null).Direction);
+			DbQuery(async s => {
 
-			var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
-			var meetings = new List<L10Meeting>() {
+				var settings = new BaseEventSettings(s, 0, new DateTime(2017, 1, 14));
+				var meetings = new List<L10Meeting>() {
 				new L10Meeting() { StartTime = new DateTime(2017,1,1,1,1,0)  },
 				new L10Meeting() { StartTime = new DateTime(2017,1,8,0,58,0) },
 				new L10Meeting() { StartTime = new DateTime(2017,1,15,1,6,0) },
 				new L10Meeting() { StartTime = new DateTime(2017,1,22,1,7,0) },
 				new L10Meeting() { StartTime = new DateTime(2017,2,22,1,1,0) },
 			};
-			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-			settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
+				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 
-			Assert.IsTrue(EventProcessor.ShouldTrigger(settings, evtGen));
+				Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
-			settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
-			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-			settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
-			Assert.IsFalse(EventProcessor.ShouldTrigger(settings, evtGen));
+				settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
+				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
+				Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
+			});
 		}
 
 		[TestMethod]
-		public void TestConsecutiveLateEnds() {
-			var evtGen = new ConsecutiveLateEnds();
+		public async Task TestConsecutiveLateEnds() {
+			var evtGen = new ConsecutiveLateEnds(1);
 
 			Assert.AreEqual(2, evtGen.GetNumberOfFailsToTrigger(null));
 			Assert.AreEqual(1, evtGen.GetNumberOfPassesToReset(null));
 			Assert.IsTrue(evtGen.IsEnabled(null));
 			Assert.AreEqual(15m, evtGen.GetFireThreshold(null).Threshold);
 			Assert.AreEqual(LessGreater.GreaterThan, evtGen.GetFireThreshold(null).Direction);
+			DbQuery(async s => {
 
-			var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
-			var meetings = new List<L10Meeting>() {
+				var settings = new BaseEventSettings(s, 0, new DateTime(2017, 1, 14));
+				var meetings = new List<L10Meeting>() {
 				new L10Meeting() { StartTime = new DateTime(2017,1,1)  , CompleteTime = new DateTime(2017,1,1,0,30,0)},
 				new L10Meeting() { StartTime = new DateTime(2017,1,8)  , CompleteTime = new DateTime(2017,1,8,0,30,0)},
 				new L10Meeting() { StartTime = new DateTime(2017,1,15) , CompleteTime = new DateTime(2017,1,15,0,50,0)},
@@ -297,26 +305,27 @@ namespace TractionTools.Tests.Crosscutting.Events {
 				new L10Meeting() { StartTime = new DateTime(2017,2,22) , CompleteTime = new DateTime(2017,2,22,0,30,0)},
 				new L10Meeting() { StartTime = new DateTime(2017,2,22) , CompleteTime = null},
 			};
-			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-			settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
-			settings.SetLookup(new SearchPageTimerSettings(0), settings, new List<L10Recurrence.L10Recurrence_Page> {
+				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
+				settings.SetLookup(new SearchPageTimerSettings(0), settings, new List<L10Recurrence.L10Recurrence_Page> {
 				new L10Recurrence.L10Recurrence_Page() {
 					Minutes = 30
 				}
 			});
 
-			Assert.IsTrue(EventProcessor.ShouldTrigger(settings, evtGen));
+				Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
-			settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
-			settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
-			settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
-			settings.SetLookup(new SearchPageTimerSettings(0), settings, new List<L10Recurrence.L10Recurrence_Page> {
+				settings = new BaseEventSettings(null, 0, new DateTime(2017, 2, 14));
+				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
+				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
+				settings.SetLookup(new SearchPageTimerSettings(0), settings, new List<L10Recurrence.L10Recurrence_Page> {
 				new L10Recurrence.L10Recurrence_Page() {
 					Minutes = 30
 				}
 			});
 
-			Assert.IsFalse(EventProcessor.ShouldTrigger(settings, evtGen));
+				Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
+			});
 		}
 
 	}

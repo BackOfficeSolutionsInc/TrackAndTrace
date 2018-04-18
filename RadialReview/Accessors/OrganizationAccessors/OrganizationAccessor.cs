@@ -727,7 +727,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public OrganizationPositionModel EditOrganizationPosition(UserOrganizationModel caller, long orgPositionId, long organizationId,
+		public async Task<OrganizationPositionModel> EditOrganizationPosition(UserOrganizationModel caller, long orgPositionId, long organizationId,
 			/*long? positionId = null,*/ String customName = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -791,6 +791,9 @@ namespace RadialReview.Accessors {
 					s.SaveOrUpdate(orgPos);
 					tx.Commit();
 					s.Flush();
+
+					await HooksRegistry.Each<IPositionHooks>((ses, x) => x.UpdatePosition(ses, orgPos, new IPositionHookUpdates() { NameChanged = true }));
+
 
 					return orgPos;
 				}

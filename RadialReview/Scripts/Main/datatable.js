@@ -188,14 +188,18 @@ var DataTable = function (settings) {
 	//Complex Updates
 	if (typeof (settings.clickEdit) === "string") {
 		settings._.onEditAction = settings.clickEdit;
+		var postWasSet = false;
+		if (settings.postEdit)
+			postWasSet = true;
+
 		settings._.onEditActionPost = settings.postEdit || settings.clickEdit;
 		settings.clickEdit = function (row, settings) {
 			var title = settings.clickEditTitle || function (settings) { return "Edit " + resolve(settings.title, settings); };
 			var rid = resolve(settings.cellId, row, settings);
 			var actionType = typeof (settings._.onEditAction);
 			if (actionType == "string") {
-				showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), settings._.onEditActionPost.replace("{0}", ""), null, null, function (d) {
-
+				var pUrl=settings._.onEditActionPost.replace("{0}", postWasSet?rid:"");
+				showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), pUrl, null, null, function (d) {
 					editRow(d.Object);
 				});
 			}

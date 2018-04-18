@@ -53,8 +53,8 @@
 		<link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/favicon-32x32.png" sizes="32x32">*@
 	<link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/favicon-96x96.png" sizes="96x96">
 	<link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/android-chrome-192x192.png" sizes="192x192">
-	<meta name="msapplication-square70x70logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-72x72.png" @*content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/smalltile.png"*@  />
-	<meta name="msapplication-square150x150logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-152x152.png" @*content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/mediumtile.png"*@ />
+	<meta name="msapplication-square70x70logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-72x72.png" @*content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-72x72.png"content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/smalltile.png"*@  />
+	<meta name="msapplication-square150x150logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-152x152.png" @*content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-152x152.png" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/mediumtile.png"*@ />
 	@*<meta name="msapplication-square310x310logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/largetile.png" />*@
 
 	@if (ViewBag.IsLocal ?? false) {
@@ -335,104 +335,104 @@
 					ForceUnhide();
 					@if (ViewBag.Alert!=null){
 							@:showAlert("@ViewBag.Alert");
-																																																																																																																						}
-					@if(ViewBag.Success!=null){
-					  @: showAlert("@ViewBag.Success", "alert-success" , "Success!" );
-					}
-					@if(ViewBag.InfoAlert!=null){
-						@: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" );
-																																																																																																																						}
-					UnstoreJsonAlert();
+                                        																																					                                                                                                    																																														                                        }
+                    @if(ViewBag.Success!=null){
+                      @: showAlert("@ViewBag.Success", "alert-success" , "Success!" );
+                    }
+                    @if(ViewBag.InfoAlert!=null){
+                        @: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" );
+                                        																																					                                                                                                    																																														                                        }
+                    UnstoreJsonAlert();
 
-					try{
-						if (typeof(window.meetingId)!=="undefined"){
-							$(".populateMeetingData").attr("data-meetingId",window.meetingId);
-						}
-						if (typeof(window.recurrenceId)!=="undefined"){
-							$(".populateMeetingData").attr("data-recurrenceId",window.recurrenceId);
-						}
-					}catch(e){
-						console.error(e);
-					}
+                    try{
+                        if (typeof(window.meetingId)!=="undefined"){
+                            $(".populateMeetingData").attr("data-meetingId",window.meetingId);
+                        }
+                        if (typeof(window.recurrenceId)!=="undefined"){
+                            $(".populateMeetingData").attr("data-recurrenceId",window.recurrenceId);
+                        }
+                    }catch(e){
+                        console.error(e);
+                    }
 
-				});  var statusTimeout;
-				@{
-					var tooltips = new MvcHtmlString("[]");
-					try {
-						tooltips = new MvcHtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Tooltips));
-					} catch (Exception) {
+                });  var statusTimeout;
+                @{
+                    var tooltips = new MvcHtmlString("[]");
+                    try {
+                        tooltips = new MvcHtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Tooltips));
+                    } catch (Exception) {
 
-					}
-				}
-				window.tooltips = @(tooltips);
+                    }
+                }
+                window.tooltips = @(tooltips);
 
-			</script>}
-	</div>
-	@if (!(ViewBag.NoTitleBar ?? false)) {
-		<div id="footer">
-			<p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName &amp; EOS</p>
-			@{ Html.RenderPartial("Partial/Footer"); }
-		</div>
-				}
-	@RenderSection("bottomSection", required: false)
-	<div class="scripts-container">
-		<div class="main-script-container">
-			<script src="https://cdn.polyfill.io/v2/polyfill.js?features=CustomEvent"></script>
-			@Scripts.Render("~/bundles/jquery")
-			@if (RadialReview.Utilities.Config.GetEnv() == RadialReview.Models.Enums.Env.local_test_sqlite) {
-				<script type="text/javascript">
-					$(function(){
-						window.onerror=function(message, source, lineno, colno, error){
-							try{
-								$(".JSError").append($("<li><div class='error'>"+msg+"</div>"+
-									"<div class='source'>"+source+"</div>"+
-									"<div class='lineno'>"+lineno+"</div>"+
-									"<div class='colno'>"+colno+"</div>"+
-									"<div class='error'>"+error+"</div></li>"));
-							}catch(e){
-								debugger;
-							}
-						}
-					});
-					(function(){
-						var oldError = console.error;
-						console.error = function (a1,a2,a3,a4,a5,a6) {
-							try{
-								// DO MESSAGE HERE.
-								$(".JSError").append($("<li class='console_error'>"+
-							  "<div class='a1'>"+a1+"</div>"+
-							  "<div class='a2'>"+a2+"</div>"+
-							  "<div class='a3'>"+a3+"</div>"+
-							  "<div class='a4'>"+a4+"</div>"+
-							  "<div class='a5'>"+a5+"</div>"+
-							  "<div class='a6'>"+a6+"</div></li>"));
+            </script>}
+    </div>
+    @if (!(ViewBag.NoTitleBar ?? false)) {
+        <div id="footer">
+            <p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName &amp; EOS</p>
+            @{ Html.RenderPartial("Partial/Footer"); }
+        </div>
+                }
+    @RenderSection("bottomSection", required: false)
+    <div class="scripts-container">
+        <div class="main-script-container">
+            <script src="https://cdn.polyfill.io/v2/polyfill.js?features=CustomEvent"></script>
+            @Scripts.Render("~/bundles/jquery")
+            @if (RadialReview.Utilities.Config.GetEnv() == RadialReview.Models.Enums.Env.local_test_sqlite) {
+                <script type="text/javascript">
+                    $(function(){
+                        window.onerror=function(message, source, lineno, colno, error){
+                            try{
+                                $(".JSError").append($("<li><div class='error'>"+msg+"</div>"+
+                                    "<div class='source'>"+source+"</div>"+
+                                    "<div class='lineno'>"+lineno+"</div>"+
+                                    "<div class='colno'>"+colno+"</div>"+
+                                    "<div class='error'>"+error+"</div></li>"));
+                            }catch(e){
+                                debugger;
+                            }
+                        }
+                    });
+                    (function(){
+                        var oldError = console.error;
+                        console.error = function (a1,a2,a3,a4,a5,a6) {
+                            try{
+                                // DO MESSAGE HERE.
+                                $(".JSError").append($("<li class='console_error'>"+
+                              "<div class='a1'>"+a1+"</div>"+
+                              "<div class='a2'>"+a2+"</div>"+
+                              "<div class='a3'>"+a3+"</div>"+
+                              "<div class='a4'>"+a4+"</div>"+
+                              "<div class='a5'>"+a5+"</div>"+
+                              "<div class='a6'>"+a6+"</div></li>"));
 
-							}catch(e){
-								debugger;
-							}
-							oldError.apply(console, [a1,a2,a3,a4,a5,a6]);
-						};
-					})();
+                            }catch(e){
+                                debugger;
+                            }
+                            oldError.apply(console, [a1,a2,a3,a4,a5,a6]);
+                        };
+                    })();
 
-				</script>
-				<ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>}
+                </script>
+                <ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>}
 
 
-			<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
-			@Scripts.Render("~/bundles/bootstrap")
-			@RenderSection("scripts", required: false) @RenderSection("modals", required: false)
-			<!--Begin Main Scripts-->
-			@Scripts.Render("~/bundles/main")
-			<script src="~/signalr/hubs"></script>
-			<!--End Main Scripts-->
-		</div>
-		<div class="page-script-container">
-			@Html.PageScripts()
-		</div>
-		<div class="ga-script-container">
-			<!-- Google Analytics -->
-			<script>
-				window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+            <script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+            @Scripts.Render("~/bundles/bootstrap")
+            @RenderSection("scripts", required: false) @RenderSection("modals", required: false)
+            <!--Begin Main Scripts-->
+            @Scripts.Render("~/bundles/main")
+            <script src="~/signalr/hubs"></script>
+            <!--End Main Scripts-->
+        </div>
+        <div class="page-script-container">
+            @Html.PageScripts()
+        </div>
+        <div class="ga-script-container">
+            <!-- Google Analytics -->
+            <script>
+                window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
 				ga('create', 'UA-68333423-1',{'userId':@(ViewBag.UserId??-1L)});
 				ga('set', 'dimension1', @(ViewBag.UserId??-1L));
 				try{
@@ -440,35 +440,35 @@
 				}catch(e){
 					console.warn(e);
 				}
-				ga('send', 'pageview');
-			</script>
-			<script async src='https://www.google-analytics.com/analytics.js'></script>
-			<!-- End Google Analytics -->
-		</div>
-		<div class="fb-script-container">
-			<!-- Facebook Pixel Code -->
-			@if (ViewBag.UserId != -1) {
-			<script>
-				!function(f,b,e,v,n,t,s)
-				{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-				n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-					if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-					n.queue=[];t=b.createElement(e);t.async=!0;
-					t.src=v;s=b.getElementsByTagName(e)[0];
-					s.parentNode.insertBefore(t,s)}(window, document,'script',
-				'https://connect.facebook.net/en_US/fbevents.js');
-				fbq('init', '798215043695500');
-				fbq('track', 'PageView');
-			</script>
-			<noscript>
-				<img height="1" width="1" style="display:none"
-					 src="https://www.facebook.com/tr?id=798215043695500&ev=PageView&noscript=1" />
-			</noscript>
-			}else {
-				<script>/*not logged in*/</script>
-			}
-			<!-- End Facebook Pixel Code -->
-		</div>
+                ga('send', 'pageview');
+            </script>
+            <script async src='https://www.google-analytics.com/analytics.js'></script>
+            <!-- End Google Analytics -->
+        </div>
+        <div class="fb-script-container">
+            <!-- Facebook Pixel Code -->
+            @if (ViewBag.UserId != -1) {
+            <script>
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                    n.queue=[];t=b.createElement(e);t.async=!0;
+                    t.src=v;s=b.getElementsByTagName(e)[0];
+                    s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', '798215043695500');
+                fbq('track', 'PageView');
+            </script>
+            <noscript>
+                <img height="1" width="1" style="display:none"
+                     src="https://www.facebook.com/tr?id=798215043695500&ev=PageView&noscript=1" />
+            </noscript>
+            }else {
+                <script>/*not logged in*/</script>
+            }
+            <!-- End Facebook Pixel Code -->
+        </div>
 	</div>
 	<div class="copyrightPrintFooter">© 2003 - @DateTime.UtcNow.Year EOS. All Rights Reserved</div>
 </body>
