@@ -27,7 +27,7 @@ var pluginSettings = settings.ep_fileupload_aws || {};
 var S3_ACCESS_KEY = pluginSettings.S3_ACCESS_KEY;
 var S3_SECRET_KEY = pluginSettings.S3_SECRET_KEY;
 var bucket = pluginSettings.bucket;
-var base_key = pluginSettings.base_key;
+var base_key = pluginSettings.base_key || "";
 var storageClass = pluginSettings.storage_class ||"REDUCED_REDUNDANCY";
 var urlBase = "https://s3.amazonaws.com/";
 

@@ -6,7 +6,7 @@ var path = require('path')
 var settings = require('ep_etherpad-lite/node/utils/Settings');
 var pluginSettings = settings.ep_fileupload_aws || {};
 var bucket = pluginSettings.bucket;//'bucket';
-var base_key = pluginSettings.base_key;//'folder/subfolder/';
+var base_key = pluginSettings.base_key||"";//'folder/subfolder/';
 var urlBase = "https://s3.amazonaws.com/";
   
   
@@ -15,7 +15,7 @@ exports.expressConfigure = function(hook_name, args, cb) {
 
 exports.expressServer = function (hook_name, args, cb) {
   args.app.post('/fileUpload', controller.onRequest);
-  args.app.get('/upload/:filename(*)', function(req, res) { 
+  args.app.get('/up/:filename(*)', function(req, res) { 
     var url = req.params.filename.replace(/\.\./g, '').split("?")[0];
     //var filePath = path.normalize(path.join(__dirname, "upload", url));
 	res.writeHead(301,  {Location: urlBase+bucket+"/"+base_key+url});
