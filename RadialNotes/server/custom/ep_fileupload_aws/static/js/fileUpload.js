@@ -9,6 +9,7 @@ $(function(){
         // Require the editor..
         var padeditor = require('ep_etherpad-lite/static/js/pad_editor').padeditor;
 
+		//console.log(""response)
         // result i.e. "/up/c79133b2c8a97533cc397f8d325ce17a.jpg", trimmed whitespace
         var filePath = response.slice(response.indexOf("/up")).trim();
         // "http://example.com/subfolder/p/padID" -> "http://example.com/subfolder"

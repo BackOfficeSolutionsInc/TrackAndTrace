@@ -26,8 +26,8 @@ var settings = require('ep_etherpad-lite/node/utils/Settings');
 var pluginSettings = settings.ep_fileupload_aws || {};
 var S3_ACCESS_KEY = pluginSettings.S3_ACCESS_KEY;
 var S3_SECRET_KEY = pluginSettings.S3_SECRET_KEY;
-var bucket = pluginSettings.bucket;//'tractiontools';
-var base_key = pluginSettings.base_key;//'n/upload/';
+var bucket = pluginSettings.bucket;
+var base_key = pluginSettings.base_key;
 var storageClass = pluginSettings.storage_class ||"REDUCED_REDUNDANCY";
 var urlBase = "https://s3.amazonaws.com/";
 
@@ -147,7 +147,7 @@ exports.onRequest = function (req, res) {
 		// if(typeof req.headers['referer'] != "undefined" && typeof matches[1] != "undefined"){
 		  // urlBase = matches[1];
 		// }
-		res.send(eejs.require("ep_fileupload_aws/templates/fileUploaded.ejs", {upload: urlBase + bucket + "/" + key}, module));
+		res.send(eejs.require("ep_fileupload_aws/templates/fileUploaded.ejs", {upload: urlBase + /*bucket +*/ "up/" + key}, module));
 
 	});
 	return;
