@@ -1,2 +1,2 @@
 # ep_fileupload_aws
-File upload plugin for Etherpad Lite. A user can upload a file, and a link to the uploaded file is automatically inserted in the pad.
+Clone of ep_fileupload, however it uploads to AWS S3 instead of using the file system. 
