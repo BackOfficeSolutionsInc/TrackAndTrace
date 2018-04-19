@@ -826,6 +826,9 @@ namespace RadialReview.Controllers {
 
 						var of = orgFlags.GetOrAddDefault(o.OrgId, (x) => new List<OrganizationFlag>()).Select(x => x.FlagType).ToArray();
 						var uf = userFlags.GetOrAddDefault(o.UserId, (x) => new List<UserRole>()).Select(x => x.RoleType).ToArray();
+						
+						var ofStrings = of.Select(x => "" + x).ToList();
+						ofStrings.Add(o.AccountType);
 
 						//csv.Add("" + o.UserId, "UserName", o.UserName);
 						csv.Add("" + o.UserId, "UserName", o.UserName);
@@ -846,7 +849,7 @@ namespace RadialReview.Controllers {
 						csv.Add("" + o.UserId, "UserType_AccountContact", "" + uf.Any(x => x == UserRoleType.AccountContact));
 						csv.Add("" + o.UserId, "UserType_Placeholder", "" + uf.Any(x => x == UserRoleType.PlaceholderOnly));
 						csv.Add("" + o.UserId, "Delinquent", "" + of.Any(x => x == OrganizationFlagType.Delinquent));
-						csv.Add("" + o.UserId, "OrgFlags", string.Join("|", of));
+						csv.Add("" + o.UserId, "OrgFlags", string.Join("|", ofStrings));
 						csv.Add("" + o.UserId, "UserFlags", string.Join("|", uf));
 						csv.Add("" + o.UserId, "TT_Blacklist", "" + uf.Any(x => x == UserRoleType.EmailBlackList));
 						csv.Add("" + o.UserId, "IsAdmin", "" + o.IsAdmin);

@@ -25,6 +25,7 @@ using RadialReview.Models.L10;
 using NHibernate.Criterion;
 using RadialReview.Models.Accountability;
 using System.Threading;
+using RadialReview.Crosscutting.Flags;
 
 namespace RadialReview.Controllers {
 	public class OrganizationController : BaseController {
@@ -120,6 +121,23 @@ namespace RadialReview.Controllers {
 
 				}
 			}
+		}
+
+
+
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> Flags(long? id = null) {
+			id = id ?? GetUser().Organization.Id;
+			var flags = await OrganizationAccessor.GetFlags(GetUser(), id.Value);
+			return View(flags);
+		}
+
+
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public async Task<JsonResult> SetFlags(long id, bool status, OrganizationFlagType flag) {
+			await OrganizationAccessor.SetFlag(GetUser(), id, flag, status);
+			return Json(ResultObject.SilentSuccess());
 		}
 
 

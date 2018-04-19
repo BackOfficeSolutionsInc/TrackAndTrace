@@ -7,7 +7,7 @@
 ///		 title:(optional, default: ""),																							///
 ///		 nodataText:(optional, default: "No data available."),																	///
 ///																																///
-///		 clickAdd:<url||function,function(row,settings)>(optional, default: null),												///
+///		 clickAdd:<url||function,function(row,settings)||object>(optional, default: null),										///
 ///		 clickEdit:<url||function,function(row,settings)>(optional, default: null),												///
 ///		 clickRemove:<url||function,function(row,settings)>(optional, default: null),											///
 ///		 clickReorder:<url||function,function(row,oldIndex,newIndex,settings)>(optional, default: null),						///
@@ -214,6 +214,22 @@ var DataTable = function (settings) {
 				addRow(d.Object);
 			});
 		};
+	}
+	if (typeof (settings.clickAdd) === "object") {
+		settings._.onAddOptions = settings.clickAdd;
+		var oldSuccess =  settings.clickAdd.success;
+		settings._.onAddOptions.success = function(d){
+			if (oldSuccess){
+				oldSuccss(d);
+			}
+			addRow(d.Object);
+		};
+
+		settings.clickAdd = function (settings) {
+			debugger;
+			showModal(settings._.onAddOptions);
+		}
+
 	}
 	if (typeof (settings.clickReorder) === "string") {
 		settings._.clickReorderUrl = settings.clickReorder;
