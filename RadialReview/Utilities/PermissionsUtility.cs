@@ -1718,8 +1718,8 @@ namespace RadialReview.Utilities {
 			if (obj == null) {
 				throw new PermissionsException("User is not attendee.");
 			}
-
-			return CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId);
+			var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf || (user.IsManager() && user.Organization.Settings.ManagersCanEditSelf);
+			return Or(x=>x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId),x=>x.ManagesUserOrganization(userId, canEditSelf));
 
 			/*var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf
 				|| (user.IsManager() && user.Organization.Settings.ManagersCanEditSelf);
