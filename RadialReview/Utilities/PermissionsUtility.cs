@@ -1712,21 +1712,16 @@ namespace RadialReview.Utilities {
 				return this;
 
 			var user = session.Get<UserOrganizationModel>(userId);
-
 			ViewUserOrganization(userId, false);
-
-			var obj = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x =>
-			x.DeleteTime == null
-			&& x.L10Recurrence.Id == recurrenceId
-			&& x.User.Id == userId).Take(1).SingleOrDefault();
+			var obj = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId && x.User.Id == userId).Take(1).SingleOrDefault();
 
 			if (obj == null) {
 				throw new PermissionsException("User is not attendee.");
 			}
 
-			CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId);
+			return CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId);
 
-			var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf
+			/*var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf
 				|| (user.IsManager() && user.Organization.Settings.ManagersCanEditSelf);
 
 			if (IsPermitted(x => x.ManagesUserOrganization(userId, !canEditSelf))) {
@@ -1735,7 +1730,7 @@ namespace RadialReview.Utilities {
 
 			if (!user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
 				return this;
-			}
+			}*/
 
 			throw new PermissionsException("You do not manage this user.") { NoErrorReport = true };
 		}
