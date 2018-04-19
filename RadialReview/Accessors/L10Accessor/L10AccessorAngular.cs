@@ -87,6 +87,10 @@ namespace RadialReview.Accessors {
 						foreach (var item in angular.Rocks) {
 							item.Owner.Managing = permissionLookup[item.Owner.Id]; 
 						}
+
+						foreach (var item in angular.Attendees) {
+							item.Managing = permissionLookup[item.Id];
+						}
 					}
 
 					tx.Commit();
