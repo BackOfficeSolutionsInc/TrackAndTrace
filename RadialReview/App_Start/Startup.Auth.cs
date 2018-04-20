@@ -31,12 +31,19 @@ namespace RadialReview
 				AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
 				LoginPath = new PathString("/Account/Login"),
 			};
-
-			if (!Config.IsLocal()) {
-				cookie.CookieDomain = "traction.tools";
-			}
-
+			
             app.UseCookieAuthentication(cookie);
+
+			//if (!Config.IsLocal() && Config.GetCookieDomains()!=null) {
+			//	var subDomainCookie = new CookieAuthenticationOptions {
+			//		AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+			//		LoginPath = new PathString("/Account/Login"),
+			//		CookieName = ".AspNet.Subcookies",
+			//	};
+			//	subDomainCookie.CookieDomain = Config.GetCookieDomains();// "traction.tools";
+			//	app.UseCookieAuthentication(subDomainCookie);
+			//}
+
             // Use a cookie to temporarily store information about a user logging in with a third party login provider
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 

@@ -51,6 +51,15 @@ namespace RadialReview.Utilities {
 			Sqlite = 2
 		}
 
+		public static string GetCookieDomains() {
+			if (IsLocal())
+				return null;
+			var res = GetAppSetting("AdditionalCookieDomains", null);
+			if (string.IsNullOrWhiteSpace(res))
+				return null;
+			return res;
+		}
+
 		public static DbType GetDatabaseType() {
 			switch (GetEnv()) {
 				case Env.local_test_sqlite:
