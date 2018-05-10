@@ -1593,11 +1593,25 @@ body.resizing .notes-tile:after,
 .dashboard .rock-list-container md-select {
   margin-top: -1px;
 }
+.dashboard .rock-list-container .icon-column-text {
+  margin-top: -22px;
+  margin-left: 18px;
+}
 .dashboard .rock-list-container .icon-column {
-  display: table-cell;
-  padding-right: 2px;
+  /*display: table-cell;*/
+  padding-right: 6px;
   vertical-align: top;
   padding-top: 6px;
+}
+.dashboard .rock-list-container .icon-column-1 {
+  padding-top: 5px !important;
+  /*width: 45px;*/
+}
+.dashboard .rock-list-container .icon-column-1-text {
+  margin-top: -20px;
+  /*float: left;*/
+  margin-left: 2px;
+  /*width: 45px;*/
 }
 .dashboard .rock-list-container .icon-column:before {
   font-family: "fontastic" !important;
@@ -1611,7 +1625,7 @@ body.resizing .notes-tile:after,
   -moz-osx-font-smoothing: grayscale;
   display: inline-block;
   position: relative;
-  top: -1px;
+  top: 5px;
   font-size: 18px;
   height: 14px;
   width: 14px;
@@ -1624,11 +1638,17 @@ body.resizing .notes-tile:after,
   width: 16px;
   height: 16px;
   position: relative;
-  left: 12px;
+  left: 14px;
   border-radius: 14px;
   float: left;
   position: absolute;
-  /* margin-top: -2px; */
+  margin-top: 6px;
+}
+.dashboard .rock-list-container .icon-column-1:before {
+  top: 1px !important;
+}
+.dashboard .rock-list-container .icon-column-1:after {
+  margin-top: 2px !important;
 }
 .dashboard .rock-list-container tr .icon-column:before {
   content: "\e203";
