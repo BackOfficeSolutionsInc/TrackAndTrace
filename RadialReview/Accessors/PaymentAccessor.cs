@@ -612,6 +612,10 @@ namespace RadialReview.Accessors {
 			var publicApi = Config.PaymentSpring_PublicKey(true);
 			var byteArray = new UTF8Encoding().GetBytes(publicApi + ":");
 			client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
 			HttpResponseMessage response = await client.PostAsync(url, requestContent);
 			HttpContent responseContent = response.Content;
 			using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
@@ -713,52 +717,59 @@ namespace RadialReview.Accessors {
 
 					// Create the HttpContent for the form to be posted.
 					var requestContent = new FormUrlEncodedContent(keys.ToArray());
+					try {
 
-					//Do not supress
-					var privateApi = Config.PaymentSpring_PrivateKey();
+						//Do not supress
+						var privateApi = Config.PaymentSpring_PrivateKey();
 
 
-					var byteArray = new UTF8Encoding().GetBytes(privateApi + ":");
-					client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-					HttpResponseMessage response = await client.PostAsync("https://api.paymentspring.com/api/v1/customers", requestContent);
-					HttpContent responseContent = response.Content;
-					using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
-						var result = await reader.ReadToEndAsync();
-						if (Json.Decode(result).errors != null) {
-							var builder = new List<string>();
-							for (var i = 0; i < Json.Decode(result).errors.Length; i++) {
-								builder.Add(Json.Decode(result).errors[i].message + " (" + Json.Decode(result).errors[i].code + ").");
+						var byteArray = new UTF8Encoding().GetBytes(privateApi + ":");
+						client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+						//added
+						ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+						HttpResponseMessage response = await client.PostAsync("https://api.paymentspring.com/api/v1/customers", requestContent);
+						HttpContent responseContent = response.Content;
+						using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
+							var result = await reader.ReadToEndAsync();
+							if (Json.Decode(result).errors != null) {
+								var builder = new List<string>();
+								for (var i = 0; i < Json.Decode(result).errors.Length; i++) {
+									builder.Add(Json.Decode(result).errors[i].message + " (" + Json.Decode(result).errors[i].code + ").");
+								}
+								throw new PermissionsException(String.Join(" ", builder));
 							}
-							throw new PermissionsException(String.Join(" ", builder));
+							if (Json.Decode(result).@class != "customer")
+								throw new PermissionsException("Expected class: 'Customer'");
+
+
+							token = new PaymentSpringsToken() {
+								CustomerToken = Json.Decode(result).id,
+								CardLast4 = cardLast4,
+								CardOwner = cardOwnerName,
+								CardType = cardType,
+								MonthExpire = cardExpireMonth,
+								YearExpire = cardExpireYear,
+								OrganizationId = organizationId,
+								Active = active,
+								ReceiptEmail = email,
+								CreatedBy = caller.Id,
+
+								TokenType = tokenType,
+								BankAccountLast4 = bankLast4,
+								BankRouting = bankRouting,
+								BankFirstName = bankFirstName,
+								BankLastName = bankLastName,
+								BankAccountType = bankAccountType
+
+							};
+							s.Save(token);
+							tx.Commit();
+							s.Flush();
 						}
-						if (Json.Decode(result).@class != "customer")
-							throw new PermissionsException("Expected class: 'Customer'");
-
-
-						token = new PaymentSpringsToken() {
-							CustomerToken = Json.Decode(result).id,
-							CardLast4 = cardLast4,
-							CardOwner = cardOwnerName,
-							CardType = cardType,
-							MonthExpire = cardExpireMonth,
-							YearExpire = cardExpireYear,
-							OrganizationId = organizationId,
-							Active = active,
-							ReceiptEmail = email,
-							CreatedBy = caller.Id,
-
-							TokenType = tokenType,
-							BankAccountLast4 = bankLast4,
-							BankRouting = bankRouting,
-							BankFirstName = bankFirstName,
-							BankLastName = bankLastName,
-							BankAccountType = bankAccountType
-
-						};
-						s.Save(token);
-						tx.Commit();
-						s.Flush();
-
+					} catch (Exception e) {
+						throw;
 					}
 				}
 				using (var ss = HibernateSession.GetCurrentSession()) {
