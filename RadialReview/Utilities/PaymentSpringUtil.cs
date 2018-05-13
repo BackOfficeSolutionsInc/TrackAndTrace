@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,7 +62,11 @@ namespace RadialReview.Utilities {
 			var privateApi = Config.PaymentSpring_PrivateKey(forceTest);
 			var byteArray = new UTF8Encoding().GetBytes(privateApi + ":");
 			client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-			var response = await client.PostAsync("https://api.paymentspring.com/api/v1/charge", requestContent);
+            
+            //added
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            var response = await client.PostAsync("https://api.paymentspring.com/api/v1/charge", requestContent);
 			var responseContent = response.Content;
 			using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
 				var result = await reader.ReadToEndAsync();
@@ -135,16 +140,16 @@ namespace RadialReview.Utilities {
 			}
 		}
 
-		public static async Task<List<LogResult>> GetAllLogs(bool forceTest = false, int maxPage = int.MaxValue,int resultsPerPage = 100) {
-			var request = new Curl<LogResult>("https://api.paymentspring.com/api/v1/transactions/log", HttpMethod.Get, LogResult.GetProcessor());
-			return await RequestPagesOfData(request, maxPage, resultsPerPage);
-		}
+		//public static async Task<List<LogResult>> GetAllLogs(bool forceTest = false, int maxPage = int.MaxValue,int resultsPerPage = 100) {
+		//	var request = new Curl<LogResult>("https://api.paymentspring.com/api/v1/transactions/log", HttpMethod.Get, LogResult.GetProcessor());
+		//	return await RequestPagesOfData(request, maxPage, resultsPerPage);
+		//}
 
 
-		public static async Task<List<LogResult>> GetCustomerLogs(PaymentSpringsToken token, bool forceTest = false, int maxPage = int.MaxValue, int resultsPerPage = 100) {
-			var request = new Curl<LogResult>("https://api.paymentspring.com/api/v1/customers/" + token.CustomerToken + "/log", HttpMethod.Get, LogResult.GetProcessor());
-			return await RequestPagesOfData(request, maxPage, resultsPerPage);
-		}
+		//public static async Task<List<LogResult>> GetCustomerLogs(PaymentSpringsToken token, bool forceTest = false, int maxPage = int.MaxValue, int resultsPerPage = 100) {
+		//	var request = new Curl<LogResult>("https://api.paymentspring.com/api/v1/customers/" + token.CustomerToken + "/log", HttpMethod.Get, LogResult.GetProcessor());
+		//	return await RequestPagesOfData(request, maxPage, resultsPerPage);
+		//}
 
 		public class PaymentSpringError {
 			public string Message { get; set; }
