@@ -671,6 +671,24 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+
+		[Access(AccessLevel.RadialData)]
+		public ActionResult AllDeleted() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var allDeleted = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime != null).Select(x => x.Id, x => x.DeleteTime).List<object[]>().ToList();
+
+					var csv = new Csv();
+					csv.Title = "UserId";
+					foreach (var d in allDeleted) {
+						csv.Add(""+(long)d[0], "DeleteTime", ""+(DateTime?)d[1]);
+					}
+
+					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllDeletedUsers.csv");
+				}
+			}
+		}
+
 		[Access(AccessLevel.RadialData)]
 		public ActionResult AllEmails() {
 			using (var s = HibernateSession.GetCurrentSession()) {
