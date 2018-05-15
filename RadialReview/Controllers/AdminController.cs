@@ -678,12 +678,14 @@ namespace RadialReview.Controllers {
 				using (var tx = s.BeginTransaction()) {
 					UserModel userAlias = null;
 					TempUserModel tempUserAlias = null;
+					OrganizationModel orgAlias = null;
 
 					var allDeleted = s.QueryOver<UserOrganizationModel>()
 						.Left.JoinAlias(x => x.User, () => userAlias)
 						.Left.JoinAlias(x => x.TempUser, () => tempUserAlias)
-						.Where(x => x.DeleteTime != null)
-							.Select(x => x.Id, x => x.DeleteTime, x=>userAlias.UserName, x=> tempUserAlias.Email)
+						.Left.JoinAlias(x => x.Organization, () => orgAlias)
+						.Where(x => x.DeleteTime != null || orgAlias.DeleteTime !=null )
+							.Select(x => x.Id, x => x.DeleteTime, x=>userAlias.UserName, x => tempUserAlias.Email, x => orgAlias.DeleteTime)
 						.List<object[]>().ToList();
 
 					var csv = new Csv();
@@ -694,7 +696,12 @@ namespace RadialReview.Controllers {
 							userName = (string)d[3];
 
 						csv.Add("" + (long)d[0], "UserEmail", "" + userName);
-						csv.Add("" + (long)d[0], "DeleteTime", "" + (DateTime?)d[1]);
+
+						var deleteTime = (DateTime?)d[1];
+						if (deleteTime == null)
+							deleteTime = (DateTime?)d[4];
+
+						csv.Add("" + (long)d[0], "DeleteTime", "" + deleteTime);
 					}
 
 					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllDeletedUsers.csv");
