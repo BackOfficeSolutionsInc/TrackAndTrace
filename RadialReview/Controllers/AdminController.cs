@@ -676,12 +676,25 @@ namespace RadialReview.Controllers {
 		public ActionResult AllDeleted() {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var allDeleted = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime != null).Select(x => x.Id, x => x.DeleteTime).List<object[]>().ToList();
+					UserModel userAlias = null;
+					TempUserModel tempUserAlias = null;
+
+					var allDeleted = s.QueryOver<UserOrganizationModel>()
+						.Left.JoinAlias(x => x.User, () => userAlias)
+						.Left.JoinAlias(x => x.TempUser, () => tempUserAlias)
+						.Where(x => x.DeleteTime != null)
+							.Select(x => x.Id, x => x.DeleteTime, x=>userAlias.UserName, x=> tempUserAlias.Email)
+						.List<object[]>().ToList();
 
 					var csv = new Csv();
 					csv.Title = "UserId";
 					foreach (var d in allDeleted) {
-						csv.Add(""+(long)d[0], "DeleteTime", ""+(DateTime?)d[1]);
+						var userName = (string)d[2];
+						if (userName == null)
+							userName = (string)d[3];
+
+						csv.Add("" + (long)d[0], "UserEmail", "" + userName);
+						csv.Add("" + (long)d[0], "DeleteTime", "" + (DateTime?)d[1]);
 					}
 
 					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllDeletedUsers.csv");
