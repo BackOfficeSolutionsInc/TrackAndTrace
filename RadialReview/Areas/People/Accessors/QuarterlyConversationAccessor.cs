@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using Hangfire;
+using log4net;
 using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Areas.People.Angular;
@@ -8,7 +9,9 @@ using RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation;
 using RadialReview.Areas.People.Engines.Surveys.Strategies.Events;
 using RadialReview.Areas.People.Engines.Surveys.Strategies.Transformers;
 using RadialReview.Areas.People.Models.Survey;
+using RadialReview.Crosscutting.Hooks.Interfaces;
 using RadialReview.Exceptions;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Angular.Meeting;
@@ -20,6 +23,7 @@ using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Utilities.RealTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -195,9 +199,21 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 		}
 
+		public static async Task<long> GenerateQuarterlyConversation(long callerId, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool sendEmails) {
+			UserOrganizationModel caller;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					caller = s.Get<UserOrganizationModel>(callerId);
+				}
+			}
+			return await GenerateQuarterlyConversation(caller, name, byAbout, quarterRange, dueDate, sendEmails);
+		}
+
 		public static async Task<long> GenerateQuarterlyConversation(UserOrganizationModel caller, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool sendEmails) {
+
 			log.Info("Start\tQC Generator- " + DateTime.UtcNow.ToJsMs());
 			try {
+
 
 				var possible = AvailableByAboutsForMe(caller, true, true);
 				var invalid = byAbout.Where(selected => possible.All(avail => avail.GetViewModelKey() != selected.GetViewModelKey()));
@@ -216,15 +232,24 @@ namespace RadialReview.Areas.People.Accessors {
 					using (var tx = s.BeginTransaction()) {
 						var perms = PermissionsUtility.Create(s, caller);
 						perms.CreateQuarterlyConversation(caller.Organization.Id);
+						qcResult = await GenerateAndEmail(s, perms, name, populatedByAbouts, quarterRange, dueDate, sendEmails);
 
-						qcResult = GenerateQuarterlyConversation_Unsafe(s, perms, name, populatedByAbouts, quarterRange, dueDate, sendEmails);
 						tx.Commit();
 						s.Flush();
 					}
 				}
-				if (sendEmails) {
-					await Emailer.SendEmails(qcResult.UnsentEmail);
-				}
+				
+
+				/*qcResult = GenerateQuarterlyConversation_Unsafe(caller, caller.Organization.Id, name, populatedByAbouts, quarterRange, dueDate, sendEmails);
+					try {
+						if (sendEmails) {
+							return Emailer.SendEmails(qcResult.UnsentEmail);
+						}
+					} catch (Exception e) {
+					}
+					return Task.Delay(1);*/
+
+
 				log.Info("End  \tQC Generator- " + DateTime.UtcNow.ToJsMs());
 
 				return qcResult.SurveyContainerId;
@@ -233,25 +258,47 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 		}
 
+		public static async Task<QuarterlyConversationGeneration> GenerateAndEmail(ISession s, PermissionsUtility perms, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool sendEmails) {
+			var qcResult = GenerateQuarterlyConversation_Unsafe(s, perms, name, byAbout, quarterRange, dueDate, sendEmails);
+			
+
+			if (qcResult.Errors.Any()) {
+				await HooksRegistry.Each<IQuarterlyConversationHook>(s,(ses, x) => x.QuarterlyConversationError(ses,perms.GetCaller(), QuarterlyConversationErrorType.CreationFailed, qcResult.Errors));
+			} else {
+				await HooksRegistry.Each<IQuarterlyConversationHook>(s,(ses, x) => x.QuarterlyConversationCreated(ses, qcResult.SurveyContainerId));
+				try {
+					if (sendEmails) {
+						await Emailer.SendEmails(qcResult.UnsentEmail);
+						await HooksRegistry.Each<IQuarterlyConversationHook>(s,(ses, x) => x.QuarterlyConversationEmailsSent(ses, qcResult.SurveyContainerId));
+					}
+				} catch (Exception e) {
+					await HooksRegistry.Each<IQuarterlyConversationHook>(s,(ses, x) => x.QuarterlyConversationError(ses, perms.GetCaller(), QuarterlyConversationErrorType.EmailsFailed, new List<string>() {
+						"Quarterly Conversation successfully created, but some email notifications failed to send."
+					}));
+				}
+			}
+			return qcResult;
+		}
+
 		public static QuarterlyConversationGeneration GenerateQuarterlyConversation_Unsafe(ISession s, PermissionsUtility perms, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool generateEmails) {
 			log.Info("\tStart\tGenerateQuarterlyConversation_Unsafe- " + DateTime.UtcNow.ToJsMs());
-
-			var caller = perms.GetCaller();
-
+			//var creator = creator_userOrganizationModel;
+			var creator = perms.GetCaller();
+			
 			var reconstructed = byAbout.GroupBy(x => x.By.UserOrganizationId + "~" + x.About.ToViewModelKey())
 				.OrderBy(x => x.First().AboutIsThe.NotNull(y => y.Value.Order()))
 				.Select(ba => {
-					//var reconstructedRelationship = AboutType.NoRelationship;
-					//foreach (var x in ba) {
-					//	if (x.AboutIsThe.HasValue)
-					//		reconstructedRelationship = reconstructedRelationship | x.AboutIsThe.Value;
-					//}
+							//var reconstructedRelationship = AboutType.NoRelationship;
+							//foreach (var x in ba) {
+							//	if (x.AboutIsThe.HasValue)
+							//		reconstructedRelationship = reconstructedRelationship | x.AboutIsThe.Value;
+							//}
 
-					//var reconstructedAbout = SurveyUserNode.Clone(ba.First().About,true);
-					//reconstructedAbout.Relationship = reconstructedRelationship;
-					//return new ByAbout(ba.First().By.User, reconstructedAbout);
+							//var reconstructedAbout = SurveyUserNode.Clone(ba.First().About,true);
+							//reconstructedAbout.Relationship = reconstructedRelationship;
+							//return new ByAbout(ba.First().By.User, reconstructedAbout);
 
-					return new ByAbout(ba.First().By.User, ba.First().About);
+							return new ByAbout(ba.First().By.User, ba.First().About);
 				}).ToList();
 
 			foreach (var ba in reconstructed) {
@@ -273,7 +320,7 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 
 			var engine = new SurveyBuilderEngine(
-				new QuarterlyConversationInitializer(caller, name, caller.Organization.Id, quarterRange, dueDate),
+				new QuarterlyConversationInitializer(creator, name, creator.Organization.Id, quarterRange, dueDate),
 				new SurveyBuilderEventsSaveStrategy(s),
 				new TransformAboutAccountabilityNodes(s)
 			);
@@ -281,11 +328,12 @@ namespace RadialReview.Areas.People.Accessors {
 			var container = engine.BuildSurveyContainer(reconstructed);
 			var containerId = container.Id;
 			var permItems = new[] {
-				PermTiny.Creator(),
-				PermTiny.Admins(),
-				PermTiny.Members(true, true, false)
-			};
-			PermissionsAccessor.CreatePermItems(s, caller, PermItem.ResourceType.SurveyContainer, containerId, permItems);
+						PermTiny.Creator(),
+						PermTiny.Admins(),
+						PermTiny.Members(true, true, false)
+					};
+
+			PermissionsAccessor.CreatePermItems(s, creator, PermItem.ResourceType.SurveyContainer, containerId, permItems);
 
 			var emails = new List<Mail>();
 			var allBys = container.GetSurveys()
@@ -318,6 +366,7 @@ namespace RadialReview.Areas.People.Accessors {
 			log.Info("\tEnd  \tGenerateQuarterlyConversation_Unsafe- " + DateTime.UtcNow.ToJsMs());
 
 			return result;
+
 		}
 
 		public static DefaultDictionary<string, string> TransformValueAnswer = new DefaultDictionary<string, string>(x => x);

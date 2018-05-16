@@ -89,6 +89,27 @@
 				}
 			}
 			]};
+
+		
+		var messageHub = $.connection.messageHub;
+
+		
+		messageHub.client.addQC = function(message,row){
+			table.insertRow(row,0);
+			showAlert(message,"success");			
+		};
+		messageHub.client.showAlert = function(mObj){
+			debugger;
+			showAlert(mObj);
+		};
+
+
+		$.connection.hub.start(Constants.StartHubSettings).done(function(){
+			messageHub.server.joinUser($.connection.hub.id).done(function () {
+				console.log("connected to messageHub")
+			});
+		});
+
 	</script>
 
 	if (ViewBag.CanCreate == true) {
@@ -118,6 +139,6 @@
 	}
 
 	<script>
-		DataTable(dtOptions);
+		table = DataTable(dtOptions);
 	</script>
 }

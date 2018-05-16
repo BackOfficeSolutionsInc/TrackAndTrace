@@ -621,6 +621,16 @@ var DataTable = function (settings) {
 			console.warn("row was " + row);
 		}
 	};
+	var insertRow = function (row,index) {
+		console.info("insert row");
+		if (row) {
+			settings.data.splice(index, 0, row);
+			update();
+		} else {
+			showAlert("Row could not be added.");
+			console.warn("row was " + row);
+		}
+	};
 	var editRow = function (row) {
 		console.info("edit row");
 		if (row) {
@@ -678,6 +688,7 @@ var DataTable = function (settings) {
 			update();
 		},
 		addRow: addRow,
+		insertRow: insertRow,
 		editRow: editRow,
 		removeRow: removeRow,
 

@@ -402,48 +402,53 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static void CreatePermItems(ISession s, UserOrganizationModel creator, PermItem.ResourceType resourceType, long resourceId, params PermTiny[] items)
-        {
-            var oneAdmin = false;
+        public static void CreatePermItems(ISession s, UserOrganizationModel creator, PermItem.ResourceType resourceType, long resourceId, params PermTiny[] items) {
+			var creatorOrgId = creator.Organization.Id;
+			var creatorId = creator.Id;
 
-            var anyAdmins = s.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResId == resourceId && x.ResType == resourceType && x.CanAdmin == true).RowCount();
-            if (anyAdmins > 0)
-                oneAdmin = true;
+			CreatePermItems(s, creatorId,  creatorOrgId, resourceType, resourceId, items);
 
-            foreach (var i in items) {
-                if (i.AccessorType == PermItem.AccessType.Creator)
-                    i.AccessorId = creator.Id;
+		}
+		private static void CreatePermItems(ISession s,long creatorId, long creatorOrgId,  PermItem.ResourceType resourceType, long resourceId,params PermTiny[] items) {
+			var oneAdmin = false;
 
-                if (i.AccessorType == PermItem.AccessType.Email) {
-                    var epi = new EmailPermItem() {
-                        CreatorId = creator.Id,
-                        Email = i.EmailAddress,
-                    };
-                    s.Save(epi);
-                    i.AccessorId = epi.Id;
-                }
+			var anyAdmins = s.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResId == resourceId && x.ResType == resourceType && x.CanAdmin == true).RowCount();
+			if (anyAdmins > 0)
+				oneAdmin = true;
 
-                oneAdmin = oneAdmin || i.CanAdmin;
-                var pi = new PermItem() {
-                    CanAdmin = i.CanAdmin,
-                    CanEdit = i.CanEdit,
-                    CanView = i.CanView,
-                    AccessorType = i.AccessorType,
-                    AccessorId = i.AccessorId,
-                    ResType = resourceType,
-                    ResId = resourceId,
-                    CreatorId = creator.Id,
-                    OrganizationId = creator.Organization.Id,
-                    IsArchtype = false,
-                };
-                s.Save(pi);
-                i.PermItem = pi;
-            }
+			foreach (var i in items) {
+				if (i.AccessorType == PermItem.AccessType.Creator)
+					i.AccessorId = creatorId;
 
-            if (!oneAdmin)
-                throw new PermissionsException("Requires at least one admin");
+				if (i.AccessorType == PermItem.AccessType.Email) {
+					var epi = new EmailPermItem() {
+						CreatorId = creatorId,
+						Email = i.EmailAddress,
+					};
+					s.Save(epi);
+					i.AccessorId = epi.Id;
+				}
 
-        }
+				oneAdmin = oneAdmin || i.CanAdmin;
+				var pi = new PermItem() {
+					CanAdmin = i.CanAdmin,
+					CanEdit = i.CanEdit,
+					CanView = i.CanView,
+					AccessorType = i.AccessorType,
+					AccessorId = i.AccessorId,
+					ResType = resourceType,
+					ResId = resourceId,
+					CreatorId = creatorId,
+					OrganizationId = creatorOrgId,
+					IsArchtype = false,
+				};
+				s.Save(pi);
+				i.PermItem = pi;
+			}
+
+			if (!oneAdmin)
+				throw new PermissionsException("Requires at least one admin");
+		}
 
 		public static bool CanView(UserOrganizationModel caller, PermItem.ResourceType resourceType, long resourceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
