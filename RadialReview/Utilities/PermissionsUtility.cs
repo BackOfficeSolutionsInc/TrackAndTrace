@@ -1803,10 +1803,17 @@ namespace RadialReview.Utilities {
 			ViewSurveyContainer(survey.SurveyContainerId);
 			return CanView(PermItem.ResourceType.Survey, surveyId);
 		}
-		public PermissionsUtility ViewSurveyResultsAbout(IForModel about) {
-			var orgId = ForModelAccessor.GetOrganizationId(session, about);
-			var allowSelf = (IsManager(orgId));
-			return ManagesForModel(about, !allowSelf);
+		public PermissionsUtility ViewSurveyResultsAbout(long surveyContainerId, IForModel about) {
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var surveyContainer = session.Get<SurveyContainer>(surveyContainerId);
+			if (surveyContainer.CreatedBy.ToKey() == caller.ToKey())
+				return this;
+			throw new PermissionsException("Cannot view this");
+			//var orgId = ForModelAccessor.GetOrganizationId(session, about);
+			//var allowSelf = (IsManager(orgId));
+			//return ManagesForModel(about, !allowSelf);
 		}
 
 		public PermissionsUtility ViewSurveyContainer(long surveyContainerId) {

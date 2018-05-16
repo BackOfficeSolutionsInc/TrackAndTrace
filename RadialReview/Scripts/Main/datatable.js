@@ -70,6 +70,7 @@
 ///          remove:<bool,function(settings)>(optional, false),																	///
 ///          reorder:<bool,function(settings)>(optional, false),																///
 ///          name:<bool,function(settings)>(optional, null),																	///
+///			 hideIfEmpty: (optional, default:false)																				///
 ///		 },...,																													///
 ///			...function(row,i) ,...																								///
 ///      },...],																												///
@@ -198,7 +199,7 @@ var DataTable = function (settings) {
 			var rid = resolve(settings.cellId, row, settings);
 			var actionType = typeof (settings._.onEditAction);
 			if (actionType == "string") {
-				var pUrl=settings._.onEditActionPost.replace("{0}", postWasSet?rid:"");
+				var pUrl = settings._.onEditActionPost.replace("{0}", postWasSet ? rid : "");
 				showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), pUrl, null, null, function (d) {
 					editRow(d.Object);
 				});
@@ -217,9 +218,9 @@ var DataTable = function (settings) {
 	}
 	if (typeof (settings.clickAdd) === "object") {
 		settings._.onAddOptions = settings.clickAdd;
-		var oldSuccess =  settings.clickAdd.success;
-		settings._.onAddOptions.success = function(d){
-			if (oldSuccess){
+		var oldSuccess = settings.clickAdd.success;
+		settings._.onAddOptions.success = function (d) {
+			if (oldSuccess) {
 				oldSuccss(d);
 			}
 			addRow(d.Object);
@@ -410,69 +411,76 @@ var DataTable = function (settings) {
 		row.append(generateRowCells(rowData));
 		return row;
 	};
+
+	var generateCell = function (settings, row, cellSelector, i) {
+		var cell = $(settings.table.cells.element).clone();
+
+		var contents = null;
+		var cellSelectorId = settings.table.cells.id;
+		var cellSelectorClasses = settings.table.cells.classes;
+
+		if (typeof (cellSelector) === "object") {
+			cellSelectorId = cellSelector.id || cellSelectorId;
+			cellSelectorClasses = cellSelector.classes || cellSelectorId;
+			contents = cellSelector.contents;
+		} else if (typeof (cellSelector) === "function") {
+			contents = cellSelector;
+		}
+
+		cell.attr("id", resolve(cellSelectorId, row, settings));
+		cell.attr("class", resolve(cellSelectorClasses, row, settings));
+
+		//Is edit button?
+		if (resolve(cellSelector.edit, settings) == true) {
+			cell.on("click", function () { resolve(settings.clickEdit, row, settings); });
+			if (!contents)
+				contents = settings.table.editText;
+			cell.addClass("clickable");
+		}
+
+		//Is remove button?
+		if (resolve(cellSelector.remove, settings) == true) {
+			cell.on("click", function () { resolve(settings.clickRemove, row, settings); });
+			if (!contents)
+				contents = settings.table.removeText;
+			cell.addClass("clickable");
+		}
+
+		//Is row number?
+		if (resolve(cellSelector.rowNum, settings) == true) {
+			var oldContents = contents;
+			contents = function (row, i, settings) {
+				return "<span class='rowNum'>" + (i + 1) + ". </span>" + (resolve(oldContents, row, i, settings) || "");
+			};
+		}
+
+		//Is draggable?
+		if (resolve(cellSelector.reorder, settings) == true) {
+			contents = function (row, i, settings) {
+				return "<span class='reorder-handle icon fontastic-icon-three-bars icon-rotate gray' style='margin-left: -5px;margin-right: -5px;cursor:move;'></span>";
+			};
+		}
+
+		var html = resolve(contents, row, i, settings);
+
+		if (contents == null)
+			console.warn("Contents null for " + s);
+		if (typeof (html) === "undefined")
+			console.warn("Cell was undefined for " + s + " (Did you forget to 'return'?)");
+
+		cell.html(html);
+
+		return {dom:cell,html:html};
+	}
+
 	var generateRowCells = function (row) {
 		var i = 0;
 		var results = [];
 		for (var s in settings.cells) {
 			if (arrayHasOwnIndex(settings.cells, s)) {
 				var cellSelector = settings.cells[s];
-				var cell = $(settings.table.cells.element).clone();
 
-				var contents = null;
-				var cellSelectorId = settings.table.cells.id;
-				var cellSelectorClasses = settings.table.cells.classes;
-
-				if (typeof (cellSelector) === "object") {
-					cellSelectorId = cellSelector.id || cellSelectorId;
-					cellSelectorClasses = cellSelector.classes || cellSelectorId;
-					contents = cellSelector.contents;
-				} else if (typeof (cellSelector) === "function") {
-					contents = cellSelector;
-				}
-
-				cell.attr("id", resolve(cellSelectorId, row, settings));
-				cell.attr("class", resolve(cellSelectorClasses, row, settings));
-
-				//Is edit button?
-				if (resolve(cellSelector.edit, settings) == true) {
-					cell.on("click", function () { resolve(settings.clickEdit, row, settings); });
-					if (!contents)
-						contents = settings.table.editText;
-					cell.addClass("clickable");
-				}
-
-				//Is remove button?
-				if (resolve(cellSelector.remove, settings) == true) {
-					cell.on("click", function () { resolve(settings.clickRemove, row, settings); });
-					if (!contents)
-						contents = settings.table.removeText;
-					cell.addClass("clickable");
-				}
-
-				//Is row number?
-				if (resolve(cellSelector.rowNum, settings) == true) {
-					var oldContents = contents;
-					contents = function (row, i, settings) {
-						return "<span class='rowNum'>" + (i + 1) + ". </span>" + (resolve(oldContents, row, i, settings) || "");
-					};
-				}
-
-				//Is draggable?
-				if (resolve(cellSelector.reorder, settings) == true) {
-					contents = function (row, i, settings) {
-						return "<span class='reorder-handle icon fontastic-icon-three-bars icon-rotate gray' style='margin-left: -5px;margin-right: -5px;cursor:move;'></span>";
-					};
-
-				}
-
-				var html = resolve(contents, row, i, settings);
-
-				if (contents == null)
-					console.warn("Contents null for " + s);
-				if (typeof (html) === "undefined")
-					console.warn("Cell was undefined for " + s + " (Did you forget to 'return'?)");
-
-				cell.html(html);
+				var q = generateCell(settings, row, cellSelector, i);
 
 				results.push(cell);
 				i++;
@@ -522,6 +530,34 @@ var DataTable = function (settings) {
 		return self;
 	}
 
+	var refreshHeaders = function (settings) {
+		settings.data = settings.data || [];
+		settings.cells = settings.cells || [];
+		for (var c in settings.cells) {
+			if (arrayHasOwnIndex(settings.cells, c)) {
+				var cell = settings.cells[c]
+
+				if (cell.hideIfEmpty) {
+					var allEmpty = true;
+					var i = 0;
+					for (var d in settings.data) {
+						if (arrayHasOwnIndex(settings.data, d)) {
+							var data = settings.data[d];
+							var html = generateCell(settings, data, cell,i).;
+							if (!(html == null || typeof (html) === "undefined")) {
+								allEmpty = false;
+								break;
+							}
+							i++;
+						}
+					}
+					if (allEmpty) {
+						console.log("column empty!");
+					}
+				}
+			}
+		}
+	}
 	var refreshRowNum = function () {
 		$(".rowNum").each(function (i, x) {
 			$(this).html("" + (i + 1) + ". ");
@@ -580,6 +616,8 @@ var DataTable = function (settings) {
 			$(nodata).hide();
 		}
 		refreshRowNum();
+		refreshHeaders(settings);
+
 		settings._.olddata = JSON.parse(JSON.stringify(settings.data));
 	}
 	var updateProperties = function (settings) {
@@ -615,16 +653,6 @@ var DataTable = function (settings) {
 		console.info("add row");
 		if (row) {
 			settings.data.push(row);
-			update();
-		} else {
-			showAlert("Row could not be added.");
-			console.warn("row was " + row);
-		}
-	};
-	var insertRow = function (row,index) {
-		console.info("insert row");
-		if (row) {
-			settings.data.splice(index, 0, row);
 			update();
 		} else {
 			showAlert("Row could not be added.");
@@ -688,7 +716,7 @@ var DataTable = function (settings) {
 			update();
 		},
 		addRow: addRow,
-		insertRow: insertRow,
+		//insertRow: insertRow,
 		editRow: editRow,
 		removeRow: removeRow,
 

@@ -62,7 +62,7 @@ namespace RadialReview.Areas.People.Accessors {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.ViewSurveyContainer(surveyContainerId);
 					var container = s.Get<SurveyContainer>(surveyContainerId);
-					perms.ViewSurveyResultsAbout(about/*, container.OrgId*/);
+					perms.ViewSurveyResultsAbout(surveyContainerId, about/*, container.OrgId*/);
 
 					if (container.DeleteTime != null)
 						throw new PermissionsException("Does not exist");
@@ -144,14 +144,24 @@ namespace RadialReview.Areas.People.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					perms.ViewSurveyResultsAbout(aboutModel);
-					//perms.Self(byModel);
+					//PERMISSIONS HANDELED BELOW, SPECIAL CASE...be careful please
 
 					var containerIds = s.QueryOver<Survey>().Where(x => x.DeleteTime == null && x.SurveyType == type)
 						.Where(x => x.About.ModelId == aboutModel.ModelId && x.About.ModelType == aboutModel.ModelType)
 						.Select(x => Projections.Group<Survey>(y => y.SurveyContainerId))
 						.Select(x => x.SurveyContainerId)
 						.List<long>().ToArray();
+
+					var any = containerIds.Any();
+
+					containerIds = containerIds.Distinct().Where(x => 
+						//Permissions filter here
+						perms.IsPermitted(p=>p.ViewSurveyResultsAbout(x,aboutModel))
+					).ToArray();
+
+					//Throw exception instead of presenting empty..
+					if (any && !containerIds.Any())
+						throw new PermissionsException("Cannot view this");
 
 					var containers = s.QueryOver<SurveyContainer>()
 						.Where(x => x.DeleteTime == null && x.SurveyType == type)
@@ -166,9 +176,7 @@ namespace RadialReview.Areas.People.Accessors {
 
 					var creatorLookup = TinyUserAccessor.GetUsers_Unsafe(s, issuedBy, false).ToDefaultDictionary(x => x.ToKey(), x => AngularUser.CreateUser(x), null);
 
-					return containers.Select(x => new AngularSurveyContainer(x, x.DueDate < DateTime.UtcNow, creatorLookup[x.CreatedBy.ToKey()]));
-
-					//perms.ViewSurveyContainer(surveyContainerId);
+					return containers.Select(x => new AngularSurveyContainer(x, x.DueDate < DateTime.UtcNow, creatorLookup[x.CreatedBy.ToKey()]));					
 				}
 			}
 		}
