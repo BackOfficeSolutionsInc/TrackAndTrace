@@ -1,6 +1,7 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Payments;
 using RadialReview.Models.Tasks;
@@ -54,11 +55,12 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult Plan_Monthly(long? orgid = null) {
+		public ActionResult Plan_Monthly(long? orgid = null,bool msg=false) {
 			var id = orgid ?? GetUser().Organization.Id;
 
 			var plan = PaymentAccessor.GetPlan(GetUser(), id);
 			var org = _OrganizationAccessor.GetOrganization(GetUser(), id);
+			ViewBag.ShowPostMsg = msg;
 			if (plan is PaymentPlan_Monthly) {
 				var pr = (PaymentPlan_Monthly)plan;
 				pr._Org = org;
@@ -252,13 +254,21 @@ namespace RadialReview.Controllers {
 
 					if (String.IsNullOrWhiteSpace(Request.Form["TaskId"])) {
 						DateTime? originalScheduledFire = null;
+						DateTime? lastFire = null;
 						if (!String.IsNullOrWhiteSpace(Request.Form["OldTaskId"])) {
-							var delete = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.OriginalTaskId == Request["OldTaskId"].ToLong()).List().ToList();
+							var delete = s.QueryOver<ScheduledTask>().Where(x => x.OriginalTaskId == Request["OldTaskId"].ToLong()).List().ToList();
 							var maxDate = DateTime.MinValue;
 							foreach (var oldTask in delete) {
-								oldTask.DeleteTime = DateTime.UtcNow;
-								s.Update(oldTask);
-								maxDate = Math2.Max(oldTask.Fire, maxDate);
+								if (oldTask.DeleteTime == null) {
+									oldTask.DeleteTime = DateTime.UtcNow;
+									s.Update(oldTask);
+								}
+								if (oldTask.Executed == null) {
+									maxDate = Math2.Max(oldTask.Fire, maxDate);
+								}
+								if (oldTask.Executed != null && oldTask.Executed < DateTime.UtcNow) {
+									lastFire = Math2.Max(lastFire ?? DateTime.MinValue, oldTask.Executed.Value);
+								}
 							}
 							originalScheduledFire = maxDate;
 						}
@@ -287,10 +297,20 @@ namespace RadialReview.Controllers {
 							setDate = true;
 						}
 
-						if (setDate == false)
-							fireTime = DateTime.UtcNow.Date;
+						if (setDate == false) {
+							fireTime = DateTime.UtcNow.Date.AddDays(30);
+							ShowAlert("Hey something went very wrong. Fallback date was used. Contact your manager with this information: <br/> {org:" + model.OrgId + ",originalFire:" + model.NotNull(x => x.Task.Fire) + ",newFire:" + fireTime + "}",AlertType.Error);
+						}
+						if (fireTime < DateTime.UtcNow.Date) {
+							fireTime = Math2.Max(fireTime, DateTime.UtcNow.Date);
+							ShowAlert("Hey something probably went very wrong. Customer will be charged today! Contact your manager with this information: <br/> {org:" + model.OrgId + ",originalFire:" + model.NotNull(x => x.Task.Fire) + ",newFire:" + fireTime + "}", AlertType.Error);
+						}
 
-						fireTime = Math2.Max(DateTime.UtcNow.Date, fireTime);
+						var period = model.SchedulePeriod ?? SchedulePeriodType.Monthly;
+						if (lastFire != null && lastFire <= fireTime && fireTime < lastFire.Value.Add(period.GetPeriod())) {
+							fireTime = lastFire.Value.Add(period.GetPeriod());
+							ShowAlert("Hey something probably went wrong. Customer would have been charged less than "+ period.GetPeriod().TotalDays + " days after most recent charge! Automatically adjusting charge date. Contact your manager with this information: <br/> {org:" + model.OrgId + ",originalFire:" + model.NotNull(x => x.Task.Fire) + ",newFire:" + fireTime + "}", AlertType.Error);
+						}
 
 
 
@@ -323,7 +343,7 @@ namespace RadialReview.Controllers {
 
 					model._Org = org;
 
-					return View(model);
+					return RedirectToAction("Plan_Monthly",new { msg=true, orgId = org.Id});
 				}
 			}
 		}
