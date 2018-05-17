@@ -471,9 +471,45 @@ namespace RadialReview.Accessors {
 			} else {
 				throw new PermissionsException("Unhandled Payment Plan");
 			}
+
+			var credits = s.QueryOver<PaymentCredit>().Where(x => x.DeleteTime == null && x.OrgId == org.Id && x.AmountRemaining > 0).List().ToList();
+			_ApplyCreditsToInvoice(s, org, itemized,credits);
+
 			return itemized;
 		}
 
+		[Obsolete("For testing only")]
+		public static void _ApplyCreditsToInvoice(ISession s, OrganizationModel org, List<Itemized> itemized,List<PaymentCredit> credits) {
+			//Apply credits
+
+			var total = itemized.Sum(x => x.Total());
+
+			if (credits.Any(x=>x.AmountRemaining>0) && total > 0) {
+				var adjTotal = total;
+				var totalCreditsApplied = 0m;
+				foreach (var c in credits) {
+					if (adjTotal > 0 && c.AmountRemaining > 0) {
+						if (c.AmountRemaining >= adjTotal) {
+							c.AmountRemaining -= adjTotal;
+							totalCreditsApplied += adjTotal;
+							s.Update(c);
+							adjTotal = 0;
+							break;
+						} else {
+							adjTotal -= c.AmountRemaining;
+							totalCreditsApplied += c.AmountRemaining;
+							c.AmountRemaining = 0;
+							s.Update(c);
+						}
+					}
+				}
+				itemized.Add(new Itemized() {
+					Name = "Credit",
+					Price = -totalCreditsApplied,
+					Quantity = 1
+				});
+			}
+		}
 
 		[Obsolete("Use ExecuteInvoice instead. Unsafe")]
 		public static async Task<PaymentResult> ChargeOrganizationAmount(ISession s, long organizationId, decimal amount, bool forceTest = false) {

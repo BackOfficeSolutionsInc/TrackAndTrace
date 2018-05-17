@@ -69,6 +69,7 @@
 ///          edit:<bool,function(settings)>(optional, false),																	///
 ///          remove:<bool,function(settings)>(optional, false),																	///
 ///          reorder:<bool,function(settings)>(optional, false),																///
+///          rowNum:<bool,function(settings)>(optional, false),																	///
 ///          name:<bool,function(settings)>(optional, null),																	///
 ///		 },...,																													///
 ///			...function(row,i) ,...																								///
@@ -220,13 +221,13 @@ var DataTable = function (settings) {
 		var oldSuccess =  settings.clickAdd.success;
 		settings._.onAddOptions.success = function(d){
 			if (oldSuccess){
-				oldSuccss(d);
+				oldSuccess(d);
 			}
 			addRow(d.Object);
 		};
 
 		settings.clickAdd = function (settings) {
-			debugger;
+			//debugger;
 			showModal(settings._.onAddOptions);
 		}
 

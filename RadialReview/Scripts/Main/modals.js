@@ -1,24 +1,24 @@
 ﻿/*
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///  obj ={																																		///
-///	  title:,																																///
-///	  icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}					///
+///	  title:,																																	///
+///	  icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}						///
 ///	  fields: [{																																///
-///		  name: (optional)																													///
-///		  text: (optional)																													///
+///		  name: (optional)																														///
+///		  text: (optional)																														///
 ///		  type: <text,textarea,checkbox,radio,span,div,header,h1,h2,h3,h4,h5,h6,number,date,datetime,time,file,yesno,label,select>(optional)	///
 ///				   (if type=radio or select) options:[{text,value},...]																			///
-///		  value: (optional)																													///
-///		  placeholder: (optional)																											///
-///		  classes: (optional)																												///
-///	  },...],																																///
+///		  value: (optional)																														///
+///		  placeholder: (optional)																												///
+///		  classes: (optional)																													///
+///	  },...],																																	///
 ///		 contents: jquery object (optional, overrides fields)																					///
-///	  pushUrl:"",																															///
-///	  success:function(formData,contentType),																								///
+///	  pushUrl:"",																																///
+///	  success:function(formData,contentType),																									///
 ///	  complete:function,																														///
-///	  cancel:function,																														///  
-///	  reformat: function,																													///
-///	  validation: function(data),																											///
+///	  cancel:function,																															///  
+///	  reformat: function,																														///
+///	  validation: function(data),																												///
 ///	  noCancel: bool																															///
 ///  }																																			///
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
