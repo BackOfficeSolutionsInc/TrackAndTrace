@@ -251,17 +251,21 @@ namespace RadialReview.Controllers {
 					var org = s.Get<OrganizationModel>(model.OrgId);
 
 					if (String.IsNullOrWhiteSpace(Request.Form["TaskId"])) {
+						DateTime? originalScheduledFire = null;
 						if (!String.IsNullOrWhiteSpace(Request.Form["OldTaskId"])) {
 							var delete = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.OriginalTaskId == Request["OldTaskId"].ToLong()).List().ToList();
+							var maxDate = DateTime.MinValue;
 							foreach (var oldTask in delete) {
 								oldTask.DeleteTime = DateTime.UtcNow;
 								s.Update(oldTask);
+								maxDate = Math2.Max(oldTask.Fire, maxDate);
 							}
+							originalScheduledFire = maxDate;
 						}
-
 
 						var fireTime = DateTime.MaxValue;
 						var setDate = false;
+
 
 						if (model.FreeUntil.Date > DateTime.UtcNow.Date) {
 							fireTime = Math2.Min(fireTime, model.FreeUntil.Date);
@@ -275,6 +279,11 @@ namespace RadialReview.Controllers {
 
 						if (model.ReviewFreeUntil != null) {
 							fireTime = Math2.Min(fireTime, model.ReviewFreeUntil.Value.Date);
+							setDate = true;
+						}
+
+						if (originalScheduledFire != null) {
+							fireTime = Math2.Min(fireTime, originalScheduledFire.Value);
 							setDate = true;
 						}
 
