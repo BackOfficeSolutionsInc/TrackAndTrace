@@ -296,6 +296,8 @@ var DataTable = function (settings) {
 		}
 
 		if (anyHeaders) {
+			settings._.generatedHeaders = [];
+
 			var headerRow = $(settings.table.rows.element).clone();
 			try {
 				$(headerRow).attr("id", resolve(settings.table.rows.id, null, settings));
@@ -317,13 +319,15 @@ var DataTable = function (settings) {
 						}
 						headerCell.text(headers[c]);
 					}
+					settings._.generatedHeaders.push(headerCell);
 					$(headerRow).append(headerCell);
 				}
 			}
 			//rowIndexShift -= 1;
 			var head = $("<thead/>");
-			head.append(headerRow);
+			head.append(headerRow);			
 			$(table).append(head);
+
 		} else {
 			console.warn("No headers. To add a header, supply a 'name' to the cell.");
 		}
@@ -482,7 +486,7 @@ var DataTable = function (settings) {
 
 				var q = generateCell(settings, row, cellSelector, i);
 
-				results.push(cell);
+				results.push(q.dom);
 				i++;
 			}
 		}
@@ -530,20 +534,22 @@ var DataTable = function (settings) {
 		return self;
 	}
 
-	var refreshHeaders = function (settings) {
+	var refreshColumns = function (settings) {
 		settings.data = settings.data || [];
 		settings.cells = settings.cells || [];
+
 		for (var c in settings.cells) {
 			if (arrayHasOwnIndex(settings.cells, c)) {
-				var cell = settings.cells[c]
+				var cell = settings.cells[c];
 
+				//Hide empty columns
 				if (cell.hideIfEmpty) {
-					var allEmpty = true;
+					var allEmpty = true;					
 					var i = 0;
 					for (var d in settings.data) {
 						if (arrayHasOwnIndex(settings.data, d)) {
 							var data = settings.data[d];
-							var html = generateCell(settings, data, cell,i).;
+							var html = generateCell(settings, data, cell,i).html;
 							if (!(html == null || typeof (html) === "undefined")) {
 								allEmpty = false;
 								break;
@@ -553,6 +559,9 @@ var DataTable = function (settings) {
 					}
 					if (allEmpty) {
 						console.log("column empty!");
+						settings._.generatedHeaders[c].hide();
+					} else {
+						settings._.generatedHeaders[c].show();
 					}
 				}
 			}
@@ -616,7 +625,7 @@ var DataTable = function (settings) {
 			$(nodata).hide();
 		}
 		refreshRowNum();
-		refreshHeaders(settings);
+		refreshColumns(settings);
 
 		settings._.olddata = JSON.parse(JSON.stringify(settings.data));
 	}
