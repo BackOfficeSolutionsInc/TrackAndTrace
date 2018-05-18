@@ -59,6 +59,7 @@ namespace RadialReview.Controllers {
 			};
 
 			ViewBag.ViewAccountabilityChart = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanView(ResourceType.AccountabilityHierarchy, GetUser().Organization.AccountabilityChartId));
+			ViewBag.ViewPeopleAnalyzer = GetUser().Organization.Settings.EnablePeople;
 
 
 			var model = new L10MeetingVM() {

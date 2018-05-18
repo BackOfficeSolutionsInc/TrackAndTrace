@@ -608,6 +608,32 @@ $(window).on("footer-resize", function () {
 });
 
 
+function sharePeopleAnalyzer() {
+
+	showModal({
+		title: "Share your teams' people analyzers with this meeting? <small title='Share the results of any people analyzer you&#39;ve issued with this meeting.' color='gray'>[?]</small>",
+		icon: "info",
+		fields: [{
+			type: "yesno",
+			name: "share"
+		}],
+		success: function (data) {
+			var share = data.share;
+			$.ajax({
+				url: "/L10/SharePeopleAnalyzer/" + window.recurrenceId + "?share=" + data.share,
+				success: function () {
+					if (share)
+						showAlert("Shared successfully!");
+					else
+						showAlert("Setting updated successfully!");
+				}
+			});
+		}
+	});
+
+}
+
+
 var currentPageType = "";
 $(window).on("page-segue", function () {
 	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting");

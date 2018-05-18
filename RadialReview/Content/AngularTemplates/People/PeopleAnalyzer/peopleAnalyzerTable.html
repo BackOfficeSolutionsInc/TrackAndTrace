@@ -27,10 +27,10 @@
 		<tbody ng-show="model.Rows.length>0">
 			<tr ng-repeat="row in model.Rows" data-name="row_{{row.Id}}">
 				<th class="column person-column"><span>{{row.About.PrettyString}}</span></th>
-				<td class="column value-column" ng-class="{'inactive':functions.inactive(row,value)}" ng-repeat="value in model.Values"><span class="resp resp-{{functions.lookup(row,value).Answer}}">{{functions.lookup(row,value).AnswerFormatted}}</span></td>
-				<td class="column gwc-column get-column" ng-class="{'inactive':functions.inactive(row,'get')}"><span class="resp resp-{{functions.lookup(row,'get').Answer}}">{{functions.lookup(row,"get").AnswerFormatted}}</span></td>
-				<td class="column gwc-column want-column" ng-class="{'inactive':functions.inactive(row,'want')}"><span class="resp resp-{{functions.lookup(row,'want').Answer}}">{{functions.lookup(row,"want").AnswerFormatted}}</span></td>
-				<td class="column gwc-column cap-column" ng-class="{'inactive':functions.inactive(row,'cap')}"><span class="resp resp-{{functions.lookup(row,'cap').Answer}}">{{functions.lookup(row,"cap").AnswerFormatted}}</span></td>
+				<td title="{{functions.lookupWhen(row,value)}}" class="column value-column" ng-class="{'inactive':functions.inactive(row,value)}" ng-repeat="value in model.Values"><span class="resp resp-{{functions.lookup(row,value).Answer}}">{{functions.lookup(row,value).AnswerFormatted}}</span></td>
+				<td title="{{functions.lookupWhen(row,'get')}}" class="column gwc-column get-column" ng-class="{'inactive':functions.inactive(row,'get')}"><span class="resp resp-{{functions.lookup(row,'get').Answer}}">{{functions.lookup(row,"get").AnswerFormatted}}</span></td>
+				<td title="{{functions.lookupWhen(row,'want')}}" class="column gwc-column want-column" ng-class="{'inactive':functions.inactive(row,'want')}"><span class="resp resp-{{functions.lookup(row,'want').Answer}}">{{functions.lookup(row,"want").AnswerFormatted}}</span></td>
+				<td title="{{functions.lookupWhen(row,'cap')}}" class="column gwc-column cap-column" ng-class="{'inactive':functions.inactive(row,'cap')}"><span class="resp resp-{{functions.lookup(row,'cap').Answer}}">{{functions.lookup(row,"cap").AnswerFormatted}}</span></td>
 				<td class="column completion-column">
 					<div ng-if="functions.personallyOwning(row)" ng-switch="functions.isLockedIn(row)">
 						<span class="btn btn-default disabled transparen1t" ng-switch-when="true">Completed</span><!--if="functions.isLockedIn(row)"--><!--ng-if="!functions.isLockedIn(row)"-->

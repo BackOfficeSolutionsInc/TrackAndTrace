@@ -31,6 +31,11 @@
     display: none !important;
   }
 }
+.people-analyzer .rzslider {
+  left: -35px;
+  width: 100%;
+  width: calc(100% + 35px);
+}
 .people-analyzer .survey-title {
   margin-left: auto;
   margin-right: auto;
@@ -38,6 +43,7 @@
   font-weight: bold;
   text-align: center;
   color: #3E3935;
+  margin-left: 58px;
 }
 .people-analyzer .diagonal-table .diagonal-item-container {
   position: relative;

@@ -181,6 +181,25 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 		}
 
+		public static IEnumerable<AngularSurveyContainer> GetSurveyContainersIssuedBy(UserOrganizationModel caller, IForModel creatorModel, SurveyType type) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+
+					//Hacky, but probably overlimiting..
+					var createdBy = AngularUser.CreateUser(caller);
+					if (caller.ToKey() != creatorModel.ToKey())
+						throw new PermissionsException();
+					///////////////////
+
+					var containers = s.QueryOver<SurveyContainer>()
+								.Where(x => x.DeleteTime == null && x.CreatedBy == creatorModel.ToImpl() && x.SurveyType==type)
+								.List().ToList();
+
+					return containers.Select(x => new AngularSurveyContainer(x, x.DueDate < DateTime.UtcNow, createdBy));
+				}
+			}
+		}
 
 		public static IEnumerable<AngularSurveyContainer> GetSurveyContainersBy(UserOrganizationModel caller, IForModel byModel, SurveyType type) {
 			using (var s = HibernateSession.GetCurrentSession()) {

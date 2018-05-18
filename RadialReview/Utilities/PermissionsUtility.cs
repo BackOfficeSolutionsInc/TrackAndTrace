@@ -41,6 +41,7 @@ using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Utilities.CoreProcess;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Crosscutting.EventAnalyzers.Models;
+using RadialReview.Areas.People.Accessors;
 
 namespace RadialReview.Utilities {
 	//[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -498,6 +499,23 @@ namespace RadialReview.Utilities {
 				};
 			}
 		}
+
+		public PermissionsUtility ViewPeopleAnalyzer(long userId) {
+			if (IsRadialAdmin(caller))
+				return this;
+
+			try {
+				return Self(userId);
+			} catch (PermissionsException e) {
+			}
+			
+			var shareingIds = QuarterlyConversationAccessor.GetUsersWhosePeopleAnalyzersICanSee(session,this, caller.Id);
+			if (shareingIds.Contains(userId))
+				return this;
+
+			throw new PermissionsException("Cannot view this people analyzer");
+		}
+
 		//public PermissionsUtility EditAccountabilityNode(long nodeId) {
 		//	var node = session.Get<AccountabilityNode>(nodeId);
 		//	try {

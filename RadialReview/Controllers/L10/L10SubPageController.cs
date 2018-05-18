@@ -19,6 +19,8 @@ using MathNet.Numerics.Distributions;
 using RadialReview.Utilities;
 using WebGrease.Css.Extensions;
 using RadialReview.Models.UserModels;
+using RadialReview.Areas.People.Accessors;
+using RadialReview.Areas.People.Models.Survey;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -151,6 +153,18 @@ namespace RadialReview.Controllers {
 		[HttpGet]
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult StartMeeting(L10MeetingVM model, bool start) {
+			try {
+				var me = model.Recurrence.NotNull(x => x._DefaultAttendees.FirstOrDefault(y => y.User.Id == GetUser().Id));
+
+				if (me.SharePeopleAnalyzer == L10Recurrence.SharePeopleAnalyzer.Unset && GetUser().Organization.Settings.EnablePeople) {
+					var issued = SurveyAccessor.GetSurveyContainersIssuedBy(GetUser(), GetUser(), SurveyType.QuarterlyConversation);
+					if (issued.Any()) {
+						ViewBag.AskToSharePeopleAnalyzer = true;
+					}
+				}
+			} catch (Exception e) {
+			}
+
 			return PartialView("StartMeeting", model);
 		}
 

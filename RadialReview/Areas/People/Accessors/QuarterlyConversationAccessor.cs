@@ -20,6 +20,7 @@ using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.L10;
 using RadialReview.Properties;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
@@ -238,7 +239,7 @@ namespace RadialReview.Areas.People.Accessors {
 						s.Flush();
 					}
 				}
-				
+
 
 				/*qcResult = GenerateQuarterlyConversation_Unsafe(caller, caller.Organization.Id, name, populatedByAbouts, quarterRange, dueDate, sendEmails);
 					try {
@@ -260,19 +261,19 @@ namespace RadialReview.Areas.People.Accessors {
 
 		public static async Task<QuarterlyConversationGeneration> GenerateAndEmail(ISession s, PermissionsUtility perms, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool sendEmails) {
 			var qcResult = GenerateQuarterlyConversation_Unsafe(s, perms, name, byAbout, quarterRange, dueDate, sendEmails);
-			
+
 
 			if (qcResult.Errors.Any()) {
-				await HooksRegistry.Each<IQuarterlyConversationHook>(s,(ses, x) => x.QuarterlyConversationError(ses,perms.GetCaller(), QuarterlyConversationErrorType.CreationFailed, qcResult.Errors));
+				await HooksRegistry.Each<IQuarterlyConversationHook>(s, (ses, x) => x.QuarterlyConversationError(ses, perms.GetCaller(), QuarterlyConversationErrorType.CreationFailed, qcResult.Errors));
 			} else {
-				await HooksRegistry.Each<IQuarterlyConversationHook>(s,(ses, x) => x.QuarterlyConversationCreated(ses, qcResult.SurveyContainerId));
+				await HooksRegistry.Each<IQuarterlyConversationHook>(s, (ses, x) => x.QuarterlyConversationCreated(ses, qcResult.SurveyContainerId));
 				try {
 					if (sendEmails) {
 						await Emailer.SendEmails(qcResult.UnsentEmail);
-						await HooksRegistry.Each<IQuarterlyConversationHook>(s,(ses, x) => x.QuarterlyConversationEmailsSent(ses, qcResult.SurveyContainerId));
+						await HooksRegistry.Each<IQuarterlyConversationHook>(s, (ses, x) => x.QuarterlyConversationEmailsSent(ses, qcResult.SurveyContainerId));
 					}
 				} catch (Exception e) {
-					await HooksRegistry.Each<IQuarterlyConversationHook>(s,(ses, x) => x.QuarterlyConversationError(ses, perms.GetCaller(), QuarterlyConversationErrorType.EmailsFailed, new List<string>() {
+					await HooksRegistry.Each<IQuarterlyConversationHook>(s, (ses, x) => x.QuarterlyConversationError(ses, perms.GetCaller(), QuarterlyConversationErrorType.EmailsFailed, new List<string>() {
 						"Quarterly Conversation successfully created, but some email notifications failed to send."
 					}));
 				}
@@ -284,21 +285,21 @@ namespace RadialReview.Areas.People.Accessors {
 			log.Info("\tStart\tGenerateQuarterlyConversation_Unsafe- " + DateTime.UtcNow.ToJsMs());
 			//var creator = creator_userOrganizationModel;
 			var creator = perms.GetCaller();
-			
+
 			var reconstructed = byAbout.GroupBy(x => x.By.UserOrganizationId + "~" + x.About.ToViewModelKey())
 				.OrderBy(x => x.First().AboutIsThe.NotNull(y => y.Value.Order()))
 				.Select(ba => {
-							//var reconstructedRelationship = AboutType.NoRelationship;
-							//foreach (var x in ba) {
-							//	if (x.AboutIsThe.HasValue)
-							//		reconstructedRelationship = reconstructedRelationship | x.AboutIsThe.Value;
-							//}
+					//var reconstructedRelationship = AboutType.NoRelationship;
+					//foreach (var x in ba) {
+					//	if (x.AboutIsThe.HasValue)
+					//		reconstructedRelationship = reconstructedRelationship | x.AboutIsThe.Value;
+					//}
 
-							//var reconstructedAbout = SurveyUserNode.Clone(ba.First().About,true);
-							//reconstructedAbout.Relationship = reconstructedRelationship;
-							//return new ByAbout(ba.First().By.User, reconstructedAbout);
+					//var reconstructedAbout = SurveyUserNode.Clone(ba.First().About,true);
+					//reconstructedAbout.Relationship = reconstructedRelationship;
+					//return new ByAbout(ba.First().By.User, reconstructedAbout);
 
-							return new ByAbout(ba.First().By.User, ba.First().About);
+					return new ByAbout(ba.First().By.User, ba.First().About);
 				}).ToList();
 
 			foreach (var ba in reconstructed) {
@@ -375,7 +376,68 @@ namespace RadialReview.Areas.People.Accessors {
 			TransformValueAnswer["often"] = "+";
 			TransformValueAnswer["sometimes"] = "+/–";
 			TransformValueAnswer["not-often"] = "–";
+		}
 
+
+
+		public static List<long> GetUsersWhosePeopleAnalyzersICanSee(ISession s, PermissionsUtility perms, long myUserId, long? recurrenceId = null) {
+			perms.Self(myUserId);
+			var callerMeetings = L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, myUserId, onlyPersonallyAttending: true)
+											.Select(x => x.Id)
+											.ToArray();
+
+			var shareingIdsQ = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+				.Where(x => x.DeleteTime == null && x.SharePeopleAnalyzer == L10Recurrence.SharePeopleAnalyzer.Yes && x.User.Id != myUserId);
+
+			if (recurrenceId == null) {
+				shareingIdsQ = shareingIdsQ.WhereRestrictionOn(x => x.L10Recurrence.Id).IsIn(callerMeetings);
+			} else {
+				if (!callerMeetings.Contains(recurrenceId.Value)) {
+					throw new PermissionsException("Not an attendee.");
+				}
+				shareingIdsQ = shareingIdsQ.Where(x => x.L10Recurrence.Id == recurrenceId);
+			}
+
+			var shareingIds = shareingIdsQ.Select(x => x.User.Id).List<long>().Distinct().ToList();
+			return (new[] { myUserId }).Union(shareingIds).Distinct().ToList();
+		}
+
+		public static AngularPeopleAnalyzer GetVisiblePeopleAnalyzers(UserOrganizationModel caller, long userId, long? recurrenceId=null,DateRange range = null) {
+			List<long> allVisibleUsers = new List<long>();
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.Self(userId);
+					allVisibleUsers = GetUsersWhosePeopleAnalyzersICanSee(s, perms, userId, recurrenceId);
+				}
+			}
+
+			var pas = allVisibleUsers.Select(id => GetPeopleAnalyzer(caller, id, range)).ToList();
+
+			var flat = new AngularPeopleAnalyzer();
+			var rows= new List<AngularPeopleAnalyzerRow>();
+			var response= new List<AngularPeopleAnalyzerResponse>();
+			var values= new List<PeopleAnalyzerValue>();
+			var containers= new List<AngularSurveyContainer>();
+			var lockins= new List<AngularLockedIn>();
+
+			foreach (var p in pas) {
+				flat.DateRange = p.DateRange;
+				rows.AddRange(p.Rows);
+				response.AddRange(p.Responses);
+				values.AddRange(p.Values);
+				values = values.Distinct(x=>x.Key).ToList();
+				containers.AddRange(p.SurveyContainers);
+				containers = containers.Distinct(x => x.Key).ToList();
+				lockins.AddRange(p.LockedIn);
+			}
+			flat.Rows = rows.OrderBy(x => x.About.PrettyString).ToList();
+			flat.Responses = response.OrderBy(x => x.IssueDate).ToList();
+			flat.Values = values;
+			flat.SurveyContainers = containers.OrderBy(x=>x.IssueDate).ToList();
+			flat.LockedIn = lockins;
+
+			return flat;
 		}
 
 		public static AngularPeopleAnalyzer GetPeopleAnalyzer(UserOrganizationModel caller, long userId, DateRange range = null) {
@@ -393,10 +455,10 @@ namespace RadialReview.Areas.People.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					perms.Self(userId);
+					perms.ViewPeopleAnalyzer(userId);
 					var myNodes = AccountabilityAccessor.GetNodesForUser(s, perms, userId);
 #pragma warning disable CS0618 // Type or member is obsolete
-					var acNodeChildrenModels = myNodes.SelectMany(node => DeepAccessor.GetChildrenAndSelfModels(s, caller, node.Id)).ToList();
+					var acNodeChildrenModels = myNodes.SelectMany(node => DeepAccessor.GetChildrenAndSelfModels(s, caller, node.Id, allowAnyFromSameOrg:true)).ToList();
 					if (!includeSelf) {
 						acNodeChildrenModels = acNodeChildrenModels.Where(x => !myNodes.Any(y => y.Id == x.Id)).ToList();
 					}

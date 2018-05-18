@@ -104,6 +104,7 @@
     <Compile Include="Accessors\ForModelAccessor.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\HeadlineAccessor.cs" />
+    <Compile Include="Accessors\L10Accessor\L10AccessorPeopleTools.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorVideo.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorHelpers.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorAudit.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="Crosscutting\Hooks\Interfaces\IMilestoneHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IPositionHooks.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IQuarterlyConversationHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IRecurrenceSettings.cs" />
     <Compile Include="Crosscutting\Hooks\QuarterlyConversation\QuarterlyConversationCreationNotifications.cs" />
     <Compile Include="Crosscutting\Hooks\Realtime\Position\RealTime_Positions.cs" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
