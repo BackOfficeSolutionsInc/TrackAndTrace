@@ -19,6 +19,13 @@
   .people-analyzer .rz-pointer {
     display: none !important;
   }
+  .people-analyzer .survey-title {
+    margin-left: 0px !important;
+  }
+  .people-analyzer .rzslider {
+    left: 0 !important;
+    width: 100% !important;
+  }
 }
 .people-analyzer .print-all-btn {
   float: right;

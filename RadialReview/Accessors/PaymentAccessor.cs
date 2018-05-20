@@ -389,7 +389,7 @@ namespace RadialReview.Accessors {
 				//s.Auditer().GetRevisionNumberForDate(<OrganizationModel>(org.Id,);
 
 				var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(s, org.Id, rangeStart, rangeEnd).ToList();
-				var reviewEnabled = /*org.Settings.EnableReview;//*/allRevisions.Any(x => x.Object.Settings.EnableReview);
+				var qcEnabled = /*org.Settings.EnableReview;//*/allRevisions.Any(x => x.Object.Settings.EnableReview || x.Object.Settings.EnablePeople);
 				var l10Enabled = /*org.Settings.EnableL10; //*/allRevisions.Any(x => x.Object.Settings.EnableL10);
 
 				//In case clocks are off.
@@ -405,23 +405,10 @@ namespace RadialReview.Accessors {
 					itemized.Add(reviewItem);
 				}
 
-				if (reviewEnabled) {
-					var reviewItem = new Itemized() {
-						Name = "Quarterly Conversation" + durationDesc,
-						Price = plan.ReviewPricePerPerson * durationMult,
-						Quantity = calc.NumberQCUsersToChargeFor//allPeopleList.Where(x => !x.IsClient).Count()
-					};
-					if (reviewItem.Quantity != 0) {
-						itemized.Add(reviewItem);
-						if (!(plan.ReviewFreeUntil == null || !(plan.ReviewFreeUntil.Value.Date > executionCalculationDate))) {
-							//Discount it since it is free
-							itemized.Add(reviewItem.Discount());
-						}
-					}
-				}
+			
 				if (l10Enabled) {
 					var l10Item = new Itemized() {
-						Name = "L10 Meeting Software" + durationDesc,
+						Name = "Level 10 Meeting Software" + durationDesc,
 						Price = plan.L10PricePerPerson * durationMult,
 						Quantity = calc.NumberL10UsersToChargeFor,
 					};
@@ -434,6 +421,22 @@ namespace RadialReview.Accessors {
 						}
 					}
 				}
+
+				if (qcEnabled) {
+					var reviewItem = new Itemized() {
+						Name = "People Tools™" + durationDesc,
+						Price = plan.ReviewPricePerPerson * durationMult,
+						Quantity = calc.NumberQCUsersToChargeFor//allPeopleList.Where(x => !x.IsClient).Count()
+					};
+					if (reviewItem.Quantity != 0) {
+						itemized.Add(reviewItem);
+						if (!(plan.ReviewFreeUntil == null || !(plan.ReviewFreeUntil.Value.Date > executionCalculationDate))) {
+							//Discount it since it is free
+							itemized.Add(reviewItem.Discount());
+						}
+					}
+				}
+
 				if ((plan.FreeUntil.Date > executionCalculationDate)) {
 					//Discount it since it is free
 					var total = itemized.Sum(x => x.Total());
@@ -451,8 +454,8 @@ namespace RadialReview.Accessors {
 					{AccountType.SwanServices, "Demo Account (Swan Services)" },
 					{AccountType.Other, "Discount (Special Account)" },
 					{AccountType.UserGroup, "Discount (User Group)" },
-					{AccountType.Coach, "Discount (Coach)" }
-
+					{AccountType.Coach, "Discount (Coach)" },
+					{AccountType.FreeForever, "Discount (Free)" },
 				};
 
 				if (org != null && discountLookup.ContainsKey(org.AccountType) && itemized.Sum(x => x.Total()) != 0) {

@@ -1853,8 +1853,15 @@ namespace RadialReview.Utilities {
 
 			var response = session.Get<SurveyResponse>(surveyResponseId);
 
+
 			if (response == null || response.DeleteTime != null)
 				throw new PermissionsException("Response does not exist.");
+
+			var container = session.Get<SurveyContainer>(response.SurveyContainerId);
+
+			if (container.DueDate < DateTime.UtcNow)
+				throw new PermissionsException("Cannot edit: Already concluded.");
+
 
 			if (response.By.Is<UserOrganizationModel>()) {
 				if (caller.Id == response.By.ModelId)

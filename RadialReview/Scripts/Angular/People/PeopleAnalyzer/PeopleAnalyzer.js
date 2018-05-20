@@ -6,16 +6,21 @@
 		bindings: {
 			//	"surveyContainerId": "<?",
 			//	surveyId: "<?",
-			"recurrence": "<?"
+			"recurrence": "<?",
+			"showQcActions":"<?"
 		},
 		controller: ["$scope", "$element", "$scope", "$http", 'radial', "$log", "$timeout", "$window", function ($scope, $element, $attrs, $http, radial, $log, $timeout, $window) {
 			var ctrl = this;
 			$scope.functions = {};
 			//$log.log("survComp:", $scope);
-			var query="";
+			var query = "";
 			if (this.recurrence) {
 				query = "?recurrenceId=" + this.recurrence;
 			}
+
+
+			$scope.showQuarterlyConversationActions=this.showQcActions;
+
 
 			var r = radial($scope, {
 				hubName: "PeopleHub",

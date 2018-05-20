@@ -17,7 +17,7 @@
 	}
 }
 <div ng-app="people" class="people quarterly-conversation ng-cloak">
-	<people-analyzer id="pa" class="hidden" recurrence="@((long?)(ViewBag.RecurrenceId??null))"></people-analyzer>
+	<people-analyzer id="pa" class="hidden" recurrence="@((long?)(ViewBag.RecurrenceId??null))" show-qc-actions="@(ViewBag.RecurrenceId==null?"true":"false")"></people-analyzer>
 </div>
 
 @using (Html.BeginStyles()) {

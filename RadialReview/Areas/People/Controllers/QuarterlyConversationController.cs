@@ -110,6 +110,7 @@ namespace RadialReview.Areas.People.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Questions(long id) {
+			ViewBag.Overdue = SurveyAccessor.IsLocked(GetUser(),id);
 			return View(id);
 		}
 

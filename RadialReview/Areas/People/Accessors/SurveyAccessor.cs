@@ -121,8 +121,22 @@ namespace RadialReview.Areas.People.Accessors {
 							o.Ordering = -1;
 					}
 
+					if (container.DueDate.HasValue && container.DueDate.Value < DateTime.UtcNow)
+						output.Locked = true;
+
 					return output;
 
+				}
+			}
+		}
+
+		public static bool IsLocked(UserOrganizationModel caller, long surveyContainerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.ViewSurveyContainer(surveyContainerId);
+					var container = s.Get<SurveyContainer>(surveyContainerId);
+					return container.DueDate < DateTime.UtcNow;
 				}
 			}
 		}
@@ -154,9 +168,9 @@ namespace RadialReview.Areas.People.Accessors {
 
 					var any = containerIds.Any();
 
-					containerIds = containerIds.Distinct().Where(x => 
+					containerIds = containerIds.Distinct().Where(x =>
 						//Permissions filter here
-						perms.IsPermitted(p=>p.ViewSurveyResultsAbout(x,aboutModel))
+						perms.IsPermitted(p => p.ViewSurveyResultsAbout(x, aboutModel))
 					).ToArray();
 
 					//Throw exception instead of presenting empty..
@@ -176,7 +190,7 @@ namespace RadialReview.Areas.People.Accessors {
 
 					var creatorLookup = TinyUserAccessor.GetUsers_Unsafe(s, issuedBy, false).ToDefaultDictionary(x => x.ToKey(), x => AngularUser.CreateUser(x), null);
 
-					return containers.Select(x => new AngularSurveyContainer(x, x.DueDate < DateTime.UtcNow, creatorLookup[x.CreatedBy.ToKey()]));					
+					return containers.Select(x => new AngularSurveyContainer(x, x.DueDate < DateTime.UtcNow, creatorLookup[x.CreatedBy.ToKey()]));
 				}
 			}
 		}
@@ -193,7 +207,7 @@ namespace RadialReview.Areas.People.Accessors {
 					///////////////////
 
 					var containers = s.QueryOver<SurveyContainer>()
-								.Where(x => x.DeleteTime == null && x.CreatedBy == creatorModel.ToImpl() && x.SurveyType==type)
+								.Where(x => x.DeleteTime == null && x.CreatedBy == creatorModel.ToImpl() && x.SurveyType == type)
 								.List().ToList();
 
 					return containers.Select(x => new AngularSurveyContainer(x, x.DueDate < DateTime.UtcNow, createdBy));

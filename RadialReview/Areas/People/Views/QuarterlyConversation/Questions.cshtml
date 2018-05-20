@@ -5,6 +5,9 @@
 	ViewBag.Subheading = "";
 
 	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+
+	var overdue = ViewBag.Overdue == true;
+
 }
 
 @section top{
@@ -14,18 +17,32 @@
 }
 
 
-<div ng-app="people" class="people quarterly-conversation ng-cloak">
-	<div class="gray instructions">Your answers are saved automatically.</div>
-	<survey-container survey-container-id="@Model"></survey-container>
-	<div class="row">
-		<div class="col-md-9 alignCenter">
-			@using (Html.BeginForm("lockin", "QuarterlyConversation")) {
-				<input type="hidden" name="id" value="@Model" />
-				<button class="btn btn-primary" type="submit" style="margin-top:-40px">Lock in my answers</button>
-			}
-
+<div ng-app="people" class="people quarterly-conversation ng-cloak @(overdue?"disabled-qc":"")">
+	@if (overdue) {
+		<div class="row">
+			<div class="col-md-9 alignCenter">
+				<br />
+				<div class="end-info"><span class="glyphicon glyphicon-exclamation-sign"></span> &nbsp;This assessment has concluded.</div>
+			</div>
 		</div>
-	</div>
+	} else {
+		<div class="gray instructions">Your answers are saved automatically.</div>
+	}
+	<survey-container survey-container-id="@Model"></survey-container>
+
+	@if (!overdue) {
+		<div class="row">
+			<div class="col-md-9 alignCenter">
+				@using (Html.BeginForm("lockin", "QuarterlyConversation")) {
+					<input type="hidden" name="id" value="@Model" />
+					<button class="btn btn-primary" type="submit" style="margin-top:-40px"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+					<div class="clearfix"></div>
+					<div class="end-info"><span class="glyphicon glyphicon-thumbs-up"></span> &nbsp;FYI... You can come back and edit this information right up until the due date.</div>
+				}
+
+			</div>
+		</div>
+	}
 </div>
 
 
@@ -35,6 +52,17 @@
 	@Styles.Render("~/styles/people")
 
 	<style>
+		.end-info {
+			border: 1px solid #cccccc;
+			background-color: #e2e2e2;
+			padding: 10px 20px;
+			border-radius: 5px;
+			display: inline-block;
+			clear: both;
+			color: gray;
+			font-style: italic;
+		}
+
 		.instructions {
 			margin-top: -30px;
 			font-style: italic;
