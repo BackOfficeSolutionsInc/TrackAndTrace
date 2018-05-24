@@ -610,7 +610,7 @@ function updateIssueAwaitingSolve(issueRecurId, status) {
 function updateModedIssueSolve(issueRecurId, status) {
 	var row = $(".issue-row[data-recurrence_issue='" + issueRecurId + "']");
 	row.attr("data-markedforclose", status);
-	row.attr("data-checked", status);
+	//row.attr("data-checked", status);
 	console.log("checked:" + issueRecurId);
 	//undoStack.execute(new CheckOffIssue(this, status));
 }
