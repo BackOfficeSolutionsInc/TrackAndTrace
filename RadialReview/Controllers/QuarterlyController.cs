@@ -35,6 +35,7 @@ namespace RadialReview.Controllers {
 			public bool vto { get; set; }
 			public bool l10 { get; set; }
 			public bool acc { get; set; }
+			public bool pa { get; set; }
 		}
 
 
@@ -56,7 +57,8 @@ namespace RadialReview.Controllers {
 				model["l10"].ToBooleanJS(),
 				model["acc"].ToBooleanJS(),
 				model["print"].ToBooleanJS(),
-				model["quarterly"].ToBooleanJS()
+				model["quarterly"].ToBooleanJS(),
+				model["pa"].ToBooleanJS()
 
 			// root:root
 			);
