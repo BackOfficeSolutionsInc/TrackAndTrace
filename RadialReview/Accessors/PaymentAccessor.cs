@@ -37,414 +37,414 @@ using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
-	public class PaymentAccessor : BaseAccessor {
-		public PaymentPlanModel BasicPaymentPlan() {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					PaymentPlanModel basicPlan = null;
-					try {
-						basicPlan = s.QueryOver<PaymentPlanModel>().Where(x => x.IsDefault).SingleOrDefault();
-					} catch (Exception e) {
-						log.Error(e);
-					}
-					if (basicPlan == null) {
-						basicPlan = new PaymentPlanModel() {
-							Description = "Employee count model",
-							IsDefault = true,
-							PlanCreated = DateTime.UtcNow
-						};
-						s.Save(basicPlan);
-						tx.Commit();
-						s.Flush();
-					}
-					return basicPlan;
-				}
-			}
-		}
+    public class PaymentAccessor : BaseAccessor {
+        public PaymentPlanModel BasicPaymentPlan() {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PaymentPlanModel basicPlan = null;
+                    try {
+                        basicPlan = s.QueryOver<PaymentPlanModel>().Where(x => x.IsDefault).SingleOrDefault();
+                    } catch (Exception e) {
+                        log.Error(e);
+                    }
+                    if (basicPlan == null) {
+                        basicPlan = new PaymentPlanModel() {
+                            Description = "Employee count model",
+                            IsDefault = true,
+                            PlanCreated = DateTime.UtcNow
+                        };
+                        s.Save(basicPlan);
+                        tx.Commit();
+                        s.Flush();
+                    }
+                    return basicPlan;
+                }
+            }
+        }
 
-		[Obsolete("unused.", true)]
-		public static async Task<InvoiceModel> SendInvoice(string email, long organizationId, long taskId, DateTime executeTime, bool forceUseTest = false, DateTime? calculateTime = null) {
-			//PaymentResult result = null;
-			InvoiceModel invoice = null;
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var org = s.Get<OrganizationModel>(organizationId);
+        [Obsolete("unused.", true)]
+        public static async Task<InvoiceModel> SendInvoice(string email, long organizationId, long taskId, DateTime executeTime, bool forceUseTest = false, DateTime? calculateTime = null) {
+            //PaymentResult result = null;
+            InvoiceModel invoice = null;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var org = s.Get<OrganizationModel>(organizationId);
 
-					if (org == null)
-						throw new NullReferenceException("Organization does not exist");
+                    if (org == null)
+                        throw new NullReferenceException("Organization does not exist");
 
-					if (org.DeleteTime != null)
-						throw new FallthroughException("Organization was deleted.");
+                    if (org.DeleteTime != null)
+                        throw new FallthroughException("Organization was deleted.");
 
-					var plan = org.PaymentPlan;
+                    var plan = org.PaymentPlan;
 
-					if (plan.Task == null)
-						throw new PermissionsException("Task was null.");
-					if (plan.Task.OriginalTaskId == 0)
-						throw new PermissionsException("PaymentPlan OriginalTaskId was 0.");
+                    if (plan.Task == null)
+                        throw new PermissionsException("Task was null.");
+                    if (plan.Task.OriginalTaskId == 0)
+                        throw new PermissionsException("PaymentPlan OriginalTaskId was 0.");
 
-					var task = s.Get<ScheduledTask>(taskId);
+                    var task = s.Get<ScheduledTask>(taskId);
 
-					if (task.OriginalTaskId == 0)
-						throw new PermissionsException("ScheduledTask OriginalTaskId was 0.");
-					if (plan.Task.OriginalTaskId != task.OriginalTaskId)
-						throw new PermissionsException("ScheduledTask and PaymentPlan do not have the same task.");
+                    if (task.OriginalTaskId == 0)
+                        throw new PermissionsException("ScheduledTask OriginalTaskId was 0.");
+                    if (plan.Task.OriginalTaskId != task.OriginalTaskId)
+                        throw new PermissionsException("ScheduledTask and PaymentPlan do not have the same task.");
 
-					if (task.Executed != null)
-						throw new PermissionsException("Task was already executed.");
+                    if (task.Executed != null)
+                        throw new PermissionsException("Task was already executed.");
 
-					//executeTime = executeTime;
-					calculateTime = calculateTime ?? DateTime.UtcNow;
-					try {
-						var itemized = CalculateCharge(s, org, plan, calculateTime.Value);
-						invoice = await CreateInvoice(s, org, plan, executeTime, itemized);
-					} finally {
+                    //executeTime = executeTime;
+                    calculateTime = calculateTime ?? DateTime.UtcNow;
+                    try {
+                        var itemized = CalculateCharge(s, org, plan, calculateTime.Value);
+                        invoice = await CreateInvoice(s, org, plan, executeTime, itemized);
+                    } finally {
 
-						tx.Commit();
-						s.Flush();
-					}
-				}
-			}
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            }
 
 
 #pragma warning disable CS0618 // Type or member is obsolete
-			await EmailInvoice(email, invoice, executeTime);
+            await EmailInvoice(email, invoice, executeTime);
 #pragma warning restore CS0618 // Type or member is obsolete
 
-			return invoice;
-		}
+            return invoice;
+        }
 
-		[Obsolete("Unsafe")]
-		public static async Task<bool> EmailInvoice(string emailAddress, InvoiceModel invoice, DateTime chargeTime) {
-			var ProductName = Config.ProductName(invoice.Organization);
-			var SupportEmail = ProductStrings.SupportEmail;
-			var OrgName = invoice.Organization.GetName();
-			var Charged = invoice.AmountDue;
-			//var CardLast4 = result.card_number ?? "NA";
-			//var TransactionId = result.id ?? "NA";
-			var ChargeTime = chargeTime;
-			var ServiceThroughDate = invoice.ServiceEnd.ToString("yyyy-MM-dd");
-			var Address = ProductStrings.Address;
+        [Obsolete("Unsafe")]
+        public static async Task<bool> EmailInvoice(string emailAddress, InvoiceModel invoice, DateTime chargeTime) {
+            var ProductName = Config.ProductName(invoice.Organization);
+            var SupportEmail = ProductStrings.SupportEmail;
+            var OrgName = invoice.Organization.GetName();
+            var Charged = invoice.AmountDue;
+            //var CardLast4 = result.card_number ?? "NA";
+            //var TransactionId = result.id ?? "NA";
+            var ChargeTime = chargeTime;
+            var ServiceThroughDate = invoice.ServiceEnd.ToString("yyyy-MM-dd");
+            var Address = ProductStrings.Address;
 
-			var localChargeTime = invoice.Organization.ConvertFromUTC(ChargeTime);
-			var lctStr = localChargeTime.ToString("dd MMM yyyy hh:mmtt") + " " + invoice.Organization.GetTimeZoneId(localChargeTime);
+            var localChargeTime = invoice.Organization.ConvertFromUTC(ChargeTime);
+            var lctStr = localChargeTime.ToString("dd MMM yyyy hh:mmtt") + " " + invoice.Organization.GetTimeZoneId(localChargeTime);
 
-			var email = Mail.Bcc(EmailTypes.Receipt, ProductStrings.PaymentReceiptEmail);
-			if (emailAddress != null) {
-				email = email.AddBcc(emailAddress);
-			}
-			var toSend = email.SubjectPlainText("[" + ProductName + "] Invoice for " + invoice.Organization.GetName())
-				//[ProductName, SupportEmail, OrgName, Charged, CardLast4, TransactionId, ChargeTime, ServiceThroughDate, Address]
-				.Body(EmailStrings.PaymentReceipt_Body, ProductName, SupportEmail, OrgName, String.Format("{0:C}", Charged), "", "", lctStr, ServiceThroughDate, Address);
-			await Emailer.SendEmail(toSend);
-			return true;
-		}
-		public static async Task<PaymentResult> ChargeOrganization(long organizationId, long taskId, bool forceUseTest = false, bool sendReceipt = true, DateTime? executeTime = null) {
+            var email = Mail.Bcc(EmailTypes.Receipt, ProductStrings.PaymentReceiptEmail);
+            if (emailAddress != null) {
+                email = email.AddBcc(emailAddress);
+            }
+            var toSend = email.SubjectPlainText("[" + ProductName + "] Invoice for " + invoice.Organization.GetName())
+                //[ProductName, SupportEmail, OrgName, Charged, CardLast4, TransactionId, ChargeTime, ServiceThroughDate, Address]
+                .Body(EmailStrings.PaymentReceipt_Body, ProductName, SupportEmail, OrgName, String.Format("{0:C}", Charged), "", "", lctStr, ServiceThroughDate, Address);
+            await Emailer.SendEmail(toSend);
+            return true;
+        }
+        public static async Task<PaymentResult> ChargeOrganization(long organizationId, long taskId, bool forceUseTest = false, bool sendReceipt = true, DateTime? executeTime = null) {
 
-			PaymentResult result = null;
-			ChargeResult chargeResult = null;
-			InvoiceModel invoice = null;
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var org = s.Get<OrganizationModel>(organizationId);
+            PaymentResult result = null;
+            ChargeResult chargeResult = null;
+            InvoiceModel invoice = null;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var org = s.Get<OrganizationModel>(organizationId);
 
-					if (org == null)
-						throw new NullReferenceException("Organization does not exist");
+                    if (org == null)
+                        throw new NullReferenceException("Organization does not exist");
 
-					if (org.DeleteTime != null)
-						throw new FallthroughException("Organization was deleted.");
+                    if (org.DeleteTime != null)
+                        throw new FallthroughException("Organization was deleted.");
 
-					var plan = org.PaymentPlan;
+                    var plan = org.PaymentPlan;
 
-					if (plan.Task == null)
-						throw new PermissionsException("Task was null.");
-					if (plan.Task.OriginalTaskId == 0)
-						throw new PermissionsException("PaymentPlan OriginalTaskId was 0.");
+                    if (plan.Task == null)
+                        throw new PermissionsException("Task was null.");
+                    if (plan.Task.OriginalTaskId == 0)
+                        throw new PermissionsException("PaymentPlan OriginalTaskId was 0.");
 
-					var task = s.Get<ScheduledTask>(taskId);
+                    var task = s.Get<ScheduledTask>(taskId);
 
-					if (task.Executed != null)
-						throw new PermissionsException("Task was already executed.");
-					if (task.DeleteTime != null)
-						throw new PermissionsException("Task was deleted.");
+                    if (task.Executed != null)
+                        throw new PermissionsException("Task was already executed.");
+                    if (task.DeleteTime != null)
+                        throw new PermissionsException("Task was deleted.");
 
-					if (task.OriginalTaskId == 0)
-						throw new PermissionsException("ScheduledTask OriginalTaskId was 0.");
-					if (plan.Task.OriginalTaskId != task.OriginalTaskId)
-						throw new PermissionsException("ScheduledTask and PaymentPlan do not have the same task.");
-					if (task.Started == null)
-						throw new PermissionsException("Task was not started.");
+                    if (task.OriginalTaskId == 0)
+                        throw new PermissionsException("ScheduledTask OriginalTaskId was 0.");
+                    if (plan.Task.OriginalTaskId != task.OriginalTaskId)
+                        throw new PermissionsException("ScheduledTask and PaymentPlan do not have the same task.");
+                    if (task.Started == null)
+                        throw new PermissionsException("Task was not started.");
 
 
-					executeTime = executeTime ?? DateTime.UtcNow.Date;
-					try {
-						chargeResult = await ChargeOrganization_Unsafe(s, org, plan, executeTime.Value, forceUseTest, true);
-						result = chargeResult.Result;
-					} finally {
-						tx.Commit();
-						s.Flush();
-					}
-				}
-			}
-			if (sendReceipt) {
+                    executeTime = executeTime ?? DateTime.UtcNow.Date;
+                    try {
+                        chargeResult = await ChargeOrganization_Unsafe(s, org, plan, executeTime.Value, forceUseTest, true);
+                        result = chargeResult.Result;
+                    } finally {
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            }
+            if (sendReceipt) {
 #pragma warning disable CS0618 // Type or member is obsolete
-				await SendReceipt(result, chargeResult.Invoice);
+                await SendReceipt(result, chargeResult.Invoice);
 #pragma warning restore CS0618 // Type or member is obsolete
-			}
-			return result;
+            }
+            return result;
 
-		}
+        }
 
-		public class ChargeResult {
-			public InvoiceModel Invoice { get; set; }
-			public PaymentResult Result { get; set; }
-		}
+        public class ChargeResult {
+            public InvoiceModel Invoice { get; set; }
+            public PaymentResult Result { get; set; }
+        }
 
-		public static async Task<ChargeResult> ChargeOrganization_Unsafe(ISession s, OrganizationModel org, PaymentPlanModel plan, DateTime executeTime, bool forceUseTest, bool firstAttempt) {
-			try {
-				var o = new ChargeResult();
-				var itemized = CalculateCharge(s, org, plan, executeTime);
-				o.Invoice = await CreateInvoice(s, org, plan, executeTime, itemized);
+        public static async Task<ChargeResult> ChargeOrganization_Unsafe(ISession s, OrganizationModel org, PaymentPlanModel plan, DateTime executeTime, bool forceUseTest, bool firstAttempt) {
+            try {
+                var o = new ChargeResult();
+                var itemized = CalculateCharge(s, org, plan, executeTime);
+                o.Invoice = await CreateInvoice(s, org, plan, executeTime, itemized);
 #pragma warning disable CS0618 // Type or member is obsolete
-				o.Result = await ExecuteInvoice(s, o.Invoice, forceUseTest);
+                o.Result = await ExecuteInvoice(s, o.Invoice, forceUseTest);
 #pragma warning restore CS0618 // Type or member is obsolete
-				return o;
-			} catch (PaymentException e) {
-				await HooksRegistry.Each<IPaymentHook>((ses, x) => x.PaymentFailedCaptured(ses, org.Id, executeTime, e, firstAttempt));
-				throw;
-			} catch (Exception e) {
-				if (!(e is FallthroughException))
-					await HooksRegistry.Each<IPaymentHook>((ses, x) => x.PaymentFailedUncaptured(ses, org.Id, executeTime, e.Message, firstAttempt));
-				throw;
-			}
-		}
+                return o;
+            } catch (PaymentException e) {
+                await HooksRegistry.Each<IPaymentHook>((ses, x) => x.PaymentFailedCaptured(ses, org.Id, executeTime, e, firstAttempt));
+                throw;
+            } catch (Exception e) {
+                if (!(e is FallthroughException))
+                    await HooksRegistry.Each<IPaymentHook>((ses, x) => x.PaymentFailedUncaptured(ses, org.Id, executeTime, e.Message, firstAttempt));
+                throw;
+            }
+        }
 
-		public static async Task<InvoiceModel> CreateInvoice(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime, IEnumerable<Itemized> items) {
-			var invoice = new InvoiceModel() {
-				Organization = org,
-				InvoiceDueDate = executeTime.Add(TimespanExtensions.OneMonth()).Date
-			};
+        public static async Task<InvoiceModel> CreateInvoice(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime, IEnumerable<Itemized> items) {
+            var invoice = new InvoiceModel() {
+                Organization = org,
+                InvoiceDueDate = executeTime.Add(TimespanExtensions.OneMonth()).Date
+            };
 
-			if (NHibernateUtil.GetClass(paymentPlan) == typeof(PaymentPlan_Monthly)) {
-				invoice.ServiceStart = executeTime;
-				invoice.ServiceEnd = executeTime.Add(TimespanExtensions.OneMonth()).Date;
-			} else {
-				throw new PermissionsException("Unhandled Payment Plan");
-			}
+            if (NHibernateUtil.GetClass(paymentPlan) == typeof(PaymentPlan_Monthly)) {
+                invoice.ServiceStart = executeTime;
+                invoice.ServiceEnd = executeTime.Add(TimespanExtensions.OneMonth()).Date;
+            } else {
+                throw new PermissionsException("Unhandled Payment Plan");
+            }
 
-			s.Save(invoice);
+            s.Save(invoice);
 
-			var invoiceItems = items.Select(x => new InvoiceItemModel() {
-				AmountDue = x.Total(),
-				Currency = Currency.USD,
-				PricePerItem = x.Price,
-				Quantity = x.Quantity,
-				Name = x.Name,
-				Description = x.Description,
-				ForInvoice = invoice,
-			}).ToList();
+            var invoiceItems = items.Select(x => new InvoiceItemModel() {
+                AmountDue = x.Total(),
+                Currency = Currency.USD,
+                PricePerItem = x.Price,
+                Quantity = x.Quantity,
+                Name = x.Name,
+                Description = x.Description,
+                ForInvoice = invoice,
+            }).ToList();
 
-			foreach (var i in invoiceItems)
-				s.Save(i);
+            foreach (var i in invoiceItems)
+                s.Save(i);
 
-			invoice.InvoiceItems = invoiceItems;
-			invoice.AmountDue = invoice.InvoiceItems.Sum(x => x.AmountDue);
-			s.Update(invoice);
+            invoice.InvoiceItems = invoiceItems;
+            invoice.AmountDue = invoice.InvoiceItems.Sum(x => x.AmountDue);
+            s.Update(invoice);
 
-			await HooksRegistry.Each<IInvoiceHook>((ses, x) => x.InvoiceCreated(s, invoice));
-
-
-			return invoice;
-		}
-
-		[Obsolete("Unsafe")]
-		public static async Task<PaymentResult> ExecuteInvoice(ISession s, InvoiceModel invoice, bool useTest = false) {
-			//invoice = s.Get<InvoiceModel>(invoice.Id);
-			if (invoice.PaidTime != null)
-				throw new FallthroughException("Invoice was already paid");
-			if (invoice.ForgivenBy != null)
-				throw new FallthroughException("Invoice was forgiven");
-			//try {
-			var result = await ChargeOrganizationAmount(s, invoice.Organization.Id, invoice.AmountDue, useTest);
-
-			invoice.TransactionId = result.id;
-			invoice.PaidTime = DateTime.UtcNow;
-			s.Update(invoice);
-
-			await HooksRegistry.Each<IInvoiceHook>((ses, x) => x.UpdateInvoice(s, invoice, new IInvoiceUpdates() { PaidStatusChanged = true }));
-			//}catch(Exception) {
-			//    throw;
-			//}
-
-			return result;
-		}
-
-		[Obsolete("Unsafe")]
-		public static async Task<bool> SendReceipt(PaymentResult result, InvoiceModel invoice) {
-			if (invoice.PaidTime != null) {
-				var ProductName = Config.ProductName(invoice.Organization);
-				var SupportEmail = ProductStrings.SupportEmail;
-				var OrgName = invoice.Organization.GetName();
-				var Charged = invoice.AmountDue;
-				var CardLast4 = result.card_number ?? "NA";
-				var TransactionId = result.id ?? "NA";
-				var ChargeTime = invoice.PaidTime;
-				var ServiceThroughDate = invoice.ServiceEnd.ToString("yyyy-MM-dd");
-				var Address = ProductStrings.Address;
-
-				var localChargeTime = invoice.Organization.ConvertFromUTC(ChargeTime.Value);
-				var lctStr = localChargeTime.ToString("dd MMM yyyy hh:mmtt") + " " + invoice.Organization.GetTimeZoneId(localChargeTime);
-
-				var email = Mail.Bcc(EmailTypes.Receipt, ProductStrings.PaymentReceiptEmail);
-				if (result.email != null) {
-					email = email.AddBcc(result.email);
-				}
-				var toSend = email.SubjectPlainText("[" + ProductName + "] Payment Receipt for " + invoice.Organization.GetName())
-					.Body(EmailStrings.PaymentReceipt_Body, ProductName, SupportEmail, OrgName, String.Format("{0:C}", Charged), CardLast4, TransactionId, lctStr, ServiceThroughDate, Address);
-				await Emailer.SendEmail(toSend);
-				return true;
-			}
-			return false;
-		}
+            await HooksRegistry.Each<IInvoiceHook>((ses, x) => x.InvoiceCreated(s, invoice));
 
 
-		public class UserCalculator {
-			public class UQ {
-				public long UserOrgId { get; set; }
-				public bool? IsRadialAdmin { get; set; }
-				public bool IsClient { get; set; }
-				public String UserId { get; set; }
-				public bool IsRegistered { get; set; }
-				public bool EvalOnly { get; set; }
-			}
+            return invoice;
+        }
 
-			public IEnumerable<UQ> AllPeopleList { get; protected set; }
-			public PaymentPlan_Monthly Plan { get; protected set; }
+        [Obsolete("Unsafe")]
+        public static async Task<PaymentResult> ExecuteInvoice(ISession s, InvoiceModel invoice, bool useTest = false) {
+            //invoice = s.Get<InvoiceModel>(invoice.Id);
+            if (invoice.PaidTime != null)
+                throw new FallthroughException("Invoice was already paid");
+            if (invoice.ForgivenBy != null)
+                throw new FallthroughException("Invoice was forgiven");
+            //try {
+            var result = await ChargeOrganizationAmount(s, invoice.Organization.Id, invoice.AmountDue, useTest);
 
-			public int NumberQCUsers { get { return AllPeopleList.Where(x => !x.IsClient).Count(); } }
-			public int NumberTotalUsers { get { return AllPeopleList.Count(); } }
+            invoice.TransactionId = result.id;
+            invoice.PaidTime = DateTime.UtcNow;
+            s.Update(invoice);
 
-			public int NumberQCUsersToChargeFor { get { return NumberQCUsers; } }
-			public int NumberL10UsersToChargeFor { get { return Math.Max(0, NumberL10Users - Plan.FirstN_Users_Free); } }
+            await HooksRegistry.Each<IInvoiceHook>((ses, x) => x.UpdateInvoice(s, invoice, new IInvoiceUpdates() { PaidStatusChanged = true }));
+            //}catch(Exception) {
+            //    throw;
+            //}
 
-			public int NumberL10Users {
-				get {
-					var l10Users = AllPeopleList.Where(x => !x.EvalOnly);
-					var l10UserCount = l10Users.Count();
-					return l10UserCount;
-				}
-			}
+            return result;
+        }
 
-			public UserCalculator(ISession s, long orgId, PaymentPlanModel planModel, DateRange range) {
-				if (NHibernateUtil.GetClass(planModel) != typeof(PaymentPlan_Monthly)) {
-					throw new PermissionsException("Unhandled Payment Plan");
-				}
+        [Obsolete("Unsafe")]
+        public static async Task<bool> SendReceipt(PaymentResult result, InvoiceModel invoice) {
+            if (invoice.PaidTime != null) {
+                var ProductName = Config.ProductName(invoice.Organization);
+                var SupportEmail = ProductStrings.SupportEmail;
+                var OrgName = invoice.Organization.GetName();
+                var Charged = invoice.AmountDue;
+                var CardLast4 = result.card_number ?? "NA";
+                var TransactionId = result.id ?? "NA";
+                var ChargeTime = invoice.PaidTime;
+                var ServiceThroughDate = invoice.ServiceEnd.ToString("yyyy-MM-dd");
+                var Address = ProductStrings.Address;
 
-				Plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(planModel);
+                var localChargeTime = invoice.Organization.ConvertFromUTC(ChargeTime.Value);
+                var lctStr = localChargeTime.ToString("dd MMM yyyy hh:mmtt") + " " + invoice.Organization.GetTimeZoneId(localChargeTime);
 
-				if (Plan.OrgId != orgId)
-					throw new Exception("Org Id do not match");
+                var email = Mail.Bcc(EmailTypes.Receipt, ProductStrings.PaymentReceiptEmail);
+                if (result.email != null) {
+                    email = email.AddBcc(result.email);
+                }
+                var toSend = email.SubjectPlainText("[" + ProductName + "] Payment Receipt for " + invoice.Organization.GetName())
+                    .Body(EmailStrings.PaymentReceipt_Body, ProductName, SupportEmail, OrgName, String.Format("{0:C}", Charged), CardLast4, TransactionId, lctStr, ServiceThroughDate, Address);
+                await Emailer.SendEmail(toSend);
+                return true;
+            }
+            return false;
+        }
 
-				var rangeStart = range.StartTime;
-				var rangeEnd = range.EndTime;
 
-				UserModel u = null;
-				UserOrganizationModel uo = null;
-				AllPeopleList = s.QueryOver<UserOrganizationModel>(() => uo)
-									.Left.JoinAlias(() => uo.User, () => u)                 ///Existed any time during this range.
+        public class UserCalculator {
+            public class UQ {
+                public long UserOrgId { get; set; }
+                public bool? IsRadialAdmin { get; set; }
+                public bool IsClient { get; set; }
+                public String UserId { get; set; }
+                public bool IsRegistered { get; set; }
+                public bool EvalOnly { get; set; }
+            }
+
+            public IEnumerable<UQ> AllPeopleList { get; protected set; }
+            public PaymentPlan_Monthly Plan { get; protected set; }
+
+            public int NumberQCUsers { get { return AllPeopleList.Where(x => !x.IsClient).Count(); } }
+            public int NumberTotalUsers { get { return AllPeopleList.Count(); } }
+
+            public int NumberQCUsersToChargeFor { get { return NumberQCUsers; } }
+            public int NumberL10UsersToChargeFor { get { return Math.Max(0, NumberL10Users - Plan.FirstN_Users_Free); } }
+
+            public int NumberL10Users {
+                get {
+                    var l10Users = AllPeopleList.Where(x => !x.EvalOnly);
+                    var l10UserCount = l10Users.Count();
+                    return l10UserCount;
+                }
+            }
+
+            public UserCalculator(ISession s, long orgId, PaymentPlanModel planModel, DateRange range) {
+                if (NHibernateUtil.GetClass(planModel) != typeof(PaymentPlan_Monthly)) {
+                    throw new PermissionsException("Unhandled Payment Plan");
+                }
+
+                Plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(planModel);
+
+                if (Plan.OrgId != orgId)
+                    throw new Exception("Org Id do not match");
+
+                var rangeStart = range.StartTime;
+                var rangeEnd = range.EndTime;
+
+                UserModel u = null;
+                UserOrganizationModel uo = null;
+                AllPeopleList = s.QueryOver<UserOrganizationModel>(() => uo)
+                                    .Left.JoinAlias(() => uo.User, () => u)                 ///Existed any time during this range.
 									.Where(() => uo.Organization.Id == orgId && uo.CreateTime <= rangeEnd && (uo.DeleteTime == null || uo.DeleteTime > rangeStart) && !uo.IsRadialAdmin)
-									.Select(x => x.Id, x => u.IsRadialAdmin, x => x.IsClient, x => x.User.Id, x => x.EvalOnly)
-									.List<object[]>()
-									.Select(x => new UQ {
-										UserOrgId = (long)x[0],
-										IsRadialAdmin = (bool?)x[1],
-										IsClient = (bool)x[2],
-										UserId = (string)x[3],
-										IsRegistered = x[3] != null,
-										EvalOnly = (bool?)x[4] ?? false
-									})
-									.Where(x => x.IsRadialAdmin == null || (bool)x.IsRadialAdmin == false)
-									.ToList();
-				if (Plan.NoChargeForClients) {
-					AllPeopleList = AllPeopleList.Where(x => x.IsClient == false).ToList();
-				}
-				if (Plan.NoChargeForUnregisteredUsers) {
-					AllPeopleList = AllPeopleList.Where(x => x.IsRegistered).ToList();
-				}
-			}
-		}
+                                    .Select(x => x.Id, x => u.IsRadialAdmin, x => x.IsClient, x => x.User.Id, x => x.EvalOnly)
+                                    .List<object[]>()
+                                    .Select(x => new UQ {
+                                        UserOrgId = (long)x[0],
+                                        IsRadialAdmin = (bool?)x[1],
+                                        IsClient = (bool)x[2],
+                                        UserId = (string)x[3],
+                                        IsRegistered = x[3] != null,
+                                        EvalOnly = (bool?)x[4] ?? false
+                                    })
+                                    .Where(x => x.IsRadialAdmin == null || (bool)x.IsRadialAdmin == false)
+                                    .ToList();
+                if (Plan.NoChargeForClients) {
+                    AllPeopleList = AllPeopleList.Where(x => x.IsClient == false).ToList();
+                }
+                if (Plan.NoChargeForUnregisteredUsers) {
+                    AllPeopleList = AllPeopleList.Where(x => x.IsRegistered).ToList();
+                }
+            }
+        }
 
-		public static List<Itemized> CalculateCharge(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime) {
-			var itemized = new List<Itemized>();
+        public static List<Itemized> CalculateCharge(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime) {
+            var itemized = new List<Itemized>();
 
-			if (NHibernateUtil.GetClass(paymentPlan) == typeof(PaymentPlan_Monthly)) {
-				var plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(paymentPlan);
-				var rangeStart = executeTime.Subtract(plan.SchedulerPeriod());// TimespanExtensions.OneMonth());
-				var rangeEnd = executeTime;
-				var durationMult = plan.DurationMultiplier();
-				var durationDesc = plan.MultiplierDesc();
-				///HEAVY LIFTING
-				var calc = new UserCalculator(s, org.Id, plan, new DateRange(rangeStart, rangeEnd));
+            if (NHibernateUtil.GetClass(paymentPlan) == typeof(PaymentPlan_Monthly)) {
+                var plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(paymentPlan);
+                var rangeStart = executeTime.Subtract(plan.SchedulerPeriod());// TimespanExtensions.OneMonth());
+                var rangeEnd = executeTime;
+                var durationMult = plan.DurationMultiplier();
+                var durationDesc = plan.MultiplierDesc();
+                ///HEAVY LIFTING
+                var calc = new UserCalculator(s, org.Id, plan, new DateRange(rangeStart, rangeEnd));
 
-				//s.Auditer().GetRevisionNumberForDate(<OrganizationModel>(org.Id,);
+                //s.Auditer().GetRevisionNumberForDate(<OrganizationModel>(org.Id,);
 
-				var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(s, org.Id, rangeStart, rangeEnd).ToList();
-				var reviewEnabled = /*org.Settings.EnableReview;//*/allRevisions.Any(x => x.Object.Settings.EnableReview);
-				var l10Enabled = /*org.Settings.EnableL10; //*/allRevisions.Any(x => x.Object.Settings.EnableL10);
+                var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(s, org.Id, rangeStart, rangeEnd).ToList();
+                var reviewEnabled = /*org.Settings.EnableReview;//*/allRevisions.Any(x => x.Object.Settings.EnableReview);
+                var l10Enabled = /*org.Settings.EnableL10; //*/allRevisions.Any(x => x.Object.Settings.EnableL10);
 
-				//In case clocks are off.
-				var executionCalculationDate = executeTime.AddDays(1).Date;
+                //In case clocks are off.
+                var executionCalculationDate = executeTime.AddDays(1).Date;
 
 
-				if (plan.BaselinePrice > 0) {
-					var reviewItem = new Itemized() {
-						Name = "Traction® Tools" + durationDesc,
-						Price = plan.BaselinePrice * durationMult,
-						Quantity = 1,
-					};
-					itemized.Add(reviewItem);
-				}
+                if (plan.BaselinePrice > 0) {
+                    var reviewItem = new Itemized() {
+                        Name = "Traction® Tools" + durationDesc,
+                        Price = plan.BaselinePrice * durationMult,
+                        Quantity = 1,
+                    };
+                    itemized.Add(reviewItem);
+                }
 
-				if (reviewEnabled) {
-					var reviewItem = new Itemized() {
-						Name = "Quarterly Conversation" + durationDesc,
-						Price = plan.ReviewPricePerPerson * durationMult,
-						Quantity = calc.NumberQCUsersToChargeFor//allPeopleList.Where(x => !x.IsClient).Count()
-					};
-					if (reviewItem.Quantity != 0) {
-						itemized.Add(reviewItem);
-						if (!(plan.ReviewFreeUntil == null || !(plan.ReviewFreeUntil.Value.Date > executionCalculationDate))) {
-							//Discount it since it is free
-							itemized.Add(reviewItem.Discount());
-						}
-					}
-				}
-				if (l10Enabled) {
-					var l10Item = new Itemized() {
-						Name = "L10 Meeting Software" + durationDesc,
-						Price = plan.L10PricePerPerson * durationMult,
-						Quantity = calc.NumberL10UsersToChargeFor,
-					};
-					if (l10Item.Quantity != 0) {
-						itemized.Add(l10Item);
+                if (reviewEnabled) {
+                    var reviewItem = new Itemized() {
+                        Name = "Quarterly Conversation" + durationDesc,
+                        Price = plan.ReviewPricePerPerson * durationMult,
+                        Quantity = calc.NumberQCUsersToChargeFor//allPeopleList.Where(x => !x.IsClient).Count()
+                    };
+                    if (reviewItem.Quantity != 0) {
+                        itemized.Add(reviewItem);
+                        if (!(plan.ReviewFreeUntil == null || !(plan.ReviewFreeUntil.Value.Date > executionCalculationDate))) {
+                            //Discount it since it is free
+                            itemized.Add(reviewItem.Discount());
+                        }
+                    }
+                }
+                if (l10Enabled) {
+                    var l10Item = new Itemized() {
+                        Name = "L10 Meeting Software" + durationDesc,
+                        Price = plan.L10PricePerPerson * durationMult,
+                        Quantity = calc.NumberL10UsersToChargeFor,
+                    };
+                    if (l10Item.Quantity != 0) {
+                        itemized.Add(l10Item);
 
-						if (!(plan.L10FreeUntil == null || !(plan.L10FreeUntil.Value.Date > executionCalculationDate))) {
-							//Discount it since it is free
-							itemized.Add(l10Item.Discount());
-						}
-					}
-				}
-				if ((plan.FreeUntil.Date > executionCalculationDate)) {
-					//Discount it since it is free
-					var total = itemized.Sum(x => x.Total());
-					itemized.Add(new Itemized() {
-						Name = "Discount",
-						Price = -1 * total,
-						Quantity = 1,
-					});
-				}
+                        if (!(plan.L10FreeUntil == null || !(plan.L10FreeUntil.Value.Date > executionCalculationDate))) {
+                            //Discount it since it is free
+                            itemized.Add(l10Item.Discount());
+                        }
+                    }
+                }
+                if ((plan.FreeUntil.Date > executionCalculationDate)) {
+                    //Discount it since it is free
+                    var total = itemized.Sum(x => x.Total());
+                    itemized.Add(new Itemized() {
+                        Name = "Discount",
+                        Price = -1 * total,
+                        Quantity = 1,
+                    });
+                }
 
-				var discountLookup = new Dictionary<AccountType, string>() {
+                var discountLookup = new Dictionary<AccountType, string>() {
                     //{AccountType.Cancelled,"Inactive Account" },
                     {AccountType.Implementer,"Discount (Implementer)" },
 					{AccountType.Dormant,"Inactive Account" },
@@ -649,7 +649,7 @@ namespace RadialReview.Accessors {
 			var byteArray = new UTF8Encoding().GetBytes(publicApi + ":");
 			client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
-
+            		//added
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
 			HttpResponseMessage response = await client.PostAsync(url, requestContent);
@@ -755,54 +755,54 @@ namespace RadialReview.Accessors {
 					var requestContent = new FormUrlEncodedContent(keys.ToArray());
 					try {
 
-						//Do not supress
-						var privateApi = Config.PaymentSpring_PrivateKey();
+					//Do not supress
+					var privateApi = Config.PaymentSpring_PrivateKey();
 
 
-						var byteArray = new UTF8Encoding().GetBytes(privateApi + ":");
-						client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+					var byteArray = new UTF8Encoding().GetBytes(privateApi + ":");
+					client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
 						//added
 						ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-						HttpResponseMessage response = await client.PostAsync("https://api.paymentspring.com/api/v1/customers", requestContent);
-						HttpContent responseContent = response.Content;
-						using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
-							var result = await reader.ReadToEndAsync();
-							if (Json.Decode(result).errors != null) {
-								var builder = new List<string>();
-								for (var i = 0; i < Json.Decode(result).errors.Length; i++) {
-									builder.Add(Json.Decode(result).errors[i].message + " (" + Json.Decode(result).errors[i].code + ").");
-								}
-								throw new PermissionsException(String.Join(" ", builder));
+					HttpResponseMessage response = await client.PostAsync("https://api.paymentspring.com/api/v1/customers", requestContent);
+					HttpContent responseContent = response.Content;
+					using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
+						var result = await reader.ReadToEndAsync();
+						if (Json.Decode(result).errors != null) {
+							var builder = new List<string>();
+							for (var i = 0; i < Json.Decode(result).errors.Length; i++) {
+								builder.Add(Json.Decode(result).errors[i].message + " (" + Json.Decode(result).errors[i].code + ").");
 							}
-							if (Json.Decode(result).@class != "customer")
-								throw new PermissionsException("Expected class: 'Customer'");
+							throw new PermissionsException(String.Join(" ", builder));
+						}
+						if (Json.Decode(result).@class != "customer")
+							throw new PermissionsException("Expected class: 'Customer'");
 
 
-							token = new PaymentSpringsToken() {
-								CustomerToken = Json.Decode(result).id,
-								CardLast4 = cardLast4,
-								CardOwner = cardOwnerName,
-								CardType = cardType,
-								MonthExpire = cardExpireMonth,
-								YearExpire = cardExpireYear,
-								OrganizationId = organizationId,
-								Active = active,
-								ReceiptEmail = email,
-								CreatedBy = caller.Id,
+						token = new PaymentSpringsToken() {
+							CustomerToken = Json.Decode(result).id,
+							CardLast4 = cardLast4,
+							CardOwner = cardOwnerName,
+							CardType = cardType,
+							MonthExpire = cardExpireMonth,
+							YearExpire = cardExpireYear,
+							OrganizationId = organizationId,
+							Active = active,
+							ReceiptEmail = email,
+							CreatedBy = caller.Id,
 
-								TokenType = tokenType,
-								BankAccountLast4 = bankLast4,
-								BankRouting = bankRouting,
-								BankFirstName = bankFirstName,
-								BankLastName = bankLastName,
-								BankAccountType = bankAccountType
+							TokenType = tokenType,
+							BankAccountLast4 = bankLast4,
+							BankRouting = bankRouting,
+							BankFirstName = bankFirstName,
+							BankLastName = bankLastName,
+							BankAccountType = bankAccountType
 
-							};
-							s.Save(token);
-							tx.Commit();
-							s.Flush();
+						};
+						s.Save(token);
+						tx.Commit();
+						s.Flush();
 						}
 					} catch (Exception e) {
 						throw;

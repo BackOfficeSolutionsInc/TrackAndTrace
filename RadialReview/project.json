@@ -27,7 +27,7 @@
     "Microsoft.AspNet.Identity.Owin": "2.2.1",
     "Microsoft.AspNet.Mvc": "5.2.3",
     "Microsoft.AspNet.Razor": "3.2.3",
-    "Microsoft.AspNet.SignalR": "2.2.2",
+    "Microsoft.AspNet.SignalR": "2.2.3",
     "Microsoft.AspNet.SignalR.Core": "2.2.2",
     "Microsoft.AspNet.SignalR.JS": "2.2.2",
     "Microsoft.AspNet.SignalR.Redis": "2.2.2",
