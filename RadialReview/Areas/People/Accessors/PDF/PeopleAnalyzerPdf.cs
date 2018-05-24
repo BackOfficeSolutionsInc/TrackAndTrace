@@ -6,6 +6,7 @@ using PdfSharp.Pdf;
 using PdfSharp.Pdf.Advanced;
 using RadialReview.Areas.People.Angular;
 using RadialReview.Areas.People.Angular.Survey;
+using RadialReview.Models;
 using RadialReview.Models.Interfaces;
 using RadialReview.Reflection;
 using RadialReview.Utilities.DataTypes;
@@ -118,7 +119,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 		}
 
 
-		public static PdfDocumentRenderer AppendPeopleAnalyzer(Document doc, string title, AngularPeopleAnalyzer pa, DateTime? beforeDate = null) {
+		public static PdfDocumentRenderer AppendPeopleAnalyzer(UserOrganizationModel caller, Document doc, AngularPeopleAnalyzer pa, DateTime? beforeDate = null) {
 			beforeDate = beforeDate ?? DateTime.MaxValue;
 
 			var resultColumns = 3 + pa.Values.Distinct(x => x.Source.PrettyString).Count();
@@ -255,13 +256,13 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			var container = pa.NotNull(y => y.SurveyContainers.Where(x => x.IssueDate <= beforeDate).OrderBy(x => x.IssueDate).LastOrDefault());
 			if (container != null) {
 				font = new XFont("Arial", fs+2, XFontStyle.Bold);
-				AddTitleText(docRenderer, renderer, beforeDate.Value, font, new XPoint(leftMargin + FONT_SIZE, topMargin + FONT_SIZE));
+				AddTitleText(caller, docRenderer, renderer, beforeDate.Value, font, new XPoint(leftMargin + FONT_SIZE, topMargin + FONT_SIZE));
 			}
 
 			return renderer;
 		}
 
-		private static void AddTitleText(DocumentRenderer docRenderer, PdfDocumentRenderer renderer, DateTime date, XFont font, XPoint position) {
+		private static void AddTitleText(UserOrganizationModel caller, DocumentRenderer docRenderer, PdfDocumentRenderer renderer, DateTime date, XFont font, XPoint position) {
 			using (XGraphics gfx = XGraphics.FromPdfPage(renderer.PdfDocument.Pages[0])) {
 				gfx.DrawString("People Analyzer"/*container.Name ?? ""*/, font, XBrushes.Black, position);
 
@@ -270,7 +271,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 				var useDate = "as of "+date.ToLongDateString();
 				if (date > DateTime.UtcNow)
-					useDate = "as of Today";
+					useDate = "as of "+caller.GetTimeSettings().ConvertFromServerTime(DateTime.UtcNow).Date.ToLongDateString();
 
 				gfx.DrawString(useDate, dateFont, XBrushes.Gray,datePos);
 
