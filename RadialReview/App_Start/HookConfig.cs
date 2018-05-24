@@ -1,4 +1,5 @@
 ﻿using RadialReview.Accessors.Hooks;
+using RadialReview.Crosscutting.Hooks.CrossCutting;
 using RadialReview.Crosscutting.Hooks.CrossCutting.Formula;
 using RadialReview.Crosscutting.Hooks.Payment;
 using RadialReview.Crosscutting.Hooks.QuarterlyConversation;
@@ -74,6 +75,9 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new SetDelinquentFlag());
 
 			HooksRegistry.RegisterHook(new QuarterlyConversationCreationNotifications());
+			HooksRegistry.RegisterHook(new SetPeopleToolsTrial());
+			
+
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
 	}

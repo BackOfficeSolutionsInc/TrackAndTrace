@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MigraDoc.DocumentObjectModel;
+using MigraDoc.Rendering;
 using Moq;
 using Newtonsoft.Json.Linq;
 using NHibernate;
@@ -437,6 +439,13 @@ namespace TractionTools.Tests.TestUtils {
 		}
 
 
+		protected void Save(Document doc, string name) {
+			PdfDocumentRenderer renderer = new PdfDocumentRenderer(true);
+			renderer.Document = doc;
+			renderer.RenderDocument();
+			renderer.PdfDocument.Save(Path.Combine(GetCurrentPdfFolder(), name));
+			renderer.PdfDocument.Save(Path.Combine(GetPdfFolder(), name));
+		}
 
 	}
 	public static class TestObjectExtensions {

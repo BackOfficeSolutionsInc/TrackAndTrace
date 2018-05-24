@@ -161,6 +161,7 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\People\Accessors\PDF\PeopleAnalyzerPdf.cs" />
     <Compile Include="Areas\People\Accessors\QuarterlyConversationAsyncAccessor.cs" />
     <Compile Include="Areas\People\Controllers\ErrorController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\SetPeopleToolsTrial.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IMilestoneHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IPositionHooks.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IQuarterlyConversationHook.cs" />
