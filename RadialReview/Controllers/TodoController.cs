@@ -45,6 +45,7 @@ namespace RadialReview.Controllers {
 			};
 
 			var meetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
+				.Where(x => x.IsAttendee == true)
 				.Select(x => new MeetingVm { name = x.Recurrence.Name, id = x.Recurrence.Id })
 				.OrderBy(x => x.name)
 				.ToList();
@@ -79,6 +80,7 @@ namespace RadialReview.Controllers {
 				var todo = TodoAccessor.GetTodo(GetUser(), id);
 
 				var meetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
+				.Where(t => t.IsAttendee == true)
 			   .Select(x => new MeetingVm { name = x.Recurrence.Name, id = x.Recurrence.Id })
 			   .OrderBy(x => x.name)
 			   .ToList();
