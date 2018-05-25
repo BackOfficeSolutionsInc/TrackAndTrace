@@ -18,9 +18,11 @@ namespace RadialReview.Models.Angular.Todos {
         public AngularTodo(TodoModel todo) : base(todo.Id) {
             Name = todo.Message;
             DetailsUrl = Config.BaseUrl(null, "/Todo/Pad/" + todo.Id); //Config.NotesUrl() + "p/" + todo.PadId + "?showControls=true&showChat=false";
+			PadId = todo.PadId;
+			DeleteTime = todo.DeleteTime;
 
-            //Details = todo.Details;
-            DueDate = todo.DueDate;
+			//Details = todo.Details;
+			DueDate = todo.DueDate;
             Owner = AngularUser.CreateUser(todo.AccountableUser);
             CompleteTime = todo.CompleteTime;
             CreateTime = todo.CreateTime;
@@ -70,7 +72,8 @@ namespace RadialReview.Models.Angular.Todos {
         public DateTime? DueDate { get; set; }
         public AngularUser Owner { get; set; }
         public DateTime? CompleteTime { get; set; }
-        public DateTime? CreateTime { get; set; }
+		public DateTime? DeleteTime { get; set; }
+		public DateTime? CreateTime { get; set; }
         public bool? Complete { get; set; }
 
         [IgnoreDataMember]
@@ -78,5 +81,6 @@ namespace RadialReview.Models.Angular.Todos {
         [JsonConverter(typeof(StringEnumConverter))]
         public TodoType? TodoType { get; set; }
         public long Ordering { get; set; }
-    }
+		public string PadId { get; set; }
+	}
 }

@@ -649,7 +649,32 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess(state.ToString()));
 		}
 
+		[Access(AccessLevel.UserOrganization)]
+		[HttpGet]
+		public async Task<ActionResult> PrintoutTodoList(long id) {
 
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
+
+			var angRecur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, forceIncludeTodoCompletion: recur.IncludeAggregateTodoCompletionOnPrintout);
+			var merger = new DocumentMerger();
+
+			//
+			var anyPages = false;
+
+			var doc = PdfAccessor.CreateDoc(GetUser(), "To-do Printout");
+			await PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false, printTileTodo: true);
+			merger.AddDoc(doc);
+			anyPages = true;
+
+			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
+			if (!anyPages)
+				return Content("No pages to print.");
+
+			var doc1 = merger.Flatten("To-do Printout", true, true, GetUser().Organization.Settings.GetDateFormat(), recur.Name);
+
+
+			return Pdf(doc1, now + "_" + angRecur.Basics.Name + "_TodoPrintout.pdf", true);
+		}
 
 		#endregion
 

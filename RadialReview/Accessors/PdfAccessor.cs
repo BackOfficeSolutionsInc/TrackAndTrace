@@ -29,6 +29,7 @@ using RadialReview.Properties;
 using PdfSharp.Pdf.IO;
 using System.Collections;
 using RadialReview.Models.Angular.Rocks;
+using System.Threading.Tasks;
 
 namespace RadialReview.Accessors {
 	public class LayoutHelper {
@@ -918,7 +919,7 @@ namespace RadialReview.Accessors {
 			return doc;
 		}
 
-		public static void AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool addPageNumber = true) {
+		public static async Task AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool addPageNumber = true, bool printTileTodo = false) {
 			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -948,8 +949,18 @@ namespace RadialReview.Accessors {
 
 
 			//Rock
-			column = table.AddColumn(Unit.FromInch(4.85 + .75));
-			column.Format.Alignment = ParagraphAlignment.Left;
+			//Todos
+			if (printTileTodo) {
+				column = table.AddColumn(Unit.FromInch(2.8));
+				column.Format.Alignment = ParagraphAlignment.Left;
+
+				//details
+				column = table.AddColumn(Unit.FromInch(2.8));
+				column.Format.Alignment = ParagraphAlignment.Left;
+			} else {
+				column = table.AddColumn(Unit.FromInch(4.85 + .75));
+				column.Format.Alignment = ParagraphAlignment.Left;
+			}
 
 			var row = table.AddRow();
 			row.HeadingFormat = true;
@@ -968,8 +979,22 @@ namespace RadialReview.Accessors {
 			row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 			row.Cells[3].Format.Alignment = ParagraphAlignment.Left;
 
+			var todos = recur.Todos;
+
+			if (printTileTodo) {
+				row.Cells[4].AddParagraph("Details");
+				row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
+				row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
+
+				todos = recur.Todos.Where(x => x.CompleteTime == null && x.DeleteTime == null);
+
+			} else {
+				todos = todos.Where(x => x.Complete == false);
+			}
+
+
 			var mn = 1;
-			foreach (var m in recur.Todos.Where(x => x.Complete == false).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
+			foreach (var m in todos.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
 				row = table.AddRow();
 				row.HeadingFormat = false;
@@ -987,6 +1012,13 @@ namespace RadialReview.Accessors {
 				row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
 				row.Cells[3].AddParagraph(m.Name);
 				row.Cells[3].Format.Alignment = ParagraphAlignment.Left;
+
+				if (printTileTodo) {
+					var getPadText = await PadAccessor.GetText(m.PadId);
+					row.Cells[4].AddParagraph(getPadText);
+					row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
+				}
+
 				mn++;
 			}
 		}
