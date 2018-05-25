@@ -92,6 +92,7 @@
     <Compile Include="Accessors\AttachAccessor.cs" />
     <Compile Include="Accessors\BaseAccessor.cs" />
     <Compile Include="Accessors\CategoryAccessor.cs" />
+    <Compile Include="Accessors\ConsentAccessor.cs" />
     <Compile Include="Accessors\CustomizeAccessor.cs" />
     <Compile Include="Accessors\DashboardAccessor.cs" />
     <Compile Include="Accessors\DatabaseUtility.cs" />
@@ -243,6 +244,7 @@
     <Compile Include="Models\Frontend\EditorModels.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
     <Compile Include="Models\Notifications\NotificationModel.cs" />
+    <Compile Include="Models\UserModels\ConsentModel.cs" />
     <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateMeasurableViewModel.cs" />
     <Compile Include="Models\UserModels\UserRole.cs" />
@@ -1395,6 +1397,7 @@
     <Content Include="Scripts\Main\beta.js" />
     <Content Include="Scripts\Main\chart.js" />
     <Content Include="Scripts\Main\clickableclass.js" />
+    <Content Include="Scripts\Main\compliance.js" />
     <Content Include="Scripts\Main\datatable.js" />
     <Content Include="Scripts\Main\datepickers.js" />
     <Content Include="Scripts\Main\iefixes.js" />
@@ -1849,6 +1852,7 @@
     <Content Include="Views\L10\Delete.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
     <Content Include="Views\ClientSuccess\HFCategories.cshtml" />
+    <Content Include="Views\Account\Consent.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

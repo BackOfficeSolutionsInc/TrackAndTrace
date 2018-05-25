@@ -14,6 +14,9 @@ namespace RadialReview.Models.Application {
 		public static class Names {
 			public static string LAST_CAMUNDA_UPDATE_TIME = "LAST_CAMUNDA_UPDATE_TIME";
 			public static string USER_RADIAL_DATA_IDS = "USER_RADIAL_DATA_IDS";
+			public static string CONSENT_MESSAGE = "CONSENT_MESSAGE";
+			public static string PRIVACY_URL = "PRIVACY_URL";
+			public static string TOS_URL = "TOS_URL";
 		}
 
 		public virtual string K { get; set; }

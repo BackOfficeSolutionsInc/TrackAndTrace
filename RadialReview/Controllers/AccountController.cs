@@ -23,6 +23,7 @@ using RadialReview.Utilities;
 using RadialReview.Hooks;
 using RadialReview.Variables;
 using NHibernate;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Controllers {
 	[Authorize]
@@ -608,6 +609,30 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.Success("Hints turned " + (hint.Value ? "on." : "off.")), JsonRequestBehavior.AllowGet);
 		}
 
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Consent() {
+			var u = GetUser();
+			ViewBag.Message = ConsentAccessor.GetConsentMessage(u);
+			return View();
+		}
+
+	
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Consent(FormCollection form) {
+			var u = GetUser();
+			if (form["btn"] == "no") {
+				ConsentAccessor.ApplyConsent(u,false);
+				return LogOff();
+			}
+			ConsentAccessor.ApplyConsent(u,true);
+			return RedirectToAction("Index", "Home");
+		}
+
+		
 
 		public class AppVersionVM {
 			public string VersionId { get; set; }
