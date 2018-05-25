@@ -1283,3 +1283,6 @@ body.beta .beta-only .feedback-smile {
   top: -2.3px;
   left: -0.5px;
 }
+body.beta .heading-margin-smiley {
+  margin-right: 10px;
+}

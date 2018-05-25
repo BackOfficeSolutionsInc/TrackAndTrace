@@ -1,50 +1,71 @@
 ﻿@model RadialReview.Models.ViewModels.OrgReviewsViewModel
 @using RadialReview.Models
 @{
-	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.Title = Html.ReviewName() + "s";
-	ViewBag.Subheading = "";
-	var showDropdown = Model.Reviews.Any(x => x.DropdownLinks.Any());
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = Html.ReviewName() + "s";
+    ViewBag.Subheading = "";
+    var showDropdown = Model.Reviews.Any(x => x.DropdownLinks.Any());
 }
 
 @section top{
-	<div class="jumbotron">
-		<h1>@Html.ReviewName()s</h1>
-	</div>
+    <div class="jumbotron">
+        <h1>@Html.ReviewName()s</h1>
+    </div>
 }
 
 @section header{
-	@*Html.Partial("_ReviewsHeader")*@
+    @*Html.Partial("_ReviewsHeader")*@
 }
 @using (Html.BeginStyles()) {
-	<style>
-		.fontastic-icon-checklist {
-			position: relative;
-			top: -2px;
-		}
+    <style>
+        .fontastic-icon-checklist {
+            position: relative;
+            top: -2px;
+        }
 
-		.advanced-link {
-			color: #AB3333 !important;
-		}
+        .advanced-link {
+            color: #AB3333 !important;
+        }
 
-		html, body {
-			background-color: #eee;
-		}
+        html, body {
+            background-color: #eee;
+        }
 
-		.reviews-table td {
-			vertical-align: middle !important;
-		}
+        .reviews-table td {
+            vertical-align: middle !important;
+        }
 
-		.grayRow.prereview{
-			background-color: rgba(91, 192, 222, 0.42);
-		}
+        .grayRow.prereview {
+            background-color: rgba(91, 192, 222, 0.42);
+        }
 
-	</style>
+
+        body.beta .beta-only.beta-label {
+            color: gray;
+            font-size: 10px;
+            position: fixed;
+            left: 406px;
+            top: 30px;
+            font-style: oblique;
+        }
+
+        body.beta .beta-only .feedback-smile {
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwUER8DQvDZLQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAABCUlEQVQ4y82VO27CQBCGv9kABVwCDgClD0BFg8gREMdwWuAYiCNg0aTyAShoXKOglPRJY4elWBtZ67VkyEbKSCvt85Pmn8cKNaYP4x0wBZR1dAX2EsSvrndSA5rRzCIbLBbsC+jymH1LEPcqwCdhFagqufksDKCbM+6CVzT7vJjRdL9gSF0QJm9GjfeVbrRfBEnlqeHLpqIPY+0RWEnafw5Mf+B4MsIfT2aN5LeUmTvvWMBrsWi/wLAP64Um3AjJGdIM0GakGSRnCDfCeqEZ9s2bcp070ybNIPmAcCtOt5ZzzWgAnZajtvNK8RJpCWIpNIw88KI/aQ7e25eyNOg96H5Uhjk79m+/gBuD5HVmlKlcKwAAAABJRU5ErkJggg==');
+            background-size: auto auto;
+            position: absolute;
+            top: 7px;
+            right: 350px;
+            width: 14px;
+            height: 14px;
+            background-size: 14px;
+            display: block;
+        }
+    </style>
 
 }
 
 @using (Html.BeginScripts()) {
-	<script>
+    <script>
 		function issueReviewImmediately(reviewContainerId,self) {
 
 			showModal({
@@ -64,86 +85,86 @@
 
 		}
 
-	</script>
+    </script>
 }
 @if (ViewBag.IsManager ?? false) {
-	<div style="text-align: right;margin-bottom: 3px;">
-		<a id="issue-eval-btn" class="btn btn-primary btn-invert" href="/Issue/">Issue New @Html.ReviewName()</a>
-	</div>
+    <div style="text-align: right;margin-bottom: 3px;">
+        <a id="issue-eval-btn" class="btn btn-primary btn-invert" href="/Issue/">Issue New @Html.ReviewName()</a>
+    </div>
 }
 
 <div class="panel panel-primary startHiddennGroup">
-	<div class="panel-heading hidden">
-		<h3 class="panel-title">Your @Html.ReviewName().ToLower()s:</h3>
-	</div>
-	@if (Model.Reviews.Any()) {
-		@*<div class="table-responsive">*@
-		<table class="table table-condensed tablesorter tablefilter tablesorter-default table-hover reviews-table">
-			<thead>
-				<tr>
-					<th style="width:80px" class="alignCenter hidden-xs1">Status</th>
-					@*@if (Model.Reviews.Any(x => x.UserReview != null && x.UserReview.ClientReview.Visible)) {
-							<th style="width: 90px;" data-title="Your Report">Your Report</th>
-						}*@
-					<th style="min-width: 100%">@Html.ReviewName() @RadialReview.Properties.DisplayNameStrings.name</th>
-					@*<th style="width:100px" class="alignCenter">Created</th>*@
-					<th style="width:100px" class="alignCenter hidden-xs1">Due</th>
+    <div class="panel-heading hidden">
+        <h3 class="panel-title">Your @Html.ReviewName().ToLower()s:</h3>
+    </div>
+    @if (Model.Reviews.Any()) {
+        @*<div class="table-responsive">*@
+        <table class="table table-condensed tablesorter tablefilter tablesorter-default table-hover reviews-table">
+            <thead>
+                <tr>
+                    <th style="width:80px" class="alignCenter hidden-xs1">Status</th>
+                    @*@if (Model.Reviews.Any(x => x.UserReview != null && x.UserReview.ClientReview.Visible)) {
+                            <th style="width: 90px;" data-title="Your Report">Your Report</th>
+                        }*@
+                    <th style="min-width: 100%">@Html.ReviewName() @RadialReview.Properties.DisplayNameStrings.name</th>
+                    @*<th style="width:100px" class="alignCenter">Created</th>*@
+                    <th style="width:100px" class="alignCenter hidden-xs1">Due</th>
 
-					@if (showDropdown) {
-						<th style="width: 36px;min-width: 36px;max-width: 36px;padding:0"></th>
-					}
+                    @if (showDropdown) {
+                        <th style="width: 36px;min-width: 36px;max-width: 36px;padding:0"></th>
+                    }
 
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var review in Model.Reviews) {
-					var takable = review.TakableId;
-					@*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var review in Model.Reviews) {
+                    var takable = review.TakableId;
+                    @*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
 
-					<tr class="startHiddenn @(review.GetDueDate() > DateTime.UtcNow ? "" : "grayRoww")  @(review.TakableId == null ? " grayRow " : "") @(review.IsPrereview?"prereview":"")">
-						<td class="alignCenter hidden-xs1">
-							@Model.CreateLabel(review)
-						</td>
-						<td class="test-ignore">
-							@review.GetTitle()
-						</td>
-						<td class="alignCenter hidden-xs1 test-ignore">
-							@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", review.GetDueDate())
-						</td>
+                    <tr class="startHiddenn @(review.GetDueDate() > DateTime.UtcNow ? "" : "grayRoww")  @(review.TakableId == null ? " grayRow " : "") @(review.IsPrereview?"prereview":"")">
+                        <td class="alignCenter hidden-xs1">
+                            @Model.CreateLabel(review)
+                        </td>
+                        <td class="test-ignore">
+                            @review.GetTitle()
+                        </td>
+                        <td class="alignCenter hidden-xs1 test-ignore">
+                            @Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", review.GetDueDate())
+                        </td>
 
-						@if (showDropdown) {
-							<td>
-								@if (review.DropdownLinks.Any()) {
-									<div class="btn-group">
-										<button id="" type="button" class="btn btn-default btn-sm dropdown-toggle review-extra-options" data-toggle="dropdown" aria-expanded="false">
-											<span style="top: 2px;" class="glyphicon glyphicon-chevron-down"></span>
-										</button>
-										<ul class="dropdown-menu alignLeft pull-right" role="menu">
-											@foreach (var link in review.DropdownLinks) {
-												if (link == null) {
-													<li class="divider"></li>
-												} else {
-													<li>@link</li>
-												}
-											}
-										</ul>
-									</div>
-								}
-							</td>
-						}
-					</tr>
-				}
+                        @if (showDropdown) {
+                            <td>
+                                @if (review.DropdownLinks.Any()) {
+                                    <div class="btn-group">
+                                        <button id="" type="button" class="btn btn-default btn-sm dropdown-toggle review-extra-options" data-toggle="dropdown" aria-expanded="false">
+                                            <span style="top: 2px;" class="glyphicon glyphicon-chevron-down"></span>
+                                        </button>
+                                        <ul class="dropdown-menu alignLeft pull-right" role="menu">
+                                            @foreach (var link in review.DropdownLinks) {
+                                                if (link == null) {
+                                                    <li class="divider"></li>
+                                                } else {
+                                                    <li>@link</li>
+                                                }
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
 
-			</tbody>
+            </tbody>
 
-		</table>
-		@*</div>*@
+        </table>
+        @*</div>*@
 
-	} else {
-		<div class="panel-body gray">
-			There are no @Html.ReviewName().ToLower()s at this time.
-		</div>
-	}
+    } else {
+        <div class="panel-body gray">
+            There are no @Html.ReviewName().ToLower()s at this time.
+        </div>
+    }
 </div>
 @Html.Partial("_Pagination", Model)
 
