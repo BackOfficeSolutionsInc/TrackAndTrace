@@ -42,6 +42,11 @@
 	@Scripts.Render("~/bundles/L10")
 	@Html.Partial("_SetupScript", Model)
 	<script>
+		
+		var meetingSettings = {
+			showDelinquent:"@((new HtmlString( ViewBag.ShowDelinquentMessage??"")))",
+		};
+
 		setPreviewMode(false);
 
 		var picturesLookup={};
@@ -162,7 +167,33 @@
 					e.preventDefault();
 				}
 			});
+
+
+			if (meetingSettings.showDelinquent) {
+				showAlert(meetingSettings.showDelinquent, 1000000);
+				$(".alert .todoModal").one("click", function () {
+					setTimeout(function () {
+						clearAlerts();
+					}, 100);
+				});
+			}
 		});
+
+		//function delinquentTodo() {
+		//	var m = "createtodo";
+		//	var title = "Add a to-do";
+		//	var parm = {
+		//		recurrence
+		//	};
+		//	showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m, null, function () {
+		//		var found = $('#modalBody').find(".select-user");
+		//		if (found.length && found.val() == null)
+		//			return "You must select at least one to-do owner.";
+		//		return true;
+		//	});
+		//}
+
+
 
 
 	</script>

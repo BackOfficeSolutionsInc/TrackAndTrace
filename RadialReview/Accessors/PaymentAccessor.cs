@@ -38,6 +38,42 @@ using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
     public class PaymentAccessor : BaseAccessor {
+
+		/// <summary>
+		/// Returns true if delinquent by certain number of days
+		/// </summary>
+		/// <param name="caller"></param>
+		/// <param name="orgId"></param>
+		/// <param name="daysOverdue"></param>
+		/// <returns></returns>
+		public static bool ShowDelinquent(UserOrganizationModel caller,long orgId,int daysOverdue) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					try {
+						perms.EditCompanyPayment(orgId);
+						var cards = s.QueryOver<PaymentSpringsToken>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null && x.Active==true).List().ToList();
+						if (!cards.Any()) {
+							var org = s.Get<OrganizationModel>(orgId);
+
+							if (org == null)
+								throw new NullReferenceException("Organization does not exist");
+							if (org.DeleteTime != null)
+								throw new FallthroughException("Organization was deleted.");
+							var plan = org.PaymentPlan;
+							if (plan.FreeUntil.AddDays(daysOverdue) < DateTime.UtcNow) {
+								return true;
+							}
+						}
+						return false;
+					} catch (Exception e) {
+						return false;
+					}
+				}
+			}
+		}
+
+
         public PaymentPlanModel BasicPaymentPlan() {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
