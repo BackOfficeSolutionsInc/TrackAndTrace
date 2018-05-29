@@ -1136,10 +1136,14 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					perms.ViewOrganization(orgId);
-					return s.QueryOver<UserRole>().Where(x => x.DeleteTime == null && x.OrgId == orgId).List().ToList();
+					return GetUserRolesAtOrganization(s, perms, orgId);
 				}
 			}
+		}
+
+		public static List<UserRole> GetUserRolesAtOrganization(ISession s, PermissionsUtility perms, long orgId) {
+			perms.ViewOrganization(orgId);
+			return s.QueryOver<UserRole>().Where(x => x.DeleteTime == null && x.OrgId == orgId).List().ToList();
 		}
 
 		public static async Task SetRole(UserOrganizationModel caller, long userId, UserRoleType type, bool enabled) {
