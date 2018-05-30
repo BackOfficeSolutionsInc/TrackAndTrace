@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TractionTools.Tests.Permissions;
+using TractionTools.Tests.Utilities;
 
 namespace TractionTools.Tests.PDF {
 	[TestClass]
@@ -87,21 +88,25 @@ namespace TractionTools.Tests.PDF {
 		[TestMethod]
 		[TestCategory("PDF")]
 		public async Task GeneratePeopleAnalyzerPdf_Landscape() {
+			var o = await OrgUtil.CreateOrganization();
 			var doc = new Document();
 			var pa = Generate(11, 20);
-			var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(doc, "asdf", pa);
+			var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(o.Manager, doc, pa);
 			renderer.Save(Path.Combine(GetCurrentPdfFolder(), "GeneratePeopleAnalyzerPdf_Landscape.pdf"));
 		}
 
 		[TestMethod]
 		[TestCategory("PDF")]
 		public async Task GeneratePeopleAnalyzerPdf_Portrait() {
+			var o = await OrgUtil.CreateOrganization();
 			var doc = new Document();
 			var pa = Generate(5, 20);
-			var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(doc, "asdf", pa);
+			var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(o.Manager, doc, pa);
 			renderer.Save(Path.Combine(GetCurrentPdfFolder(), "GeneratePeopleAnalyzerPdf_Portrait.pdf"));
 		}
 
+
+		
 
 	}
 }

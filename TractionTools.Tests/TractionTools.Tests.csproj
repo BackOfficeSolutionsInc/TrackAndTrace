@@ -351,6 +351,7 @@
     <Compile Include="PDF\SurveyPdfTest.cs" />
     <Compile Include="PDF\AccountabilityChartPdfTest.cs" />
     <Compile Include="PeopleTools\QcSettings.cs" />
+    <Compile Include="PeopleTools\PeopleAnalyzerTests.cs" />
     <Compile Include="Permissions\ManagerPermissions.cs" />
     <Compile Include="Permissions\L10Permissions.cs" />
     <Compile Include="Permissions\PermissionsUtilityTests.cs" />

@@ -34,6 +34,7 @@ using System.Web.SessionState;
 using TractionTools.Tests.Utilities;
 
 namespace TractionTools.Tests.TestUtils {
+	[TestClass]
 	public class BaseTest {
 
 		private static Dictionary<Guid, UserOrganizationModel> AdminUsers = new Dictionary<Guid, UserOrganizationModel>();
