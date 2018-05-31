@@ -622,15 +622,53 @@ function sharePeopleAnalyzer() {
 			$.ajax({
 				url: "/L10/SharePeopleAnalyzer/" + window.recurrenceId + "?share=" + data.share,
 				success: function () {
-					if (share)
+					if (share) {
 						showAlert("Shared successfully!");
-					else
+						$(".pa-io-slider input").prop("checked", true);
+					}
+					else {
 						showAlert("Setting updated successfully!");
+						$(".pa-io-slider input").prop("checked", false);
+					}
 				}
 			});
 		}
 	});
 
+}
+var pasliderDefined;
+if (!pasliderDefined) {
+	var paslidertimeout = -1;
+	$("body").off("click", ".pa-io-slider");
+	$("body").on("click", ".pa-io-slider", function (e) {
+		debugger;
+		e.stopPropagation();
+		var cb = $(".pa-io-slider input");
+		var oldCheck = cb.prop("checked");
+		cb.prop("checked", !oldCheck);
+
+		var share = ($(".pa-io-slider input").is(":checked"));
+
+		$.ajax({
+			url: "/L10/SharePeopleAnalyzer/" + window.recurrenceId + "?share=" + share,
+			success: function () {
+				clearTimeout(paslidertimeout);
+				paslidertimeout = setTimeout(function () {
+					clearAlerts();
+					if (share) {
+						showAlert("Sharing your People Analyzer with this team.",5000);
+					} else {
+						showAlert("No longer sharing your People Analyzer with this team.", 5000);
+					}
+				},500)
+			},
+			error:function(){
+				showAlert("Error updating setting.");
+				cb.prop("checked", oldCheck);
+			}
+		});
+	});
+	pasliderDefined = true;
 }
 
 

@@ -393,6 +393,7 @@ namespace RadialReview.Areas.People.Accessors {
 				shareingIdsQ = shareingIdsQ.WhereRestrictionOn(x => x.L10Recurrence.Id).IsIn(callerMeetings);
 			} else {
 				if (!callerMeetings.Contains(recurrenceId.Value)) {
+					//Hey. This permission is correct.
 					throw new PermissionsException("Not an attendee.");
 				}
 				shareingIdsQ = shareingIdsQ.Where(x => x.L10Recurrence.Id == recurrenceId);
@@ -530,7 +531,16 @@ namespace RadialReview.Areas.People.Accessors {
 
 					var sunToAccNode = availableSurveyNodes.ToDefaultDictionary(x => x.ToKey, x => x.AccountabilityNode, x => null);
 
-					foreach (var row in accountabiliyNodeResults.GroupBy(x => sunToDiscriminator[x.About.ToKey()])) {
+					//Build response rows
+					var allowedQuestionIdentifiers = new[] {
+						SurveyQuestionIdentifier.GWC,
+						SurveyQuestionIdentifier.Value
+					};
+					var groupByAbout_filtered = accountabiliyNodeResults
+													.Where(x => x._ItemFormat != null && allowedQuestionIdentifiers.Contains(x._ItemFormat.GetQuestionIdentifier()))
+													.GroupBy(x => sunToDiscriminator[x.About.ToKey()]);
+
+					foreach (var row in groupByAbout_filtered) {
 						var answersAbout = row.OrderByDescending(x => x.CompleteTime ?? DateTime.MinValue);
 
 						var get = answersAbout.Where(x => x._ItemFormat.GetSetting<string>("gwc") == "get").FirstOrDefault();
@@ -562,7 +572,7 @@ namespace RadialReview.Areas.People.Accessors {
 						//row.Key._PrettyString = userLu[row.Key/*.ToKey()*/];
 						var sun = discriminatorToSun[row.Key];
 
-						var arow = new AngularPeopleAnalyzerRow(sun.AccountabilityNode, !myNodes.Any(x => x.Id == sun.AccountabilityNodeId));
+						var arow = new AngularPeopleAnalyzerRow(sun.AccountabilityNode, !myNodes.Any(x => x.Id == sun.AccountabilityNodeId));					
 						rows.Add(arow);
 					}
 
@@ -586,7 +596,9 @@ namespace RadialReview.Areas.People.Accessors {
 					var surveyItemFormatLookup = formats.ToDictionary(x => x.Id, x => x);
 
 					var responses = new List<AngularPeopleAnalyzerResponse>();
-					foreach (var result in accountabiliyNodeResults) {
+					var accountabilityNodeResults_filtered = accountabiliyNodeResults.Where(x => allowedQuestionIdentifiers.Contains(x._ItemFormat.GetQuestionIdentifier()));
+
+					foreach (var result in accountabilityNodeResults_filtered) {
 						if (!surveyContainers.Any(x => x.Id == result.SurveyContainerId))
 							continue;
 						if (!surveys.Any(x => x.Id == result.SurveyId))

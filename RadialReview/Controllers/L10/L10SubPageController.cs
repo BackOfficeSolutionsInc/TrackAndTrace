@@ -37,11 +37,21 @@ namespace RadialReview.Controllers {
 				Recurrence = recurrence,
 				EnableTranscript = recurrence.EnableTranscription,
 			};
+
+
+
 			if (model != null && model.Recurrence != null) {
 				model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.MemberPictures = model.Recurrence._DefaultAttendees.Select(x => new ProfilePictureVM { Initials = x.User.GetInitials(), Name = x.User.GetName(), UserId = x.User.Id, Url = x.User.ImageUrl(true, ImageSize._32) }).ToList();
 				model.HeadlineType = recurrence.HeadlineType;
+
+				try {
+					var me = model.Recurrence.NotNull(x => x._DefaultAttendees.FirstOrDefault(y => y.User.Id == GetUser().Id));
+					model.SharingPeopleAnalyzer = me.SharePeopleAnalyzer == L10Recurrence.SharePeopleAnalyzer.Yes;
+				} catch (Exception) {
+				}
+
 			}
 			//Dont need the meeting
 			switch (page) {
@@ -61,6 +71,8 @@ namespace RadialReview.Controllers {
 			//Do need the meeting
 			try {
 				model.Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
+
+				
 
 				long pageId;
 

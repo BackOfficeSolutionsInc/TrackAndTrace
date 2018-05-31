@@ -17,7 +17,7 @@ namespace RadialReview.Accessors {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.Self(userId);
 
-					var attendees = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.User.Id == userId && x.DeleteTime == null).List().ToList();
+					var attendees = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.User.Id == userId && x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
 
 					foreach (var a in attendees) {
 						if (a.SharePeopleAnalyzer != share) {

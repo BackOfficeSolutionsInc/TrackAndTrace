@@ -92,6 +92,13 @@ namespace RadialReview.Controllers {
 			}
 
 
+			try {
+				var me = model.Recurrence.NotNull(x => x._DefaultAttendees.FirstOrDefault(y => y.User.Id == GetUser().Id));
+				model.SharingPeopleAnalyzer = me.SharePeopleAnalyzer == L10Recurrence.SharePeopleAnalyzer.Yes;
+			} catch (Exception) {
+			}
+
+
 			return View(model);
 		}
 

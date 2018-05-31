@@ -8,6 +8,8 @@ using TractionTools.Tests.TestUtils;
 using TractionTools.Tests.Utilities;
 using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Accessors;
+using RadialReview.Models.L10;
+using RadialReview.Exceptions;
 
 namespace TractionTools.Tests.PeopleTools {
 	[TestClass]
@@ -36,10 +38,11 @@ namespace TractionTools.Tests.PeopleTools {
 							case SurveyQuestionIdentifier.GWC:
 								SurveyAccessor.UpdateAngularSurveyResponse(user, q.Response.Id, "yes");
 								break;
+							case SurveyQuestionIdentifier.GeneralComment:
+								SurveyAccessor.UpdateAngularSurveyResponse(user, q.Response.Id, "comment...");
+								break;
 							default:
 								break;
-						}
-						if (format.QuestionIdentifier ==SurveyQuestionIdentifier.Value) {
 						}
 					}
 				}
@@ -58,24 +61,73 @@ namespace TractionTools.Tests.PeopleTools {
 			VtoAccessor.AddCompanyValue(org.Manager, l10.Recur.VtoId);
 
 
-			l10.AddAdmin(org.Manager);
-			await l10.AddAttendee(org.Manager);
+			//l10.AddAdmin(org.Manager);
+			await l10.AddAttendee(org.Employee);
 			await l10.AddAttendee(org.Middle);
 			await l10.AddAttendee(org.E1);
 
 			await GenQCAsync("middle", org.Middle);
 
-			var visible = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(org.Middle, org.Middle.Id, l10.Id);
-			var aboutIds = visible.Rows.Select(v => v.About.ModelId);
+			{
+				//Should show up for Middle
+				var visible = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(org.Middle, org.Middle.Id, l10.Id);
+				var aboutIds = visible.Rows.Select(v => v.About.ModelId);
 
-			Assert.AreEqual(4, aboutIds.Count());
-			Assert.IsTrue(aboutIds.Contains(org.Middle.Id));
-			Assert.IsTrue(aboutIds.Contains(org.E1.Id));
-			Assert.IsTrue(aboutIds.Contains(org.E2.Id));
-			Assert.IsTrue(aboutIds.Contains(org.E3.Id));
+				Assert.AreEqual(3, aboutIds.Count());
+				//Assert.IsTrue(aboutIds.Contains(org.MiddleNode.Id));
+				Assert.IsTrue(aboutIds.Contains(org.E1BottomNode.Id));
+				Assert.IsTrue(aboutIds.Contains(org.E2Node.Id));
+				Assert.IsTrue(aboutIds.Contains(org.E3Node.Id));
+			}
 
+			{
+				//no error when meeting is not specified...
+				QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(org.E4, org.E4.Id/*, NOT SPECIFIED */);
 
+				try {
+					//But throw an error when meeting is specified and employee is not a member of the L10
+					QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(org.E4, org.E4.Id, l10.Id);
+					Assert.Fail();
+				} catch (PermissionsException) {
+				}				
+			}
 
+			{
+				//should not show up for Manager, as Manager hasnt agreed yet.
+				var visible = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(org.Employee, org.Employee.Id, l10.Id);
+				var aboutIds = visible.Rows.Select(v => v.About.ModelId);
+				Assert.AreEqual(0, aboutIds.Count());
+			}
+
+			//Lets share it ...
+			await L10Accessor.SharePeopleAnalyzer(org.Middle, org.Middle.Id, l10.Id, L10Recurrence.SharePeopleAnalyzer.Yes);
+			{
+				//should show up for Manager since they have now agreed.
+				var visible = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(org.Employee, org.Employee.Id, l10.Id);
+				var aboutIds = visible.Rows.Select(v => v.About.ModelId);
+				Assert.AreEqual(3, aboutIds.Count());
+				//Assert.IsTrue(aboutIds.Contains(org.MiddleNode.Id));
+				Assert.IsTrue(aboutIds.Contains(org.E1BottomNode.Id));
+				Assert.IsTrue(aboutIds.Contains(org.E2Node.Id));
+				Assert.IsTrue(aboutIds.Contains(org.E3Node.Id));
+			}
+
+			//Lets unshare it ...
+			await L10Accessor.SharePeopleAnalyzer(org.Middle, org.Middle.Id, l10.Id, L10Recurrence.SharePeopleAnalyzer.No);
+			{
+				//should show up for Manager since they have now agreed.
+				var visible = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(org.Employee, org.Employee.Id, l10.Id);
+				var aboutIds = visible.Rows.Select(v => v.About.ModelId);
+				Assert.AreEqual(0, aboutIds.Count());
+			}
+			//Lets unset it ...
+			await L10Accessor.SharePeopleAnalyzer(org.Middle, org.Middle.Id, l10.Id, L10Recurrence.SharePeopleAnalyzer.Unset);
+			{
+				//should show up for Manager since they have now agreed.
+				var visible = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(org.Employee, org.Employee.Id, l10.Id);
+				var aboutIds = visible.Rows.Select(v => v.About.ModelId);
+				Assert.AreEqual(0, aboutIds.Count());
+			}
 		}
 	}
 }
