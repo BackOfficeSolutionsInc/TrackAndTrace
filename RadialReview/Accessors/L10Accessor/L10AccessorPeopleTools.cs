@@ -16,7 +16,8 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.Self(userId);
-
+					//If this method is not changed
+					//then we dont need to confirm viewer permissions of recurrenceId
 					var attendees = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.User.Id == userId && x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
 
 					foreach (var a in attendees) {
