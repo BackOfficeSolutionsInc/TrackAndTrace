@@ -1167,11 +1167,10 @@
 
 			addMenuItem: function (m, indx) {
 				var newElement = $('<div class="' + (indx == this.selected ? 'selected' : '') + '" data=id="' + m.id + '">' + m.label + '</div>');
-				//debugger;
+				
 				var self = this;
 				$(newElement).on("click", function () {
 					console.log("offset",window.afterKeySelection);
-					//$(".token-editor").focus();
 					var range = document.createRange();
 					range.setStart(afterKeySelection.anchorNode, window.afterKeySelection.anchorOffset);
 					range.setEnd(afterKeySelection.focusNode, window.afterKeySelection.focusOffset);
@@ -1182,33 +1181,12 @@
 					self.selected = indx;
 					console.log(self.selected, "clicked");
 					self.onSelect.call(self);
-					debugger;
 					
-					//try {
+					//Added
 					setTimeout(function () {
 						var s = window.tokenEditor.getSelection();
 						window.tokenEditor.setSelection(s.start , s.end +1);
 					}, 0);
-
-
-					//	//// Create the key press event.
-					//	////var pressEvent = document.createEvent('KeyboardEvent');
-					//	////pressEvent.initKeyEvent("keypress", true, true, window,false, false, false, false,0, 16/*char.charCodeAt(0)*/);
-					//	//new KeyboardEvent("keypress", {
-					//	//	bubbles: true,
-					//	//	cancelable: true,
-					//	//	//char: "Q",
-					//	//	key: "Shift",
-					//	//	shiftKey: true,
-					//	//	keyCode: 16
-					//	//});
-					//	//var input = window.tokenEditor; // Get the element where you want to press.
-
-					//	//input.dispatchEvent(pressEvent); // Press the key.
-					//}
-					//catch (e) {
-					//	console.log(e);
-					//}
 
 				});
 				this.$el.append(newElement)
