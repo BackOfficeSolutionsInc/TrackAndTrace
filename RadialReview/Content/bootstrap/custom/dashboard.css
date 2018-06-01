@@ -1475,6 +1475,14 @@ body.resizing .notes-tile:after,
   -webkit-transition: background .2s;
   transition: background .2s;
   width: 100%;
+  /*.table-header,
+		.picture-column,
+		.createtime-column,
+		.due-column,
+		.company-rock-column,
+		.delete-column {
+			display: none;
+		}*/
 }
 .dashboard .rock-list-container th {
   font-size: 12px;
@@ -1678,13 +1686,13 @@ body.resizing .notes-tile:after,
   vertical-align: top;
   padding-top: 3px;
 }
-.dashboard .rock-list-container .table-header,
-.dashboard .rock-list-container .picture-column,
 .dashboard .rock-list-container .createtime-column,
 .dashboard .rock-list-container .due-column,
-.dashboard .rock-list-container .company-rock-column,
 .dashboard .rock-list-container .delete-column {
   display: none;
+}
+.dashboard .rock-list-container .company-rock-column {
+  max-width: none;
 }
 .dashboard .rock-list-container .status-column {
   padding: 2px !important;
