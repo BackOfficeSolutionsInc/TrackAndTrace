@@ -1936,33 +1936,21 @@ namespace RadialReview.Accessors {
 			List<Cell> cells1 = new List<Cell>();
 			List<Table> tables1 = new List<Table>();
 
-			var table = container_cell.Elements.AddTable();//section.AddTable();
-			//if (list.Count == 2) {
-			//	container_row.Format.LeftIndent = Unit.FromInch(1.60);
-			//	//table.Rows.LeftIndent = Unit.FromInch(1.60);
-			//} else if (list.Count == 1) {
-			//	//table.Rows.LeftIndent = Unit.FromInch(3.39);
-			//	container_row.Format.LeftIndent = Unit.FromInch(3.39);
-			//}
-
+			var table = container_cell.Elements.AddTable();
+			
 			foreach (var item in list) {
 				table.AddColumn(Unit.FromInch(3.39));
 			}
 			table.Borders.Color = TableBlack;
 			table.Borders.Width = 0;
 			table.Format.Alignment = ParagraphAlignment.Center;
-			table.LeftPadding = 0;//Unit.FromInch(.1);
+			table.LeftPadding = 0;
 
 			var tractionHeader = table.AddRow();
 			tractionHeader.Shading.Color = TableGray;
 			tractionHeader.Height = Unit.FromInch(0.25);
 			tractionHeader.Borders.Right.Width = Unit.FromInch(.125);
 			tractionHeader.Borders.Right.Color = Colors.Transparent;
-			//tractionHeader.Format.RightIndent = Unit.FromInch(1);
-			//tractionHeader.Height = Unit.FromInch(0.55);
-
-
-
 
 			bool flag = true;
 			Paragraph paragraph;
@@ -1979,18 +1967,14 @@ namespace RadialReview.Accessors {
 
 
 			var tractionData = table.AddRow();
-
-			//tractionData.Height = height;
+			
 
 			for (int i = 0; i < list.Count; i++) {
 				cells1.Add(tractionData.Cells[i]);
 				var tbl = new Table();
-				//tbl.Borders.Color = TableBlack;
-				//tbl.Borders.Color = TableBlack;
-				//tbl.Borders.Bottom.Color = TableBlack;
 				tbl.AddColumn(Unit.FromInch(.30));
-				tbl.AddColumn(Unit.FromInch(/*2.08*/2.33));
-				tbl.AddColumn(Unit.FromInch(.75/*1*/));
+				tbl.AddColumn(Unit.FromInch(2.33));
+				tbl.AddColumn(Unit.FromInch(.75));
 				tables1.Add(tbl);
 			}
 
