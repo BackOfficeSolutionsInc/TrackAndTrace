@@ -25,12 +25,25 @@ namespace RadialReview
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
-            // Enable the application to use a cookie to store information for the signed in user
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-                LoginPath = new PathString("/Account/Login")
-            });
+			// Enable the application to use a cookie to store information for the signed in user
+
+			var cookie = new CookieAuthenticationOptions {
+				AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+				LoginPath = new PathString("/Account/Login"),
+			};
+			
+            app.UseCookieAuthentication(cookie);
+
+			//if (!Config.IsLocal() && Config.GetCookieDomains()!=null) {
+			//	var subDomainCookie = new CookieAuthenticationOptions {
+			//		AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+			//		LoginPath = new PathString("/Account/Login"),
+			//		CookieName = ".AspNet.Subcookies",
+			//	};
+			//	subDomainCookie.CookieDomain = Config.GetCookieDomains();// "traction.tools";
+			//	app.UseCookieAuthentication(subDomainCookie);
+			//}
+
             // Use a cookie to temporarily store information about a user logging in with a third party login provider
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
@@ -41,7 +54,7 @@ namespace RadialReview
                 TokenEndpointPath = new PathString("/Token"),
                 Provider = new ApplicationOAuthProvider(PublicClientId),
                 AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
-                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
+                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),				
                 AllowInsecureHttp = true
             };
 

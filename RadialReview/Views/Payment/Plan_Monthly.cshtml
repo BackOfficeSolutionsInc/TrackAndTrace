@@ -5,10 +5,26 @@
 }
 
 <h1 class="pull-left">Plan Monthly:&nbsp;</h1>
-<h1 style="color:orange" class="pull-left"><b> @Model._Org.GetName()</b> (@Model._Org.Id)</h1>
+<h1 style="color:orange" class="pull-left"><a href="/organization/which/@Model._Org.Id"><b> @Model._Org.GetName()</b> (@Model._Org.Id)</a></h1>
 <div class="clearfix"></div>
 <a target="_blank" href="/account/calculateorganizationcharge/@Model._Org.Id">Calculate Charge</a>
+<h2 style="color:red">This page is dangerous, it may double charge clients. Don't use unless you have been trained!</h2>
 <hr />
+
+@if (ViewBag.ShowPostMsg ?? false) {
+	<h1 style="color:blue">Check under <b>Current Task Info</b>  and confirm that "Fire" is when you want the next charge to take place.</h1>
+	using (Html.BeginScripts()) {
+		<script>
+			$(function () {
+				var cell = $(".currTask .display-label:contains(Fire):not(:contains(FirstFire))");
+				cell.addClass("selectedCell");
+				cell.next().addClass("selectedCell");
+
+			})();
+		</script>
+	}
+}
+
 
 @using (Html.BeginForm()) {
 	<div class="row">
@@ -30,7 +46,7 @@
 				@Html.DisplayFor(x => x.Task)
 			}
 		</div>
-		<div class="col-sm-4">
+		<div class="col-sm-4 currTask">
 			<h3><b><u>Current Task Info</u></b></h3>
 			@Html.DisplayFor(x => x._CurrentTask)
 		</div>
@@ -55,6 +71,12 @@
 
 		.grayed {
 			color: #888;
+		}
+
+		.selectedCell{
+			background-color:blue;
+			color:white;   
+			padding-left: 6px;
 		}
 	</style>
 }

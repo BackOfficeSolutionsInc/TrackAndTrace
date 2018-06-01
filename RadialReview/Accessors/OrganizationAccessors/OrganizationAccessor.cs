@@ -1487,5 +1487,20 @@ namespace RadialReview.Accessors {
 				await HooksRegistry.Each<IOrganizationFlagHook>((ses, x) => x.RemoveFlag(ses, orgId, type));
 			}
 		}
+
+		public static async Task<List<OrganizationFlagType>> GetFlags(UserOrganizationModel caller, long orgId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					return await GetFlags(s, perms, orgId);
+				}
+			}
+		}
+
+		public static async Task<List<OrganizationFlagType>> GetFlags(ISession s, PermissionsUtility perms, long orgId) {
+			perms.Or(x => x.ViewOrganization(orgId), x => x.RadialAdmin(true));
+			return s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Select(x=>x.FlagType).List<OrganizationFlagType>().ToList();
+		}
+
 	}
 }
