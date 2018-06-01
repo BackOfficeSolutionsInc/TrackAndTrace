@@ -84,6 +84,7 @@ namespace RadialReview.Accessors.PDF {
 					public bool isLeaf { get; set; }
 					public string side { get; set; }
 					public List<N> columnHeads { get; set; }
+					public int? ColumnNumber { get; set; }
 
 					protected N me { get; set; }
 
@@ -93,6 +94,7 @@ namespace RadialReview.Accessors.PDF {
 					}
 
 					public int? WhichColumn() {
+						return ColumnNumber;
 						var hs = originalParent.children;
 						for (var i = 0; i < hs.Count; i++) {
 							var column = dive(hs[i]);
@@ -210,7 +212,7 @@ namespace RadialReview.Accessors.PDF {
 					return v;
 				}
 
-				public List<N> callHierarchy(N root) {
+				public List<N> callHierarchy(N root,bool sort=true) {
 					var stack = new Stack<N>();
 					stack.Push(root);
 					var nodes = new List<N>();
@@ -239,9 +241,11 @@ namespace RadialReview.Accessors.PDF {
 					}
 					d3_layout_hierarchyVisitAfter(root, n => {
 						var childs = n.children;
-						if (_sort != null && childs != null) {
-							Comparison<N> compare = _sort;
-							childs.Sort(_sort);
+						if (sort) {
+							if (_sort != null && childs != null) {
+								Comparison<N> compare = _sort;
+								childs.Sort(_sort);
+							}
 						}
 						var parent = n.parent;
 						if (_value != null && parent != null)
@@ -391,7 +395,7 @@ namespace RadialReview.Accessors.PDF {
 					public tree(CompactTree<N> ct) {
 						_ct = ct;
 					}
-
+					
 					public List<N> nodes(N d, object i = null) {
 						return call(d, i);
 					}
@@ -399,10 +403,26 @@ namespace RadialReview.Accessors.PDF {
 					public List<N> call(N d, object i = null) {
 
 						_ct.decompactify(d);
+						
+						//compactify if needed.
 						if (_ct.compactify) {
+							//sort first...
+							d3_layout_hierarchyVisitAfter(d, n => {
+								var childs = n.children;
+								if (_sort != null && childs != null) {
+									Comparison<N> compare = _sort;
+									childs.Sort(_sort);
+								}
+								var parent = n.parent;
+								if (_value != null && parent != null)
+									parent.value += n.value;
+							});
+
+							//Compactify
 							_ct.compactifyTree(d, null);
 						}
-						var nodes = _ct.hierarchy.callHierarchy(d);
+						var nodes = _ct.hierarchy.callHierarchy(d,!_ct.compactify);
+
 						var root0 = nodes[0];
 						var root1 = _ct.wrapTree(root0);
 
@@ -640,9 +660,15 @@ namespace RadialReview.Accessors.PDF {
 						if (n <= 3) {
 							cols = n;
 							rows = 1;
-						} else if (n > 3 && n < 11) {
+						} else if (3 < n && n < 11) {
 							cols = 2;
 							rows = (int)Math.Ceiling(n / 2.0);
+						} else if (11 <= n && n <= 28) {
+							cols = 4;
+							rows = (int)Math.Ceiling(n / 4.0);
+						} else if (28<= n && n <= 42) {
+							cols = 6;
+							rows = (int)Math.Ceiling(n / 6.0);
 						} else {
 							cols = (int)Math.Ceiling(sqrtn);
 							rows = (int)Math.Floor(sqrtn);
@@ -653,9 +679,7 @@ namespace RadialReview.Accessors.PDF {
 						}
 
 
-
-
-
+						
 
 						//# branches
 						//var branches = cols;
@@ -689,15 +713,18 @@ namespace RadialReview.Accessors.PDF {
 								child._compact = new node<N>.compact(child);
 								child._compact.originalParent = node;
 							}
+							child._compact.ColumnNumber = i;
 							//child._compact.originalParent = child.parent;
 							child.parent = colHead;
 							child._compact.isLeaf = true;
 							if (i % 2 == oddEven) {
 								child._compact.side = "left";
 								child.side = "left";//added
+								child.SetDebugNotes("i=" + leafNum);
 							} else {
 								child._compact.side = "right";
 								child.side = "right";//added
+								child.SetDebugNotes("i=" + leafNum);
 							}
 							currentColumnHeads[i] = child;
 							//child._compact.originalChildren = new List<N>();
@@ -911,79 +938,21 @@ namespace RadialReview.Accessors.PDF {
 
 					var ab = new[] { a, b };
 
-					//foreach (var i in ab) {
-					//	if (i.NotNull(x => x._self._compact.isLeaf)) {
-					//		i.SetDebugNotes("L");
-					//	}
-					//	if (i == null || i._self == null || i._self._compact == null) {
-					//		i.SetDebugNotes("n");
-					//	}
-					//}
-
-					//if (a.parent == b.parent) {
-					//	if (b.NotNull(x=>x._self._compact.side=="right") && a.NotNull(x => x._self._compact.side == "left")) {
-					//		b.SetDebugNotes(">");
-					//		a.SetDebugNotes("<");
-					//		return 1;
-					//	}
-					//}
-
-
-
-
-					//if (!aCompactLeft && aCompactRight && !bCompact) {
-					//	a.SetDebugNotes("A|");
-					//	b.SetDebugNotes("|A");
-					//	return a.parent == b.parent ? 1 : 0.8;
-					//}
-					//if (!aCompact && !bCompactLeft && bCompactRight) {
-					//	a.SetDebugNotes("B|");
-					//	b.SetDebugNotes("|B");
-					//	return a.parent == b.parent ? 1 : 0.8;
-					//}
-
-
-					//if (a.NotNull(x => x._self._compact.isLeaf) && b.NotNull(x => x._self._compact.isLeaf) && a.parent == b.parent) {
-					//	//if (b.NotNull(x => x._self._compact.side == "right") && a.NotNull(x => x._self._compact.side == "left")) {
-					//	if (a.parent.children.Last() != a) {
-					//		a.SetDebugNotes("x0");
-					//		b.SetDebugNotes("(x0)");
-					//		return 0;
-					//	}
-					//}
-
-					//a.SetDebugNotes("Z|");
-					//b.SetDebugNotes("|Z");
 					return 1;
 				}
 
 				private double d3_layout_treeSeparation(nodeWrapper<N> a, nodeWrapper<N> b) {
-
-
-					//if (a.children.Any() && b.children.Any() && a.children.Any(x => x.NotNull(y => y._self._compact.isLeaf)) && b.children.Any(x => x.NotNull(y => y._self._compact.isLeaf))) {
-					//	return 2;
-					//}
+					
 					var p1 = a.NotNull(x => x._self._compact.originalParent);
 					var p2 = b.NotNull(x => x._self._compact.originalParent);
 					var ppnn = !(p1 == null || p2 == null);
 
-					//if (a.parent.parent == b.parent.parent && a.parent != b.parent && a.NotNull(x => x._self._compact.isLeaf) && b.NotNull(x => x._self._compact.isLeaf)) {
-					//	b.SetDebugNotes("2");
-					//	a.SetDebugNotes("2");
-					//	return 2;
-					//}
 
-					//if (!a.NotNull(x => x._self._compact.isLeaf) && !b.NotNull(x => x._self._compact.isLeaf) && a.NotNull(x => x.children.LastOrDefault()._self._compact.isLeaf) && b.NotNull(x => x.children.FirstOrDefault()._self._compact.isLeaf) && p1 == p2) {
-					//	a.SetDebugNotes("0");
-					//	b.SetDebugNotes("(0)");
-					//	return 0;
-					//}
-
-					//if (a.parent.parent == b.parent.parent && p1 != p2 && ppnn) {
-					//	a.SetDebugNotes("0");
-					//	b.SetDebugNotes("(0)");
-					//	return 0;
-					//}
+					var w0_15 = 0.15;
+					var w0_6 = 0.6;
+					var w1_0 = 1.0;
+					var w1_5 = 1.5;
+					var w2_0 = 2.0;
 
 
 					var isBLeft = b.NotNull(x => x._self._compact.side == "left");
@@ -1000,107 +969,93 @@ namespace RadialReview.Accessors.PDF {
 					if ((b.NotNull(x => x._self._compact.isLeaf) && b.NotNull(x => x._self._compact.side == "left") && a.NotNull(x => x._self._compact) == null) ||
 						(a.NotNull(x => x._self._compact.isLeaf) && a.NotNull(x => x._self._compact.side == "right") && b.NotNull(x => x._self._compact) == null)) {
 						a.SetDebugNotes("b");
-						//b.SetDebugNotes("(b)");
-						return 1;
+						return w1_0;//1
 					}
 
 					if (colCount == 3) {
 						if (curCol == 0) {
 							a.SetDebugNotes("h");
-							return 1;
+							return w1_0;//1
 						}
 						if (curCol == 1) {
 							a.SetDebugNotes("g");
-							return 1;
+							return w1_0;//1
 						}
 						if (curCol == 2) {
 							a.SetDebugNotes("i");
-							return 2;
+							return w2_0;//2
 						}
 					}
 
-
-
-
 					if (a.NotNull(x => x._self._compact.isLeaf) && b.NotNull(x => x._self._compact.isLeaf) && p1 == p2 && ppnn) {
-						//if (b.NotNull(x => x._self._compact.side == "right") && a.NotNull(x => x._self._compact.side == "left")) {
-
 						if (colCount == 4) {
 							if (curCol == 0) {
 								a.SetDebugNotes("q");
-								return 2;//2
+								return w2_0;//2
 							}
 							if (curCol == 1) {
 								a.SetDebugNotes("d");
-								return .15;//2
+								return w0_15;//.15
 							}
 							if (curCol == 2) {
 								a.SetDebugNotes("m");
-								return .15;//1
+								return w0_15;//.15
 							}
 							if (curCol == 3) {
 								a.SetDebugNotes("p");
-								return 2;//1
+								return w2_0;//2
 							}
 						}
-
 						if (a.children.Any()) {
 							if (a.children.Last() == a) {
 								a.SetDebugNotes("a");
-								return 1;
+								return w1_0;//1
 							} else {
 								a.SetDebugNotes("c");
-								return 2;
+								return w2_0;//2
 							}
 						}
-
 					}
 
 					if (isFirstCol(curCol)) {
 						a.SetDebugNotes("[");
-						//b.SetDebugNotes("([)");
-						return 1;
+						return w1_0;//1
 					}
 					if (isLastCol(curCol)) {
 
 						if (isBLeft && isARight && p1.parent == p2.parent) {
 
 							/*
-							
 									|
 							 o______o_______o
 							 |		|		|
 							o+o    o+a	   b+o
 							 |		|		|
 							o+o    o+o	   o+o
-
 							*/
 
 							a.SetDebugNotes("j" + a._self.Id);
 							b.SetDebugNotes("(j" + a._self.Id + ")");
-							return .6;
+							return w0_6;//.6
 						}
 
 						if (isBRight && isARight) {
 							/*
-							
 							 |
 							 o______o
 							 |		|
 							o+a		|-b
 							 |
 							o+o
-
 							*/
 							a.SetDebugNotes("k" + a._self.Id);
 							b.SetDebugNotes("(k" + a._self.Id + ")");
-							return 1.5;
+							return w1_5;//1.5
 						}
 
 						if (isBLeft && isALeft) {
 
 							/*
-							
 									|
 							  o_____o
 							  |		|
@@ -1111,103 +1066,21 @@ namespace RadialReview.Accessors.PDF {
 							*/
 							a.SetDebugNotes("k" + a._self.Id);
 							b.SetDebugNotes("(k" + a._self.Id + ")");
-							return 1.5;
+							return w1_5;//1.5
 						}
 
 						a.SetDebugNotes("]" + a._self.Id);
 						b.SetDebugNotes("(]" + a._self.Id + ")");
-						return 2;
+						return w1_0;//1
 					}
-
-					//if (a.children.Any() && a.children[0].children.Any() && b.children.Any() && b.children[0].children.Any()) {
-					//	//b.SetDebugNotes(".25");
-					//	//a.SetDebugNotes(".25");
-					//	//return .25;
-					//}
-
-
-					//if (a.children.Any() && b.children.Any() && a.children.Any(x => x.NotNull(y => y._self._compact.isLeaf ))&& b.children.Any(x => x.NotNull(y => y._self._compact.isLeaf)) {
-					//	return 0;
-					//}
-
-					//if (a.parent.parent == b.parent.parent && a.parent != b.parent) {
-					//	return 2;
-					//}
-
-
-
-					//if (a.parent == b.parent && a.children.Any() && b.children.Any()) {
-					//	return 3;
-					//}
-					//return 1;
-					//	if (a.parent == b.parent) {
-					//		if (b.NotNull(x => x._self._compact.side == "right") && a.NotNull(x => x._self._compact.side == "left")) {
-					//			b.SetDebugNotes(">>");
-					//			a.SetDebugNotes("<<");
-					//			return .5;
-					//		}
-					//	}
-					//}
+					
 
 					if (a.parent == b.parent || (p1 == p2 && ppnn)) {
-						a.SetDebugNotes("1");
-						//b.SetDebugNotes("(1)");
-						return 1;
+						a.SetDebugNotes("Q");
+						return w1_0;//1
 					}
-					a.SetDebugNotes("2");
-					//b.SetDebugNotes("(2)");
-					return 2;
-
-					//return a.parent == b.parent ? 1 : 2 /*2*/;
-
-
-					//if (a.children.Count() != 0 && b.children.Count() != 0) {
-					//	return a.parent == b.parent ? 1 : 1;
-					//}
-
-					////
-					//var aCompact = a.children.Any(x => x._self.NotNull(y => y._compact.side == "left" || y._compact.side == "right"));
-					//var bCompact = b.children.Any(x => x._self.NotNull(y => y._compact.side == "left" || y._compact.side == "right"));
-
-
-					//var aCompactLeft = a.children.Any(x => x._self.NotNull(y => y._compact.side == "left"));
-					//var aCompactRight = a.children.Any(x => x._self.NotNull(y => y._compact.side == "right"));
-					//var bCompactLeft = a.children.Any(x => x._self.NotNull(y => y._compact.side == "left"));
-					//var bCompactRight = a.children.Any(x => x._self.NotNull(y => y._compact.side == "right"));
-
-
-					//if (!aCompactLeft && aCompactRight && !bCompact) {
-					//	return a.parent == b.parent ? 1 : 1.5;
-					//}
-					//if (!aCompact && !bCompactLeft && bCompactRight) {
-					//	return a.parent == b.parent ? 1 : 1.5;
-					//}
-					////if (aCompactRight && bCompactLeft || bCompactRight && aCompactLeft) {
-					////	return a.parent == b.parent ? 1 : 1;
-					////}
-					//if (aCompact && bCompact) {
-					//	return 1;//a.parent == b.parent ? .5 : 0.5;
-					//}
-
-					//if (aCompact || bCompact) {
-					//	return a.parent == b.parent ? 1 : 1.5;
-					//}
-
-
-
-					//if (a._self != null && b._self != null &&
-					//		a._self._compact != null && b._self._compact != null &&
-					//		a._self._compact.isLeaf && b._self._compact.isLeaf) {
-					//	if (a._self._compact.side == "right" && b._self._compact.side == "left") {
-					//		return a.parent == b.parent ? .5 : 1.0;
-					//	} else if (a._self._compact.side == "left" && b._self._compact.side == "right") {
-					//		var mult = 1.0; // .6
-					//		return a.parent == b.parent ? mult :2 * mult;
-					//	}
-					//}
-
-
-					return a.parent == b.parent ? 1 : 1.5 /*2*/;
+					a.SetDebugNotes("W");
+					return w1_5;//1.5
 				}
 
 				private void sizeNode(node<N> node) {

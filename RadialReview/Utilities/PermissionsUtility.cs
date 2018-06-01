@@ -1222,8 +1222,8 @@ namespace RadialReview.Utilities {
 			if (vto.L10Recurrence.HasValue && vto.L10Recurrence.Value > 0) {
 				var l10 = session.Get<L10Recurrence>(vto.L10Recurrence.Value);
 				if (l10.ShareVto)
-					return ViewOrganization(vto.Organization.Id).Or(() => ViewOrganization(l10.OrganizationId), () => ViewL10Recurrence(vto.L10Recurrence.Value));
-				return ViewOrganization(vto.Organization.Id).ViewL10Recurrence(vto.L10Recurrence.Value);
+					return Or(() => ViewOrganization(l10.OrganizationId).ViewOrganization(vto.Organization.Id), () => ViewL10Recurrence(vto.L10Recurrence.Value));
+				return ViewL10Recurrence(vto.L10Recurrence.Value);
 				//return CanView(PermItem.ResourceType.L10Recurrence, vto.L10Recurrence.Value);
 			} else {
 				return CanView(PermItem.ResourceType.VTO, vtoId, @this => {
@@ -1712,21 +1712,16 @@ namespace RadialReview.Utilities {
 				return this;
 
 			var user = session.Get<UserOrganizationModel>(userId);
-
 			ViewUserOrganization(userId, false);
-
-			var obj = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x =>
-			x.DeleteTime == null
-			&& x.L10Recurrence.Id == recurrenceId
-			&& x.User.Id == userId).Take(1).SingleOrDefault();
+			var obj = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId && x.User.Id == userId).Take(1).SingleOrDefault();
 
 			if (obj == null) {
 				throw new PermissionsException("User is not attendee.");
 			}
+			var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf || (user.IsManager() && user.Organization.Settings.ManagersCanEditSelf);
+			return Or(x=>x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId),x=>x.ManagesUserOrganization(userId, canEditSelf));
 
-			CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId);
-
-			var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf
+			/*var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf
 				|| (user.IsManager() && user.Organization.Settings.ManagersCanEditSelf);
 
 			if (IsPermitted(x => x.ManagesUserOrganization(userId, !canEditSelf))) {
@@ -1735,7 +1730,7 @@ namespace RadialReview.Utilities {
 
 			if (!user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
 				return this;
-			}
+			}*/
 
 			throw new PermissionsException("You do not manage this user.") { NoErrorReport = true };
 		}

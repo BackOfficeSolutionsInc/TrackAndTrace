@@ -125,7 +125,7 @@ namespace TractionTools.Tests.TestUtils {
 					var newPath = path.ToList();
 					newPath.Add(item.Key);
 
-					Assert.AreEqual(newVal.Count, actVal.Count);
+					Assert.AreEqual(newVal.Count, actVal.Count, ""+item.Key	);
 
 					for (int i = 0; i < newVal.Count; i++) {
 						CompareModelProperties(newVal[i], actVal[i], newPath);

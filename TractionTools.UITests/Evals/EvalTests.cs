@@ -17,7 +17,7 @@ namespace TractionTools.UITests.Evals {
 		[TestMethod]
 		[TestCategory("Visual")]
 		public void Visual_ImageRegenerationIsFalse() {
-			Assert.IsFalse(Config.GetAppSetting("RegenerateImages", "false").ToBooleanJS(),"Turn off RegenerateImages in the app.config. All visual tests are incorrect until you do.");
+			Assert.IsFalse(Config.GetAppSetting("RegenerateImages", "false").ToBooleanJS(), "Turn off RegenerateImages in the app.config. All visual tests are incorrect until you do.");
 		}
 
 
@@ -89,7 +89,7 @@ namespace TractionTools.UITests.Evals {
 				var take = row.Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
 
-                d.Keyboard.SendKeys(Keys.Escape);
+				d.Keyboard.SendKeys(Keys.Escape);
 
 				take.Click();
 
@@ -118,8 +118,8 @@ namespace TractionTools.UITests.Evals {
 				var take = row.Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
 
-                d.Keyboard.SendKeys(Keys.Escape);
-                take.Click();
+				d.Keyboard.SendKeys(Keys.Escape);
+				take.Click();
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count > 0);
 				Thread.Sleep(2000);
 				var links = d.Finds("#nameList")[0].Finds("li a");
@@ -133,8 +133,8 @@ namespace TractionTools.UITests.Evals {
 
 				var take = d.Finds(".reviews-table tbody tr")[0].Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
-                d.Keyboard.SendKeys(Keys.Escape);
-                take.Click();
+				d.Keyboard.SendKeys(Keys.Escape);
+				take.Click();
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count > 0);
 				Thread.Sleep(2000);
 				var links = d.Finds("#nameList")[0].Finds("li a");
@@ -187,18 +187,18 @@ namespace TractionTools.UITests.Evals {
 				var take = row.Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
 
-                d.Keyboard.SendKeys(Keys.Escape);
+				d.Keyboard.SendKeys(Keys.Escape);
 
-                take.Click();
+				take.Click();
 
 				d.Find("[href='#advanced']").Click();
 
-				d.WaitUntil(5, x=> x.Finds(".customize .selectable").Count == 4);
+				d.WaitUntil(5, x => x.Finds(".customize .selectable").Count == 4);
 
 
 				d.Find("#first_" + org.Employee.Id).Click();
 				Thread.Sleep(1000);
-				d.Find("[name='customize_"+org.Employee.Id+"_"+org.E6.Id+"_" + org.E6Node.Id+"']").Click();
+				d.Find("[name='customize_" + org.Employee.Id + "_" + org.E6.Id + "_" + org.E6Node.Id + "']").Click();
 
 				Thread.Sleep(250);
 
@@ -226,17 +226,17 @@ namespace TractionTools.UITests.Evals {
 				take = row.Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
 
-                d.Keyboard.SendKeys(Keys.Escape);
-                take.Click();
+				d.Keyboard.SendKeys(Keys.Escape);
+				take.Click();
 
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count == 4);
-				
+
 				var links = d.Finds("#nameList")[0].Finds("li a");
 				Thread.Sleep(2000);
 				//Make sure we're reviewing only these users
 				org.AssertAllUsers(u => links.Any(x => x.Text == u.GetNameAndTitle()), org.Manager, org.E1, org.Employee, org.Middle);
 
-				
+
 			});
 
 			TestView(await org.GetCredentials(org.Employee), "/", d => {
@@ -253,8 +253,8 @@ namespace TractionTools.UITests.Evals {
 
 				var take = row.Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
-                d.Keyboard.SendKeys(Keys.Escape);
-                take.Click();
+				d.Keyboard.SendKeys(Keys.Escape);
+				take.Click();
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count > 0);
 				Thread.Sleep(2000);
 				var links = d.Finds("#nameList")[0].Finds("li a");
@@ -268,8 +268,8 @@ namespace TractionTools.UITests.Evals {
 
 				var take = d.Finds(".reviews-table tbody tr")[0].Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
-                d.Keyboard.SendKeys(Keys.Escape);
-                take.Click();
+				d.Keyboard.SendKeys(Keys.Escape);
+				take.Click();
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count > 0);
 				Thread.Sleep(2000);
 				var links = d.Finds("#nameList")[0].Finds("li a");
@@ -278,4 +278,4 @@ namespace TractionTools.UITests.Evals {
 			});
 		}
 	}
-}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+}

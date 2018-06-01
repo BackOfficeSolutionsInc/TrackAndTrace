@@ -19,29 +19,29 @@ using RadialReview.Models.Angular.DataType;
 using System.Threading.Tasks;
 
 namespace RadialReview.Controllers {
-    public partial class L10Controller : BaseController {
+	public partial class L10Controller : BaseController {
 
-        [Access(AccessLevel.UserOrganization)]
-        public ActionResult Details(long id, bool complete = false, long? start = null) {
-            ViewBag.NumberOfWeeks = (int)Math.Ceiling(TimingUtility.ApproxDurationOfPeriod(GetUser().Organization.Settings.ScorecardPeriod).TotalDays) * 13;
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Details(long id, bool complete = false, long? start = null) {
+			ViewBag.NumberOfWeeks = (int)Math.Ceiling(TimingUtility.ApproxDurationOfPeriod(GetUser().Organization.Settings.ScorecardPeriod).TotalDays) * 13;
 
-            var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
 
-            ViewBag.VtoId = recur.VtoId;
-            ViewBag.IncludeHeadlines = recur.HeadlineType;
-            ViewBag.ShowPriority = (/*recur.Prioritization == Models.L10.PrioritizationType.Invalid||*/recur.Prioritization == Models.L10.PrioritizationType.Priority);
-            ViewBag.StartDate = start.NotNull(x => x.Value);
-            ViewBag.Title = recur.Name;
+			ViewBag.VtoId = recur.VtoId;
+			ViewBag.IncludeHeadlines = recur.HeadlineType;
+			ViewBag.ShowPriority = (/*recur.Prioritization == Models.L10.PrioritizationType.Invalid||*/recur.Prioritization == Models.L10.PrioritizationType.Priority);
+			ViewBag.StartDate = start.NotNull(x => x.Value);
+			ViewBag.Title = recur.Name;
 
 			ViewBag.CanEdit = PermissionsAccessor.CanEdit(GetUser(), Models.PermItem.ResourceType.L10Recurrence, id);
 
 
 			return View(id);
-        }
+		}
 
 		[Access(AccessLevel.UserOrganization)]
 		[OutputCache(NoStore = true, Duration = 0)]
-		public async Task<JsonResult> DetailsData(long id, bool scores = true, bool historical = true, long start = 0, long end = long.MaxValue, bool fullScorecard = false,bool removeWeeks = false) {
+		public async Task<JsonResult> DetailsData(long id, bool scores = true, bool historical = true, long start = 0, long end = long.MaxValue, bool fullScorecard = false, bool removeWeeks = false) {
 			var startRange = Math2.Min(start.ToDateTime(), end.ToDateTime());
 			var endRange = Math2.Max(start.ToDateTime(), end.ToDateTime());
 
@@ -54,7 +54,7 @@ namespace RadialReview.Controllers {
 			var range = new DateRange(startRange, endRange);
 			var scorecardRange = new DateRange(scorecardStart, scorecardEnd);
 
-			var model = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard, range: range, scorecardRange: scorecardRange,populateManaging:true);
+			var model = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard, range: range, scorecardRange: scorecardRange, populateManaging: true);
 			//model.Name=null;
 
 			if (start != 0 && end != long.MaxValue) {

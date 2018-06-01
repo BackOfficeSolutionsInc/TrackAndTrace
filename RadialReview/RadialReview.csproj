@@ -243,6 +243,7 @@
     <Compile Include="Models\Frontend\EditorModels.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
     <Compile Include="Models\Notifications\NotificationModel.cs" />
+    <Compile Include="Models\Payments\PaymentCredit.cs" />
     <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateMeasurableViewModel.cs" />
     <Compile Include="Models\UserModels\UserRole.cs" />
@@ -1849,6 +1850,7 @@
     <Content Include="Views\L10\Delete.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
     <Content Include="Views\ClientSuccess\HFCategories.cshtml" />
+    <Content Include="Views\Organization\Flags.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
