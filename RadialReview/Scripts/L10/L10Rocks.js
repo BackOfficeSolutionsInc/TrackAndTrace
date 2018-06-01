@@ -31,7 +31,8 @@
 		$(rockRow).addClass("selected");
 		currentTodoDetailsId = $(rockRow).data("todo");
 		//var createtime = $(rockRow).data("createtime");
-		var duedate = parseJsonDate($(rockRow).attr("data-duedate"), true);
+		//var duedate = parseJsonDate($(rockRow).attr("data-duedate"), true);
+        var duedate = +$(rockRow).attr("data-duedate");
 		var accountable = $(rockRow).data("accountable");
 		var owner = $(rockRow).data("name");
 		var message = $(rockRow).data("message");
@@ -39,8 +40,14 @@
 		//var padId = $(rockRow).data("padid");
 		var rockId = $(rockRow).data("rockid");
 
-		var due = new Date(new Date(duedate).toUTCString().substr(0, 16));
+       
+
+		//var due = new Date(new Date(duedate).toUTCString().substr(0, 16));
+        var due = new Date(duedate);
 		//var checked = $(rockRow).find(".todo-checkbox").is(":checked");
+
+        console.log('dueDate=>', new Date(duedate))
+        console.log('dueDate time convert=>', due)
 
 		var detailsContents = $("<div class='component detail-component'></div>");
 		var milestoneDetailsContents = $("<div class='component milestone-component'></div>");
@@ -72,9 +79,9 @@
 			"<div >" +
 				"<span class='gray' style='width:75px;display:inline-block'>Due date:</span>" +
 				"<span style='width:250px;padding-left:10px;' class='duedate rock-duedate on-edit-enabled' data-accountable='" + accountable + "' data-rockid='" + rockId + "' >" +
-					//"<span class='date' style='display:inline-block' data-date='" + dateFormatter(due) + "' data-date-format='m-d-yyyy'>" +
-					//	"<input type='text' data-rockid='" + rockId + "' class='form-control datePicker' value='" + dateFormatter(due) + "'/>" +
-					//"</span>" +
+            "<span class='date' style='display:inline-block' data-date='" + clientDateFormat(due) + "' data-date-format='m-d-yyyy'>" +
+            "<input type='text' data-rockid='" + rockId + "' class='form-control datePicker' value='" + clientDateFormat(due) + "'/>" +
+					"</span>" +
 				"</span>" +
 			"</div>"
 		);
@@ -109,22 +116,24 @@
 			fixRocksDetailsBoxSize();
 		}
 
-		var rockDue = $(detailsContents).find(".rock-duedate");
-		generateDatepickerLocalize(rockDue, duedate, "rock-duedate").on("change", function (e, data) {
-			var rockid = data.containerElement.data("rockid");
-			$(".rock-id-" + rockid).data("duedate", data.serverDate);
-			recalculateMilestones();
-			$.ajax({
-				url: "/rocks/setduedate",
-				method: "POST",
-				data: {
-					rockId: data.containerElement.data("rockid"),
-					dueDate: data.serverDate
-				}, error: function () {
-					recalculateMilestones();
-				}
-			});
-		});
+		//var rockDue = $(detailsContents).find(".rock-duedate");
+  //      generateDatepickerLocalize(rockDue, duedate, "rock-duedate").on("change", function (e, data) {
+  //          var rockid = data.containerElement.data("rockid");
+  //          console.log('server date=>', data);
+  //          console.log('server date=>',data.serverDate);
+		//	$(".rock-id-" + rockid).data("duedate", data.serverDate);
+		//	recalculateMilestones();
+		//	$.ajax({
+		//		url: "/rocks/setduedate",
+		//		method: "POST",
+		//		data: {
+		//			rockId: data.containerElement.data("rockid"),
+		//			dueDate: data.serverDate
+		//		}, error: function () {
+		//			recalculateMilestones();
+		//		}
+		//	});
+		//});
 	}
 
 	var clickMilestoneRow = function (evt) {
@@ -193,7 +202,43 @@
 		var input = $("<textarea class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendRockMessage(this," + $(this).parent().data("rockid") + ")'>" + ($(this).html()) + "</textarea>");
 		$(this).parent().html(input);
 		input.focusTextToEnd();
-	});
+    });
+
+    $("body").on('click', ".rock-details .rock-duedate .date input", function () {
+        if (!$(this).attr("init")) {
+            var now = new Date();
+            var rockId = $(this).data("rockid");
+            
+            $(this).datepickerX({
+                format: 'dd-mm-yyyy',
+                todayBtn: true,
+                orientation: "top left"
+            }).on('changeDate', function (ev) {
+                //DO NOT CONVERT TO SERVER TIME...
+                var data_timeStamp = ev.date.addDays(.99999).valueOf();
+                $(".rock-id-" + rockId).data("duedate", data_timeStamp);
+
+                recalculateMilestones();
+                $.ajax({
+                    url: "/rocks/setduedate",
+                    method: "POST",
+                    data: {
+                        rockId: rockId,
+                        dueDate: data_timeStamp
+                    }, error: function () {
+                        recalculateMilestones();
+                    }
+                });
+            });
+            $(this).attr("init", 1);
+            $(this).blur();
+            var that = this;
+            setTimeout(function () {
+                $(that).datepickerX("show");
+            }, 10);
+        }
+    });
+
 });
 
 
