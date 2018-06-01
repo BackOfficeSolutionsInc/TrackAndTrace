@@ -23,7 +23,7 @@
                 }
             }
         },
-        template: "<span class='picture-container' title='hsla({{::user.colorCode}}, 36%, 49%, 1) {{user.Name}} {{user.colorCode}}'>" +
+        template: "<span class='picture-container' title='{{user.Name}}'>" +
         "<span ng-if='user.ImageUrl!=\"/i/userplaceholder\" && user.ImageUrl!=null && user.ImageUrl!=\"\"' class='picture' style='background: url({{user.ImageUrl}}) no-repeat center center; background-color:hsla({{::user.colorCode}}, 36%, 49%, 1);color:hsla({{::user.colorCode}}, 36%, 72%, 1)'></span>" +
         "<span ng-if='user.ImageUrl==\"/i/userplaceholder\"' class='picture keep-background' ng-style='getElementStyle(user.colorCode)'><span class='initials'>{{user.Initials}}</span></span>" +
         "<span ng-if='user.ImageUrl==null || user.ImageUrl==\"\"' class='picture keep-background' style='color:#ccc'>n/a</span>" +
