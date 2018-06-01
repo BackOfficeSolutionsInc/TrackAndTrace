@@ -1,6 +1,8 @@
-﻿using RadialReview.Accessors;
+﻿using NHibernate;
+using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Payments;
 using RadialReview.Models.Tasks;
@@ -54,11 +56,12 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult Plan_Monthly(long? orgid = null) {
+		public ActionResult Plan_Monthly(long? orgid = null, bool msg = false) {
 			var id = orgid ?? GetUser().Organization.Id;
 
 			var plan = PaymentAccessor.GetPlan(GetUser(), id);
 			var org = _OrganizationAccessor.GetOrganization(GetUser(), id);
+			ViewBag.ShowPostMsg = msg;
 			if (plan is PaymentPlan_Monthly) {
 				var pr = (PaymentPlan_Monthly)plan;
 				pr._Org = org;
@@ -85,19 +88,24 @@ namespace RadialReview.Controllers {
 					var org = s.Get<OrganizationModel>(id);
 					var model = s.Get<PaymentPlan_Monthly>(org.PaymentPlan.Id);
 
+					DateTime? originalScheduledFire = null;
+					DateTime? lastFire = null;
 					if (model == null)
 						throw new PermissionsException("Payment plan doesnt exist");
 
 					if (model != null && model.Task != null) {
-						var delete = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.OriginalTaskId == model.Task.OriginalTaskId).List().ToList();
-						foreach (var oldTask in delete) {
-							oldTask.DeleteTime = DateTime.UtcNow;
-							s.Update(oldTask);
-						}
+						var originalTaskId = model.Task.OriginalTaskId;
+						_DeleteOldTasks(s, originalTaskId, ref lastFire, out originalScheduledFire);
+						//var delete = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.OriginalTaskId == model.Task.OriginalTaskId).List().ToList();
+						//foreach (var oldTask in delete) {
+						//	oldTask.DeleteTime = DateTime.UtcNow;
+						//	s.Update(oldTask);
+						//}
 					}
 
-					var fireTime = DateTime.MaxValue;
-					var setDate = false;
+
+					//var fireTime = DateTime.MaxValue;
+					//var setDate = false;
 					var result = ResultObject.SilentSuccess();
 					//adjust the date
 					if (model.LastExecuted != null) {
@@ -107,43 +115,46 @@ namespace RadialReview.Controllers {
 						result.Refresh = true;
 					}
 
-					model.FreeUntil = Math2.Max(DateTime.UtcNow, date);
+					//model.FreeUntil = Math2.Max(DateTime.UtcNow, date);
 
 
-					if (model.FreeUntil.Date > DateTime.UtcNow.Date) {
-						fireTime = Math2.Min(fireTime, model.FreeUntil.Date);
-						setDate = true;
-					}
+					//if (model.FreeUntil.Date > DateTime.UtcNow.Date) {
+					//	fireTime = Math2.Min(fireTime, model.FreeUntil.Date);
+					//	setDate = true;
+					//}
 
-					if (model.L10FreeUntil != null) {
-						fireTime = Math2.Min(fireTime, model.L10FreeUntil.Value.Date);
-						setDate = true;
-					}
+					//if (model.L10FreeUntil != null) {
+					//	fireTime = Math2.Min(fireTime, model.L10FreeUntil.Value.Date);
+					//	setDate = true;
+					//}
 
-					if (model.ReviewFreeUntil != null) {
-						fireTime = Math2.Min(fireTime, model.ReviewFreeUntil.Value.Date);
-						setDate = true;
-					}
+					//if (model.ReviewFreeUntil != null) {
+					//	fireTime = Math2.Min(fireTime, model.ReviewFreeUntil.Value.Date);
+					//	setDate = true;
+					//}
 
-					if (setDate == false)
-						fireTime = DateTime.UtcNow.Date;
+					//if (setDate == false)
+					//	fireTime = DateTime.UtcNow.Date;
 
-					fireTime = Math2.Max(DateTime.UtcNow.Date, fireTime);
+					//fireTime = Math2.Max(DateTime.UtcNow.Date, fireTime);
+
+					DateTime fireTime = _CalculateFireTime(model, originalScheduledFire, lastFire);
 
 
-					model.Task = new ScheduledTask() {
-						MaxException = 1,
-						Url = "/Scheduler/ChargeAccount/" + model.OrgId,
-						NextSchedule = model.SchedulerPeriod(),
-						Fire = fireTime,
-						FirstFire = fireTime,
-						TaskName = ScheduledTask.MonthlyPaymentPlan,
-						EmailOnException = true,
-					};
-					s.Save(model.Task);
-					model.Task.OriginalTaskId = model.Task.Id;
-					model.Task.CreatedFromTaskId = model.Task.Id;
-					s.Update(model.Task);
+					_SavePaymentTask(s, fireTime, model);
+					//model.Task = new ScheduledTask() {
+					//	MaxException = 1,
+					//	Url = "/Scheduler/ChargeAccount/" + model.OrgId,
+					//	NextSchedule = model.SchedulerPeriod(),
+					//	Fire = fireTime,
+					//	FirstFire = fireTime,
+					//	TaskName = ScheduledTask.MonthlyPaymentPlan,
+					//	EmailOnException = true,
+					//};
+					//s.Save(model.Task);
+					//model.Task.OriginalTaskId = model.Task.Id;
+					//model.Task.CreatedFromTaskId = model.Task.Id;
+					//s.Update(model.Task);
 
 					tx.Commit();
 					s.Flush();
@@ -243,6 +254,63 @@ namespace RadialReview.Controllers {
 			}), JsonRequestBehavior.AllowGet);
 		}
 
+		[HttpGet]
+		[Access(AccessLevel.Radial)]
+		public JsonResult RemoveCredit(long id) {
+			var user = GetUser();
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, user);
+					perms.RadialAdmin();
+
+					var c = s.Get<PaymentCredit>(id);
+
+					if (c.DeleteTime != null)
+						throw new PermissionsException("Already deleted");
+
+					c.DeleteTime = DateTime.UtcNow;
+					s.Update(c);
+
+					tx.Commit();
+					s.Flush();
+					return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+				}
+			}
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.Radial)]
+		public JsonResult ApplyCredit(PaymentCredit model) {
+			var user = GetUser();
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, user);
+					perms.RadialAdmin();
+
+					//add creator
+					model.CreatedBy = user.Id;
+					model.AmountRemaining = model.OriginalAmount;
+
+					var org = s.Get<OrganizationModel>(model.OrgId);
+					var credits = s.QueryOver<PaymentCredit>().Where(x => x.OrgId == model.OrgId && x.DeleteTime == null).List().ToList();
+
+					if (org == null)
+						throw new PermissionsException("Organization does not exist");
+					if (model.OriginalAmount > 1000)
+						throw new PermissionsException("Credit must be less than $1000");
+					if (credits.Sum(x => x.AmountRemaining) + model.AmountRemaining < 0)
+						throw new PermissionsException("Total credits must be zero or greater.");
+
+					s.Save(model);
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+			return Json(ResultObject.SilentSuccess(model));
+		}
+
 		[HttpPost]
 		[Access(AccessLevel.Radial)]
 		public ActionResult Plan_Monthly(PaymentPlan_Monthly model) {
@@ -251,72 +319,108 @@ namespace RadialReview.Controllers {
 					var org = s.Get<OrganizationModel>(model.OrgId);
 
 					if (String.IsNullOrWhiteSpace(Request.Form["TaskId"])) {
+						DateTime? originalScheduledFire = null;
+						DateTime? lastFire = null;
 						if (!String.IsNullOrWhiteSpace(Request.Form["OldTaskId"])) {
-							var delete = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.OriginalTaskId == Request["OldTaskId"].ToLong()).List().ToList();
-							foreach (var oldTask in delete) {
-								oldTask.DeleteTime = DateTime.UtcNow;
-								s.Update(oldTask);
-							}
+							var originalTaskId = Request["OldTaskId"].ToLong();
+							_DeleteOldTasks(s, originalTaskId, ref lastFire, out originalScheduledFire);
 						}
 
-
-						var fireTime = DateTime.MaxValue;
-						var setDate = false;
-
-						if (model.FreeUntil.Date > DateTime.UtcNow.Date) {
-							fireTime = Math2.Min(fireTime, model.FreeUntil.Date);
-							setDate = true;
-						}
-
-						if (model.L10FreeUntil != null) {
-							fireTime = Math2.Min(fireTime, model.L10FreeUntil.Value.Date);
-							setDate = true;
-						}
-
-						if (model.ReviewFreeUntil != null) {
-							fireTime = Math2.Min(fireTime, model.ReviewFreeUntil.Value.Date);
-							setDate = true;
-						}
-
-						if (setDate == false)
-							fireTime = DateTime.UtcNow.Date;
-
-						fireTime = Math2.Max(DateTime.UtcNow.Date, fireTime);
-
-
-
-						model.Task = new ScheduledTask() {
-							MaxException = 1,
-							Url = "/Scheduler/ChargeAccount/" + model.OrgId,
-							NextSchedule = model.SchedulerPeriod(),
-							Fire = fireTime,
-							FirstFire = fireTime,
-							TaskName = ScheduledTask.MonthlyPaymentPlan,
-							EmailOnException = true,
-						};
-						s.Save(model.Task);
-						model.Task.OriginalTaskId = model.Task.Id;
-						model.Task.CreatedFromTaskId = model.Task.Id;
-						s.Update(model.Task);
+						DateTime fireTime = _CalculateFireTime(model, originalScheduledFire, lastFire);
+						_SavePaymentTask(s, fireTime, model);
 
 					} else {
 						model.Task = s.Get<ScheduledTask>(Request["TaskId"].ToLong());
 					}
 
-
-
 					org.PaymentPlan = model;
 
 					s.Update(org);
-
 					tx.Commit();
 					s.Flush();
 
 					model._Org = org;
 
-					return View(model);
+					return RedirectToAction("Plan_Monthly", new { msg = true, orgId = org.Id });
 				}
 			}
+		}
+
+		private static void _SavePaymentTask(ISession s, DateTime fireTime, PaymentPlan_Monthly model) {
+			model.Task = new ScheduledTask() {
+				MaxException = 1,
+				Url = "/Scheduler/ChargeAccount/" + model.OrgId,
+				NextSchedule = model.SchedulerPeriod(),
+				Fire = fireTime,
+				FirstFire = fireTime,
+				TaskName = ScheduledTask.MonthlyPaymentPlan,
+				EmailOnException = true,
+			};
+			s.Save(model.Task);
+			model.Task.OriginalTaskId = model.Task.Id;
+			model.Task.CreatedFromTaskId = model.Task.Id;
+			s.Update(model.Task);
+		}
+
+		private static void _DeleteOldTasks(ISession s, long originalTaskId, ref DateTime? lastFire, out DateTime? originalScheduledFire) {
+			var delete = s.QueryOver<ScheduledTask>().Where(x => x.OriginalTaskId == originalTaskId).List().ToList();
+			var maxDate = DateTime.MinValue;
+			foreach (var oldTask in delete) {
+				if (oldTask.DeleteTime == null) {
+					oldTask.DeleteTime = DateTime.UtcNow;
+					s.Update(oldTask);
+				}
+				if (oldTask.Executed == null) {
+					maxDate = Math2.Max(oldTask.Fire, maxDate);
+				}
+				if (oldTask.Executed != null && oldTask.Executed < DateTime.UtcNow) {
+					lastFire = Math2.Max(lastFire ?? DateTime.MinValue, oldTask.Executed.Value);
+				}
+			}
+			originalScheduledFire = maxDate;
+		}
+
+		private DateTime _CalculateFireTime(PaymentPlan_Monthly model, DateTime? originalScheduledFire, DateTime? lastFire) {
+			var fireTime = DateTime.MaxValue;
+			var setDate = false;
+
+
+			if (model.FreeUntil.Date > DateTime.UtcNow.Date) {
+				fireTime = Math2.Min(fireTime, model.FreeUntil.Date);
+				setDate = true;
+			}
+
+			if (model.L10FreeUntil != null) {
+				fireTime = Math2.Min(fireTime, model.L10FreeUntil.Value.Date);
+				setDate = true;
+			}
+
+			if (model.ReviewFreeUntil != null) {
+				fireTime = Math2.Min(fireTime, model.ReviewFreeUntil.Value.Date);
+				setDate = true;
+			}
+
+			if (originalScheduledFire != null) {
+				fireTime = Math2.Min(fireTime, originalScheduledFire.Value);
+				setDate = true;
+			}
+
+			if (setDate == false) {
+				fireTime = DateTime.UtcNow.Date.AddDays(30);
+				ShowAlert("Hey something went very wrong. Fallback date was used. Contact your manager with this information: <br/> {org:" + model.OrgId + ",originalFire:" + model.NotNull(x => x.Task.Fire) + ",newFire:" + fireTime + "}", AlertType.Error);
+			}
+			if (fireTime < DateTime.UtcNow.Date) {
+				fireTime = Math2.Max(fireTime, DateTime.UtcNow.Date);
+				ShowAlert("Hey something probably went very wrong. Customer will be charged today! Contact your manager with this information: <br/> {org:" + model.OrgId + ",originalFire:" + model.NotNull(x => x.Task.Fire) + ",newFire:" + fireTime + "}", AlertType.Error);
+			}
+
+			var period = model.SchedulePeriod ?? SchedulePeriodType.Monthly;
+			if (lastFire != null && lastFire <= fireTime && fireTime < lastFire.Value.Add(period.GetPeriod())) {
+				fireTime = lastFire.Value.Add(period.GetPeriod());
+				ShowAlert("Hey something probably went wrong. Customer would have been charged less than " + period.GetPeriod().TotalDays + " days after most recent charge! Automatically adjusting charge date. Contact your manager with this information: <br/> {org:" + model.OrgId + ",originalFire:" + model.NotNull(x => x.Task.Fire) + ",newFire:" + fireTime + "}", AlertType.Error);
+			}
+
+			return fireTime;
 		}
 
 		[Access(AccessLevel.UserOrganization)]

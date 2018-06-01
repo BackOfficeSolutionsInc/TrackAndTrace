@@ -2061,7 +2061,7 @@ namespace RadialReview.Accessors {
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
 
-			var section = AddTitledPage(doc, "HeadLines", Orientation.Landscape, addPageNumber: addPageNumber);
+			var section = AddTitledPage(doc, "Headlines", Orientation.Landscape, addPageNumber: addPageNumber);
 			Table table;
 			double mult;
 			Row row;

@@ -69,6 +69,7 @@
 ///          edit:<bool,function(settings)>(optional, false),																	///
 ///          remove:<bool,function(settings)>(optional, false),																	///
 ///          reorder:<bool,function(settings)>(optional, false),																///
+///          rowNum:<bool,function(settings)>(optional, false),																	///
 ///          name:<bool,function(settings)>(optional, null),																	///
 ///			 hideIfEmpty: (optional, default:false)																				///
 ///		 },...,																													///
@@ -218,16 +219,17 @@ var DataTable = function (settings) {
 	}
 	if (typeof (settings.clickAdd) === "object") {
 		settings._.onAddOptions = settings.clickAdd;
-		var oldSuccess = settings.clickAdd.success;
-		settings._.onAddOptions.success = function (d) {
-			if (oldSuccess) {
-				oldSuccss(d);
+
+		var oldSuccess =  settings.clickAdd.success;
+		settings._.onAddOptions.success = function(d){
+			if (oldSuccess){
+				oldSuccess(d);
 			}
 			addRow(d.Object);
 		};
 
 		settings.clickAdd = function (settings) {
-			debugger;
+			//debugger;
 			showModal(settings._.onAddOptions);
 		}
 

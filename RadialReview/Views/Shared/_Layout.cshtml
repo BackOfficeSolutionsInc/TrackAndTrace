@@ -334,14 +334,14 @@
 					$('[data-toggle="tooltip"]').tooltip();
 					ForceUnhide();
 					@if (ViewBag.Alert!=null){
-							@:showAlert("@ViewBag.Alert");
-                                        																																					                                                                                                    																																														                                        }
+							@:showAlert("@ViewBag.Alert",10000000);
+                    }
                     @if(ViewBag.Success!=null){
-                      @: showAlert("@ViewBag.Success", "alert-success" , "Success!" );
+                      @: showAlert("@ViewBag.Success", "alert-success" , "Success!" ,10000000);
                     }
                     @if(ViewBag.InfoAlert!=null){
-                        @: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" );
-                                        																																					                                                                                                    																																														                                        }
+                        @: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" ,10000000);
+                    }
                     UnstoreJsonAlert();
 
                     try{
