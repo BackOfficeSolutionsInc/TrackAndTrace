@@ -4,43 +4,43 @@ using System.Linq;
 using System.Web;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
+using System.Web.Script.Serialization;
+using System.Runtime.Serialization;
 
-namespace RadialReview.Models.Dashboard
-{
-	public enum TileType 
-	{
+namespace RadialReview.Models.Dashboard {
+	public enum TileType {
 		//DO NOT REORDER
 		Invalid = 0,
 		Profile,
 		Scorecard,
-        Todo,
-        Roles,
-        Rocks,
-        Values,
+		Todo,
+		Roles,
+		Rocks,
+		Values,
 		Manage,
 		Url,
-        L10Todos,
-        L10Scorecard,
-        L10Rocks,
-        Headlines,
-        L10Issues,
+		L10Todos,
+		L10Scorecard,
+		L10Rocks,
+		Headlines,
+		L10Issues,
 		FAQGuide,
 		Notifications,
 		L10SolvedIssues,
-        Tasks,
-        CoreProcesses,
-        Milestones
-    }
+		Tasks,
+		CoreProcesses,
+		Milestones
+	}
 
 
 	public class TileTypeBuilder {
-		
+
 
 		public TileType Type { get; private set; }
 		public string DataUrl { get; private set; }
 		public string KeyId { get; private set; }
 
-		private TileTypeBuilder(TileType type, string dataUrl,string keyId=null) {
+		private TileTypeBuilder(TileType type, string dataUrl, string keyId = null) {
 			Type = type;
 			DataUrl = dataUrl;
 			KeyId = keyId;
@@ -62,8 +62,7 @@ namespace RadialReview.Models.Dashboard
 	}
 
 
-	public class TileModel : ILongIdentifiable, IHistorical
-	{
+	public class TileModel : ILongIdentifiable, IHistorical {
 		public virtual long Id { get; set; }
 		public virtual bool Hidden { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
@@ -75,12 +74,15 @@ namespace RadialReview.Models.Dashboard
 		public virtual int X { get; set; }
 		public virtual int Y { get; set; }
 		public virtual TileType Type { get; set; }
+		[ScriptIgnore]
+		[IgnoreDataMember]
 		public virtual Dashboard Dashboard { get; set; }
+		[ScriptIgnore]
+		[IgnoreDataMember]
 		public virtual UserModel ForUser { get; set; }
-        public virtual string KeyId { get; set; }
+		public virtual string KeyId { get; set; }
 
-		public TileModel()
-		{
+		public TileModel() {
 			CreateTime = DateTime.UtcNow;
 		}
 
@@ -97,13 +99,11 @@ namespace RadialReview.Models.Dashboard
 			DataUrl = type.DataUrl;
 		}
 
-		public class TileMap : ClassMap<TileModel>
-		{
-			public TileMap()
-			{
-                Id(x => x.Id);
-                Map(x => x.KeyId);
-                Map(x => x.CreateTime);
+		public class TileMap : ClassMap<TileModel> {
+			public TileMap() {
+				Id(x => x.Id);
+				Map(x => x.KeyId);
+				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.DataUrl);
 				Map(x => x.Hidden);
@@ -119,5 +119,5 @@ namespace RadialReview.Models.Dashboard
 			}
 		}
 
-    }
+	}
 }

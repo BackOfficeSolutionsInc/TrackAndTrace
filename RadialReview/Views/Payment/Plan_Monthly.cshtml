@@ -5,34 +5,48 @@
 }
 
 <h1 class="pull-left">Plan Monthly:&nbsp;</h1>
-<h1 style="color:orange" class="pull-left"><b> @Model._Org.GetName()</b> (@Model._Org.Id)</h1>
+<h1 style="color:orange" class="pull-left"><a href="/organization/which/@Model._Org.Id"><b> @Model._Org.GetName()</b> (@Model._Org.Id)</a></h1>
 <div class="clearfix"></div>
 <a target="_blank" href="/account/calculateorganizationcharge/@Model._Org.Id">Calculate Charge</a>
+<h2 style="color:red">This page is dangerous, it may double charge clients. Don't use unless you have been trained!</h2>
 <hr />
 
-@using (Html.BeginForm())
-{
+@if (ViewBag.ShowPostMsg ?? false) {
+	<h1 style="color:blue">Check under <b>Current Task Info</b>  and confirm that "Fire" is when you want the next charge to take place.</h1>
+	using (Html.BeginScripts()) {
+		<script>
+			$(function () {
+				var cell = $(".currTask .display-label:contains(Fire):not(:contains(FirstFire))");
+				cell.addClass("selectedCell");
+				cell.next().addClass("selectedCell");
+
+			})();
+		</script>
+	}
+}
+
+
+@using (Html.BeginForm()) {
 	<div class="row">
 		<div class="col-sm-3">
 			<h3><b><u>Plan</u></b></h3>
 			@Html.EditorForModel()
-            <script>document.getElementById("SchedulePeriod").remove()</script>
-            <label>Period:</label>
-            @Html.EnumDropDownListFor(x => x.SchedulePeriod)
+			<script>document.getElementById("SchedulePeriod").remove()</script>
+			<label>Period:</label>
+			@Html.EnumDropDownListFor(x => x.SchedulePeriod)
 			<br /><hr />
 			<label>Task Id (delete to create new)</label>@Html.TextBox("TaskId", Model.Task == null ? (long?)null : Model.Task.Id)
 			<hr />
-			@Html.TextBox("OldTaskId", Model.Task == null ? (long?)null : Model.Task.OriginalTaskId,new {type="hidden"})
+			@Html.TextBox("OldTaskId", Model.Task == null ? (long?)null : Model.Task.OriginalTaskId, new { type = "hidden" })
 		</div>
-		<div class="col-sm-4 alignRight @((Model._CurrentTask !=null && Model.Task.Id != Model._CurrentTask.Id)?"grayed":"")" >
+		<div class="col-sm-4 alignRight @((Model._CurrentTask !=null && Model.Task.Id != Model._CurrentTask.Id)?"grayed":"")">
 			<h3><b><u>Task Info</u></b></h3>
 
-			@if (Model.Task != null)
-			{
+			@if (Model.Task != null) {
 				@Html.DisplayFor(x => x.Task)
 			}
 		</div>
-		<div class="col-sm-4">
+		<div class="col-sm-4 currTask">
 			<h3><b><u>Current Task Info</u></b></h3>
 			@Html.DisplayFor(x => x._CurrentTask)
 		</div>
@@ -40,17 +54,16 @@
 	<button type="submit">Submit</button>
 }
 
-@using (Html.BeginStyles())
-{
+@using (Html.BeginStyles()) {
 	<style>
 		.alignRight .display-label {
-			padding-right: 0px;	
+			padding-right: 0px;
 		}
 
 		.display-label {
-			 padding-right: 10px;
-			 font-weight: bold;
-		 }
+			padding-right: 10px;
+			font-weight: bold;
+		}
 
 		.display-field {
 			height: 20px;
@@ -58,6 +71,12 @@
 
 		.grayed {
 			color: #888;
+		}
+
+		.selectedCell{
+			background-color:blue;
+			color:white;   
+			padding-left: 6px;
 		}
 	</style>
 }

@@ -89,6 +89,31 @@
   border-bottom: 3px solid #2c77ba;
   padding-right: 4px;
 }
+.scorecard-table .edit-formula {
+  float: right;
+  right: 14px;
+  position: relative;
+  background-color: white;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border-radius: 11px;
+  border: 1px solid lightgray;
+  margin-right: -16px;
+  outline: none;
+}
+.scorecard-table .edit-formula span {
+  color: lightgray;
+  position: absolute;
+  margin-top: 1px;
+  font-size: 80%;
+  text-align: center;
+  /* color: white; */
+  padding-left: 5px;
+}
+.scorecard-table .edit-formula span:hover {
+  color: lightgrey !important;
+}
 .scorecard-table .heading {
   font-weight: bold;
   text-transform: uppercase;

@@ -193,6 +193,10 @@ body,
         padding: 0px !important;
     }
 
+    .picture-icon-cursor {
+        cursor: pointer;
+    }
+
     *:focus {
         outline: none;
     }
@@ -303,162 +307,180 @@ body,
         box-shadow: 0px 15px 12px -8px rgba(0, 0, 0, 0.2);
         background-color: white;
         margin-bottom: 18px;*/
-        /*&:hover{
+		/*&:hover{
             .BoxShadowHelper(1)
         }*/
-        .component {
-            //padding: 0;
-            box-shadow: inherit;
-            background-color: inherit;
-            margin-bottom: inherit;
-        }
-    }
-    /*input[type='text'] {
+		.component {
+			//padding: 0;
+			box-shadow: inherit;
+			background-color: inherit;
+			margin-bottom: inherit;
+		}
+	}
+	/*input[type='text'] {
         border: none;
         border-bottom: 1px solid #EFEFEF;
         padding-left: 5px;
         min-width: 250px;
         color: #555;
     }*/
-    .form-horizontal .form-group input[type='text'] {
-        margin-top: 2px;
-    }
-    /*input[type='text']:focus {
+	.form-horizontal .form-group input[type='text'] {
+		margin-top: 2px;
+	}
+	/*input[type='text']:focus {
         border: none;
         border-bottom: 1px dotted @traction-orange;
         outline: none;
         color: #000;
     }*/
-    .scorecard-list-container {
-        .create-row {
-            float: right;
-            .material-button(@traction-orange);
-            .material-button-fade;
+	.scorecard-list-container {
+		.create-row {
+			float: right;
+			.material-button(@traction-orange);
+			.material-button-fade;
 
-            &:before {
-                .material-button-plus;
-            }
+			&:before {
+				.material-button-plus;
+			}
 
-            &:after {
-                .material-button-measurable;
-            }
-        }
+			&:after {
+				.material-button-measurable;
+			}
+		}
 
-        #ScorecardTable_Over,
-        .score-column,
-        .admin-column,
-        .IsDivider,
-        .top-row,
-        .delete-column-alt,
-        .cumulative-column,
-        thead {
-            display: none;
-        }
+		#ScorecardTable_Over,
+		.score-column,
+		.admin-column,
+		.IsDivider,
+		.top-row,
+		.delete-column-alt,
+		.cumulative-column,
+		thead {
+			display: none;
+		}
 
-        .direction {
-            font-size: 13px;
-            top: -1px;
-            position: relative;
-            cursor: pointer;
-            width: 150px;
-            text-align: right;
-            padding-right: 10px;
-        }
+		.direction {
+			font-size: 13px;
+			top: -1px;
+			position: relative;
+			cursor: pointer;
+			width: 150px;
+			text-align: right;
+			padding-right: 10px;
+		}
 
-        .direction_1:empty::before,
-        .direction_GreaterThan:empty::before {
-            content: "Greater than or equal to";
-        }
+		.direction_1:empty::before,
+		.direction_GreaterThan:empty::before {
+			content: "Greater than or equal to";
+		}
 
-        .direction_-1:empty::before,
-        .direction_LessThan:empty::before {
-            content: "Less than";
-        }
+		.direction_-1:empty::before,
+		.direction_LessThan:empty::before {
+			content: "Less than";
+		}
 
-        .direction_2:empty::before,
-        .direction_GreaterThanNotEqual:empty::before {
-            content: "Greater than";
-        }
+		.direction_2:empty::before,
+		.direction_GreaterThanNotEqual:empty::before {
+			content: "Greater than";
+		}
 
-        .direction_-3:empty::before,
-        .direction_Between:empty::before {
-            content: "Between";
-        }
+		.direction_-3:empty::before,
+		.direction_Between:empty::before {
+			content: "Between";
+		}
 
-        .direction_-2:empty::before,
-        .direction_LessThanOrEqual:empty::before {
-            content: "Less than or equal to";
-        }
+		.direction_-2:empty::before,
+		.direction_LessThanOrEqual:empty::before {
+			content: "Less than or equal to";
+		}
 
-        .direction_0:empty::before,
-        .direction_EqualTo:empty::before {
-            content: "Equal to";
-        }
+		.direction_0:empty::before,
+		.direction_EqualTo:empty::before {
+			content: "Equal to";
+		}
 
 
-        .table-responsive {
-            overflow-y: hidden;
-        }
+		.table-responsive {
+			overflow-y: hidden;
+		}
 
-        & table {
-            width: 100%;
+		& table {
+			width: 100%;
 
-            .heading.admin-column {
-                font-size: 8px;
-                position: relative;
-                bottom: -3px;
-            }
+			.heading.admin-column {
+				font-size: 8px;
+				position: relative;
+				bottom: -3px;
+			}
 
-            .goal-column.value {
-                width: 120px;
-                min-width: 120px;
-            }
+			.goal-column.value {
+				width: 120px;
+				min-width: 120px;
+			}
 
-            .measurable-column {
-                width: 97%;
-                max-width: 97%;
+			.measurable-column {
+				width: 97%;
+				max-width: 97%;
 
-                input {
-                    width: 90%;
-                    max-width: 90%;
-                }
-            }
-        }
+				input {
+					width: 90%;
+					max-width: 90%;
+				}
+			}
+		}
 
-        tr.disabled {
-            display: none;
-        }
+		tr.disabled {
+			display: none;
+		}
 
-        .delete-row {
-            .delete-row()
-        }
-    }
+		.delete-row {
+			.delete-row()
+		}
+	}
 
-    .rock-list-container {
-        .create-row {
-            float: right;
-            .material-button(@traction-orange);
-            .material-button-fade;
+	.rock-list-container {
+		.grayRow:after {
+			content: "ARCHIVED";
+			text-align: center;
+			left: 0;
+			right: 0;
+			display: inline;
+			height: 0px;
+			padding: 13px;
+			letter-spacing: 18px;
+			position: absolute;
+			color: #c3c3c3;
+			font-size: 19px;
+			font-family: monospace;
+			font-weight: 900;
+			text-shadow: 0 0 8px white;
+			pointer-events: none;
+		}
 
-            &:before {
-                .material-button-plus;
-            }
+		.create-row {
+			float: right;
+			.material-button(@traction-orange);
+			.material-button-fade;
 
-            &:after {
-                .material-button-rock;
-            }
-        }
-        /*.picture-container { 
+			&:before {
+				.material-button-plus;
+			}
+
+			&:after {
+				.material-button-rock;
+			}
+		}
+		/*.picture-container { 
             width: 32px;
             height: 32px;
             vertical-align: bottom;
         }*/
-        thead,
-        .createtime-column,
-        .due-column {
-            display: none;
-        }
-        /*.due-column input{
+		thead1,
+		.createtime-column,
+		.due-column {
+			display: none;
+		}
+		/*.due-column input{
             min-width:90px;
             max-width:90px;
         }*/
@@ -854,16 +876,22 @@ body,
                     float: right;
                 }
 
-                @-moz-document url-prefix() {
-                    .glyphicon-triangle-right {
-                        top: -15px;
-                        left: 1px;
-                        font-size: 10px;
-                        color: #a2a2a2;
-                        float: right;
-                    }
-                }
+				@-moz-document url-prefix() {
+					.glyphicon-triangle-right {
+						top: -15px;
+						left: 1px;
+						font-size: 10px;
+						color: #a2a2a2;
+						float: right;
             }
+        }
+			}
+		}
+        /*.btn-advanced{
+            color: #a2a2a2;
+        }*/
+        .btn-advanced:hover {
+            color: darkred;
         }
 
         .wizard-extra-buttons {
@@ -986,6 +1014,7 @@ body,
 	.delete-row {
 		display: none !important;
 	}
+
 	.app td,
 	.app .direction {
 		cursor: default;
@@ -995,10 +1024,11 @@ body,
 		.opacity(.65);
 	}
 
+
 	.app input,
 	.app md-checkbox,
-	.app .item-wrapper,	
-	.btn-pages,.btn-texting,
+	.app .item-wrapper,
+	.btn-pages, .btn-texting, .btn-advanced,
 	.on-edit-enabled {
 		pointer-events: none;
 		touch-action: none;
@@ -1054,3 +1084,24 @@ body,
 	width: 47px;
 	height: 47px;
 }
+
+body.admin-disabled {
+    .user-pane .create-row {
+        opacity: .5 !important;
+        pointer-events: none;
+        background-color: gray;
+    }
+
+    .scorecard-list-container .create-row {
+        opacity: .5 !important;
+        pointer-events: none;
+        background-color: gray;
+    }
+
+    .rock-pane .create-row {
+        opacity: .5 !important;
+        pointer-events: none;
+        background-color: gray;
+    }
+}
+

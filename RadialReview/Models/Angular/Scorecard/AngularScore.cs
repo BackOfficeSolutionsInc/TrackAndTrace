@@ -8,13 +8,10 @@ using RadialReview.Utilities;
 using RadialReview.Models.Enums;
 using System.Runtime.Serialization;
 
-namespace RadialReview.Models.Angular.Scorecard
-{
-	public class AngularScore : BaseAngular
-	{
-		public AngularScore(ScoreModel score,DateTime? absoluteUpdateTime,bool skipUser=true) : base(score.Id)
-		{
-			Week = DateTime.SpecifyKind(score.ForWeek,DateTimeKind.Utc);
+namespace RadialReview.Models.Angular.Scorecard {
+	public class AngularScore : BaseAngular {
+		public AngularScore(ScoreModel score, DateTime? absoluteUpdateTime, bool skipUser = true) : base(score.Id) {
+			Week = DateTime.SpecifyKind(score.ForWeek, DateTimeKind.Utc);
 			ForWeek = TimingUtility.GetWeekSinceEpoch(Week);
 			if (Id == 0)
 				Id = score.MeasurableId - ForWeek;
@@ -23,9 +20,9 @@ namespace RadialReview.Models.Angular.Scorecard
 			Measurable = new AngularMeasurable(score.Measurable, skipUser);
 			Measured = score.Measured;
 			DateEntered = score.DateEntered;
-            Target = score.OriginalGoal ?? Measurable.Target;
-            AltTarget = score.AlternateOriginalGoal ?? Measurable.AltTarget;
-            Direction = score.OriginalGoalDirection??Measurable.Direction;
+			Target = score.OriginalGoal ?? Measurable.Target;
+			AltTarget = score.AlternateOriginalGoal ?? Measurable.AltTarget;
+			Direction = score.OriginalGoalDirection ?? Measurable.Direction;
 
 			if (score._Editable == false)
 				Disabled = true;
@@ -33,21 +30,21 @@ namespace RadialReview.Models.Angular.Scorecard
 			UT = absoluteUpdateTime;
 		}
 
-		public AngularScore(){
+		public AngularScore() {
 		}
 		public long ForWeek { get; set; }
 		public DateTime Week { get; set; }
 
 		[IgnoreDataMember]
-		public AngularMeasurable Measurable { get; set; } 
-        public long MeasurableId { get { return Measurable.Id; } }
+		public AngularMeasurable Measurable { get; set; }
+		public long MeasurableId { get { return Measurable.Id; } }
 
 		public DateTime? DateEntered { get; set; }
 		public decimal? Measured { get; set; }
-        public bool? Disabled { get; set; }
-        public LessGreater? Direction { get; set; }
-        public decimal? Target { get; set; }
-        public decimal? AltTarget { get; set; }
+		public bool? Disabled { get; set; }
+		public LessGreater? Direction { get; set; }
+		public decimal? Target { get; set; }
+		public decimal? AltTarget { get; set; }
 
-    }
+	}
 }

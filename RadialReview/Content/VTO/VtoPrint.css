@@ -20,7 +20,7 @@
 
 
 	.vto-print .page {
-		height:50%;
+		height: 50%;
 		overflow: hidden;
 		padding: 0.5in;
 		height: 7in;
@@ -342,6 +342,7 @@
 			height: 49%;
 			height: calc(50% - 14px);
 		}
+
 		.vto-print .copyright {
 			position: absolute;
 			color: #ccc !important;
@@ -370,7 +371,7 @@
 		padding: 0;
 	}
 
-	
+
 
 	@page {
 		size: landscape;

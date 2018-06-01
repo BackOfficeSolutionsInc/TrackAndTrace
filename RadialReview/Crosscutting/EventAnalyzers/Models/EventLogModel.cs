@@ -12,8 +12,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Models {
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 
+		public virtual long OrgId { get; set; }
+
 		public virtual String EventAnalyzerName { get; set; }
-		public virtual DateTime LastRun { get; set; }
+		public virtual DateTime RunTime { get; set; }
 		public virtual EventFrequency Frequency { get; set; }
 
 		public EventLogModel() {
@@ -25,9 +27,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Models {
 				Id(x => x.Id);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
+				Map(x => x.OrgId);
 
 				Map(x => x.EventAnalyzerName);
-				Map(x => x.LastRun);
+				Map(x => x.RunTime);
 				Map(x => x.Frequency);
 			}
 

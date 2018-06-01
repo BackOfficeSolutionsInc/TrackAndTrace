@@ -27,7 +27,7 @@ using RadialReview.Api;
 namespace TractionTools.Tests.API.v1 {
 	[TestClass]
 	public class PositionApiTests_v1 : BaseApiTest {
-		public PositionApiTests_v1() : base(VERSION_1) {}
+		public PositionApiTests_v1() : base(VERSION_1) { }
 
 		[TestMethod]
 		[TestCategory("Api_V1")]
@@ -37,12 +37,12 @@ namespace TractionTools.Tests.API.v1 {
 			positionController.MockUser(c.E1);
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
+			var createPosition = await _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
 			MockHttpContext();
 			await posAccessor.AddPositionToUser(c.E1, c.E1.Id, createPosition.Id);
 			var getMinePosition = positionController.GetMinePosition();
-            CompareModelProperties(/*APIResult.PositionApiTests_v0_TestGetMinePosition*/ getMinePosition);
-            Assert.AreEqual(createPosition.Id, getMinePosition.FirstOrDefault().Id);
+			CompareModelProperties(/*APIResult.PositionApiTests_v0_TestGetMinePosition*/ getMinePosition);
+			Assert.AreEqual(createPosition.Id, getMinePosition.FirstOrDefault().Id);
 		}
 
 		[TestMethod]
@@ -53,10 +53,10 @@ namespace TractionTools.Tests.API.v1 {
 			positionController.MockUser(c.E1);
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
-			var result = await positionController.AddPositionRoles(createPosition.Id, new TitleModel() { title="Test Position"});
-            CompareModelProperties(/*APIResult.PositionApiTests_v0_TestUpdatePositionRoles*/ result);
-            var getRole = RoleAccessor.GetRoleById(c.E1, result.Id);
+			var createPosition = await _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
+			var result = await positionController.AddPositionRoles(createPosition.Id, new TitleModel() { title = "Test Position" });
+			CompareModelProperties(/*APIResult.PositionApiTests_v0_TestUpdatePositionRoles*/ result);
+			var getRole = RoleAccessor.GetRoleById(c.E1, result.Id);
 			Assert.AreEqual(result.Id, getRole.Id);
 		}
 
@@ -69,9 +69,9 @@ namespace TractionTools.Tests.API.v1 {
 			positionController.MockUser(c.E1);
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
-			var createPosition = positionController.CreatePosition(new TitleModel { title = "TestPosition" });
-            CompareModelProperties(/*APIResult.PositionApiTests_v0_TestCreatePosition*/ createPosition);
-            var getPosition = positionController.GetPositions(createPosition.Id);
+			var createPosition = await positionController.CreatePosition(new TitleModel { title = "TestPosition" });
+			CompareModelProperties(/*APIResult.PositionApiTests_v0_TestCreatePosition*/ createPosition);
+			var getPosition = positionController.GetPositions(createPosition.Id);
 			Assert.AreEqual(createPosition.Id, getPosition.Id);
 		}
 
@@ -84,10 +84,10 @@ namespace TractionTools.Tests.API.v1 {
 			positionController.MockUser(c.E1);
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
-			var createPosition = positionController.CreatePosition(new TitleModel { title = "TestPosition" });
+			var createPosition = await positionController.CreatePosition(new TitleModel { title = "TestPosition" });
 			var getPosition = positionController.GetPositions(createPosition.Id);
-            CompareModelProperties(/*APIResult.PositionApiTests_v0_TestGetPositions*/ getPosition);
-            Assert.AreEqual(createPosition.Id, getPosition.Id);
+			CompareModelProperties(/*APIResult.PositionApiTests_v0_TestGetPositions*/ getPosition);
+			Assert.AreEqual(createPosition.Id, getPosition.Id);
 		}
 
 
@@ -101,10 +101,10 @@ namespace TractionTools.Tests.API.v1 {
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
 			var nameUpdated = "TestPosition_Updated";
-			var createPosition = positionController.CreatePosition(new TitleModel { title = "TestPosition" });
+			var createPosition = await positionController.CreatePosition(new TitleModel { title = "TestPosition" });
 			await positionController.UpdatePositions(createPosition.Id, new TitleModel { title = nameUpdated });
-            //CompareModelProperties(/*APIResult.PositionApiTests_v0_TestUpdatePositions*/ UpdatePosition);
-            var getPosition = positionController.GetPositions(createPosition.Id);
+			//CompareModelProperties(/*APIResult.PositionApiTests_v0_TestUpdatePositions*/ UpdatePosition);
+			var getPosition = positionController.GetPositions(createPosition.Id);
 			Assert.AreEqual(nameUpdated, getPosition.Name);
 		}
 	}

@@ -335,10 +335,12 @@
     <Compile Include="Codebase\TestSqliteDbTime.cs" />
     <Compile Include="Controllers\DashboardControllerTests.cs" />
     <Compile Include="Controllers\L10ControllerTests.cs" />
+    <Compile Include="Controllers\MeetingWizardTests.cs" />
     <Compile Include="Controllers\TestMigration.cs" />
     <Compile Include="Controllers\TwilioApi.cs" />
     <Compile Include="Controllers\PasswordTests.cs" />
     <Compile Include="Crosscutting\Events\EventProcessorTests.cs" />
+    <Compile Include="Crosscutting\Events\EventSubscriptionTests.cs" />
     <Compile Include="Engines\SurveyEngineTests.cs" />
     <Compile Include="Crosscutting\Hooks\EnterpriseHookTest.cs" />
     <Compile Include="Crosscutting\Integrations\ActiveCampaignTest.cs" />
@@ -417,13 +419,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="_data\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\RadialReview\RadialReview.csproj">
       <Project>{7104473e-4e35-4107-9b11-4346291f8b4e}</Project>
       <Name>RadialReview</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="_data\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

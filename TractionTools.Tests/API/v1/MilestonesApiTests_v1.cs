@@ -48,7 +48,7 @@ namespace TractionTools.Tests.Api.v1 {
 
 			string name = "TestMilestone";
 			DateTime date = DateTime.UtcNow.AddDays(7);
-			var milestone = RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, name, date);
+			var milestone =await RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, name, date);
 
 			var getRocksMilestones = milestonesController.GetMilestones(milestone.Id);
 			CompareModelProperties(/*APIResult.MilestonesApiTests_v0_TestGetMilestones*/ getRocksMilestones);
@@ -80,7 +80,7 @@ namespace TractionTools.Tests.Api.v1 {
 			//await L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
 			var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
 
-			var addRocksMilestones = RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, "TestMilestone", DateTime.Now.AddDays(7));
+			var addRocksMilestones =await RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, "TestMilestone", DateTime.Now.AddDays(7));
 
 			//Update Milestone
 			milestonesController.UpdateMilestones(addRocksMilestones.Id, new MilestonesController.UpdateMilestoneModel {
@@ -112,7 +112,7 @@ namespace TractionTools.Tests.Api.v1 {
 			//await L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
 			var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
 
-			var addRocksMilestones = RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, "TestMilestone", DateTime.Now.AddDays(7));
+			var addRocksMilestones =await RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, "TestMilestone", DateTime.Now.AddDays(7));
 
 			//remove milestone
 			milestonesController.RemoveMilestones(addRocksMilestones.Id);

@@ -31,7 +31,7 @@ namespace RadialReview.Models.Angular.VTO {
 		public long? CopiedFrom { get; set; }
 		public String Name { get; set; }
 
-        public string _TractionPageName { get; set; }
+		public string _TractionPageName { get; set; }
 
 		public bool IncludeVision { get; set; }
 
@@ -50,18 +50,18 @@ namespace RadialReview.Models.Angular.VTO {
 		public String CoreValueTitle { get; set; }
 		public String IssuesListTitle { get; set; }
 		public static AngularVTO Create(VtoModel vto) {
-            return new AngularVTO() {
-                Id = vto.Id,
-                L10Recurrence = vto.L10Recurrence,
-                CreateTime = vto.CreateTime,
-                CopiedFrom = vto.CopiedFrom,
-                TenYearTarget = vto.TenYearTarget,
-                Name = vto.Name, //AngularVtoString.Create(vto.Name),
-                Values = AngularCompanyValue.Create(vto._Values),
-                CoreFocus = AngularCoreFocus.Create(vto.CoreFocus),
-                Strategy = AngularStrategy.Create(vto.MarketingStrategy),
+			return new AngularVTO() {
+				Id = vto.Id,
+				L10Recurrence = vto.L10Recurrence,
+				CreateTime = vto.CreateTime,
+				CopiedFrom = vto.CopiedFrom,
+				TenYearTarget = vto.TenYearTarget,
+				Name = vto.Name, //AngularVtoString.Create(vto.Name),
+				Values = AngularCompanyValue.Create(vto._Values),
+				CoreFocus = AngularCoreFocus.Create(vto.CoreFocus),
+				Strategy = AngularStrategy.Create(vto.MarketingStrategy),
 				//vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)),
-				Strategies= vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)).ToList(),
+				Strategies = vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)).ToList(),
 
 				OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan),
 				QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
@@ -76,35 +76,35 @@ namespace RadialReview.Models.Angular.VTO {
 
 		public long? L10Recurrence { get; set; }
 
-        public void ReplaceVision(VtoModel vto) {
-            // Id = vto.Id;
-            //L10Recurrence = vto.L10Recurrence,
-            //CreateTime = vto.CreateTime,
-            //CopiedFrom = vto.CopiedFrom,
-            _TractionPageName = Name ?? "";
-            Name = vto.Name;
+		public void ReplaceVision(VtoModel vto) {
+			// Id = vto.Id;
+			//L10Recurrence = vto.L10Recurrence,
+			//CreateTime = vto.CreateTime,
+			//CopiedFrom = vto.CopiedFrom,
+			_TractionPageName = Name ?? "";
+			Name = vto.Name;
 
-            TenYearTarget = vto.TenYearTarget;
-            //Name = vto.Name, //AngularVtoString.Create(vto.Name),
-            Values = AngularCompanyValue.Create(vto._Values);
-            CoreFocus = AngularCoreFocus.Create(vto.CoreFocus);
-            Strategy = AngularStrategy.Create(vto.MarketingStrategy); //vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x));
+			TenYearTarget = vto.TenYearTarget;
+			//Name = vto.Name, //AngularVtoString.Create(vto.Name),
+			Values = AngularCompanyValue.Create(vto._Values);
+			CoreFocus = AngularCoreFocus.Create(vto.CoreFocus);
+			Strategy = AngularStrategy.Create(vto.MarketingStrategy); //vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x));
 			Strategies = vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)).ToList();
-            //OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan);
-            //QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
-            ThreeYearPicture = AngularThreeYearPicture.Create(vto.ThreeYearPicture);
-            //Issues = AngularVtoString.Create(vto._Issues),
-            TenYearTargetTitle = vto.TenYearTargetTitle ?? "10-YEAR TARGET™";
-            CoreValueTitle = vto.CoreValueTitle ?? "CORE VALUES";
-            //IssuesListTitle = vto.IssuesListTitle ?? "ISSUES LIST",
-            IncludeVision = true;
-        }
-    }
+			//OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan);
+			//QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
+			ThreeYearPicture = AngularThreeYearPicture.Create(vto.ThreeYearPicture);
+			//Issues = AngularVtoString.Create(vto._Issues),
+			TenYearTargetTitle = vto.TenYearTargetTitle ?? "10-YEAR TARGET™";
+			CoreValueTitle = vto.CoreValueTitle ?? "CORE VALUES";
+			//IssuesListTitle = vto.IssuesListTitle ?? "ISSUES LIST",
+			IncludeVision = true;
+		}
+	}
 	#region DataTypes
 	//public class AngularVtoIssue : AngularVtoString {
 	//	public string Owner { get; set; }
 	//	public string OwnerInitials { get; set; }
-		
+
 	//	public static AngularVtoIssue Create(VtoIssue strs) {
 	//		return new AngularVtoIssue() {
 	//			Data = strs.Data,
@@ -227,7 +227,7 @@ namespace RadialReview.Models.Angular.VTO {
 				//TenYearTarget = (marketingStrategyModel.TenYearTarget),
 				Uniques = AngularVtoString.Create(marketingStrategyModel._Uniques),
 				MarketingStrategyTitle = marketingStrategyModel.MarketingStrategyTitle ?? "MARKETING STRATEGY",
-				Title= (marketingStrategyModel.Title),
+				Title = (marketingStrategyModel.Title),
 			};
 		}
 	}

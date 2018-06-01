@@ -174,7 +174,7 @@ namespace RadialReview.Controllers {
 			if (!anyPages)
 				return Content("No pages to print.");
 
-			var doc1 = merger.Flatten("Quarterly Printout", true, true, GetUser().Organization.Settings.GetDateFormat(),recur.Name);
+			var doc1 = merger.Flatten("Quarterly Printout", true, true, GetUser().Organization.Settings.GetDateFormat(), recur.Name);
 
 
 			return Pdf(doc1, now + "_" + angRecur.Basics.Name + "_QuarterlyPrintout.pdf", true);

@@ -1,4 +1,4 @@
-﻿angular.module("tree", []).directive("tree", ["$timeout", function ($timeout) {
+﻿angular.module("tree", []).directive("tree", ["$timeout","$window", function ($timeout, $window) {
 	return {
 		templateNamespace: 'svg',
 		restrict: "A",
@@ -11,8 +11,8 @@
 		//transclude: true,
 		replace: true,
 		template: '<g><g class="pz-zoom"> <rect class="pz-rect" width="100%" height="100%" style="width:100%;height:100%;fill:transparent;"></rect>' +
-                  '<g class="pz-pan"><g class="tt-tree"></g></g>' +
-                  '</g></g>',
+				  '<g class="pz-pan"><g class="tt-tree"></g></g>' +
+				  '</g></g>',
 		controller: ["$element", "$scope", "$rootScope", "$timeout", "$q", function ($element, $scope, $rootScope, $timeout, $q) {
 
 			var svg = $element.closest("svg");
@@ -20,29 +20,29 @@
 				var filter = d3.select(svg[0]).append("filter");
 
 				filter.attr("id", "glow")
-                    .attr("width", "10px")
-                    .attr("height", "10px")
-                    .attr("x", -.75)
-                    .attr("y", -.75);
+					.attr("width", "10px")
+					.attr("height", "10px")
+					.attr("x", -.75)
+					.attr("y", -.75);
 				filter.append("feFlood")
-                    .attr("result", "flood")
-                    .attr("flood-color", "gray")
-                    .attr("flood-opacity", "1");
+					.attr("result", "flood")
+					.attr("flood-color", "gray")
+					.attr("flood-opacity", "1");
 
 				filter.append("feComposite")
-                    .attr("in", "flood")
-                    .attr("result", "mask")
-		            .attr("in2", "SourceGraphic")
-		            .attr("operator", "in");
+					.attr("in", "flood")
+					.attr("result", "mask")
+					.attr("in2", "SourceGraphic")
+					.attr("operator", "in");
 				filter.append("feMorphology")
-                    .attr("in", "mask")
-                    .attr("result", "dilated")
-                    .attr("radius", "2")
-                    .attr("operator", "dilate");
+					.attr("in", "mask")
+					.attr("result", "dilated")
+					.attr("radius", "2")
+					.attr("operator", "dilate");
 				filter.append("feGaussianBlur")
-                    .attr("in", "dilated")
-                    .attr("result", "blurred")
-                    .attr("stdDeviation", "5");
+					.attr("in", "dilated")
+					.attr("result", "blurred")
+					.attr("stdDeviation", "5");
 
 				var femerge = filter.append("feMerge");
 				femerge.append("feMergeNode").attr("in", "blurred");
@@ -53,7 +53,7 @@
 				console.error(e);
 			}
 
-			$scope.duration = 250;
+			$scope.duration = 0;//250;
 
 			function getNode(source) {
 				if (typeof (source) === "string") {
@@ -161,16 +161,17 @@
 								x = x * scale + svg.width() / 2;
 								y = y * scale + svg.height() / 3;
 								scale = Math.max(1, scale);
-								d3.select(pz[0]).transition()
-                                    .duration($scope.duration)
-                                    .ease("quad-in-out")
-                                    .attr("transform", "translate(" + x + "," + y + ")scale(" + scale + ")");
+								d3.select(pz[0])
+									//.transition()
+									//.duration($scope.duration)
+									//.ease("quad-in-out")
+									.attr("transform", "translate(" + x + "," + y + ")scale(" + scale + ")");
 								if (panzoom) {
 									panzoom.scale(scale);
 									panzoom.translate([x, y]);
 									$timeout(function () {
 										resolve();
-									}, $scope.duration);
+									}, /*$scope.duration ||*/ 250);
 								} else {
 									reject("No panzoom");
 								}
@@ -244,7 +245,7 @@
 								all.attr("filter", null);
 							}, 500);
 						}, console.error);
-					}, $scope.duration || 250);
+					},/* $scope.duration ||*/ 250);
 
 				}, 1);
 			}
@@ -320,6 +321,17 @@
 		}],
 		link: function (scope, element, attr, ctrl, transclude) {
 
+
+			var fallback = false;
+			if (msieversion()) {
+				var v = msieversion();
+				if (v >= 11) {
+					fallback = true; //Edge
+				} else {
+					fallback = true; //IE
+				}
+			}
+
 			var svg = element.closest("svg");
 			////BEGIN PAN ZOOM 
 
@@ -343,16 +355,17 @@
 
 			d3.select(pzZoom[0]).call(scope.panzoom);
 			////END PAN ZOOM
-
-
-
-
-
+			
 			var minHeight = 20;
 			var minWidth = 20;
 
 			var i = 0,
-            duration = scope.duration;
+			duration = scope.duration;
+
+			if (fallback) {
+				duration = 0;
+			}
+
 			scope.root = scope.root || {};
 
 			var vSeparation = 40;
@@ -433,6 +446,16 @@
 
 			var expandSource = scope.root;
 
+
+
+			function adjWidth(d) {
+				if ($window.OverrideNodeWidth) {
+					//debugger;
+					return $window.OverrideNodeWidth;
+				}
+				return d.width;
+			}
+
 			scope.updater = function (source, first) {
 
 				if (typeof (first) === "undefined")
@@ -443,7 +466,7 @@
 
 				// Compute the new tree layout.
 				var nodes = tree.nodes(scope.root),
-                    links = tree.links(nodes);
+					links = tree.links(nodes);
 
 				//Object.defineProperty(object.prototype, 'x', {
 				//	get: function () {
@@ -455,7 +478,6 @@
 				//		this.x = val;
 				//	}
 				//});
-
 				//for (var n in nodes) {
 				//	var node = nodes[n];
 				//	if (node._compact && node._compact.isLeaf) {
@@ -469,10 +491,6 @@
 				//		}
 				//	}
 				//}
-
-
-
-
 
 				// Normalize for fixed-depth.
 				var maxHeightRow = {};
@@ -489,9 +507,9 @@
 					rowWidth[d.depth] = rowWidth[d.depth] || [];
 					rowWidth[d.depth].push({
 						ox: d.x,
-						w: d.width
+						w: adjWidth(d)
 					});
-					maxWidth = Math.max(maxWidth, d.width);
+					maxWidth = Math.max(maxWidth, adjWidth(d));
 				});
 				for (var i = 1; i <= maxDepth; i++) {
 					maxHeightRow[i] = maxHeightRow[i] + maxHeightRow[i - 1];
@@ -515,23 +533,23 @@
 
 				// Update the nodes�
 				var node = self.selectAll("g.node")
-                    .data(nodes, function (d) {
-                    	return (d.Id);//|| (d.Id = ++i));
-                    });
+					.data(nodes, function (d) {
+						return (d.Id);//|| (d.Id = ++i));
+					});
 
 				// Enter any new nodes at the parent's previous position.
 				var nodeEnter = node.enter().append("g")
-                    .call(scope.dragListener || function () { })
-                    .call(dragListener)
-                    .attr("class", "node")
-                    .style("opacity", -10)
-                    .attr("transform", function (d) {
-                    	var es = expandSource;
-                    	if (!es || !es.x0 || !es.y0)
-                    		es = source;
+					.call(scope.dragListener || function () { })
+					.call(dragListener)
+					.attr("class", "node")
+					.style("opacity", -10)
+					.attr("transform", function (d) {
+						var es = expandSource;
+						if (!es || !es.x0 || !es.y0)
+							es = source;
 
-                    	return "translate(" + (es.x0) + "," + es.y0 + ")";
-                    })
+						return "translate(" + (es.x0) + "," + es.y0 + ")";
+					})
 					.classed("root-node", function (d) {
 						return d.Id == scope.root.Id;
 					})
@@ -556,74 +574,74 @@
 				ghost.append("circle").on("mouseover", overCircle).on("mouseout", outCircle);
 				ghost.append("text").text("").on("mouseover", overCircle).on("mouseout", outCircle);
 
-				var fallback = false;
-				if (msieversion()) {
-					var v = msieversion();
-					if (v >= 11) {
-						fallback = true; //Edge
-					} else {
-						fallback = true; //IE
-					}
-				}
+
 				// Transition nodes to their new position.
 				var nodeUpdate = node
-                    .attr("data-id", function (d) { return d.Id })
-                    .attr("data-height", function (d) {
-                    	var maxH = 0; var maxW = 0;
-                    	var dive = function (parent) {
-                    		if ($(parent).css("display") == "none")
-                    			return;
+					.attr("data-id", function (d) { return d.Id })
+					.attr("data-height", function (d) {
+						var maxH = 0; var maxW = 0;
+						var dive = function (parent) {
+							if ($(parent).css("display") == "none")
+								return;
+							if ($(parent).is("md-autocomplete"))
+								return;
 
-                    		//if ($(parent).prop("tagName").toLowerCase() !== "foreignobject") {
-                    		var bb = { width: 0, height: 0 };
-                    		if (fallback && !$(parent).hasClass("acc-fallback-ignore")) {
-                    			bb = $(parent)[0].getBoundingClientRect();
-                    		}
+							//if ($(parent).prop("tagName").toLowerCase() !== "foreignobject") {
+							var bb = { width: 0, height: 0 };
+							if (fallback && !$(parent).hasClass("acc-fallback-ignore")) {
+								bb = $(parent)[0].getBoundingClientRect();
+							}
 
-                    		var oh = Math.max($(parent).outerHeight(), bb.height);
-                    		var ow = Math.max($(parent).outerWidth(), bb.width);
-                    		if (ow > 0)
-                    			maxH = Math.max(maxH, oh);
-                    		if (oh > 0)
-                    			maxW = Math.max(maxW, ow);
+							if ($(parent).is(".acc-contents")) {
+								//console.log($(parent), $(parent).outerHeight());
+								//debugger;
+							}
 
-                    		//}
-                    		$(parent).children().each(function () {
-                    			dive(this);
-                    		});
-                    	}
-                    	d3.selectAll(".acc-fallback-ignore").classed("acc-fallback-hidden", true);
-                    	dive(this);
-                    	d3.selectAll(".acc-fallback-ignore").classed("acc-fallback-hidden", false);
-                    	d.height = maxH;
-                    	d.width = maxW;
-                    	return d.height;
-                    })
-                    .attr("data-width", function (d) {
-                    	return d.width;
-                    })
-                    .classed("collapsed", function (d) {
-                    	return d._children && d._children.length;
-                    })
-                    .transition()
-                    .duration(duration)
-                    .style("opacity", 1)
-                    .attr("transform", function (d) {
-                    	var adj = 0;
-                    	//if (d._compact&&d._compact.isLeaf) {
-                    	//	if (d._compact.side == "left") {
-                    	//		adj -= d.width/2;
-                    	//	} else {
-                    	//		adj += d.width/2;
-                    	//	}
-                    	//}
 
-                    	return "translate(" + (d.x - d.width / 2 + adj) + "," + d.y + ")";
-                    });
+							var oh = Math.max($(parent).outerHeight(), bb.height / scope.panzoom.scale());
+							var ow = Math.max($(parent).outerWidth(), bb.width / scope.panzoom.scale());
+							if (ow > 0)
+								maxH = Math.max(maxH, oh);
+							if (oh > 0)
+								maxW = Math.max(maxW, ow);
+
+							//}
+							$(parent).children().each(function () {
+								dive(this);
+							});
+						}
+						d3.selectAll(".acc-fallback-ignore").classed("acc-fallback-hidden", true);
+						dive(this);
+						d3.selectAll(".acc-fallback-ignore").classed("acc-fallback-hidden", false);
+						d.height = maxH;
+						d.width = maxW;
+						return d.height;
+					})
+					.attr("data-width", function (d) {
+						return adjWidth(d);
+					})
+					.classed("collapsed", function (d) {
+						return d._children && d._children.length;
+					})
+					//.transition()
+					//.duration(duration)
+					.style("opacity", 1)
+					.attr("transform", function (d) {
+						var adj = 0;
+						//if (d._compact&&d._compact.isLeaf) {
+						//	if (d._compact.side == "left") {
+						//		adj -= d.width/2;
+						//	} else {
+						//		adj += d.width/2;
+						//	}
+						//}
+
+						return "translate(" + (d.x - adjWidth(d) / 2 + adj) + "," + d.y + ")";
+					});
 
 				nodeUpdate.select(".ghost circle")
-                    .attr("r", 10)
-                    .attr("transform", function (d) { return "translate(" + (d.width / 2 - .25) + "," + (d.height + 15.5) + ")"; });
+					.attr("r", 10)
+					.attr("transform", function (d) { return "translate(" + (adjWidth(d) / 2 - .25) + "," + (d.height + 15.5) + ")"; });
 
 				if (scope.ttUpdate)
 					scope.ttUpdate(node);
@@ -632,7 +650,7 @@
 				var nodeExit = node.exit();
 
 				var afterExit = nodeExit.attr("transform", function (d) { return "translate(" + source.x + "," + source.y + ")"; })
-                    .style("opacity", -10);
+					.style("opacity", -10);
 
 				if (scope.ttExit)
 					scope.ttExit(afterExit);
@@ -643,12 +661,12 @@
 
 				// Update the links�
 				var link = self.selectAll("path.link")
-                    .data(links, function (d) { return d.target.Id; });
+					.data(links, function (d) { return d.target.Id; });
 
 				// Enter any new links at the parent's previous position.
 				link.enter().insert("path", "g")
-                    .attr("class", "link")
-                    .style("opacity", 0)
+					.attr("class", "link")
+					.style("opacity", 0)
 					.classed("root-node-link", function (d) {
 						if (d.source && scope.root)
 							return d.source.Id == scope.root.Id;
@@ -665,18 +683,19 @@
 					};
 					return diagonal(o);
 				})
-					.transition()
-                    .duration(duration * 2)
-                    .style("opacity", 1);
+					//.transition()
+					//.duration(duration * 2)
+					.style("opacity", 1);
 
 				// Transition exiting nodes to the parent's new position.
-				link.exit().transition()
-                    .duration(duration)
-                    .attr("d", function (d) {
-                    	var o = { x: source.x, y: source.y };
-                    	return diagonal({ source: o, target: o });
-                    })
-                    .style("opacity", 0)
+				link.exit()
+					//.transition()
+					//.duration(duration)
+					.attr("d", function (d) {
+						var o = { x: source.x, y: source.y };
+						return diagonal({ source: o, target: o });
+					})
+					.style("opacity", 0)
 					.remove();
 
 				// Stash the old positions for transition.
@@ -687,7 +706,7 @@
 
 				var maxWidth = baseWidth;
 				nodes.forEach(function (d) {
-					maxWidth = Math.max(maxWidth, d.width);
+					maxWidth = Math.max(maxWidth, adjWidth(d));
 				});
 
 				tree.nodeSize([maxWidth + hSeparation, baseHeight]);
@@ -849,9 +868,9 @@
 				var link = svgGroup.selectAll(".templink").data(data);
 
 				link.enter().append("path")
-                    .attr("class", "templink")
-                    .attr("d", d3.svg.diagonal())
-                    .attr('pointer-events', 'none');
+					.attr("class", "templink")
+					.attr("d", d3.svg.diagonal())
+					.attr('pointer-events', 'none');
 
 				link.attr("d", d3.svg.diagonal());
 
@@ -876,7 +895,8 @@
 					scaleX = translateCoords.scale[0];
 					scaleY = translateCoords.scale[1];
 					scale = zoomListener.scale();
-					svgGroup.transition().attr("transform", "translate(" + translateX + "," + translateY + ")scale(" + scale + ")");
+					svgGroup//.transition()
+						.attr("transform", "translate(" + translateX + "," + translateY + ")scale(" + scale + ")");
 					d3.select(domNode).select('g.node').attr("transform", "translate(" + translateX + "," + translateY + ")");
 					zoomListener.scale(zoomListener.scale());
 					zoomListener.translate([translateX, translateY]);
@@ -915,19 +935,19 @@
 					// remove link paths
 					links = tree.links(nodes);
 					nodePaths = svgGroup.selectAll("path.link")
-                        .data(links, function (d) {
-                        	return d.target.Id;
-                        }).remove();
+						.data(links, function (d) {
+							return d.target.Id;
+						}).remove();
 					// remove child nodes
 					nodesExit = svgGroup.selectAll("g.node")
-                        .data(nodes, function (d) {
-                        	return d.Id;
-                        }).filter(function (d, i) {
-                        	if (d.Id == draggingNode.Id) {
-                        		return false;
-                        	}
-                        	return true;
-                        }).remove();
+						.data(nodes, function (d) {
+							return d.Id;
+						}).filter(function (d, i) {
+							if (d.Id == draggingNode.Id) {
+								return false;
+							}
+							return true;
+						}).remove();
 				}
 
 				// remove parent link
@@ -946,107 +966,107 @@
 			var ox, oy;
 			var skipDrag = false;
 			dragListener = d3.behavior.drag()
-                .on("dragstart", function (d) {
-                	//debugger;
-                	skipDrag = false;
-                	if (d == scope.root)
-                		skipDrag = true;
+				.on("dragstart", function (d) {
+					//debugger;
+					skipDrag = false;
+					if (d == scope.root)
+						skipDrag = true;
 
-                	if (skipDrag)
-                		return;
-                	if (typeof (scope.ttDragStart) === "function") {
-                		try {
-                			scope.ttDragStart(d);
-                		} catch (e) {
-                			skipDrag = true;
-                			return;
-                		}
-                	}
-                	if (skipDrag)
-                		return;
-                	selfSvg.classed("is-dragging", true);
+					if (skipDrag)
+						return;
+					if (typeof (scope.ttDragStart) === "function") {
+						try {
+							scope.ttDragStart(d);
+						} catch (e) {
+							skipDrag = true;
+							return;
+						}
+					}
+					if (skipDrag)
+						return;
+					selfSvg.classed("is-dragging", true);
 
-                	dragStarted = true;
-                	nodes = tree.nodes(d);
-                	ox = d.width / 2;
-                	oy = -50;
+					dragStarted = true;
+					nodes = tree.nodes(d);
+					ox = adjWidth(d) / 2;
+					oy = -50;
 
-                	console.log(ox, oy);
-                	d3.event.sourceEvent.stopPropagation();
-                	// it's important that we suppress the mouseover event on the node being dragged. Otherwise it will absorb the mouseover event and the underlying node will not detect it d3.select(this).attr('pointer-events', 'none');
-                })
-                .on("drag", function (d) {
-                	if (skipDrag)
-                		return;
-                	if (dragStarted) {
-                		domNode = this;
-                		initiateDrag(d, domNode);
-                	}
-                	var pz = element.find('.pz-pan');
+					console.log(ox, oy);
+					d3.event.sourceEvent.stopPropagation();
+					// it's important that we suppress the mouseover event on the node being dragged. Otherwise it will absorb the mouseover event and the underlying node will not detect it d3.select(this).attr('pointer-events', 'none');
+				})
+				.on("drag", function (d) {
+					if (skipDrag)
+						return;
+					if (dragStarted) {
+						domNode = this;
+						initiateDrag(d, domNode);
+					}
+					var pz = element.find('.pz-pan');
 
-                	// get coords of mouseEvent relative to svg container to allow for panning
-                	relCoords = d3.mouse(svg.get(0));
-                	// console.log(relCoords);
+					// get coords of mouseEvent relative to svg container to allow for panning
+					relCoords = d3.mouse(svg.get(0));
+					// console.log(relCoords);
 
-                	if (relCoords[0] < panBoundary) {
-                		panTimer = true;
-                		pan(this, 'left');
-                	} else if (relCoords[0] > (svg.width() - panBoundary)) {
-                		panTimer = true;
-                		pan(this, 'right');
-                	} else if (relCoords[1] < panBoundary) {
-                		panTimer = true;
-                		pan(this, 'up');
-                	} else if (relCoords[1] > (svg.height() - panBoundary)) {
-                		panTimer = true;
-                		pan(this, 'down');
-                	} else {
-                		try {
-                			clearTimeout(panTimer);
-                			// console.log("clear1");
-                		} catch (e) {
-                		}
-                	}
+					if (relCoords[0] < panBoundary) {
+						panTimer = true;
+						pan(this, 'left');
+					} else if (relCoords[0] > (svg.width() - panBoundary)) {
+						panTimer = true;
+						pan(this, 'right');
+					} else if (relCoords[1] < panBoundary) {
+						panTimer = true;
+						pan(this, 'up');
+					} else if (relCoords[1] > (svg.height() - panBoundary)) {
+						panTimer = true;
+						pan(this, 'down');
+					} else {
+						try {
+							clearTimeout(panTimer);
+							// console.log("clear1");
+						} catch (e) {
+						}
+					}
 
-                	d.x0 += d3.event.dx;
-                	d.y0 += d3.event.dy;
-                	var node = d3.select(this);
-                	node.attr("transform", "translate(" + (d.x0 - ox) + "," + (d.y0 - oy) + ")");
-                	updateTempConnector();
-                })
-                .on("dragend", function (d) {
-                	selfSvg.classed("is-dragging", false);
-                	panTimer = null;
-                	if (skipDrag) {
-                		return;
-                	}
-                	domNode = this;
-                	var dnid = null;
-                	if (draggingNode)
-                		dnid = draggingNode.Id;
+					d.x0 += d3.event.dx;
+					d.y0 += d3.event.dy;
+					var node = d3.select(this);
+					node.attr("transform", "translate(" + (d.x0 - ox) + "," + (d.y0 - oy) + ")");
+					updateTempConnector();
+				})
+				.on("dragend", function (d) {
+					selfSvg.classed("is-dragging", false);
+					panTimer = null;
+					if (skipDrag) {
+						return;
+					}
+					domNode = this;
+					var dnid = null;
+					if (draggingNode)
+						dnid = draggingNode.Id;
 
-                	var dat = {
-                		oldParentId: null,
-                		newParentId: null,
-                		id: dnid,
-                		swap: false
-                	};
-                	if (selectedNode) {
-                		dat.swap = true;
-                		// now remove the element from the parent, and insert it into the new elements children
-                		dat.oldParentId = draggingNode.parent.Id;
-                		scope.swap(draggingNode.Id, selectedNode.Id);
-                		dat.newParentId = selectedNode.Id;
-                		// Make sure that the node being added to is expanded so user can see added node is correctly moved
-                		scope.expand(selectedNode);
-                		endDrag();
-                	} else {
-                		endDrag();
-                	}
-                	if (typeof (scope.ttDragEnd) === "function") {
-                		scope.ttDragEnd(d, dat);
-                	}
-                });
+					var dat = {
+						oldParentId: null,
+						newParentId: null,
+						id: dnid,
+						swap: false
+					};
+					if (selectedNode) {
+						dat.swap = true;
+						// now remove the element from the parent, and insert it into the new elements children
+						dat.oldParentId = draggingNode.parent.Id;
+						scope.swap(draggingNode.Id, selectedNode.Id);
+						dat.newParentId = selectedNode.Id;
+						// Make sure that the node being added to is expanded so user can see added node is correctly moved
+						scope.expand(selectedNode);
+						endDrag();
+					} else {
+						endDrag();
+					}
+					if (typeof (scope.ttDragEnd) === "function") {
+						scope.ttDragEnd(d, dat);
+					}
+				});
 
 			function endDrag() {
 				selectedNode = null;

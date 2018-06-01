@@ -50,13 +50,22 @@ namespace RadialReview.Models.Synchronize {
 	}
 	public class SyncLock {
 
-        public const string CREATE_KEY = "__CreateKey";
+		public const int MAX_SYNC_KEYS = 64;
+		public static string CREATE_KEY(int id) {
+			return "__CreateKey_" + id;
+		}
+
+		public static string CREATE_KEY(string key) {
+			var hash = Math.Abs((key ?? "").GetHashCode());
+			return CREATE_KEY(hash % MAX_SYNC_KEYS);
+		}
+
 		public virtual string Id { get; set; }
 		public virtual DateTime LastUpdateDb { get; set; }
 		public virtual int UpdateCount { get; set; }
-        public virtual long? LastClientUpdateTimeMs { get; set; }
+		public virtual long? LastClientUpdateTimeMs { get; set; }
 
-        public SyncLock() {
+		public SyncLock() {
 			//LastUpdateDb = DateTime.UtcNow;
 		}
 
@@ -64,9 +73,9 @@ namespace RadialReview.Models.Synchronize {
 			public Map() {
 				Id(x => x.Id).GeneratedBy.Assigned();
 				Map(c => c.LastUpdateDb).CustomSqlType("timestamp").Length(3).Generated.Always();
-                Map(x => x.UpdateCount);
-                Map(x => x.LastClientUpdateTimeMs);
-            }
+				Map(x => x.UpdateCount);
+				Map(x => x.LastClientUpdateTimeMs);
+			}
 		}
 	}
 }

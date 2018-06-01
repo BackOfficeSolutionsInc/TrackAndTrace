@@ -22,7 +22,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 		public ISession Session { get; set; }
 		public IForModel About { get; set; }
 
-		public TraverseBuildAboutAngular(ISession s,IForModel about,Action<AngularSurveyAboutContainer> setter, string templateModifier = AngularSurveyItemFormat.DEFAULT_TEMPLATE_MODIFIER) {
+		public TraverseBuildAboutAngular(ISession s, IForModel about, Action<AngularSurveyAboutContainer> setter, string templateModifier = AngularSurveyItemFormat.DEFAULT_TEMPLATE_MODIFIER) {
 			SetSurveyContainer = setter;
 			TemplateModifier = templateModifier;
 			Session = s;
@@ -88,7 +88,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 		}
 
 		private void AdjPrettyName(Dictionary<string, string> dict, AngularForModel forModel) {
-			var name = dict.GetOrDefault(forModel.ToKey(),"[err]");
+			var name = dict.GetOrDefault(forModel.ToKey(), "[err]");
 			forModel.SetPrettyString(name);
 		}
 
@@ -97,20 +97,20 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 			var lookup = GenLookups(surveyContainer);
 			var allSurveys = surveyContainer.GetSurveys();
 			var surveysAbout = allSurveys.GroupBy(x => x.GetAbout())
-				.Where(x=>x.Key.ToKey()==About.ToKey()) // filter out extra surveys
+				.Where(x => x.Key.ToKey() == About.ToKey()) // filter out extra surveys
 				.ToList();
 			var container = AngularSurveyAboutContainer.ConstructShallow(surveyContainer);
 			foreach (var surveyAbouts in surveysAbout) {
-				var allSectionsAbout = surveyAbouts.SelectMany(x => x.GetSections()).GroupBy(x=>x.GetSectionMergerKey()).ToList();
+				var allSectionsAbout = surveyAbouts.SelectMany(x => x.GetSections()).GroupBy(x => x.GetSectionMergerKey()).ToList();
 				var survey = AngularSurveyAbout.ConstructShallow(surveyAbouts.First());
 				AdjPrettyName(lookup, survey.About);
 				foreach (var sectionAbout in allSectionsAbout) {
-					var section = AngularSurveyAboutSection.ConstructShallow(sectionAbout.First());					
+					var section = AngularSurveyAboutSection.ConstructShallow(sectionAbout.First());
 					var allItemContainers = sectionAbout.SelectMany(x => x.GetItemContainers()).GroupBy(x => x.GetItemMergerKey()).ToList();
 					foreach (var items in allItemContainers) {
 						var itemContainer = AngularSurveyItemContainerAbout.ConstructShallow(items.First());
 						foreach (var response in items) {
-							if (response.HasResponse()){
+							if (response.HasResponse()) {
 								var r = new AngularSurveyResponse(response.GetResponse());
 								AdjPrettyName(lookup, r.By);
 								AdjPrettyName(lookup, r.About);

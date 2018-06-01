@@ -141,7 +141,7 @@ namespace TractionTools.Tests.Controllers {
 				Assert.AreEqual(2, model.Rocks.Count());
 				Assert.AreEqual("Rock1", model.Rocks.First().Name);
 				Assert.AreEqual("Rock2", model.Rocks.Last().Name);
-				Assert.IsNull(model.Scorecard); // This is requested with a Load Url
+				//Assert.IsNull(model.Scorecard); // This is requested with a Load Url
 
 				Assert.AreEqual(0, model.L10Todos.Count());
 				Assert.AreEqual(0, model.L10SolvedIssues.Count());
@@ -191,7 +191,7 @@ namespace TractionTools.Tests.Controllers {
 				Assert.AreEqual(2, model.Rocks.Count());
 				Assert.AreEqual("Rock1", model.Rocks.First().Name);
 				Assert.AreEqual("Rock2", model.Rocks.Last().Name);
-				Assert.IsNull(model.Scorecard); // This is requested with a Load Url
+				//Assert.IsNull(model.Scorecard); // This is requested with a Load Url
 
 				//Number of tiles
 				Assert.AreEqual(1, model.L10Todos.Count());

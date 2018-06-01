@@ -65,8 +65,8 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<JsonResult> AddRole(long aid,AttachType atype) {
-			await AccountabilityAccessor.AddRole(GetUser(), new Attach(atype,aid));
+		public async Task<JsonResult> AddRole(long aid,AttachType atype,int? insert=null,string name=null) {
+			await AccountabilityAccessor.AddRole(GetUser(), new Attach(atype,aid),name, insert:insert);
 			return Json(ResultObject.SilentSuccess());
 		}
 

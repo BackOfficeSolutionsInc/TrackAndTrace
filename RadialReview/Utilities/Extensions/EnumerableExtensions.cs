@@ -11,6 +11,7 @@ using System.Web.Mvc;
 using RadialReview.Utilities.DataTypes;
 using System.Collections;
 using static RadialReview.EnumerableExtensions;
+using RadialReview.AliveExtensions;
 
 namespace RadialReview {
     public class AliveEnumerable<TSource> : IEnumerable<TSource> {
@@ -116,19 +117,19 @@ namespace RadialReview {
         }
         public static IEnumerable<TResult> SelectAlive<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector) where TSource : IDeletable {
             return source.Alive().Select(selector);
-        }
+		}
 
-        public static IEnumerable<T> Alive<T>(this IEnumerable<T> source) {
-            if (source == null)
-                return null;
+		public static IEnumerable<T> Alive<T>(this IEnumerable<T> source) {
+			if (source == null)
+				return null;
 
-            /*if (source is AliveEnumerable<T>)
+			/*if (source is AliveEnumerable<T>)
                 return source;*/
-            return source.Where(x => x.Alive());
-            //return new AliveEnumerable<T>(source.Where(x => x.Alive()));
-        }
+			return source.Where(x => x.Alive());
+			//return new AliveEnumerable<T>(source.Where(x => x.Alive()));
+		}
 
-        public static List<TSource> ToListAlive<TSource>(this IEnumerable<TSource> source) where TSource : IDeletable {
+		public static List<TSource> ToListAlive<TSource>(this IEnumerable<TSource> source) where TSource : IDeletable {
             return source.Alive().ToList();
         }
 

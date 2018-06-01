@@ -76,11 +76,22 @@ namespace RadialReview.Accessors {
 
 		#region Angular
 
-		public static async Task<AngularRecurrence> GetOrGenerateAngularRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false, DateRange scorecardRange = null) {
+		public static async Task<AngularRecurrence> GetOrGenerateAngularRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false, DateRange scorecardRange = null, bool populateManaging = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					var angular = await GetOrGenerateAngularRecurrence(s, perms, recurrenceId, includeScores, includeHistorical, fullScorecard, range, forceIncludeTodoCompletion, scorecardRange);
+
+					if (populateManaging) {
+						var permissionLookup = new DefaultDictionary<long, bool>(id => perms.IsPermitted(x => x.CanAdminMeetingItemsForUser(id, recurrenceId)));
+						foreach (var item in angular.Rocks) {
+							item.Owner.Managing = permissionLookup[item.Owner.Id]; 
+						}
+
+						foreach (var item in angular.Attendees) {
+							item.Managing = permissionLookup[item.Id];
+						}
+					}
 
 					tx.Commit();
 					s.Flush();
@@ -105,9 +116,12 @@ namespace RadialReview.Accessors {
 			}).ToList();
 
 			scorecardRange = scorecardRange ?? range;
+			bool includeClosedHeadlines = true;
 			DateRange lookupRange = null;
 			if (range != null) {
 				lookupRange = new DateRange(range.StartTime, range.EndTime);
+			} else {
+				includeClosedHeadlines = false;
 			}
 
 			if (fullScorecard) {
@@ -138,7 +152,7 @@ namespace RadialReview.Accessors {
 
 			var measurables = scoresAndMeasurables.MeasurablesAndDividers.Select(x => {
 				if (x.IsDivider) {
-					var m = AngularMeasurable.CreateDivider(x._Ordering, x.Id);
+					var m = AngularMeasurable.CreateDivider(x);
 					m.RecurrenceId = x.L10Recurrence.Id;
 					return m;
 				} else {
@@ -173,7 +187,7 @@ namespace RadialReview.Accessors {
 			recur.Rocks = allRocks.Distinct(x => x.Id);
 			recur.Todos = GetAllTodosForRecurrence(s, perms, recurrenceId, includeClosed: includeHistorical, range: range).Select(x => new AngularTodo(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
 			recur.IssuesList.Issues = GetAllIssuesForRecurrence(s, perms, recurrenceId, includeCompleted: includeHistorical, range: range).Select(x => new AngularIssue(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
-			recur.Headlines = GetAllHeadlinesForRecurrence(s, perms, recurrenceId, includeClosed: includeHistorical, range: range).Select(x => new AngularHeadline(x)).OrderByDescending(x => x.CloseTime ?? DateTime.MaxValue).ToList();
+			recur.Headlines = GetAllHeadlinesForRecurrence(s, perms, recurrenceId, includeClosed: includeClosedHeadlines, range: range).Select(x => new AngularHeadline(x)).OrderByDescending(x => x.CloseTime ?? DateTime.MaxValue).ToList();
 			recur.Notes = recurrence._MeetingNotes.Select(x => new AngularMeetingNotes(x)).ToList();
 
 			recur.ShowSegue = recurrence._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Segue);
@@ -303,7 +317,8 @@ namespace RadialReview.Accessors {
 
 		//[Untested("Vto_Rocks",/* "Is the rock correctly removed in real-time from L10",/* "Is the rock correctly removed in real-time from VTO",*/ "Is rock correctly archived when existing in no meetings?")]
 		public static async Task UnarchiveRock(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long rockId) {
-			perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+			//perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+			perm.AdminL10Recurrence(recurrenceId).EditRock_UnArchive(rockId);
 
 			await RockAccessor.UnArchiveRock(s, perm, rockId);
 

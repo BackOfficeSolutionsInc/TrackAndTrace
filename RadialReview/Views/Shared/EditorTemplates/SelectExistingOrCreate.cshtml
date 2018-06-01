@@ -5,10 +5,12 @@
 }
 
 <div class="seoc seoc-@guid">
+	<input type="hidden" class="seoc-selectpage" name="SelectPage" value="@(!Model.ShowCreateFirst)" />
 	<span class="seoc-alt-btn"><span class="btn btn-link"></span></span>
 	<div class="seoc-panel">
 		<div class="seoc-existing hidden">
-			<select class="seoc-select" name="@Html.NameFor(x=>x.SelectedValue)"></select>
+			<select class="seoc-select" name="@Html.NameFor(x => x.SelectedValue)" @{ if (Model.Multiple) { @: multiple="multiple"
+																								} }></select>
 		</div>
 		<div class="seoc-create hidden">
 			<div class="panel">
@@ -79,9 +81,20 @@
 		transition:.15s ease background;
 	}
 
+	.select2-results__option.loading-results ~ .select2-results__option{
+		display:none;
+	}
+	.select2-results__option.loading-results:before{
+		content:"Loading...";
+		position:relative;
+		top:10px;
+	}
+
+
 	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--single .select2-selection__clear:hover {
 		background-color: #7b7b7b;
 	}
+
 
 	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--single .select2-selection__clear:before{
 		content: "CLEAR";
@@ -90,6 +103,53 @@
 		top: -1px;
 		position: relative;
 		color: #eee;
+	}
+
+	@*Multiple selections*@
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--multiple .select2-selection__rendered{
+		padding-right:10px;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--multiple .searchresult-image{
+		display:inline-block;
+		margin:2px;	
+		margin-left: -2px;
+	}
+	
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--multiple .searchresult-image .picture{
+		border-radius:16px;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--multiple .select2-selection__choice{
+		line-height:0px;
+		border-radius: 19px;
+		background: #efefef;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--multiple .select2-selection__clear{
+		/*margin-right: -15px;*/
+		margin-top:15px;
+		margin-bottom: 8px;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--multiple .select2-search__field{
+		margin-top:13px;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--multiple .searchresult-title{
+		margin-right: 6px;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--multiple .select2-selection__choice__remove{
+		margin-right: 6px;
+		margin-left: 4px;
+		float: right;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--multiple .select2-selection__choice__remove,
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--multiple .searchresult-title{
+		line-height: 34px;
+		margin-top: 2px;
 	}
 
 	.seoc-@guid .seoc-create .panel-body{
@@ -108,6 +168,7 @@
 	}
 
 	.seoc-@guid .seoc-alt-btn .btn{
+        font-weight:bold !important;
 	}
 
 	.seoc-@guid .seoc-alt-btn .btn:hover{
@@ -116,7 +177,6 @@
 		font-style: italic;
 	}
 
-
 	@*.seoc-@guid .select2-container .select2-selection--single{
 		height:28px !important;
 	}*@
@@ -124,11 +184,6 @@
 
 </style>
 <script>
-	//$.fn.select2.amd.require(
-	//	["select2/core", "select2/utils", "select2/compat/matcher"],
-	//	function (Select2, Utils, oldMatcher) {
-
-
 	function a@(guid)() {
 		$.getScript("//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.js").done(function () {
 
@@ -223,8 +278,8 @@
 			$(select2).on('select2:open', function (e) {
 				var o = $(container).find(".seoc-existing .select2");
 				//setTimeout(function(){
-					var loc = /*o.offset().top+o.height() -*/ parseInt($("html").css("padding-top"));
-					$("body>.select2-container").css("margin-top",-loc);
+				var loc = /*o.offset().top+o.height() -*/ parseInt($("html").css("padding-top"));
+				$("body>.select2-container").css("margin-top",-loc);
 				//},0);
 
 			});
@@ -234,7 +289,7 @@
 			// open select2 dropdown on focus
 			$(".seoc-@guid").on('focus', '.select2-selection--single', function(e) {
 				select2_open = $(this).parent().parent().siblings('select');
-				select2_open.select2('open').select2('open');
+				select2_open.select2('open');
 			});
 
 			// fix for ie11
@@ -256,8 +311,9 @@
 					if (tempHidden){
 						$(container).find(".seoc-panel").append(tempHidden);
 					}
-
 					text = "or select existing";
+					$(container).find(".seoc-selectpage").val("false");
+
 				}else{
 					var tempHidden = hiddenPage;
 					hiddenPage = $(container).find(".seoc-create").detach();
@@ -265,6 +321,7 @@
 						$(container).find(".seoc-panel").append(tempHidden);
 					}
 					text = "or create new";
+					$(container).find(".seoc-selectpage").val("true");
 				}
 
 				container.find(".seoc-alt-btn .btn").text(text);

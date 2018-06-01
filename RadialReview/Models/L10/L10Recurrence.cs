@@ -253,7 +253,7 @@ namespace RadialReview.Models.L10 {
 			}
 		}
 
-		public class L10Recurrence_Attendee : ILongIdentifiable, IDeletable, IOneToMany {
+		public class L10Recurrence_Attendee : ILongIdentifiable, IHistorical, IOneToMany {
 			public virtual long Id { get; set; }
 			public virtual DateTime CreateTime { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }

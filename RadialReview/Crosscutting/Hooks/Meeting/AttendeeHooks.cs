@@ -21,10 +21,15 @@ namespace RadialReview.Hooks.Meeting {
 		public HookPriority GetHookPriority() {
 			return HookPriority.UI;
 		}
-		
+
 
 		public async Task AddAttendee(ISession s, long recurrenceId, UserOrganizationModel user, L10Recurrence.L10Recurrence_Attendee attendee) {
 			var auser = AngularUser.CreateUser(user);
+
+			auser.Managing = true; /*This is really wrong, but the backend will catch any issues, need to make each user do a perms check... 
+			hard to do when pushing an update.
+			*/
+
 			auser.CreateTime = attendee.CreateTime;
 
 			using (var rt = RealTimeUtility.Create()) {
@@ -65,7 +70,7 @@ namespace RadialReview.Hooks.Meeting {
 
 		public async Task UndeleteRecurrence(ISession s, L10Recurrence recur) {
 			//noop
-		} 
+		}
 		#endregion
 	}
 }

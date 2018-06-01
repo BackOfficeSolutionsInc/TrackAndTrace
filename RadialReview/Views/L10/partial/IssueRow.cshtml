@@ -1,54 +1,54 @@
 ﻿@model RadialReview.Models.Issues.IssueModel.IssueModel_Recurrence
 
 <li class="issue-row dd-item arrowkey undoable-stripped"
-    data-createtime="@(Model.CreateTime.ToJavascriptMilliseconds())"
-    data-checked="@(Model.CloseTime==null?"False":"True")"
-    data-recurrence_issue="@Model.Id"
-    data-issue="@Model.Issue.Id"
-    data-message="@Model.Issue.Message.EscapeHtml()"
-    data-details="@Model.Issue.Description.EscapeHtml()"
-    data-imageurl="@Model.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._64))"
-    data-owner="@Model.Owner.NotNull(x=>x.GetName())"
-    data-accountable="@Model.Owner.NotNull(x => x.Id)"
-    data-priority="@Model.Priority"
-    data-rank="@Model.Rank"
-    data-rank-time="0"
-    data-awaitingsolve="@Model.AwaitingSolve"
-    data-markedforclose="@Model.MarkedForClose"
-    @*data-padid="@Model.Issue.PadId"*@>
-    <span class="undo-button">Undo</span>
-    <input data-recurrence_issue="@Model.Id" class="issue-checkbox on-edit-enabled" type="checkbox" @(Model.CloseTime == null ? "" : "checked") />
-    <div class="move-icon noselect dd-handle">
-        <span class="outer icon fontastic-icon-three-bars icon-rotate"></span>
-        <span class="inner icon fontastic-icon-primitive-square"></span>
-    </div>
-    <div class="btn-group pull-right">
-        <span class='issuesButton icon fontastic-icon-forward-1  @((ViewBag.CanEdit??true)?"issuesModal_move":"disabled")' style="padding-right: 5px"
-              title="Send to another L10"
-              data-copyto="@Model.Recurrence.Id"
-              data-recurrence_issue="@Model.Id"
-              data-title="Copy Issue"></span>
-        <span class='glyphicon glyphicon-unchecked todoButton issuesButton @((ViewBag.CanEdit??true)?"todoModal":"disabled")' style="padding-right: 5px"
-              title="Create a Context-Aware To-Do™"
-              data-issue="@Model.Issue.Id"
-              data-meeting="@ViewBag.MeetingId"
-              data-recurrence="@Model.Recurrence.Id"
-              data-method='CreateTodoFromIssue'></span>
-        <span class='glyphicon glyphicon-vto vtoButton @((ViewBag.CanEdit??true)?"":"disabled")'
-              title="Move to V/TO's long-term issues list"></span>
-    </div>
-    <div class="number-priority on-edit-enabled">
-        <span class="number"></span>
-        <span class="priority" data-priority="@Model.Priority"></span>
-        <span class="rank123 badge" data-rank="@Model.Rank" title="Click to IDS">IDS</span>
-    </div>
-    <span class="profile-image">@Html.Partial("_ProfilePicture", Model.Owner)</span>
-    <div class="message" data-recurrence_issue="@Model.Id">@Model.Issue.Message</div>
-    <div class="issue-details-container"><div class="issue-details" data-recurrence_issue="@Model.Id">@Model.Issue.Description</div></div>
-    <ol class="dd-list">
-        @foreach (var i in Model._ChildIssues.OrderBy(x => x.Ordering))
-        {
-            @Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)
-        }
+	data-createtime="@(Model.CreateTime.ToJavascriptMilliseconds())"
+	data-checked="@(Model.CloseTime==null?"False":"True")"
+	data-recurrence_issue="@Model.Id"
+	data-issue="@Model.Issue.Id"
+	data-message="@Model.Issue.Message.EscapeHtml()"
+	data-details="@Model.Issue.Description.EscapeHtml()"
+	data-imageurl="@Model.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._64))"
+	data-owner="@Model.Owner.NotNull(x=>x.GetName())"
+	data-accountable="@Model.Owner.NotNull(x => x.Id)"
+	data-priority="@Model.Priority"
+	data-rank="@Model.Rank"
+	data-rank-time="0"
+	data-awaitingsolve ="@Model.AwaitingSolve"
+	data-markedforclose ="@Model.MarkedForClose"
+	@*data-padid="@Model.Issue.PadId"*@>
+	<span class="undo-button">Undo</span>
+	<input data-recurrence_issue="@Model.Id" class="issue-checkbox on-edit-enabled" type="checkbox" @(Model.CloseTime == null ? "" : "checked") />
+	<div class="move-icon noselect dd-handle">
+		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>
+		<span class="inner icon fontastic-icon-primitive-square"></span>
+	</div>
+	<div class="btn-group pull-right on-edit-enabled">
+		<span class='issuesButton icon fontastic-icon-forward-1  @((ViewBag.CanEdit??true)?"issuesModal_move":"disabled")' style="padding-right: 5px"
+			  title="Send to another L10"
+			  data-copyto="@Model.Recurrence.Id"
+			  data-recurrence_issue="@Model.Id"
+			  data-title="Copy Issue"></span>
+		<span class='glyphicon glyphicon-unchecked todoButton issuesButton @((ViewBag.CanEdit??true)?"todoModal":"disabled")' style="padding-right: 5px"
+			  title="Create a Context-Aware To-Do™"
+			  data-issue="@Model.Issue.Id"
+			  data-meeting="@ViewBag.MeetingId"
+			  data-recurrence="@Model.Recurrence.Id"
+			  data-method='CreateTodoFromIssue'></span>
+		<span class='glyphicon glyphicon-vto vtoButton @((ViewBag.CanEdit??true)?"":"disabled")'
+			  title="Move to V/TO's long-term issues list"></span>
+	</div>
+	<div class="number-priority on-edit-enabled">
+		<span class="number"></span>
+		<span class="priority" data-priority="@Model.Priority"></span>
+		<span class="rank123 badge" data-rank="@Model.Rank" title="Click to IDS">IDS</span>
+	</div>
+	<span class="profile-image">@Html.Partial("_ProfilePicture", Model.Owner)</span>
+	<div class="message" data-recurrence_issue="@Model.Id">@Model.Issue.Message</div>
+	<div class="issue-details-container"><div class="issue-details" data-recurrence_issue="@Model.Id">@Model.Issue.Description</div></div>
+	<ol class="dd-list">
+		@foreach (var i in Model._ChildIssues.OrderBy(x => x.Ordering))
+		{
+			@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)
+		}
 </ol>
 </li>

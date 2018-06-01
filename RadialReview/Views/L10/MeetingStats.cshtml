@@ -1,138 +1,135 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingStatsVM
 @{
-    //Layout = "~/Views/L10/BasePage.cshtml";
+	//Layout = "~/Views/L10/BasePage.cshtml";
 
-    var list = new List<HtmlString>();
-    var join = new HtmlString("n/a");
-    var duration = "On-Going";
-    if (Model.StartTime != null)
-    {
-        var format = "h:mm";
-        list.Add(Html.ConvertFromUtcLocal(Model.StartTime.Value, format));
-        if (Model.EndTime != null)
-        {
-            list.Add(Html.ConvertFromUtcLocal(Model.EndTime.Value, format));
-            duration = (long)(Model.EndTime.Value - Model.StartTime.Value).TotalMinutes + " minutes";
-        }
-        else
-        {
-            list.Add(new HtmlString(" In Progress "));
-        }
-        join = new HtmlString(String.Join(" - ", list));
-    }
+	var list = new List<HtmlString>();
+	var join = new HtmlString("n/a");
+	var duration = "On-Going";
+	if (Model.StartTime != null) {
+		var format = "h:mm";
+		list.Add(Html.ConvertFromUtcLocal(Model.StartTime.Value, format));
+		if (Model.EndTime != null)
+		{
+			list.Add(Html.ConvertFromUtcLocal(Model.EndTime.Value, format));
+			duration = (long)(Model.EndTime.Value - Model.StartTime.Value).TotalMinutes + " minutes";
+		} else {
+			list.Add(new HtmlString(" In Progress "));
+		}
+		join = new HtmlString(String.Join(" - ", list));
+	}
 }
 
 <div class="component meeting-stats">
-    <div class="row">
+	<div class="row">
 
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-xs-6 smallPad smallBreak2">
-                    <div class="stats">
-                        <h1 id="reviewsCompleted" class="scramble resize1" data-range="99" style="">@Model.IssuesSolved</h1>
-                        <h6>Issues Solved</h6>
-                    </div>
-                </div>
-                @*<div class="col-xs-6 smallPad smallBreak2">
-                        <div class="stats">
-                            <h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="">@Model.TodoCompleted</h1>
-                            <h6>To-do Completed</h6>
-                        </div>
-                    </div>*@
-                <div class="col-xs-6 smallPad smallBreak2">
-                    <div class="stats">
-                        <h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="margin-right:-8px;">@(Math.Round(Model.TodoCompletionPercentage))%</h1>
-                        <h6>To-do Completion</h6>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-xs-6 smallPad smallBreak2">
-                    <div class="stats" id="ratingStat">
-                        <a href="javascript:void(0)" style="float: right;padding-right: 10px;" onclick="editRating(@Model.RecurrenceId)"> Edit </a>
-                        <h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="font-size: 52px;margin-top: 27px;margin-bottom: 24px;">
-                            @(double.IsNaN(Model.AverageRating) ? "N/A" : (Math.Round(Model.AverageRating * 10.0) / 10.0) + "")
-                        </h1>
-                        <h6>Average Rating</h6>
-                    </div>
-                </div>
-                <div class="col-xs-6 smallPad smallBreak2 test-ignore">
-                    <div class="stats">
-                        <h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="font-size: 30px;margin-top: 37px;margin-bottom: 34px;">
-                            @join
-                        </h1>
-                        <h6 class="test-ignore">@duration</h6>
-                        @*<h6>Meeting Duration</h6>*@
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    @*@if (Model.TodosCreated.Any(x => x.CompleteTime == null))
-        {
-            <h3 style="font-size: 20px; color: #444;">Newly Added New To-Dos</h3>
-            <div class="todo-container ">
-                <ol class="todo-list sortable ">
-                    @foreach (var i in Model.TodosCreated.OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)){
-                        <li class="todo-item">
-                            @Html.Partial("_ProfilePicture", i.AccountableUser)
-                            <span class="todo-message">@i.Message</span>
-                            <span class="todo-due">@i.DueDate.ToShortDateString()</span>
-                        </li>
-                    }
-                </ol>
-            </div>
-        }*@
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-xs-6 smallPad smallBreak2">
+					<div class="stats">
+						<h1 id="reviewsCompleted" class="scramble resize1" data-range="99" style="">@Model.IssuesSolved</h1>
+						<h6>Issues Solved</h6>
+					</div>
+				</div>
+				@*<div class="col-xs-6 smallPad smallBreak2">
+						<div class="stats">
+							<h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="">@Model.TodoCompleted</h1>
+							<h6>To-do Completed</h6>
+						</div>
+					</div>*@
+				<div class="col-xs-6 smallPad smallBreak2">
+					<div class="stats">
+						<h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="margin-right:-8px;">@(Math.Round(Model.TodoCompletionPercentage))%</h1>
+						<h6>To-do Completion</h6>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-xs-6 smallPad smallBreak2">
+					<div class="stats" id="ratingStat">
+						<a href="javascript:void(0)" style="float: right;padding-right: 10px;" onclick="editRating(@Model.RecurrenceId)"> Edit </a>
+						<h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="font-size: 52px;margin-top: 27px;margin-bottom: 24px;">
+							@(double.IsNaN(Model.AverageRating) ? "N/A" : (Math.Round(Model.AverageRating * 10.0) / 10.0) + "")
+						</h1>
+						<h6>Average Rating</h6>
+					</div>
+				</div>
+				<div class="col-xs-6 smallPad smallBreak2 test-ignore">
+					<div class="stats">
+						<h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="font-size: 30px;margin-top: 37px;margin-bottom: 34px;">
+							@join
+						</h1>
+						<h6 class="test-ignore">@duration</h6>
+						@*<h6>Meeting Duration</h6>*@
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	@*@if (Model.TodosCreated.Any(x => x.CompleteTime == null))
+		{
+			<h3 style="font-size: 20px; color: #444;">Newly Added New To-Dos</h3>
+			<div class="todo-container ">
+				<ol class="todo-list sortable ">
+					@foreach (var i in Model.TodosCreated.OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)){
+						<li class="todo-item">
+							@Html.Partial("_ProfilePicture", i.AccountableUser)
+							<span class="todo-message">@i.Message</span>
+							<span class="todo-due">@i.DueDate.ToShortDateString()</span>
+						</li>
+					}
+				</ol>
+			</div>
+		}*@
 </div>
 <span style="color:transparent">@Model.Version</span>
 
 @*<div class="component meeting-stats">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="chart-title">Meeting Start/End Time</div>
-                <div id="StartTime" style="width:100%;"></div>
-            </div>
-            <div class="col-md-6">
-                <div class="chart-title">Average Rating</div>
-                <div id="AvgRating" style="width:100%;">
-                </div>
-            </div>
-        </div>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="chart-title">Meeting Start/End Time</div>
+				<div id="StartTime" style="width:100%;"></div>
+			</div>
+			<div class="col-md-6">
+				<div class="chart-title">Average Rating</div>
+				<div id="AvgRating" style="width:100%;">
+				</div>
+			</div>
+		</div>
 
-    </div>*@
+	</div>*@
 @*<script src="~/Scripts/d3/d3.v3.min.js"></script>
-    <script src="~/Scripts/d3/Charts.js"></script>*@
+	<script src="~/Scripts/d3/Charts.js"></script>*@
 <script>
 
 
-    function editRating(id) {
-        showModal("Edit Rating", "/l10/EditRanting?recurrenceId=" + id, "/l10/EditRanting", null, "ratingValidation", "updateRatingSuccess");
-    }
+	function editRating(id) {
+		showModal("Edit Rating", "/l10/EditRanting?recurrenceId=" + id, "/l10/EditRanting", null, "ratingValidation", "updateRatingSuccess");
+	}
 
-    function updateRatingSuccess(data) {
-        if (data.response == "success")
-            $('#ratingStat h1').text(parseFloat(data.data).toFixed(1));
-    }
+	function updateRatingSuccess(data) {
+		if (data.response == "success")
+			$('#ratingStat h1').text(parseFloat(data.data).toFixed(1));
+	}
 
-    function ratingValidation(data) {
-        for (var i in data) {
-            //alert(i); // alerts key
-            //alert(data[i]); //alerts key's value
+	function ratingValidation(data) {
+		for (var i in data) {
+			//alert(i); // alerts key
+			//alert(data[i]); //alerts key's value
 
-            if (i.indexOf("rating_") !== -1) {
-                if (data[i] == "") {
-                    return "Ratings must be filled out.";
-                }
-                var val = parseFloat(data[i]);
-                if (val < 1 || val > 10) {
-                    return "Value must be between 1 and 10.";
-                }
-            }
-        }
+			if (i.indexOf("rating_") !== -1) {
+				if (data[i] == "") {
+					return "Ratings must be filled out.";
+				}
+				var val = parseFloat(data[i]);
+				if (val < 1 || val > 10) {
+					return "Value must be between 1 and 10.";
+				}
+			}
+		}
 
-    }
+	}
 
 
 	@*@{
@@ -203,24 +200,24 @@
 </script>
 
 <style>
-    .todo-item {
-        font-size: 18px;
-    }
+	.todo-item {
+		font-size: 18px;
+	}
 
-    .todo-message {
-        position: relative;
-        top: -8px;
-    }
+	.todo-message {
+		position: relative;
+		top: -8px;
+	}
 
-    .todo-container .picture {
-        width: 32px;
-        height: 32px;
-    }
+	.todo-container .picture {
+		width: 32px;
+		height: 32px;
+	}
 
-    .todo-due {
-        float: right;
-        color: #CCC;
-        position: relative;
-        top: 8px;
-    }
+	.todo-due {
+		float: right;
+		color: #CCC;
+		position: relative;
+		top: 8px;
+	}
 </style>

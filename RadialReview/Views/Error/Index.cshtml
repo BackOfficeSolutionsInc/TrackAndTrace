@@ -23,7 +23,7 @@
 			<a target="_blank" href="mailto:@ProductStrings.SupportEmail?subject=Error:@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A@(body)">Email Support</a>
 		}
 
-		@if (((int?)ViewBag.Organizations ?? 0) == 0) {
+		@if (((int?)ViewBag.Organizations ?? 0) == 0 && !(ViewBag.NoAccessCode ?? false) ) {
 			<div class="review">
 				<h4>Instructions to access your organization:</h4>
 				<p>

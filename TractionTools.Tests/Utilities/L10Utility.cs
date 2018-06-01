@@ -424,7 +424,10 @@ namespace TractionTools.Tests.Utilities {
 						employee = u;
 					}
 					if (manager == null) {
-						manager = new UserOrganizationModel() { Organization = o, ManagerAtOrganization = true };
+						manager = new UserOrganizationModel() {
+							Organization = o,
+							ManagerAtOrganization = true,
+						};
 						s.Save(manager);
 					}
 				});

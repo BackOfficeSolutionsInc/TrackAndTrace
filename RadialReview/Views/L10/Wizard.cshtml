@@ -1,276 +1,286 @@
 ﻿@model long
 @{
-	ViewBag.Title = "L10 Wizard";
-	ViewBag.FullWidth = true;
-	Layout = "~/Views/Shared/_Layout.cshtml";
-	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+    ViewBag.Title = "L10 Wizard";
+    ViewBag.FullWidth = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 
-	var target = "";
-	if (ViewBag.NoTitleBar ?? false) {
-		target = "target=\"_blank\"";
-	}
+    var target = "";
+    if (ViewBag.NoTitleBar ?? false) {
+        target = "target=\"_blank\"";
+    }
 
 }
 @using (Html.BeginStyles()) {
-	@*<link href="~/Content/L10/L10Wizard.css" rel="stylesheet" />*@
-	@Styles.Render("~/Content/L10Wizard")
-	@*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>*@
+    @*<link href="~/Content/L10/L10Wizard.css" rel="stylesheet" />*@
+    @Styles.Render("~/Content/L10Wizard")
+    @*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>*@
 
 
 if (ViewBag.NoTitleBar ?? false) {
-	<style>
-		html {
-			overflow: auto;
-			padding-top: 26px;
-		}
+    <style>
+        html {
+            overflow: auto;
+            padding-top: 26px;
+        }
 
-		#l10-wizard-menu .wizard-nav-bar {
-			display: none;
-		}
-	</style>
+        #l10-wizard-menu .wizard-nav-bar {
+            display: none;
+        }
+    </style>
 }
-	<script>
-		console.log("Wizard-Style-Started",+new Date());
-		try{
-			window.InitialModel = @ViewBag.InitialModel;
-		}catch(e){
-			console.error(e);
-		}
-	</script>
+    <script>
+        console.log("Wizard-Style-Started",+new Date());
+        try{
+            window.InitialModel = @ViewBag.InitialModel;
+        }catch(e){
+            console.error(e);
+        }
+    </script>
 
 }
 
 @using (Html.BeginScripts()) {
-	@*<script src="~/Scripts/Wizard/wizard.js"></script>
-		<script src="~/Scripts/L10/L10Wizard.js"></script>*@
-	<script>
-		console.log("Wizard-Script-started",+new Date());
+    @*<script src="~/Scripts/Wizard/wizard.js"></script>
+        <script src="~/Scripts/L10/L10Wizard.js"></script>*@
+    <script>
+        console.log("Wizard-Script-started",+new Date());
 
-		@if (!(ViewBag.CanEdit??false)) {
+        @if (!(ViewBag.CanEdit??false)) {
 			@:$("body").addClass("edit-disabled");
-		}
-	</script>
+        		}
 
-	@Scripts.Render("~/bundles/meeting")
+        @if (!(ViewBag.CanAdmin ?? false)) {
+			@:$("body").addClass("admin-disabled");
+        		}
+    </script>
 
-	@Scripts.Render("~/bundles/L10Wizard")
-	@*<script src="~/Scripts/L10/L10.js"></script>*@
+    @Scripts.Render("~/bundles/meeting")
 
-	<script>
-		initWizard("Basics");
-		//setCompletion(10);
-		angular.module('L10App')
+    @Scripts.Render("~/bundles/L10Wizard")
+    @*<script src="~/Scripts/L10/L10.js"></script>*@
+
+    <script>
+        initWizard("Basics");
+        //setCompletion(10);
+        angular.module('L10App')
 			.value('recurrenceId', @Model)
 			.value('date-range',"today")
 			.value('meetingDataUrlBase', '/L10/DetailsData/{0}?scores=false&historical=false')
 			.value("meetingCallback",false);
 
 
-		function textingModal(data){
-			if (!data.Error){
-				var message = data.Message.replace(" '"," '<b>").replace("' to ","</b>' to ");//.replace(" to activate.","</b> to activate.");
+        function textingModal(data){
+            if (!data.Error){
+                var message = data.Message.replace(" '"," '<b>").replace("' to ","</b>' to ");//.replace(" to activate.","</b> to activate.");
 
-				showModal({
-					icon:"info",
-					title: message
-				});
-			}
-		}
+                showModal({
+                    icon:"info",
+                    title: message
+                });
+            }
+        }
 
-		var curRecur=0;
-		function showPrint(recurrenceId) {
-			//Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
-			curRecur=recurrenceId;
-			showModal("Generate Quarterly Printout", "/Quarterly/Modal/"+ recurrenceId, "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
+        var curRecur=0;
+        function showPrint(recurrenceId) {
+            //Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
+            curRecur=recurrenceId;
+            showModal("Generate Quarterly Printout", "/Quarterly/Modal/"+ recurrenceId, "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
 
-		}
+        }
 
-		function callbackPrint() {
-			$("#modalForm").unbind("submit");
-			$("#modalForm").attr("target", "_blank");
-			$("#modalForm").attr("method", "post");
-			$("#modalForm").attr("action", "/Quarterly/Printout/" + curRecur);
-			$("#modalForm").bind("submit", function () {
-				$("#modal").modal('hide');
-			});
-		}
-		function getAdmins(id){
-			showModal("You do not have access to this page.","/l10/getadmins/"+id,null);
-		}
+        function callbackPrint() {
+            $("#modalForm").unbind("submit");
+            $("#modalForm").attr("target", "_blank");
+            $("#modalForm").attr("method", "post");
+            $("#modalForm").attr("action", "/Quarterly/Printout/" + curRecur);
+            $("#modalForm").bind("submit", function () {
+                $("#modal").modal('hide');
+            });
+        }
 
-	</script>
+        function getAdmins(id){
+            showModal("You do not have access to this page.","/l10/getadmins/"+id,null);
+        }
+
+    </script>
 }
 @*<div class="btn-row pull-right">
-		<a class="btn btn-default btn-sm" href="/L10/Details/@Model"><span style="top: 2px;" class="icon fontastic-icon-archive-1" title=""></span> Meeting Archive</a>
-		<a class="btn btn-default btn-sm" href="#" onclick="showPrint(@(Model))"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Printout</a>
-		<a class="btn btn-default btn-sm shift-hidden" href="@Url.Action("ExportAll",new { id=Model })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a>
-		<a class="btn btn-default btn-sm shift-visible" href="@Url.Action("ExportAll",new { id=Model,includeDetails=true })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> <i>Export All <span class="gray">(include notes)</span></i></a>
-		<a class="btn btn-default btn-sm" href="/L10/Timeline/@Model"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a>
-		<a class="btn btn-default btn-sm" href="/L10/EditVto/@Model"><span style="top: 2px;" class="glyphicon glyphicon-vto" title=""></span> View V/TO</a>
-		<a class="btn btn-default btn-sm l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+Model,"/TwilioApi/Modal",null,null,"textingModal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions</a>
-	</div>*@
+        <a class="btn btn-default btn-sm" href="/L10/Details/@Model"><span style="top: 2px;" class="icon fontastic-icon-archive-1" title=""></span> Meeting Archive</a>
+        <a class="btn btn-default btn-sm" href="#" onclick="showPrint(@(Model))"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Printout</a>
+        <a class="btn btn-default btn-sm shift-hidden" href="@Url.Action("ExportAll",new { id=Model })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a>
+        <a class="btn btn-default btn-sm shift-visible" href="@Url.Action("ExportAll",new { id=Model,includeDetails=true })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> <i>Export All <span class="gray">(include notes)</span></i></a>
+        <a class="btn btn-default btn-sm" href="/L10/Timeline/@Model"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a>
+        <a class="btn btn-default btn-sm" href="/L10/EditVto/@Model"><span style="top: 2px;" class="glyphicon glyphicon-vto" title=""></span> View V/TO</a>
+        <a class="btn btn-default btn-sm l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+Model,"/TwilioApi/Modal",null,null,"textingModal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions</a>
+    </div>*@
 <div class="clearfix smallBreak2"></div>
 <div class="ng-cloak2" ng-app="L10App">
-	<div ng-controller="L10Controller">
-		<div class="wizard hidden">
-			<div class="row">
-				<div class="col-sm-3 wizard-menu">
-					<div class="component" id="l10-wizard-menu">
-						<table style="width:100%" class="wizard-nav-bar">
-							<tr>
-								<td>
-									<span class="button backButton pull-left glyphicon glyphicon-chevron-left" onclick="backPage()"></span>
-								</td>
-								<td style="width:100%">
-									<div class="progress" id="l10-wizard-progress">
-										<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-											<span class="sr-only">60% Complete</span>
-										</div>
-									</div>
-								</td>
-								<td>
-									<div class="button nextButton pull-right glyphicon glyphicon-chevron-right" onclick="nextPage()"></div>
-								</td>
-							</tr>
-						</table>
+    <div ng-controller="L10Controller">
+        <div class="wizard hidden">
+            <div class="row">
+                <div class="col-sm-3 wizard-menu">
+                    <div class="component" id="l10-wizard-menu">
+                        <table style="width:100%" class="wizard-nav-bar">
+                            <tr>
+                                <td>
+                                    <span class="button backButton pull-left glyphicon glyphicon-chevron-left" onclick="backPage()"></span>
+                                </td>
+                                <td style="width:100%">
+                                    <div class="progress" id="l10-wizard-progress">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                                            <span class="sr-only">60% Complete</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="button nextButton pull-right glyphicon glyphicon-chevron-right" onclick="nextPage()"></div>
+                                </td>
+                            </tr>
+                        </table>
 
 
-						@*<div class="wizard-nav-bar">
+                        @*<div class="wizard-nav-bar">
 
-							</div>*@
-						<div class="clearfix"></div>
-						<ol>
-							<li><a href="#Basics">Basics</a></li>
-							<li><span id="l10-wizard-attendees-btn"><a href="#Attendees">Attendees</a></span></li>
-							<li ng-show="model.ShowScorecard"><a href="#Scorecard">Scorecard</a></li>
-							<li ng-show="model.ShowRockReview"><a href="#Rocks">Rocks</a></li>
-							<li ng-show="model.HeadlineType=='HeadlinesList' && model.ShowHeadlines"><a href="#Headlines">People Headlines</a></li>
-							<li ng-show="model.ShowTodos"><a href="#Todos">To-dos</a></li>
-							<li ng-show="model.ShowIDS"><a href="#Issues">Issues</a></li>
-							@*<li><a href="#VTO">V/TO</a></li>*@
-						</ol>
+                            </div>*@
+                        <div class="clearfix"></div>
+                        <ol>
+                            <li><a href="#Basics">Basics</a></li>
+                            <li><span id="l10-wizard-attendees-btn"><a href="#Attendees">Attendees</a></span></li>
+                            <li ng-show="model.ShowScorecard"><a href="#Scorecard">Scorecard</a></li>
+                            <li ng-show="model.ShowRockReview"><a href="#Rocks">Rocks</a></li>
+                            <li ng-show="model.HeadlineType=='HeadlinesList' && model.ShowHeadlines"><a href="#Headlines">People Headlines</a></li>
+                            <li ng-show="model.ShowTodos"><a href="#Todos">To-dos</a></li>
+                            <li ng-show="model.ShowIDS"><a href="#Issues">Issues</a></li>
+                            @*<li><a href="#VTO">V/TO</a></li>*@
+                        </ol>
 
-					</div>
-					<div class="component1 wizard-extra-buttons" id="wizard-extra-buttons">
-						<div class="btn-row pull-right1">
-							<a class="btn btn-default btn-sm1 btn-meeting-archive" href="/L10/Details/@Model"><span style="top: 2px;" class="icon fontastic-icon-archive-1" title=""></span> Meeting Archive <span class="glyphicon glyphicon-triangle-right gray"></span></a>
-							<a class="btn btn-default btn-sm1 btn-generate-printout" href="#" onclick="showPrint(@(Model))"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Printout <span class="glyphicon glyphicon-triangle-right gray"></span></a>
-							<a class="btn btn-default btn-sm1 shift-hidden btn-export" href="@Url.Action("ExportAll", new { id = Model })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All <span class="glyphicon glyphicon-triangle-right gray"></span></a>
-							<a class="btn btn-default btn-sm1 shift-visible hidden btn-export" href="@Url.Action("ExportAll", new { id = Model, includeDetails = true })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> <i>Export All <span class="gray fadein">(include notes)</span></i> <span class="glyphicon glyphicon-triangle-right gray"></span></a>
-							<a class="btn btn-default btn-sm1 btn-timeline" href="/L10/Timeline/@Model"><span class="icon fontastic-icon-back-in-time"></span> Timeline <span class="glyphicon glyphicon-triangle-right gray"></span></a>
-							<a class="btn btn-default btn-sm1 btn-vto" href="/L10/EditVto/@Model"><span style="top: 2px;" class="glyphicon glyphicon-vto" title=""></span> View V/TO <span class="glyphicon glyphicon-triangle-right gray"></span></a>
-							<a class="btn btn-default btn-sm1 l10-texting-actions btn-texting" href="#" onclick="@Html.ShowModal("Add Texting Action", "/TwilioApi/Modal?recurrenceId=" + Model, "/TwilioApi/Modal", null, null, "textingModal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions <span class="glyphicon glyphicon-triangle-right gray"></span></a>
-							<a class="btn btn-default btn-sm1 btn-pages" target="_blank" href="/L10/Pages/@Model"><span style="top: 2px;" class="icon fontastic-icon-page-multiple"></span> Edit pages <span class="glyphicon glyphicon-triangle-right gray"></span></a>
-						</div>
-					</div>
-				</div>
-				<div class="col-sm-9">
-					@*<div class="pull-right">
-							<div class="btn btn-default" onclick="backPage()">Back</div>
-							<div class="btn btn-primary" onclick="nextPage()">Next</div>
-						</div>
-						<div class="clearfix smallBreak2"></div>*@
-					<div class="component wizard-page" data-page="Basics" id="l10-wizard-basics">
-						<div class="pull-right">
-							@{Html.RenderAction("Dropdown", "Permissions", new {
-									id = Model,
-									type = RadialReview.Models.PermItem.ResourceType.L10Recurrence,
-									right = true,
-									displayText="",
-								}); }
-						</div>
-						<div class="form-horizontal">
-							<div class="form-group">
-								<label class="col-md-3 control-label">Meeting Name:</label>
-								<div class="col-md-7" id="l10-wizard-name">
-									<input class="blend on-edit-enabled" type="text" ng-model-options="{ debounce: 300 }" ng-model="model.Basics.Name" ng-change="functions.sendUpdate(model.Basics)" />
-								</div>
-							</div>
-							<div class="form-group" ng-show="model.MeetingType =='L10'">
-								<label class="col-md-3 control-label">Type of team:</label>
-								<div class="col-md-7" id="l10-wizard-teamtype">
-									<select class="blend on-edit-enabled" ng-model="model.Basics.TeamType" ng-change="functions.sendUpdate(model.Basics)" ng-options="s.value as s.text for s in options.l10teamtypes"></select>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="component wizard-page" data-page="Attendees" id="l10-wizard-attendees">
-						<div class="upload upload-attendees" ng-click="functions.goto('/upload/L10/users?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload Attendees"></div>
-						<div class="title-bar">Attendees List</div>
-						@{Html.RenderPartial("~/Views/User/partial/list.cshtml", new ViewDataDictionary{
-							  {"AddHeaders",false},
-							  {"SortBy","createtime-column"}
-						  });
-						}
-					</div>
-					<div class="component wizard-page" data-page="Scorecard" id="l10-wizard-scorecard">
-						@*<i class="material-icons">merge_type</i>*@
-						<div class="upload upload-scorecard" ng-click="functions.goto('/upload/l10/scorecard?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload Scorecard"></div>
-						<div class="title-bar">Scorecard Measurables</div>
-						@{Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary{
-							  {"AddHeaders",false},
-							  {"AddDatePicker",false},
-							  {"EditOwner",true},
-							  {"ElasticInput",false},
-							  {"Order","| orderBy: ['Id','DateCreated']"}
-						  });
-						}
-					</div>
+                    </div>
+                    <div class="component1 wizard-extra-buttons" id="wizard-extra-buttons">
+                        <div class="btn-row pull-right1">
+                            <a class="btn btn-default btn-sm1 btn-meeting-archive" href="/L10/Details/@Model"><span style="top: 2px;" class="icon fontastic-icon-archive-1" title=""></span> Meeting Archive <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+                            <a class="btn btn-default btn-sm1 btn-generate-printout" href="#" onclick="showPrint(@(Model))"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Printout <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+                            <a class="btn btn-default btn-sm1 shift-hidden btn-export" href="@Url.Action("ExportAll", new { id = Model })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+                            <a class="btn btn-default btn-sm1 shift-visible hidden btn-export" href="@Url.Action("ExportAll", new { id = Model, includeDetails = true })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> <i>Export All <span class="gray fadein">(include notes)</span></i> <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+                            <a class="btn btn-default btn-sm1 btn-timeline" href="/L10/Timeline/@Model"><span class="icon fontastic-icon-back-in-time"></span> Timeline <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+                            <a class="btn btn-default btn-sm1 btn-vto" href="/L10/EditVto/@Model"><span style="top: 2px;" class="glyphicon glyphicon-vto" title=""></span> View V/TO <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+                            <a class="btn btn-default btn-sm1 l10-texting-actions btn-texting" href="#" onclick="@Html.ShowModal("Add Texting Action", "/TwilioApi/Modal?recurrenceId=" + Model, "/TwilioApi/Modal", null, null, "textingModal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+                            <a class="btn btn-default btn-sm1 btn-pages" @*target="_blank"*@ href="/L10/Pages/@Model"><span style="top: 2px;" class="icon fontastic-icon-page-multiple"></span> Edit pages <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+                            @if (ViewBag.CanAdmin == false) {
+                                <a class="btn btn-default btn-sm1 btn-advanced" href="#" onclick="getAdmins(@Model)"><span style="top: 2px;" class="icon fontastic-icon-cog-gear"></span> Advanced Settings <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+                            } else {
+                                <a class="btn btn-default btn-sm1 btn-advanced" href="/L10/Edit/@Model"><span style="top: 2px;" class="icon fontastic-icon-cog-gear"></span> Advanced Settings <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                    @*<div class="pull-right">
+                            <div class="btn btn-default" onclick="backPage()">Back</div>
+                            <div class="btn btn-primary" onclick="nextPage()">Next</div>
+                        </div>
+                        <div class="clearfix smallBreak2"></div>*@
+                    <div class="component wizard-page" data-page="Basics" id="l10-wizard-basics">
+                        <div class="pull-right">
+                            @{Html.RenderAction("Dropdown", "Permissions", new {
+                                    id = Model,
+                                    type = RadialReview.Models.PermItem.ResourceType.L10Recurrence,
+                                    right = true,
+                                    displayText = "",
+                                }); }
+                        </div>
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Meeting Name:</label>
+                                <div class="col-md-7" id="l10-wizard-name">
+                                    <input class="blend on-edit-enabled" type="text" ng-model-options="{ debounce: 300 }" ng-model="model.Basics.Name" ng-change="functions.sendUpdate(model.Basics)" />
+                                </div>
+                            </div>
+                            <div class="form-group" ng-show="model.MeetingType =='L10'">
+                                <label class="col-md-3 control-label">Type of team:</label>
+                                <div class="col-md-7" id="l10-wizard-teamtype">
+                                    <select class="blend on-edit-enabled" ng-model="model.Basics.TeamType" ng-change="functions.sendUpdate(model.Basics)" ng-options="s.value as s.text for s in options.l10teamtypes"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="component wizard-page" data-page="Attendees" id="l10-wizard-attendees">
+                        <div class="upload upload-attendees" ng-click="functions.goto('/upload/L10/users?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload Attendees"></div>
+                        <div class="title-bar">Attendees List</div>
+                        @{Html.RenderPartial("~/Views/User/partial/list.cshtml", new ViewDataDictionary{
+                              {"AddHeaders",false},
+                              {"SortBy","createtime-column"}
+                          });
+                        }
+                    </div>
+                    <div class="component wizard-page" data-page="Scorecard" id="l10-wizard-scorecard">
+                        @*<i class="material-icons">merge_type</i>*@
+                        <div class="upload upload-scorecard" ng-click="functions.goto('/upload/l10/scorecard?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload Scorecard"></div>
+                        <div class="title-bar">Scorecard Measurables</div>
+                        @{Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary{
+                              {"AddHeaders",false},
+                              {"AddDatePicker",false},
+                              {"EditOwner",true},
+                              {"ElasticInput",false},
+                              {"Order","| orderBy: ['Id','DateCreated']"}
+                          });
+                        }
+                    </div>
 
-					<div class="component wizard-page" data-page="Rocks" id="l10-wizard-rocks">
-						<div class="upload upload-rocks" ng-click="functions.goto('/upload/l10/rocks?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload Rocks"></div>
-						<div class="title-bar">Quarterly Rocks</div>
-						@{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml", new ViewDataDictionary{
-							  {"SortBy","createtime-column"},
-							  {"AddHeaders",false},
-							  {"AddDatePicker",false},
-							  {"Filter",""},
-							  {"DefaultSort","['Id','CreateTime']"}
-						  });
-						}
-					</div>
-					<div class="component wizard-page" data-page="Headlines" id="l10-wizard-headlines" ng-show="model.HeadlineType=='HeadlinesList'">
-						<div class="title-bar">People Headlines</div>
-						@{Html.RenderPartial("~/Views/Headlines/partial/list.cshtml", new ViewDataDictionary{
-							  {"AddHeaders",false},
-							  {"ShowDetails",false},
-							  {"SortBy","createtime-column"},
-							  {"AddDatePicker",false},
-							  {"DefaultSort","CreateTime"},
-							  {"Order","| orderBy: ['Id','DateCreated']"}
-						  });
-						}
-					</div>
-					<div class="component wizard-page" data-page="Todos" id="l10-wizard-todos">
-						<div class="upload upload-todos" ng-click="functions.goto('/upload/l10/todos?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload To-dos"></div>
-						<div class="title-bar">To-do List</div>
-						@{Html.RenderPartial("~/Views/Todo/partial/list.cshtml", new ViewDataDictionary{
-							  {"AddHeaders",false},
-							  {"ShowDetails",false},
-							  {"SortBy","createtime-column"},
-							  {"AddDatePicker",false},
-							  {"DefaultSort","CreateTime"},
-							  {"Order","| orderBy: ['Id','DateCreated']"}
-						  });
-						}
-					</div>
-					<div class="component wizard-page" data-page="Issues" id="l10-wizard-issues">
-						<div class="upload upload-issues" ng-click="functions.goto('/upload/l10/issues?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload Issues"></div>
-						<div class="title-bar">Issues List</div>
-						@{Html.RenderPartial("~/Views/Issues/partial/list.cshtml", new ViewDataDictionary{
-							  {"AddHeaders",false},
-							  {"ShowDetails",false},
-							  {"SortBy","createtime-column"},
-							  {"SortByDirection","ascending"},
-							  {"DefaultSort","['Id','CreateTime']"}
-						  });
-						}
-					</div>
-					@*<div class="component wizard-page" data-page="VTO">
-							VTO!!
-						</div>*@
-				</div>
-			</div>
-		</div>
-	</div>
+                    <div class="component wizard-page" data-page="Rocks" id="l10-wizard-rocks">
+                        <div class="upload upload-rocks" ng-click="functions.goto('/upload/l10/rocks?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload Rocks"></div>
+                        <div class="title-bar">Quarterly Rocks</div>
+                        @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml", new ViewDataDictionary{
+                              {"SortBy","createtime-column"},
+                              {"AddHeaders",false},
+                              {"AddDatePicker",false},
+                              {"Filter",""},
+                              {"DefaultSort","['Id','CreateTime']"}
+                          });
+                        }
+                    </div>
+                    <div class="component wizard-page" data-page="Headlines" id="l10-wizard-headlines" ng-show="model.HeadlineType=='HeadlinesList'">
+                        <div class="title-bar">People Headlines</div>
+                        @{Html.RenderPartial("~/Views/Headlines/partial/list.cshtml", new ViewDataDictionary{
+                              {"AddHeaders",false},
+                              {"ShowDetails",false},
+                              {"SortBy","createtime-column"},
+                              {"AddDatePicker",false},
+                              {"DefaultSort","CreateTime"},
+                              {"Order","| orderBy: ['Id','DateCreated']"}
+                          });
+                        }
+                    </div>
+                    <div class="component wizard-page" data-page="Todos" id="l10-wizard-todos">
+                        <div class="upload upload-todos" ng-click="functions.goto('/upload/l10/todos?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload To-dos"></div>
+                        <div class="title-bar">To-do List</div>
+                        @{Html.RenderPartial("~/Views/Todo/partial/list.cshtml", new ViewDataDictionary{
+                              {"AddHeaders",false},
+                              {"ShowDetails",false},
+                              {"SortBy","createtime-column"},
+                              {"AddDatePicker",false},
+                              {"DefaultSort","CreateTime"},
+                              {"Order","| orderBy: ['Id','DateCreated']"}
+                          });
+                        }
+                    </div>
+                    <div class="component wizard-page" data-page="Issues" id="l10-wizard-issues">
+                        <div class="upload upload-issues" ng-click="functions.goto('/upload/l10/issues?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload Issues"></div>
+                        <div class="title-bar">Issues List</div>
+                        @{Html.RenderPartial("~/Views/Issues/partial/list.cshtml", new ViewDataDictionary{
+                              {"AddHeaders",false},
+                              {"ShowDetails",false},
+                              {"SortBy","createtime-column"},
+                              {"SortByDirection","ascending"},
+                              {"DefaultSort","['Id','CreateTime']"}
+                          });
+                        }
+                    </div>
+                    @*<div class="component wizard-page" data-page="VTO">
+                            VTO!!
+                        </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
