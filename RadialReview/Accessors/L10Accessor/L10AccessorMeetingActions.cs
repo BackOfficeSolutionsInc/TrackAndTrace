@@ -548,25 +548,25 @@ namespace RadialReview.Accessors {
 						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
 						.List().ToList();
 					var raters = attendees.Where(x => ids.Any(y => y == x.User.Id));
-                    var raterCount =0m;
-                    var raterValue = 0m;
+					var raterCount = 0m;
+					var raterValue = 0m;
 
 					foreach (var a in raters) {
 						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
 						s.Update(a);
 
-                        if (a.Rating != null) {
-                            raterCount += 1;
-                            raterValue += a.Rating.Value;
-                        }
+						if (a.Rating != null) {
+							raterCount += 1;
+							raterValue += a.Rating.Value;
+						}
 					}
 
-                    meeting.AverageMeetingRating = new Ratio(raterValue, raterCount);
-                    s.Update(meeting);
+					meeting.AverageMeetingRating = new Ratio(raterValue, raterCount);
+					s.Update(meeting);
 
 
-                    //End all logs 
-                    var logs = s.QueryOver<L10Meeting.L10Meeting_Log>()
+					//End all logs 
+					var logs = s.QueryOver<L10Meeting.L10Meeting_Log>()
 						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.EndTime == null)
 						.List().ToList();
 					foreach (var l in logs) {
@@ -608,7 +608,7 @@ namespace RadialReview.Accessors {
 							var padTexts = await PadAccessor.GetHtmls(pads);
 
 							/////
-							var headlineTable = await HeadlineAccessor.BuildHeadlineTable(headlines.ToList(), "Headlines", recurrenceId,true, padTexts);
+							var headlineTable = await HeadlineAccessor.BuildHeadlineTable(headlines.ToList(), "Headlines", recurrenceId, true, padTexts);
 
 							var issueTable = await IssuesAccessor.BuildIssuesSolvedTable(issuesForTable.ToList(), "Issues Solved", recurrenceId, true, padTexts);
 							var todosTable = new DefaultDictionary<long, string>(x => "");
@@ -632,7 +632,7 @@ namespace RadialReview.Accessors {
 									hasTodos[personTodos.First().AccountableUserId] = true;
 
 								var todoTable = await TodoAccessor.BuildTodoTable(personTodos.ToList(), "Outstanding To-dos", true, padLookup: padTexts);
-								
+
 
 								var output = new StringBuilder();
 
@@ -722,45 +722,41 @@ namespace RadialReview.Accessors {
 		}
 
 
-        public async static Task UpdateRating(UserOrganizationModel caller,List<System.Tuple<long, decimal?>> ratingValues,long meetingId,string connectionId)
-        {
-          
-            L10Meeting meeting = null;
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    var now = DateTime.UtcNow;
-                    //Make sure we're unstarted
-                    var perms = PermissionsUtility.Create(s, caller);
-                    meeting= s.QueryOver<L10Meeting>().Where(t=>t.Id== meetingId).SingleOrDefault();
-                    perms.ViewL10Meeting(meeting.Id);
+		public async static Task UpdateRating(UserOrganizationModel caller, List<System.Tuple<long, decimal?>> ratingValues, long meetingId, string connectionId) {
+
+			L10Meeting meeting = null;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var now = DateTime.UtcNow;
+					//Make sure we're unstarted
+					var perms = PermissionsUtility.Create(s, caller);
+					meeting = s.QueryOver<L10Meeting>().Where(t => t.Id == meetingId).SingleOrDefault();
+					perms.ViewL10Meeting(meeting.Id);
 
 
-                    var ids = ratingValues.Select(x => x.Item1).ToArray();
+					var ids = ratingValues.Select(x => x.Item1).ToArray();
 
-                    //Set rating for attendees
-                    var attendees = s.QueryOver<L10Meeting.L10Meeting_Attendee>()
-                        .Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
-                        .List().ToList();
-                    var raters = attendees.Where(x => ids.Any(y => y == x.User.Id));
+					//Set rating for attendees
+					var attendees = s.QueryOver<L10Meeting.L10Meeting_Attendee>()
+						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
+						.List().ToList();
+					var raters = attendees.Where(x => ids.Any(y => y == x.User.Id));
 
-                    foreach (var a in raters)
-                    {
-                        a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
-                        s.Update(a);
-                    }
+					foreach (var a in raters) {
+						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
+						s.Update(a);
+					}
 
-                    Audit.L10Log(s, caller, meeting.L10RecurrenceId, "UpdateL10Rating", ForModel.Create(meeting));
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-        }
+					Audit.L10Log(s, caller, meeting.L10RecurrenceId, "UpdateL10Rating", ForModel.Create(meeting));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 
 
 
-        public static IEnumerable<L10Recurrence.L10Recurrence_Connection> GetConnected(UserOrganizationModel caller, long recurrenceId, bool load = false) {
+		public static IEnumerable<L10Recurrence.L10Recurrence_Connection> GetConnected(UserOrganizationModel caller, long recurrenceId, bool load = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
@@ -781,10 +777,14 @@ namespace RadialReview.Accessors {
 			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
+					//var perms = PermissionsUtility.
 					if (recurrenceId == -3) {
-						var recurs = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.User.Id == caller.Id)
+						var recurs = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null)
+							.WhereRestrictionOn(x=>x.User.Id).IsIn(caller.UserIds)
 							.Select(x => x.L10Recurrence.Id)
 							.List<long>().ToList();
+						//Hey.. this doesnt grab all visible meetings.. it should be adjusted when we know that GetVisibleL10Meetings_Tiny is optimized
+						//GetVisibleL10Meetings_Tiny(s, perms, caller.Id);
 						foreach (var r in recurs) {
 							hub.Groups.Add(connectionId, MeetingHub.GenerateMeetingGroupId(r));
 						}

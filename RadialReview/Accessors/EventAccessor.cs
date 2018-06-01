@@ -2,7 +2,9 @@
 using NHibernate;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Crosscutting.EventAnalyzers.Models;
+using RadialReview.Crosscutting.Hooks.Interfaces;
 using RadialReview.Exceptions;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using RadialReview.Models.Frontend;
 using RadialReview.Utilities;
@@ -13,7 +15,7 @@ using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Accessors {
-	public class EventAccessor {
+	public class EventAccessor : BaseAccessor{
 
 		public static Type GetGeneratorTypeFromType(string eventType) {
 			foreach (var g in GetDefaultAvailableAnalyzers()){
@@ -65,7 +67,7 @@ namespace RadialReview.Accessors {
 						var fields = (await generator.GetSettingsFields(settings)).ToList();
 						var name = generator.EventType;
 						fields.Add(EditorField.Hidden("eag", name));
-						subform.AddSubForm(generator.GetFriendlyName(), name, fields);
+						subform.AddSubForm(generator.Name, name, fields);
 					}
 
 					return new EditorForm() {
@@ -89,42 +91,52 @@ namespace RadialReview.Accessors {
 			return generators;
 		}
 
-		public static async Task<EventSubscription> SubscribeToEvent(UserOrganizationModel caller, long subscriberUserId, IEventAnalyzerGenerator analyzer) {
+		public static async Task<EventSubscription> SubscribeToEvent(UserOrganizationModel caller,long subscriberUserId, IEventAnalyzerGenerator analyzer) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					var permChecked = false;
-
-					perms.Self(subscriberUserId);
+					perms.SubscribeToEvent(subscriberUserId,analyzer);
 
 					var subscriber = s.Get<UserOrganizationModel>(subscriberUserId);
-
-					if (analyzer is IEventAnalyzerGenerator) {
-						perms.ViewL10Recurrence(((IRecurrenceEventAnalyerGenerator)analyzer).RecurrenceId);
-						permChecked = true;
-					}
-
-
-					if (permChecked == false)
-						throw new PermissionsException("no permissions were checked");
-
+					await analyzer.PreSaveOrUpdate(s);
 					var settings = JsonConvert.SerializeObject(analyzer);
 
-					var sub = new EventSubscription() {
+					EventSubscription evt = new EventSubscription() {
 						EventSettings = settings,
 						EventType = analyzer.EventType,
 						OrgId = subscriber.Organization.Id,
 						SubscriberId = subscriber.Id,
+						Frequency = analyzer.GetExecutionFrequency()
 					};
+					s.Save(evt);
+					tx.Commit();
+					s.Flush();
+					return evt;
+				}
+			}
+		}
 
-					s.Save(sub);
+		public static async Task<EventSubscription> EditEvent(UserOrganizationModel caller, long id, IEventAnalyzerGenerator analyzer) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.ViewEvent(id, analyzer);
+
+					var evt  = s.Get<EventSubscription>(id);
+					await analyzer.PreSaveOrUpdate(s);
+					var settings = JsonConvert.SerializeObject(analyzer);
+
+					evt.EventSettings = settings;
+					evt.EventType = analyzer.EventType;
+
+					s.Update(evt);
 
 					tx.Commit();
 					s.Flush();
-
-					return sub;
+					return evt;
 				}
 			}
+
 		}
 
 		public static async Task<List<EventSubscription>> GetEventSubscriptions(UserOrganizationModel caller, long subscriberId) {
@@ -154,6 +166,58 @@ namespace RadialReview.Accessors {
 					return true;
 				}
 			}
+		}
+
+		public static async Task ExecuteAll(EventFrequency frequency,long taskId, DateTime? now = null) {
+			var start = DateTime.UtcNow;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					TaskAccessor.EnsureTaskIsExecuting(s, taskId);
+
+					UserOrganizationModel subA = null;
+					OrganizationModel orgA = null;
+					var subs = s.QueryOver<EventSubscription>()
+						.JoinAlias(x => x.Subscriber, () => subA)
+						.JoinAlias(x => x.Org, () => orgA)
+						.Where(x => x.Frequency == frequency && x.DeleteTime == null && subA.DeleteTime == null && orgA.DeleteTime == null)
+						.List().ToList();
+
+					var currentTime = now ?? DateTime.UtcNow;
+
+					var i = 0;
+
+					foreach (var orgSubs in subs.GroupBy(x => x.OrgId)) {
+						var orgSettings = new BaseEventSettings(s, orgSubs.Key, currentTime);
+						foreach (var o in orgSubs.ToList()) {
+							var analyzers = await EventAccessor.BuildFromSubscription(o).GenerateAnalyzers(orgSettings);
+
+							foreach (var a in analyzers) {
+								var anyExecuted = false;
+
+								if (a.IsEnabled(orgSettings)) {
+									var shouldTrigger = await EventProcessor.ShouldTrigger(orgSettings, a);
+									if (shouldTrigger) {
+										anyExecuted = true;
+										await HooksRegistry.Each<IEventHook>((ses, x) => x.HandleEventTriggered(ses, a, orgSettings));
+									}
+									o.LastExecution = currentTime;
+									s.Update(o);
+									i += 1;
+								}
+							}
+						}
+						if (i % 150 == 0) {
+							s.Flush();
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			var duration = DateTime.UtcNow - start;
+			log.Info("Executed " + frequency + " events. Duration:" + duration.TotalMilliseconds + "ms");
+
 		}
 
 	}

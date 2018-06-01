@@ -1,6 +1,6 @@
 ﻿<div class="current-section"><span class="image"></span><span class="title">{{CurrentSection}}</span><span class="decoration"></span></div>
 <div class="row">
-	<div class="col-md-9" >
+	<div class="col-md-9">
 		<span class="debug-info"><i>--Survey Container--</i><span>{{model.Name}}</span></span>
 		<div class="title survey-container-title">{{model.Name}}</div>
 		<div class="surveys" ng-class="{'disabled':model.Locked}" id="surveys">
@@ -8,7 +8,7 @@
 		</div>
 	</div>
 	<div class="col-md-3">
-		<nav  data-spy="affix" class="bs-docs-sidebar hidden-print hidden-sm hidden-xs affix-bottom"  data-offset-top="69" data-offset-bottom="200">
+		<nav data-spy="affix" class="bs-docs-sidebar hidden-print hidden-sm hidden-xs affix-bottom" data-offset-top="69" data-offset-bottom="200">
 			<ul class="nav bs-docs-sidenav">
 				<li ng-repeat="survey in model.Surveys | orderBy:'Ordering'" data-scrollspy-listen="{{getSections(survey)}}" ng-if="showSurvey(survey)">
 					<a href="#survey-{{::survey.Id}}" target="_self" ng-click="anchorShift(true)">{{survey.Name}}</a>

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using RadialReview.Models.Frontend;
 using System.ComponentModel.DataAnnotations;
+using NHibernate;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
 	public abstract class BaseL10EventAnaylzerGenerators : IEventAnalyzerGenerator, IRecurrenceEventAnalyerGenerator {
@@ -44,9 +45,14 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
 
 		public abstract Task<IEnumerable<EditorField>> GetSettingsFields(IEventGeneratorSettings settings);
 
-		public abstract string GetFriendlyName();
+		public abstract string Name { get; }
+
+		public abstract string Description { get; }
 
 		public abstract string EventType { get; }
-		
+
+		public abstract Task PreSaveOrUpdate(ISession s);
+
+		public abstract EventFrequency GetExecutionFrequency();
 	}
 }

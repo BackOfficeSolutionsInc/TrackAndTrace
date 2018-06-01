@@ -252,7 +252,10 @@ namespace RadialReview.Accessors {
 			if (revieweeUser.ACNodeId == null)
 				return GetRoles(queryProvider, perms, revieweeUser.RGMId, range);
 			else {
-				return GetRolesForAcNode(queryProvider, perms, revieweeUser.ACNodeId.Value, range);
+				return GetRolesForAcNode(queryProvider, perms, revieweeUser.ACNodeId.Value, range)
+							.OrderBy(x => x.Ordering)
+							.Select(x => x.Role)
+							.ToList();
 			}
 		}
 
@@ -393,7 +396,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static List<RoleModel> GetRolesForAcNode(AbstractQuery queryProvider, PermissionsUtility perms, long acNodeId, DateRange range = null) {
+		public static List<RoleGroupRole> GetRolesForAcNode(AbstractQuery queryProvider, PermissionsUtility perms, long acNodeId, DateRange range = null) {
 
 			var node = queryProvider.Get<AccountabilityNode>(acNodeId);
 			perms.ViewOrganization(node.OrganizationId);
@@ -467,7 +470,7 @@ namespace RadialReview.Accessors {
 			var relaventGroups = new List<RoleGroup>();
 			if (userId != null) {
 				var userRoleLinks = links.Where(x => x.AttachType == AttachType.User && x.AttachId == userId);
-				var userRoles = userRoleLinks.Select(x => rolesLU.GetOrDefault(x.RoleId, null)).Where(x => x != null).ToList();
+				var userRoles = userRoleLinks.Select(x => new RoleGroupRole(rolesLU.GetOrDefault(x.RoleId, null),x.Ordering)).Where(x => x != null && x.Role!=null).ToList();
 				if (userRoles.Any())
 					relaventGroups.Add(new RoleGroup(userRoles, userId.Value, AttachType.User, "User"));
 
@@ -481,18 +484,18 @@ namespace RadialReview.Accessors {
 			{
 				var roles = new List<RoleModel>();
 
-				var posGroup = new DefaultDictionary<long, RoleGroup>(x => new RoleGroup(new List<RoleModel>(), x, AttachType.Position, "Function"));
+				var posGroup = new DefaultDictionary<long, RoleGroup>(x => new RoleGroup(new List<RoleGroupRole>(), x, AttachType.Position, "Function"));
 
 				if (positionId != null) {
 					var baseGroup = posGroup[positionId.Value];
 					var myPosRolesLinks = links.Where(x => x.AttachType == AttachType.Position && x.AttachId == positionId);
-					var posRoles = myPosRolesLinks.Select(x => rolesLU.GetOrDefault(x.RoleId, null)).Where(x => x != null).ToList();
+					var posRoles = myPosRolesLinks.Select(x => new RoleGroupRole(rolesLU.GetOrDefault(x.RoleId, null),x.Ordering)).Where(x => x != null && x.Role != null).ToList();
 					posGroup[positionId.Value].Roles.AddRange(posRoles);
 				}
 
 				var posRolesLinks = links.Where(x => x.AttachType == AttachType.Position && relaventPD.Any(y => y.PosId == x.AttachId) && x.AttachId != positionId);
 				foreach (var pos in posRolesLinks.GroupBy(x => x.AttachId)) {
-					var posRoles = pos.Select(x => rolesLU.GetOrDefault(x.RoleId, null)).Where(x => x != null).ToList();
+					var posRoles = pos.Select(x => new RoleGroupRole(rolesLU.GetOrDefault(x.RoleId, null),x.Ordering)).Where(x => x != null && x.Role!=null).ToList();
 					posGroup[pos.Key].Roles.AddRange(posRoles);
 				}
 
@@ -504,7 +507,7 @@ namespace RadialReview.Accessors {
 				var teamRolesLinks = links.Where(x => x.AttachType == AttachType.Team && relaventTD.Any(y => y.TeamId == x.AttachId));
 
 				foreach (var team in teamRolesLinks.GroupBy(x => x.AttachId)) {
-					var teamRoles = team.Select(x => rolesLU.GetOrDefault(x.RoleId, null)).Where(x => x != null).ToList();
+					var teamRoles = team.Select(x => new RoleGroupRole(rolesLU.GetOrDefault(x.RoleId, null),x.Ordering)).Where(x => x != null && x.Role!=null).ToList();
 					if (teamRoles.Any()) {
 						var teamName = td.FirstOrDefault(y => y.TeamId == team.Key).NotNull(y => y.TeamName) ?? "Team";
 						relaventGroups.Add(new RoleGroup(teamRoles, team.Key, AttachType.Team, teamName));

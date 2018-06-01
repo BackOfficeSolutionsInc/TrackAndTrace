@@ -1,78 +1,78 @@
 ﻿@model long
 @{
-    ViewBag.Title = "Quarterly Conversation";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Subheading = "";
+	ViewBag.Title = "Quarterly Conversation";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Subheading = "";
 
-    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1 class="nowrap">Quarterly Conversation</h1>
-    </div>
+	<div class="jumbotron">
+		<h1 class="nowrap">Quarterly Conversation</h1>
+	</div>
 }
 
 
 <div ng-app="people" class="people quarterly-conversation ng-cloak">
-    <div class="gray instructions">Your answers are saved automatically.</div>
-    <survey-container survey-container-id="@Model"></survey-container>
-    <div class="row">
-        <div class="col-md-9 alignCenter">
-            @using (Html.BeginForm("lockin", "QuarterlyConversation")) {
-                <input type="hidden" name="id" value="@Model" />
-                <button class="btn btn-primary" type="submit" style="margin-top:-40px">Lock in my answers</button>
-            }
+	<div class="gray instructions">Your answers are saved automatically.</div>
+	<survey-container survey-container-id="@Model"></survey-container>
+	<div class="row">
+		<div class="col-md-9 alignCenter">
+			@using (Html.BeginForm("lockin", "QuarterlyConversation")) {
+				<input type="hidden" name="id" value="@Model" />
+				<button class="btn btn-primary" type="submit" style="margin-top:-40px">Lock in my answers</button>
+			}
 
-        </div>
-    </div>
+		</div>
+	</div>
 </div>
 
 
 
 
 @using (Html.BeginStyles()) {
-    @Styles.Render("~/styles/people")
+	@Styles.Render("~/styles/people")
 
-    <style>
-        .instructions {
-            margin-top: -30px;
-            font-style: italic;
-            z-index: 100;
-            position: relative;
-            color: rgba(255,255,255,.6);
-        }
+	<style>
+		.instructions {
+			margin-top: -30px;
+			font-style: italic;
+			z-index: 100;
+			position: relative;
+			color: rgba(255,255,255,.6);
+		}
 
-        .jumbotron {
-            z-index: 4;
-            position: relative;
-            z-index: 1002;
-            position: relative;
-        }
+		.jumbotron {
+			z-index: 4;
+			position: relative;
+			z-index: 1002;
+			position: relative;
+		}
 
-            .jumbotron h1 {
-                /*font-size: 55px;
-                margin-top: -8px;*/
-            }
+			.jumbotron h1 {
+				/*font-size: 55px;
+				margin-top: -8px;*/
+			}
 
-        @@media (max-width:1000px) {
-            .jumbotron {
-                padding-top: 30px;
-            }
+		@@media (max-width:1000px) {
+			.jumbotron {
+				padding-top: 30px;
+			}
 
-                .jumbotron h1 {
-                    font-size: 6vw;
-                    margin-top: calc(57.5px - 6vw);
-                }
-        }
-        /*@@media (min-width:768px) {
-            .jumbotron h1 {
-                font-size: 4vw;
-                margin-top: calc(57.5px - 6vw);
-            }
-        }*/
-    </style>
+				.jumbotron h1 {
+					font-size: 6vw;
+					margin-top: calc(57.5px - 6vw);
+				}
+		}
+		/*@@media (min-width:768px) {
+			.jumbotron h1 {
+				font-size: 4vw;
+				margin-top: calc(57.5px - 6vw);
+			}
+		}*/
+	</style>
 }
 @using (Html.BeginScripts()) {
-    @Scripts.Render("~/bundles/people")
+	@Scripts.Render("~/bundles/people")
 }

@@ -8,7 +8,7 @@ namespace TractionTools.UITests.FAQ {
 	public class FaqTests : BaseSelenium {
 
 
-		
+
 		[ClassInitialize]
 		public static void Setup(TestContext ctx) {
 
@@ -40,7 +40,7 @@ namespace TractionTools.UITests.FAQ {
 
 
 
-				d.Find(".anno-content").WaitForText(d,"Click this button to create a new Level 10 meeting",1000.0);
+				d.Find(".anno-content").WaitForText(d, "Click this button to create a new Level 10 meeting", 1000.0);
 				d.Find("#l10-create-meeting").Click();
 				d.Wait(1000);
 				d.Find("#l10-create-new-meeting").Click();
@@ -108,7 +108,7 @@ namespace TractionTools.UITests.FAQ {
 				text = d.Find(".anno-content").Wait(400).Text;
 				Assert.IsTrue(text.Contains("You can also access your meeting's archive, timeline, V/TO™, and more."));
 				d.Find(".anno-btn:not(.anno-btn-low-importance)").Wait(400).Click();
-				
+
 			});
 
 		}

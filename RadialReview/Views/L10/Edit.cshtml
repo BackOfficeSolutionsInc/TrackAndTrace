@@ -1,4 +1,4 @@
-﻿@using RadialReview.Models
+@using RadialReview.Models
 @model RadialReview.Models.L10.VM.L10EditVM
 @{
     ViewBag.Title = "Edit L10 Meeting";
@@ -27,272 +27,281 @@
         <h3 class="panel-title">Edit L10 Meeting</h3>
     </div>
     <div class="panel-body form-horizontal">
-        <form class="" action="/L10/Edit" method="POST">
-            <div class="form-group">
-                <label class="col-sm-2 control-label alignLeft">Meeting Name:</label>
-                <div class="col-sm-10">
-                    @Html.TextBoxFor(x => x.Recurrence.Name, new { @class = "form-control editable meeting-name", style = "width:100%;", placeholder = "Add a name for the meeting..." })
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label alignLeft">Team Type:</label>
-                <div class="col-sm-10">
-                    @Html.EnumDropDownListFor(x => x.Recurrence.TeamType, new { @class = "form-control  editable", style = "" })
-                </div>
-            </div>
-            <hr />
+
+		<form class="" action="/L10/Edit" method="POST">
+			<div class="form-group">
+				<label class="col-sm-2 control-label alignLeft">Meeting Name:</label>
+				<div class="col-sm-10">
+					@Html.TextBoxFor(x => x.Recurrence.Name, new { @class = "form-control editable meeting-name", style = "width:100%;", placeholder = "Add a name for the meeting..." })
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label alignLeft">Team Type:</label>
+				<div class="col-sm-10">
+					@Html.EnumDropDownListFor(x => x.Recurrence.TeamType, new { @class = "form-control  editable", style = "" })
+				</div>
+			</div>
+			<hr />
 
 
-            <div class="panel-group" id="accordion1">
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingOne">
-                        <h4 class="panel-title">
-                            <a role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Attendees
-                            </a>
-                            <div class="list-count pull-right"></div>
-                        </h4>
-                    </div>
-                    <div id="collapseOne" class="panel-collapse collapse in attendee" role="tabpanel" aria-labelledby="headingOne">
-                        <div class="panel-body">
-                            <div class="form-group">
-                                @*<label class="col-sm-3 control-label">Members:</label>*@
-                                <div class="col-sm-12">
-                                    <label>Attendees</label>
-                                    @Html.ListBoxFor(x =>
-                                    x.SelectedMembers,
-                                    Model.PossibleMembers.ToSelectList(x => x.GetNameAndTitle(), x => x.Id).OrderBy(x => x.Text),
-                                    new { @class = "Xselect2  duel-list form-control attendee editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a name..." })
-                                    <br />
+			<div class="panel-group" id="accordion1">
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingOne">
+						<h4 class="panel-title">
+							<a role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+								Attendees
+							</a>
+							<div class="list-count pull-right"></div>
+						</h4>
+					</div>
+					<div id="collapseOne" class="panel-collapse collapse in attendee" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+							<div class="form-group">
+								@*<label class="col-sm-3 control-label">Members:</label>*@
+								<div class="col-sm-12">
+									<label>Attendees</label>
+									@Html.ListBoxFor(x =>
+									x.SelectedMembers,
+									Model.PossibleMembers.ToSelectList(x => x.GetNameAndTitle(), x => x.Id).OrderBy(x => x.Text),
+									new { @class = "Xselect2  duel-list form-control attendee editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a name..." })
+									<br />
 
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">Default To-do Owner:</label>
-                                        <div class="col-sm-5"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list editable"></select></div>
-                                    </div>
-                                    @*<div class="col-sm-"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list editable"></select></div>*@
-                                    <br />
-                                    @*<div>
-                                    <label>Default Issue Owner:</label>
-                                    </div>
-                                    <div class="col-sm-"><select name='@Html.NameFor(x => x.Recurrence.DefaultIssueOwner).ToHtmlString()' class="select2 form-control default-issue-list editable"></select></div>*@
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingThree">
-                        <h4 class="panel-title">
-                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Scorecard
-                            </a>
-                            <div class="list-count pull-right"></div>
-                        </h4>
-                    </div>
-                    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-                        <div class="panel-body">
-                            @Html.ListBoxFor(x =>
-                            x.SelectedMeasurables,
-                            Model.PossibleMeasurables.ToSelectList(x => x.Title + " (Owner: " + x.AccountableUser.NotNull(y => y.GetName()) + ")", x => x.Id).OrderBy(x => x.Text),
-                            new { @class = "Xselect2 duel-list form-control measurables editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a measurable..." })
+									<div class="form-group">
+										<label class="col-sm-3 control-label">Default To-do Owner:</label>
+										<div class="col-sm-5"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list editable"></select></div>
+									</div>
+									@*<div class="col-sm-"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list editable"></select></div>*@
+									<br />
+									@*<div>
+									<label>Default Issue Owner:</label>
+									</div>
+									<div class="col-sm-"><select name='@Html.NameFor(x => x.Recurrence.DefaultIssueOwner).ToHtmlString()' class="select2 form-control default-issue-list editable"></select></div>*@
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingThree">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+								Scorecard
+							</a>
+							<div class="list-count pull-right"></div>
+						</h4>
+					</div>
+					<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+						<div class="panel-body">
+							@Html.ListBoxFor(x =>
+							x.SelectedMeasurables,
+							Model.PossibleMeasurables.ToSelectList(x => x.Title + " (Owner: " + x.AccountableUser.NotNull(y => y.GetName()) + ")", x => x.Id).OrderBy(x => x.Text),
+							new { @class = "Xselect2 duel-list form-control measurables editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a measurable..." })
 
 
-                            <br />
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Include Individual To-do Completion:</label>
-                                <div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.IncludeIndividualTodos, new { @class = "editable", style = "margin-top: 11px;" })</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Include Aggregate To-do Completion:</label>
-                                <div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.IncludeAggregateTodoCompletion, new { @class = "editable", style = "margin-top: 11px;" })</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Include Aggregate To-do Completion on Printouts:</label>
-                                <div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.IncludeAggregateTodoCompletionOnPrintout, new { @class = "editable", style = "margin-top: 11px;" })</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Reverse Scorecard:</label>
-                                <div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.ReverseScorecard, new { @class = "editable", style = "margin-top: 11px;" })</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Prevent Editing Unowned Measurables:</label>
-                                <div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.PreventEditingUnownedMeasurables, new { @class = "editable", style = "margin-top: 11px;" })</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Start of week:</label>
-                                <div class="col-sm-5">
-                                    @Html.DropDownListFor(x => x.Recurrence.StartOfWeekOverride, new[] {
-                                    new SelectListItem(){Text="--Use organization default--",    Value= "",                  },
-                                    new SelectListItem(){Text="" +DayOfWeek.Sunday,              Value= "" +DayOfWeek.Sunday,    },
-                                    new SelectListItem(){Text="" +DayOfWeek.Monday,              Value= "" +DayOfWeek.Monday,    },
-                                    new SelectListItem(){Text="" +DayOfWeek.Tuesday,             Value= "" +DayOfWeek.Tuesday,   },
-                                    new SelectListItem(){Text="" +DayOfWeek.Wednesday,           Value= "" +DayOfWeek.Wednesday, },
-                                    new SelectListItem(){Text="" +DayOfWeek.Thursday,            Value= "" +DayOfWeek.Thursday,  },
-                                    new SelectListItem(){Text="" +DayOfWeek.Friday,              Value= "" +DayOfWeek.Friday,    },
-                                    new SelectListItem(){Text="" +DayOfWeek.Saturday,            Value= "" +DayOfWeek.Saturday,  }
-                                    }, new { @class = "editable form-control " })
-                                    <i>Notice: Overriding the start of week only affects your Level 10 meeting. Dates are not changed on the 'Scorecard Tile' on the Workspace.</i>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Highlight week:</label>
-                                <div class="col-sm-5">
-                                    @Html.DropDownListFor(x => x.Recurrence.CurrentWeekHighlightShift, new[] {
-                                    new SelectListItem() { Text="Current week",    Value= "0" },
-                                    new SelectListItem() { Text="Previous week",    Value= "-1" },
-                                    }, new { @class = "editable form-control " })
+							<br />
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Include Individual To-do Completion:</label>
+								<div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.IncludeIndividualTodos, new { @class = "editable", style = "margin-top: 11px;" })</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Include Aggregate To-do Completion:</label>
+								<div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.IncludeAggregateTodoCompletion, new { @class = "editable", style = "margin-top: 11px;" })</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Include Aggregate To-do Completion on Printouts:</label>
+								<div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.IncludeAggregateTodoCompletionOnPrintout, new { @class = "editable", style = "margin-top: 11px;" })</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Reverse Scorecard:</label>
+								<div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.ReverseScorecard, new { @class = "editable", style = "margin-top: 11px;" })</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Prevent Editing Unowned Measurables:</label>
+								<div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.PreventEditingUnownedMeasurables, new { @class = "editable", style = "margin-top: 11px;" })</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Start of week:</label>
+								<div class="col-sm-5">
+									@Html.DropDownListFor(x => x.Recurrence.StartOfWeekOverride, new[] {
+									new SelectListItem(){Text="--Use organization default--",    Value= "",                  },
+									new SelectListItem(){Text="" +DayOfWeek.Sunday,              Value= "" +DayOfWeek.Sunday,    },
+									new SelectListItem(){Text="" +DayOfWeek.Monday,              Value= "" +DayOfWeek.Monday,    },
+									new SelectListItem(){Text="" +DayOfWeek.Tuesday,             Value= "" +DayOfWeek.Tuesday,   },
+									new SelectListItem(){Text="" +DayOfWeek.Wednesday,           Value= "" +DayOfWeek.Wednesday, },
+									new SelectListItem(){Text="" +DayOfWeek.Thursday,            Value= "" +DayOfWeek.Thursday,  },
+									new SelectListItem(){Text="" +DayOfWeek.Friday,              Value= "" +DayOfWeek.Friday,    },
+									new SelectListItem(){Text="" +DayOfWeek.Saturday,            Value= "" +DayOfWeek.Saturday,  }
+									}, new { @class = "editable form-control " })
+									<i>Notice: Overriding the start of week only affects your Level 10 meeting. Dates are not changed on the 'Scorecard Tile' on the Workspace.</i>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Highlight week:</label>
+								<div class="col-sm-5">
+									@Html.DropDownListFor(x => x.Recurrence.CurrentWeekHighlightShift, new[] {
+									new SelectListItem() { Text="Current week",    Value= "0" },
+									new SelectListItem() { Text="Previous week",    Value= "-1" },
+									}, new { @class = "editable form-control " })
 
-                                    @*<select class="form-control" name="@Html.NameFor(x=>x.Recurrence.CurrentWeekHighlightShift)"><option value="0"></option></select>*@
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingTwo">
-                        <h4 class="panel-title">
-                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                @Html.Organization().Settings.RockName
-                            </a>
-                            <div class="list-count pull-right"></div>
-                        </h4>
-                    </div>
-                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-                        <div class="panel-body">
-                            @Html.ListBoxFor(x =>
-                            x.SelectedRocks,
-                            Model.PossibleRocks.ToSelectList(x => x.ToFriendlyString(), x => x.Id).OrderBy(x => x.Text),
-                            new { @class = "Xselect2  duel-list form-control rocks editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typeing one of your " + Html.Organization().Settings.RockName + "..." })
+									@*<select class="form-control" name="@Html.NameFor(x=>x.Recurrence.CurrentWeekHighlightShift)"><option value="0"></option></select>*@
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingTwo">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+								@Html.Organization().Settings.RockName
+							</a>
+							<div class="list-count pull-right"></div>
+						</h4>
+					</div>
+					<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+						<div class="panel-body">
+							@Html.ListBoxFor(x =>
+							x.SelectedRocks,
+							Model.PossibleRocks.ToSelectList(x => x.ToFriendlyString(), x => x.Id).OrderBy(x => x.Text),
+							new { @class = "Xselect2  duel-list form-control rocks editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typeing one of your " + Html.Organization().Settings.RockName + "..." })
 
-                            <br />
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Combine company and individual rocks:</label>
-                                <div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.CombineRocks, new { @class = "editable", style = "margin-top: 11px;" })</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Rocks Format:</label>
-                                <div class="col-sm-5">@Html.EnumDropDownListFor(x => x.Recurrence.RockType, new { @class = "form-control editable", style = "margin-top: 3px;" })</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingHeadlines">
-                        <h4 class="panel-title">
-                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseHeadlines" aria-expanded="false" aria-controls="collapseHeadlines">
-                                People Headlines
-                            </a>
-                            <div class="list-count pull-right"></div>
-                        </h4>
-                    </div>
-                    <div id="collapseHeadlines" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingHeadlines">
-                        <div class="panel-body ids">
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">People Headlines format:</label>
-                                <div class="col-sm-4">@Html.EnumDropDownListFor(x => x.Recurrence.HeadlineType, new { @class = "editable form-control", style = "margin-top:3px;" }) </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingIDS">
-                        <h4 class="panel-title">
-                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseIDS" aria-expanded="false" aria-controls="collapseIDS">
-                                IDS
-                            </a>
-                            <div class="list-count pull-right"></div>
-                        </h4>
-                    </div>
-                    <div id="collapseIDS" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingIDS">
+							<br />
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Combine company and individual rocks:</label>
+								<div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.CombineRocks, new { @class = "editable", style = "margin-top: 11px;" })</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Rocks Format:</label>
+								<div class="col-sm-5">@Html.EnumDropDownListFor(x => x.Recurrence.RockType, new { @class = "form-control editable", style = "margin-top: 3px;" })</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingHeadlines">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseHeadlines" aria-expanded="false" aria-controls="collapseHeadlines">
+								People Headlines
+							</a>
+							<div class="list-count pull-right"></div>
+						</h4>
+					</div>
+					<div id="collapseHeadlines" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingHeadlines">
+						<div class="panel-body ids">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">People Headlines format:</label>
+								<div class="col-sm-4">@Html.EnumDropDownListFor(x => x.Recurrence.HeadlineType, new { @class = "editable form-control", style = "margin-top:3px;" }) </div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingIDS">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseIDS" aria-expanded="false" aria-controls="collapseIDS">
+								IDS
+							</a>
+							<div class="list-count pull-right"></div>
+						</h4>
+					</div>
+					<div id="collapseIDS" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingIDS">
 
-                        <div class="panel-body ids">
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Prioritization Method:</label>
-                                <div class="col-sm-4">@Html.EnumDropDownListFor(x => x.Recurrence.Prioritization, new { @class = "editable form-control", style = "" }) </div>
-                            </div>
-                            <div class="clearfix"></div>
-                            <div class="well smallBreak2" style="margin:30px">
-                                <div class="">
-                                    <dl>
-                                        <dt>By Priority (1, 2, & 3) </dt>
-                                        <dd>Select the 1<sup>st</sup>, 2<sup>nd</sup>, and 3<sup>rd</sup> most important issue to discuss. After discussing, select another three to prioritize.</dd>
-                                        <small><i>*This is the preferred method.</i></small>
-                                    </dl>
-                                    <dl>
-                                        <dt>By Vote</dt>
-                                        <dd>Vote on which issue to talk about. Issue with the most votes has the highest priority.</dd>
-                                    </dl>
-                                </div>
+						<div class="panel-body ids">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Prioritization Method:</label>
+								<div class="col-sm-4">@Html.EnumDropDownListFor(x => x.Recurrence.Prioritization, new { @class = "editable form-control", style = "" }) </div>
+							</div>
+							<div class="clearfix"></div>
+							<div class="well smallBreak2" style="margin:30px">
+								<div class="">
+									<dl>
+										<dt>By Priority (1, 2, & 3) </dt>
+										<dd>Select the 1<sup>st</sup>, 2<sup>nd</sup>, and 3<sup>rd</sup> most important issue to discuss. After discussing, select another three to prioritize.</dd>
+										<small><i>*This is the preferred method.</i></small>
+									</dl>
+									<dl>
+										<dt>By Vote</dt>
+										<dd>Vote on which issue to talk about. Issue with the most votes has the highest priority.</dd>
+									</dl>
+								</div>
 
-                            </div>
+							</div>
 
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="vtoHeadlines">
-                        <h4 class="panel-title">
-                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseVto" aria-expanded="false" aria-controls="collapseVto">
-                                V/TO
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseVto" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingVto">
-                        <div class="panel-body ids">
-                            @{
-                                var disableShareVto = "";
-                                var clickThroughShareVto = "";
-                                var sharableVto = ((RadialReview.Accessors.L10Accessor.VtoSharable)(ViewBag.VtoSharable));
-                                if (sharableVto != null) {
-                                    disableShareVto = sharableVto.CanShareVto ? "" : "disabled";
-                                    clickThroughShareVto = sharableVto.CanShareVto ? "" : "clickThrough";
-                                }
-                            }
-                            <div class="form-group ">
-                                <label class="col-sm-3 control-label">Share Vision Component with other teams:</label>
-                                <div class="col-sm-9" style="@(sharableVto.CanShareVto?"":"cursor: not-allowed;")">
-                                    @Html.CheckBoxFor(x => x.Recurrence.ShareVto, new { @class = "editable clickable " + clickThroughShareVto, style = "margin-top: 11px;" })
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="vtoHeadlines">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseVto" aria-expanded="false" aria-controls="collapseVto">
+								V/TO
+							</a>
+						</h4>
+					</div>
+					<div id="collapseVto" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingVto">
+						<div class="panel-body ids">
+							@{
+								var disableShareVto = "disabled";
+								var clickThroughShareVto = "clickThrough";
+								var sharableVto = ((RadialReview.Accessors.L10Accessor.VtoSharable)(ViewBag.VtoSharable));
+								var canShare = false;
+								var shareError = "";
+								try {
 
-                                    <span style="display: block;color: lightgray;">@(new HtmlString(sharableVto.ErrorMessage))</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+									if (sharableVto != null) {
+										disableShareVto = sharableVto.CanShareVto ? "" : "disabled";
+										clickThroughShareVto = sharableVto.CanShareVto ? "" : "clickThrough";
+										canShare = sharableVto.CanShareVto;
+										shareError = sharableVto.ErrorMessage;
+									}
+								} catch (Exception e) {
+								}
+							}
+							<div class="form-group ">
+								<label class="col-sm-3 control-label">Share Vision Component with other teams:</label>
+								<div class="col-sm-9" style="@(canShare?"":"cursor: not-allowed;")">
+									@Html.CheckBoxFor(x => x.Recurrence.ShareVto, new { @class = "editable clickable " + clickThroughShareVto, style = "margin-top: 11px;" })
 
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingFour">
-                        <h4 class="panel-title">
-                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                                Page Durations
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-                        <div class="panel-body durations">
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Agenda Item Timer:</label>
-                                <div class="col-sm-5">
-                                    @Html.DropDownList(Html.NameFor(x => x.Recurrence.CountDown).ToHtmlString(), new SelectList(new[] { new { Value = "true", Text = "Count down" }, new { Value = "false", Text = "Count up" } }, "Value", "Text", Model.Recurrence.CountDown), new { @class = "form-control" })
-                                </div>
-                            </div>
+									<span style="display: block;color: lightgray;">@(new HtmlString(shareError))</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
-                            <div id="duration-table"></div>
-                            @using (Html.BeginScripts()) {
-                                <script>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingFour">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+								Page Durations
+							</a>
+						</h4>
+					</div>
+					<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+						<div class="panel-body durations">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Agenda Item Timer:</label>
+								<div class="col-sm-5">
+									@Html.DropDownList(Html.NameFor(x => x.Recurrence.CountDown).ToHtmlString(), new SelectList(new[] { new { Value = "true", Text = "Count down" }, new { Value = "false", Text = "Count up" } }, "Value", "Text", Model.Recurrence.CountDown), new { @class = "form-control" })
+								</div>
+							</div>
 
-                                    DataTable({
-                                        container:"#duration-table",
-                                        clickReorder:"/l10/ReorderL10Page/{0}?oldOrder={1}&newOrder={2}",
-                                        clickRemove: "/l10/DeleteL10Page/{0}",
-                                        clickEdit: "/l10/EditL10Page/{0}",
+							<div id="duration-table"></div>
+							@using (Html.BeginScripts()) {
+								<script>
 
-                                        addButton:{
-                                            text:"New Page"
-                                        },
-                                        nodataText:"No pages. Click add to create one.",
-                                        clickAdd: "/L10/CreateL10Page/@Model.Recurrence.Id", postAdd: "/L10/EditL10Page/",
-                                        cells:[
+									DataTable({
+										container:"#duration-table",
+										clickReorder:"/l10/ReorderL10Page/{0}?oldOrder={1}&newOrder={2}",
+										clickRemove: "/l10/DeleteL10Page/{0}",
+										clickEdit: "/l10/EditL10Page/{0}",
+
+										addButton:{
+											text:"New Page"
+										},
+										nodataText:"No pages. Click add to create one.",
+										clickAdd: "/L10/CreateL10Page/@Model.Recurrence.Id", postAdd: "/L10/EditL10Page/",
+										cells:[
                                             {reorder:true},
                                             {name:"Title",classes:"fullWidth",contents:function(x){return x.Title;}},
                                             {name:"Type",classes:"alignCenter",contents:function(x){return "<span class='label label-default' style='min-width:80px;display: inline-block;'>"+x.PageTypeStr+"</span>";}},
@@ -300,131 +309,135 @@
                                             {name:"Minutes",classes:"width80",contents:function(x){return x.Minutes;}},
                                             {edit:true},
                                             {remove:true},
-                                        ],
-                                        data:@Html.ArrayToString(Model.Recurrence._Pages),
-                                    });
-                                </script>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingFive">
-                        <h4 class="panel-title">
-                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                                Advanced
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive" style="padding-top: 15px;">
 
-                        <div class="row smallBreak2">
-                            <div class="form-group1">
-                                @*<label class="col-sm-3 control-label">Members:</label>*@
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">Forum Text-In Code:</label>
-                                        <div class="col-sm-5">
-                                            @Html.TextBoxFor(x => x.Recurrence.ForumCode, new { @class = "form-control" })
+										],
+										data:@Html.ArrayToString(Model.Recurrence._Pages),
+									});
+								</script>
+							}
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingFive">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+								Advanced
+							</a>
+						</h4>
+					</div>
+					<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive" style="padding-top: 15px;">
 
-                                            <div class="gray">Leave empty to disable.</div>
-                                        </div>
-                                        <div>Phone number: @(RadialReview.Utilities.Config.TextInNumber().ToPhoneNumber())</div>
+						<div class="row smallBreak2">
+							<div class="form-group1">
+								@*<label class="col-sm-3 control-label">Members:</label>*@
+								<div class="col-sm-12">
+									<div class="form-group">
+										<label class="col-sm-3 control-label">Forum Text-In Code:</label>
+										<div class="col-sm-5">
+											@Html.TextBoxFor(x => x.Recurrence.ForumCode, new { @class = "form-control" })
 
-                                    </div>
-                                </div>
-                            </div>
-                            @*<div class="form-group">
-                            <div class="col-sm-12">
-                            <div class="form-group">
-                            <label class="col-sm-3 control-label">Display Text-In:</label>
-                            <div class="col-sm-5">@Html.TextBoxFor(x => x.Recurrence.ForumCode)</div>
-                            <div class="gray">Leave empty to disable.</div>
-                            </div>
-                            </div>
-                            </div>*@
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="col-sm-6 control-label">Transcribe Meeting :</label>
-                                    <div class="col-sm-6">@Html.CheckBoxFor(x => x.Recurrence.EnableTranscription, new { @class = "editable", style = "margin-top: 11px;" }) <span class="gray">(Chrome Only!)</span></div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="panel">
-                                    <div class="panel-body">
-                                        Use a microphone to transcribe the meeting into an archive. This is a beta feature.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+											<div class="gray">Leave empty to disable.</div>
+										</div>
+										<div>Phone number: @(RadialReview.Utilities.Config.TextInNumber().ToPhoneNumber())</div>
 
-                    </div>
-                </div>
+									</div>
+								</div>
+							</div>
+							@*<div class="form-group">
+							<div class="col-sm-12">
+							<div class="form-group">
+							<label class="col-sm-3 control-label">Display Text-In:</label>
+							<div class="col-sm-5">@Html.TextBoxFor(x => x.Recurrence.ForumCode)</div>
+							<div class="gray">Leave empty to disable.</div>
+							</div>
+							</div>
+							</div>*@
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label class="col-sm-6 control-label">Transcribe Meeting :</label>
+									<div class="col-sm-6">@Html.CheckBoxFor(x => x.Recurrence.EnableTranscription, new { @class = "editable", style = "margin-top: 11px;" }) <span class="gray">(Chrome Only!)</span></div>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="panel">
+									<div class="panel-body">
+										Use a microphone to transcribe the meeting into an archive. This is a beta feature.
+									</div>
+								</div>
+							</div>
+						</div>
 
-
-
-
-                @*<hr />*@
-
-
-                @*<div class="form-group">
-                <label class="col-sm-3 control-label">Default To-do Owner:</label>
-                <div class="col-sm-9"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list editable"></select></div>
-                </div>
-                <div class="form-group">
-                <label class="col-sm-3 control-label">Show Individual To-do Completion:</label>
-                <div class="col-sm-9">@Html.CheckBoxFor(x => x.Recurrence.IncludeIndividualTodos, new { @class = "editable", style = "margin-top: 11px;" })</div>
-                </div>
-                <div class="form-group">
-                <label class="col-sm-3 control-label">Show Aggregate To-do Completion:</label>
-                <div class="col-sm-9">@Html.CheckBoxFor(x => x.Recurrence.IncludeAggregateTodoCompletion, new { @class = "editable", style = "margin-top: 11px;" })</div>
-                </div>
-
-                <div class="form-group">
-                <label class="col-sm-3 control-label">Transcribe Meeting :</label>
-                <div class="col-sm-9">@Html.CheckBoxFor(x => x.Recurrence.EnableTranscription, new { @class = "editable", style = "margin-top: 11px;" }) <span class="gray">(Chrome Only!)</span></div>
-                </div>*@
-
-                <br />
-                @Html.HiddenFor(x => x.Recurrence.Id)					@*SecuredHiddenFor*@
-                @Html.HiddenFor(x => x.Recurrence.CreateTime)			@*SecuredHiddenFor*@
-                @Html.HiddenFor(x => x.Recurrence.OrganizationId)		@*SecuredHiddenFor*@
-                @Html.HiddenFor(x => x.Recurrence.MeetingInProgress)	@*SecuredHiddenFor*@
-                @Html.HiddenFor(x => x.Recurrence.CreatedById)			@*SecuredHiddenFor*@
-                @Html.HiddenFor(x => x.Recurrence.VideoId)				@*SecuredHiddenFor*@
-                @Html.HiddenFor(x => x.Recurrence.HeadlinesId)			@*SecuredHiddenFor*@
-                @Html.HiddenFor(x => x.Recurrence.OrderIssueBy)			@*SecuredHiddenFor*@
-                @Html.HiddenFor(x => x.Recurrence.VtoId)				@*SecuredHiddenFor*@
-
-                @Html.HiddenFor(x => x.Recurrence.MeetingType)
-                @Html.HiddenFor(x => x.Recurrence.ForumStep)
+					</div>
+				</div>
 
 
 
 
-                @Html.HiddenFor(x => x.Return)
+				@*<hr />*@
 
-                @*Fake for spacing*@
-                <div class="pull-left" style="visibility: hidden;">
-                    @if (Model.Recurrence.Id != 0) {
-                        <div class="alignCenter"><div class="btn btn-danger">Delete meeting</div></div>
-                    }
-                </div>
-                @*Delete button*@
-                <div class="pull-right">
-                    @if (Model.Recurrence.Id != 0) {
-                        <div class="alignCenter">
-                            <div class="btn btn-danger" onclick="@Html.ShowModal("Are you sure?", "/L10/Delete/", "/L10/Delete/" + Model.Recurrence.Id, onCompleteFunction: "goL10")">Delete meeting</div>
-                        </div>
-                    }
-                </div>
-                <div class="alignCenter">
-                    <input class="btn btn-primary" type="submit" value="Save" />
-                </div>
-            </div>
-        </form>
+
+				@*<div class="form-group">
+				<label class="col-sm-3 control-label">Default To-do Owner:</label>
+				<div class="col-sm-9"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list editable"></select></div>
+				</div>
+				<div class="form-group">
+				<label class="col-sm-3 control-label">Show Individual To-do Completion:</label>
+				<div class="col-sm-9">@Html.CheckBoxFor(x => x.Recurrence.IncludeIndividualTodos, new { @class = "editable", style = "margin-top: 11px;" })</div>
+				</div>
+				<div class="form-group">
+				<label class="col-sm-3 control-label">Show Aggregate To-do Completion:</label>
+				<div class="col-sm-9">@Html.CheckBoxFor(x => x.Recurrence.IncludeAggregateTodoCompletion, new { @class = "editable", style = "margin-top: 11px;" })</div>
+				</div>
+
+				<div class="form-group">
+				<label class="col-sm-3 control-label">Transcribe Meeting :</label>
+				<div class="col-sm-9">@Html.CheckBoxFor(x => x.Recurrence.EnableTranscription, new { @class = "editable", style = "margin-top: 11px;" }) <span class="gray">(Chrome Only!)</span></div>
+				</div>*@
+
+				<br />
+				@Html.HiddenFor(x => x.Recurrence.Id)					@*SecuredHiddenFor*@
+				@Html.HiddenFor(x => x.Recurrence.CreateTime)			@*SecuredHiddenFor*@
+				@Html.HiddenFor(x => x.Recurrence.OrganizationId)		@*SecuredHiddenFor*@
+				@Html.HiddenFor(x => x.Recurrence.MeetingInProgress)	@*SecuredHiddenFor*@
+				@Html.HiddenFor(x => x.Recurrence.CreatedById)			@*SecuredHiddenFor*@
+				@Html.HiddenFor(x => x.Recurrence.VideoId)				@*SecuredHiddenFor*@
+				@Html.HiddenFor(x => x.Recurrence.HeadlinesId)			@*SecuredHiddenFor*@
+				@Html.HiddenFor(x => x.Recurrence.OrderIssueBy)			@*SecuredHiddenFor*@
+				@Html.HiddenFor(x => x.Recurrence.VtoId)				@*SecuredHiddenFor*@
+
+				@Html.HiddenFor(x => x.Recurrence.MeetingType)
+				@Html.HiddenFor(x => x.Recurrence.ForumStep)
+
+
+
+
+				@Html.HiddenFor(x => x.Return)
+
+				@*Fake for spacing*@
+				<div class="pull-left" style="visibility: hidden;">
+					@if (Model.Recurrence.Id != 0) {
+						<div class="alignCenter"><div class="btn btn-danger">Delete meeting</div></div>
+					}
+				</div>
+				@*Delete button*@
+				<div class="pull-right">
+					@if (Model.Recurrence.Id != 0) {
+						<div class="alignCenter">
+                            <div class="btn btn-danger" onclick="@Html.ShowModal("Are you sure?", "/L10/Delete/"+Model.Recurrence.Id, "/L10/Delete/" + Model.Recurrence.Id, onCompleteFunction: "goL10")">Delete meeting</div>
+						</div>
+					}
+				</div>
+				<div class="alignCenter">
+					<input class="btn btn-primary" type="submit" value="Save" />
+				</div>
+			</div>
+		</form>
+
+
+
 
 
     </div>
@@ -527,7 +540,7 @@
                     var selected = +found[i] == selectedTodoList ? "selected" : "";
                     $(".default-todo-list").append("<option value='" + found[i]+ "' " + selected + ">"+text+"</option>");
                 }
-                
+
                 var selected = -1 == selectedTodoList ? "selected" : "";
                 $(".default-todo-list").append("<option value='-1' " + selected + ">Caller</option>");
 

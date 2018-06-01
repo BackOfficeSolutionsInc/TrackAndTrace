@@ -13,8 +13,8 @@ using RadialReview.Models;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 	public enum EventFrequency {
-		[Obsolete("Hey these are expensive to run")]
-		Minutly = 1,
+		//[Obsolete("Hey these are expensive to run")]
+		//Minutly = 1,
 		[Obsolete("Hey these are expensive to run")]
 		Hourly = 60,
 		[Obsolete("Hey these are expensive to run")]
@@ -28,14 +28,16 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 
 
 	public interface IEventAnalyzerGenerator {
-		string GetFriendlyName();
-		Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings settings);
+		Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings orgSettings);
 		Task<IEnumerable<EditorField>> GetSettingsFields(IEventGeneratorSettings settings);
 		string EventType { get; }
+		string Name { get; }
+		string Description { get; }
+		Task PreSaveOrUpdate(ISession s);
+		EventFrequency GetExecutionFrequency();
 	}
 
 	public interface IEventAnalyzer {
-		EventFrequency GetExecutionFrequency();
 		int GetNumberOfPassesToReset(IEventSettings settings);
 		int GetNumberOfFailsToTrigger(IEventSettings settings);
 		bool IsEnabled(IEventSettings settings);
@@ -54,8 +56,8 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 	}
 
 	public interface IEventGeneratorSettings {
-		UserOrganizationModel Caller { get;  }
-		PermissionsUtility Permissions { get;  }
+		UserOrganizationModel Caller { get; }
+		PermissionsUtility Permissions { get; }
 
 		List<KeyValuePair<string, long>> VisibleRecurrences { get; }
 
@@ -78,6 +80,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 		Task<T> Lookup<T>(BaseSearch<T> search);
 		void SetLookup<T>(BaseSearch<T> searcher, IEventSettings settings, T obj);
 	}
+
 	public interface IDataSource {
 		Task<T> Lookup<T>(BaseSearch<T> search);
 		void Set<T>(string key, T obj);
@@ -299,12 +302,12 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 	}
 
 	public class BaseEventSettings : IEventSettings {
-		public BaseEventSettings(ISession session, long organizationId, DateTime lastCheck) {
-			RunTime = lastCheck;
+		public BaseEventSettings(ISession session, long organizationId, DateTime runTime) {
+			RunTime = runTime;
 			OrganizationId = organizationId;
 			Session = session;
 			DataSearch = new BaseEventDataSource(this);
-			Admin= PermissionsUtility.CreateAdmin(Session);
+			Admin = PermissionsUtility.CreateAdmin(Session);
 		}
 
 		public IDataSource DataSearch { get; private set; }
@@ -318,7 +321,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 			return await DataSearch.Lookup(search);
 		}
 
-		public void SetLookup<T>(BaseSearch<T> searcher,IEventSettings settings, T obj) {
+		public void SetLookup<T>(BaseSearch<T> searcher, IEventSettings settings, T obj) {
 			DataSearch.Set(searcher.GetKey(settings), obj);
 		}
 	}
@@ -338,14 +341,14 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 		/// <param name="consecutiveNegativesToTrigger"></param>
 		/// <param name="lastCheck"></param>
 		/// <returns></returns>
-		public static bool ShouldTrigger(IEnumerable<IEvent> evts, IThreshold threshold,int consecutivePositivesToReset,int consecutiveNegativesToTrigger, DateTime? lastCheck=null) {
+		public static bool ShouldTrigger(IEnumerable<IEvent> evts, IThreshold threshold, int consecutivePositivesToReset, int consecutiveNegativesToTrigger, DateTime? lastCheck = null) {
 			int positives = 0;
 			int negatives = 0;
 			bool trigger = false;
 			bool reset = false;
 
 			var events = evts.ToList();
-			 
+
 			var ordered = events.OrderBy(x => x.Time).ToList();
 			var first = ordered.FirstOrDefault();
 			if (first != null) {

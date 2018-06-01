@@ -1,5 +1,6 @@
 ﻿using NHibernate;
 using NHibernate.Linq;
+using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
@@ -295,16 +296,17 @@ namespace RadialReview.Accessors {
 						s.Flush();
 					}
 					using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
-						var found = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
-						if (found == null) {
-							s.Save(new SyncLock() {
-								Id = SyncLock.CREATE_KEY
-							});
+						for (var i = 0; i < SyncLock.MAX_SYNC_KEYS; i++) {
+							var found = s.Get<SyncLock>(SyncLock.CREATE_KEY(i), LockMode.Upgrade);
+							if (found == null) {
+								s.Save(new SyncLock() {
+									Id = SyncLock.CREATE_KEY(i)
+								});
+							}
 						}
 						tx.Commit();
 						s.Flush();
 					}
-
 
 					// must be last
 					using (var tx = s.BeginTransaction()) {
@@ -328,6 +330,7 @@ namespace RadialReview.Accessors {
 		public const string ACCOUNT_AGE = "ACCOUNT_AGE";
 		public const string DAILY_EMAIL_TODO_TASK = "DAILY_EMAIL_TODO_TASK";
 		public const string DAILY_TASK = "DAILY_TASK";
+		public const string EVENT_FREQUENCY_TASK = "EVENT_FREQUENCY_TASK";
 		//public const string HOURLY_TASK = "DAILY_TASK";
 
 		public static void ConstructApplicationTasks(ISession s) {
@@ -357,7 +360,6 @@ namespace RadialReview.Accessors {
 				}
 			}
 
-
 			var foundDaily = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == DAILY_TASK).List().ToList();
 			if (!foundDaily.Any()) {
 				var b = DateTime.UtcNow.Date.AddMinutes(3);
@@ -373,6 +375,30 @@ namespace RadialReview.Accessors {
 				s.Save(task);
 				task.OriginalTaskId = task.Id;
 				s.Update(task);
+			}
+
+
+			var foundEventFrequency = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == EVENT_FREQUENCY_TASK).List().ToList();
+			foreach (var ii in Enum.GetValues(typeof(EventFrequency))) {
+				var i = (EventFrequency)ii;
+				var url = "/Scheduler/ExecuteEvents?frequency=" + i;
+				var count = foundEventFrequency.Count(x => x.Url == url);
+				if (count == 0) {
+					var b = DateTime.UtcNow.Date;
+					var task = new ScheduledTask() {
+						MaxException = 1,
+						Url = url,
+						NextSchedule = TimeSpan.FromMinutes((int)i),
+						Fire = b,
+						FirstFire = b,
+						TaskName = EVENT_FREQUENCY_TASK,
+						EmailOnException = true
+
+					};
+					s.Save(task);
+					task.OriginalTaskId = task.Id;
+					s.Update(task);
+				}
 			}
 		}
 

@@ -97,25 +97,25 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 				throw new NotImplementedException();
 			} else {
 
-                if (data.FirstSeenByAbout()) {
-                    var sun = (data.About as SurveyUserNode);
-                    if (sun != null && sun._Relationship != null && sun._Relationship[data.By.ToKey()].HasFlag(AboutType.Self))
-                        return GetItemBuildersSupervisorSelfAssessment(data);
-                    return GetItemBuildersSupervisorSelfAssessment(data);//return GetItemBuildersSupervisorAssessment(data);
-                }
-                return new List<IItemInitializer>();
+				if (data.FirstSeenByAbout()) {
+					var sun = (data.About as SurveyUserNode);
+					if (sun != null && sun._Relationship != null && sun._Relationship[data.By.ToKey()].HasFlag(AboutType.Self))
+						return GetItemBuildersSupervisorSelfAssessment(data);
+					return GetItemBuildersSupervisorSelfAssessment(data);//return GetItemBuildersSupervisorAssessment(data);
+				}
+				return new List<IItemInitializer>();
 
-            }
+			}
 		}
 
-        public ISection InitializeSection(ISectionInitializerData data) {
+		public ISection InitializeSection(ISectionInitializerData data) {
 			var sun = data.About as SurveyUserNode;
 			var help = "Would you say your boss could say yes to...";
-            if (sun != null && sun._Relationship != null && sun._Relationship[data.Survey.GetBy().ToKey()].HasFlag(AboutType.Self))
-                help = "";
-            return new SurveySection(data, "Management Self-Assessment", SurveySectionType.ManagementAssessment, "management-assessment") {
-                Help = help
-            };
+			if (sun != null && sun._Relationship != null && sun._Relationship[data.Survey.GetBy().ToKey()].HasFlag(AboutType.Self))
+				help = "";
+			return new SurveySection(data, "Management Self-Assessment", SurveySectionType.ManagementAssessment, "management-assessment") {
+				Help = help
+			};
 		}
 
 		public void Prelookup(IInitializerLookupData data) {

@@ -1030,6 +1030,9 @@ body,
 .wizard .picture-column {
   padding: 0px !important;
 }
+.wizard .picture-icon-cursor {
+  cursor: pointer;
+}
 .wizard *:focus {
   outline: none;
 }
@@ -2754,4 +2757,19 @@ body,
 #modal input[type=checkbox].blend {
   width: 47px;
   height: 47px;
+}
+body.admin-disabled .user-pane .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
+}
+body.admin-disabled .scorecard-list-container .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
+}
+body.admin-disabled .rock-pane .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
 }

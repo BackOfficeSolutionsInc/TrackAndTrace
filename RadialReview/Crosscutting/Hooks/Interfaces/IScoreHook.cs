@@ -11,14 +11,14 @@ namespace RadialReview.Utilities.Hooks {
 
 	public class IScoreHookUpdates {
 		public DateTime AbsoluteUpdateTime { get; internal set; }
-        public bool Calculated { get; set; }
-        public bool ValueChanged { get; set; }		
+		public bool Calculated { get; set; }
+		public bool ValueChanged { get; set; }
 	}
 
-    public class ScoreAndUpdates {
-        public ScoreModel score { get; set; }
-        public IScoreHookUpdates updates { get; set; }
-    }
+	public class ScoreAndUpdates {
+		public ScoreModel score { get; set; }
+		public IScoreHookUpdates updates { get; set; }
+	}
 
 
 	public interface IScoreHook : IHook {

@@ -7,7 +7,7 @@
 ///		 title:(optional, default: ""),																							///
 ///		 nodataText:(optional, default: "No data available."),																	///
 ///																																///
-///		 clickAdd:<url||function,function(row,settings)>(optional, default: null),												///
+///		 clickAdd:<url||function,function(row,settings)||object>(optional, default: null),										///
 ///		 clickEdit:<url||function,function(row,settings)>(optional, default: null),												///
 ///		 clickRemove:<url||function,function(row,settings)>(optional, default: null),											///
 ///		 clickReorder:<url||function,function(row,oldIndex,newIndex,settings)>(optional, default: null),						///
@@ -69,6 +69,7 @@
 ///          edit:<bool,function(settings)>(optional, false),																	///
 ///          remove:<bool,function(settings)>(optional, false),																	///
 ///          reorder:<bool,function(settings)>(optional, false),																///
+///          rowNum:<bool,function(settings)>(optional, false),																	///
 ///          name:<bool,function(settings)>(optional, null),																	///
 ///		 },...,																													///
 ///			...function(row,i) ,...																								///
@@ -95,8 +96,8 @@ var DataTable = function (settings) {
 	}
 
 	if (!settings.container) {
-	    console.warn("Container not set for data-table.");
-	    settings.container = "#main .body-content";
+		console.warn("Container not set for data-table.");
+		settings.container = "#main .body-content";
 	}
 
 	settings.id = settings.id || generateGuid();
@@ -188,14 +189,18 @@ var DataTable = function (settings) {
 	//Complex Updates
 	if (typeof (settings.clickEdit) === "string") {
 		settings._.onEditAction = settings.clickEdit;
+		var postWasSet = false;
+		if (settings.postEdit)
+			postWasSet = true;
+
 		settings._.onEditActionPost = settings.postEdit || settings.clickEdit;
 		settings.clickEdit = function (row, settings) {
 			var title = settings.clickEditTitle || function (settings) { return "Edit " + resolve(settings.title, settings); };
 			var rid = resolve(settings.cellId, row, settings);
 			var actionType = typeof (settings._.onEditAction);
 			if (actionType == "string") {
-				showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), settings._.onEditActionPost.replace("{0}", ""), null, null, function (d) {
-
+				var pUrl=settings._.onEditActionPost.replace("{0}", postWasSet?rid:"");
+				showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), pUrl, null, null, function (d) {
 					editRow(d.Object);
 				});
 			}
@@ -210,6 +215,22 @@ var DataTable = function (settings) {
 				addRow(d.Object);
 			});
 		};
+	}
+	if (typeof (settings.clickAdd) === "object") {
+		settings._.onAddOptions = settings.clickAdd;
+		var oldSuccess =  settings.clickAdd.success;
+		settings._.onAddOptions.success = function(d){
+			if (oldSuccess){
+				oldSuccess(d);
+			}
+			addRow(d.Object);
+		};
+
+		settings.clickAdd = function (settings) {
+			//debugger;
+			showModal(settings._.onAddOptions);
+		}
+
 	}
 	if (typeof (settings.clickReorder) === "string") {
 		settings._.clickReorderUrl = settings.clickReorder;
@@ -304,7 +325,7 @@ var DataTable = function (settings) {
 			head.append(headerRow);
 			$(table).append(head);
 		} else {
-		    console.warn("No headers. To add a header, supply a 'name' to the cell.");
+			console.warn("No headers. To add a header, supply a 'name' to the cell.");
 		}
 
 

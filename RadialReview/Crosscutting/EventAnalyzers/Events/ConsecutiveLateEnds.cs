@@ -9,9 +9,11 @@ using RadialReview.Crosscutting.EventAnalyzers.Searchers;
 using System.Threading.Tasks;
 using RadialReview.Models.Frontend;
 using System.ComponentModel.DataAnnotations;
+using RadialReview.Models.L10;
+using NHibernate;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
-    public class ConsecutiveLateEnds : IEventAnalyzer, IEventAnalyzerGenerator, IRecurrenceEventAnalyerGenerator {
+	public class ConsecutiveLateEnds : IEventAnalyzer, IEventAnalyzerGenerator, IRecurrenceEventAnalyerGenerator {
 		public ConsecutiveLateEnds(long recurrenceId) {
 			RecurrenceId = recurrenceId;
 			WeeksInARow = 2;
@@ -25,24 +27,24 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 
 		public string EventType { get { return "ConsecutiveLateEnds"; } }
 		public IThreshold GetFireThreshold(IEventSettings settings) {
-            return new EventThreshold(LessGreater.GreaterThan, MinutesOver);
-        }
+			return new EventThreshold(LessGreater.GreaterThan, MinutesOver);
+		}
 
-        public EventFrequency GetExecutionFrequency() {
-            return EventFrequency.Weekly;
-        }
+		public EventFrequency GetExecutionFrequency() {
+			return EventFrequency.Weekly;
+		}
 
-        public int GetNumberOfFailsToTrigger(IEventSettings settings) {
-            return WeeksInARow;
-        }
+		public int GetNumberOfFailsToTrigger(IEventSettings settings) {
+			return WeeksInARow;
+		}
 
-        public int GetNumberOfPassesToReset(IEventSettings settings) {
-            return 1;
-        }
+		public int GetNumberOfPassesToReset(IEventSettings settings) {
+			return 1;
+		}
 
-        public bool IsEnabled(IEventSettings settings) {
-            return true;
-        }
+		public bool IsEnabled(IEventSettings settings) {
+			return true;
+		}
 
 		public async Task<IEnumerable<IEvent>> GenerateEvents(IEventSettings settings) {
 			var meetings = await settings.Lookup(new SearchRealL10Meeting(RecurrenceId));
@@ -65,6 +67,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 			});
 			return evts;
 			//var pageTimes = settings.Lookup(new SearchPageTimerActualsForMeeting(recurrenceId));
+
 		}
 
 		public async Task<IEnumerable<IEventAnalyzer>> GenerateAnalyzers(IEventSettings settings) {
@@ -79,8 +82,24 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 			};
 		}
 
-		public string GetFriendlyName() {
-			return "Consecutive late meeting ends";
+		private string _MeetingName { get; set; }
+		public async Task PreSaveOrUpdate(ISession s) {
+			_MeetingName = s.Get<L10Recurrence>(RecurrenceId).Name;
 		}
+		/*
+		  ,_MeetingName.NotNull(x=>" for "+x)??"");
+		 */
+
+		public string Name {
+			get {
+				return "Consecutive late meeting ends";
+			}
+		}
+		public string Description {
+			get {
+				return string.Format("{0} minutes for {1} weeks in a row{2}", LessGreater.GreaterThan.ToDescription(MinutesOver), WeeksInARow, _MeetingName.NotNull(x => " for " + x) ?? "");
+			}
+		}
+		
 	}
 }

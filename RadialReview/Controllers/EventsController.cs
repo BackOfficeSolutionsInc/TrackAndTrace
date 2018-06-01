@@ -38,17 +38,26 @@ namespace RadialReview.Controllers
 		}
 
 
-
-		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public async Task<JsonResult> Edit(string body) {			
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> Create(string body) {
 			var evt = EventAccessor.BuildFromJson(ReadBody());
-			var r=await EventAccessor.SubscribeToEvent(GetUser(), GetUser().Id, evt);
+			var r = await EventAccessor.SubscribeToEvent(GetUser(), GetUser().Id, evt);
+			return Json(ResultObject.SilentSuccess(r));
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> Edit(long id, string body) {
+			var evt = EventAccessor.BuildFromJson(ReadBody());
+			var r = await EventAccessor.EditEvent(GetUser(), id, evt);
 
 			return Json(ResultObject.SilentSuccess(r));
 		}
 
-
-
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> Delete(long id) {			
+			var r = await EventAccessor.DeleteOrUndeleteEvent(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(true),JsonRequestBehavior.AllowGet);
+		}
 	}
 }

@@ -162,11 +162,19 @@
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
     <Compile Include="Areas\People\Controllers\ErrorController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
+    <Content Include="Content\Angular\angular-material.css">
+      <DependentUpon>angular-material.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Angular\angular-material.less" />
     <None Include="Content\Chart\metric-graphics.less" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IMilestoneHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IPositionHooks.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\Position\RealTime_Positions.cs" />
+    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnaylzerGenerators.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\MissL10PastQuarter.cs" />
@@ -226,6 +234,7 @@
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Angular\LocalDateTime.cs" />
     <Compile Include="Models\Angular\Notifications\AngularAppNotification.cs" />
+    <Compile Include="Models\Angular\Organization\AngularOrganizationUnsafe.cs" />
     <Compile Include="Models\Angular\Users\AngularUserRole.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\Charts\MetricGraphic.cs" />
@@ -234,6 +243,7 @@
     <Compile Include="Models\Frontend\EditorModels.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
     <Compile Include="Models\Notifications\NotificationModel.cs" />
+    <Compile Include="Models\Payments\PaymentCredit.cs" />
     <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateMeasurableViewModel.cs" />
     <Compile Include="Models\UserModels\UserRole.cs" />
@@ -1836,7 +1846,11 @@
     <Content Include="Views\ClientSuccess\Close.cshtml" />
     <Content Include="Views\Data\Dashboard.cshtml" />
     <Content Include="Views\Admin\EmployeeCount.cshtml" />
+    <Content Include="Views\Faq\GenerateTokenInstruction.cshtml" />
+    <Content Include="Views\L10\Delete.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
+    <Content Include="Views\ClientSuccess\HFCategories.cshtml" />
+    <Content Include="Views\Organization\Flags.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -2548,6 +2562,7 @@
     <Content Include="Views\TileData\L10Issues.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Areas\CoreProcess\CamundaFiles\" />
     <Folder Include="Areas\People\Engines\Surveys\Abstract\" />
     <Folder Include="Content\fonts\fonts\" />
@@ -2555,8 +2570,6 @@
     <Folder Include="logs\" />
     <Folder Include="Models\Frontend\ViewModels\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
-    <Folder Include="Scripts\Models\" />
-    <Folder Include="Scripts\typings\d3\plugins\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />
@@ -2659,6 +2672,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Scripts\d3\Charts.ts" />
+    <TypeScriptCompile Include="Scripts\Models\Charts.ts" />
+    <TypeScriptCompile Include="Scripts\typings\d3\d3.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\d3\plugins\d3.superformula.d.ts" />
     <Content Include="SoftwareUpdates\20151217.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -10,6 +10,8 @@ using RadialReview.Accessors;
 using RadialReview.Crosscutting.EventAnalyzers.Searchers;
 using System.Threading.Tasks;
 using RadialReview.Models.Frontend;
+using NHibernate;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 
@@ -28,9 +30,21 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 		public override IEventAnalyzer EventAnalyzerConstructor(long recurrenceId, IHistoricalImpl attendee) {
 			return new MemberwiseTodoCompletion(recurrenceId, attendee, Direction, Percentage,WeeksInARow);
 		}
+		private string _MeetingName { get; set; }
+		public override async Task PreSaveOrUpdate(ISession s) {
+			_MeetingName = s.Get<L10Recurrence>(RecurrenceId).Name;
+		}
+		
+		public override string Name {
+			get {
+				return "Memberwise to-do completion percentage";
+			}
+		}
 
-		public override string GetFriendlyName() {
-			return "Memberwise to-do completion percentage";
+		public override string Description {
+			get {
+				return string.Format("{0} for {1} weeks in a row{2}", Direction.ToDescription(Percentage),WeeksInARow,_MeetingName.NotNull(x=>" for "+x)??"");
+			}
 		}
 
 		public override async Task<IEnumerable<EditorField>> GetSettingsFields(IEventGeneratorSettings settings) {
@@ -41,6 +55,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 				EditorField.FromProperty(this,x=>x.Percentage),
 				EditorField.FromProperty(this,x=>x.WeeksInARow),
 			};
+		}
+
+		public override EventFrequency GetExecutionFrequency() {
+			return EventFrequency.Weekly;
 		}
 
 		public override string EventType { get { return "MemberwiseTodoCompletion"; } }

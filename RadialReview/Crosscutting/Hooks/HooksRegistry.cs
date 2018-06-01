@@ -27,24 +27,24 @@ namespace RadialReview.Hooks {
 			lock (lck) {
 				_Hooks = new List<IHook>();
 			}
-        }
+		}
 
-        public static void RegisterHook(IHook hook) {
-            var hooks = GetSingleton();
-            lock (lck) {
-                hooks._Hooks.Add(hook);
-            }
-        }
+		public static void RegisterHook(IHook hook) {
+			var hooks = GetSingleton();
+			lock (lck) {
+				hooks._Hooks.Add(hook);
+			}
+		}
 
 
-        public static void RegisterHookForTests(params IHook[] hooks) {
-            Deregister();
-            foreach (var h in hooks) {
-                RegisterHook(h);
-            }
-        }
+		public static void RegisterHookForTests(params IHook[] hooks) {
+			Deregister();
+			foreach (var h in hooks) {
+				RegisterHook(h);
+			}
+		}
 
-        public static List<T> GetHooks<T>() where T : IHook {
+		public static List<T> GetHooks<T>() where T : IHook {
 			return GetSingleton()._Hooks.Where(x => x is T).Cast<T>().ToList();
 		}
 
@@ -63,7 +63,7 @@ namespace RadialReview.Hooks {
 			var hookData = HookData.ToReadOnly();
 
 			var hooks = GetHooks<T>();
-			foreach (var x in hooks.OrderByDescending(x=>(int)x.GetHookPriority())) {				
+			foreach (var x in hooks.OrderByDescending(x => (int)x.GetHookPriority())) {
 				try {
 					if (x.CanRunRemotely() && Config.IsSchedulerAction()) {
 						await AmazonSQSUtility.SendMessage(MessageQueueModel.CreateHookRegistryAction(action, new SerializableHook() {
@@ -95,8 +95,8 @@ namespace RadialReview.Hooks {
 							} catch (Exception e) {
 								log.Error(e);
 								if (tx.IsActive)
-										tx.Rollback();
-								if (Config.IsLocal()) {									
+									tx.Rollback();
+								if (Config.IsLocal()) {
 									throw;
 								} else {
 									//just eat it.									
@@ -160,8 +160,8 @@ namespace RadialReview.Hooks {
 			return _Singleton;
 		}
 
-        public static void Deregister() {
-            _Singleton = null;
-        }
+		public static void Deregister() {
+			_Singleton = null;
+		}
 	}
 }
