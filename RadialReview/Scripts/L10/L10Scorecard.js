@@ -366,14 +366,23 @@ var currencySymbol = {
 }
 
 function updateMeasurable(id, name, text, value) {
-    //debugger;
-    var sel = $("[data-pk='" + id + "'][data-name='" + name + "']");
+    refreshMeasurableValues(id, name, text, value);
 
+    $($("tr[data-meetingmeasurable='" + id + "'] .score.future input")).each(function (d) {
+        if (name == "target")
+            $(this).attr("data-goal", value);
+        if (name == "direction")
+            $(this).attr("data-goal-dir", value);
+        updateScore(this, false);
+    });
+}
+
+
+function refreshMeasurableValues(id, name, text, value) {
+    var sel = $("[data-pk='" + id + "'][data-name='" + name + "']");
     if (name == "unitType") {
         var targetElement = $("[data-pk='" + id + "'][data-name='target']");
-
         var element = '<span class="inlineEdit gray unit editable editable-click" data-type="select" data-source="/Dropdown/Type/unitType" data-name="' + name + '" data-measurable="' + id + '" data-pk="' + id + '" data-url="/L10/UpdateMeasurable" data-value="' + value + '">' + currencySymbol[text] + '</span>'
-
         $(sel).remove();
         if (text != "units" && text != "%") {
             $(targetElement).before(element);
@@ -381,7 +390,6 @@ function updateMeasurable(id, name, text, value) {
         else {
             $(targetElement).after(element);
         }
-
         makeXEditable_Scorecard($("[data-pk='" + id + "'][data-name='" + name + "']"));
     }
     else {
@@ -392,15 +400,6 @@ function updateMeasurable(id, name, text, value) {
         highlight(sel);
 
     }
-
-    $($("tr[data-meetingmeasurable='" + id + "'] .score.future input")).each(function (d) {
-        debugger;
-        if (name == "target")
-            $(this).attr("data-goal", value);
-        if (name == "direction")
-            $(this).attr("data-goal-dir", value);
-        updateScore(this, false);
-    });
 }
 
 function myIsNaN(o) {
