@@ -1697,55 +1697,16 @@ namespace RadialReview.Accessors {
 					row.Format.Alignment = ParagraphAlignment.Center;
 
 					row.Format.Font.Bold = false;
-					//row.Format.Font.Size = Unit.FromInch(0.128 * 2.0 / 3.0); // --- 1/16"
-					//row.Shading.Color = TableBlue;
+
 					row.HeightRule = RowHeightRule.AtLeast;
 					row.VerticalAlignment = VerticalAlignment.Center;
 					row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
-					//row.Cells[0].AddParagraph("" + mn + ".");
-					//row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToString(format)) ?? "Not-set");
-					var status = getStatusText(m.Completion);//.NotNull(x => x.Value.GetDisplayName());
+					
+					//use the functions above to simiplify.
+					var status = getStatusText(m.Completion);
 					var bold = m.Completion == RockState.AtRisk;
 					Color statusColor = getStatusColor(m.Completion);
-					////Update below also
-					//switch (m.Completion) {
-					//	case RockState.OnTrack:
-					//		statusColor = Colors.DarkBlue;
-					//		break;
-					//	case RockState.AtRisk:
-					//		statusColor = Colors.DarkRed;
-					//		break;
-					//	case RockState.Complete:
-					//		statusColor = Colors.DarkGreen;
-					//		break;
-					//	default:
-					//		break;
-					//}
-					//if (quarterlyPrintout) {
-					//	switch (m.Completion ?? RockState.Indeterminate) {
-					//		case RockState.Indeterminate:
-					//			status = "Not Done";
-					//			bold = true;
-					//			statusColor = Colors.DarkRed;
-					//			break;
-					//		case RockState.AtRisk:
-					//			status = "Not Done";
-					//			bold = true;
-					//			statusColor = Colors.DarkRed;
-					//			break;
-					//		case RockState.OnTrack:
-					//			status = "Not Done";
-					//			statusColor = Colors.DarkRed;
-					//			bold = true;
-					//			break;
-					//		case RockState.Complete:
-					//			status = "Done";
-					//			statusColor = Colors.DarkGreen;
-					//			break;
-					//		default:
-					//			break;
-					//	}
-					//}
+					
 
 					row.Cells[0].AddParagraph("" + (sr_count + 1) + ")  " + m.NotNull(x => x.Name));
 					row.Cells[0].Format.Alignment = ParagraphAlignment.Left;
