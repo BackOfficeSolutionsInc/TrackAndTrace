@@ -42,7 +42,7 @@ var Grid = {
             resizers += "</div>";
         }
 
-        var isTodoTile = item.DataUrl.indexOf("Todo") > -1 ? "display:block;" : "display:none";
+        var showPrintBtn = item.ShowPrintButton ? "printbtnShow" : "printbtnHide";
 
         var classes = "";
         classes += "width_" + w;
@@ -53,7 +53,7 @@ var Grid = {
             '<div class="settings-container">' +
             '<span class="glyphicon glyphicon-fullscreen icon settings resize-control"></span>' +
             '<span class="glyphicon glyphicon-trash icon settings trash" onclick="Grid.removeTile(' + id + ')"></span>' +
-            '<span class="glyphicon glyphicon-print icon settings" style="' + isTodoTile + ';top:18px;" onclick="Grid.printTileData(' + item.KeyId + ')"></span>' +
+            '<span class="glyphicon glyphicon-print icon settings ' + showPrintBtn +' " style="top:18px;" onclick="printTileData(' + item.KeyId + ')"></span>' +
             '<div class="controls" style="width:' + (Grid.currentSize * 10 + 6) + 'px;">' +
             resizers +
             '</div>' +
@@ -293,9 +293,6 @@ var Grid = {
             }
         });
 
-    },
-    printTileData: function (id) {
-        window.open("/L10/PrintoutTodoList/" + id, '_blank');
     },
     addTile: function (tile) {
         var t = Grid.createTile(tile);

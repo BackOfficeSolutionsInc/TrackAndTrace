@@ -65,6 +65,8 @@ namespace RadialReview.Controllers {
 			List<TileModel> tiles = new List<TileModel>();
 			if (dash != null)
 				tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
+			
+
 			ListDataVM output = await GetTileData(GetUser(), id, userId, tiles, completed, name, start, end, fullScorecard);
 
 			return Json(output, JsonRequestBehavior.AllowGet);
@@ -533,6 +535,10 @@ namespace RadialReview.Controllers {
 			}
 
 			var tiles = DashboardAccessor.GetTiles(GetUser(), id.Value);
+			foreach (var item in tiles) {
+				if (item.DataUrl.Contains("L10Todos"))
+					item.ShowPrintButton = true;
+			}
 			DashboardVM dashboard = GenerateDashboardViewModel(id, useDefault, tiles);
 
 			return View(dashboard);
