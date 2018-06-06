@@ -653,9 +653,7 @@ namespace RadialReview.Controllers {
 		[HttpGet]
 		public async Task<ActionResult> PrintoutTodoList(long id) {
 
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
-
-			var angRecur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, forceIncludeTodoCompletion: recur.IncludeAggregateTodoCompletionOnPrintout);
+			var angRecur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, forceIncludeTodoCompletion: false);
 			var merger = new DocumentMerger();
 
 			//
@@ -670,7 +668,7 @@ namespace RadialReview.Controllers {
 			if (!anyPages)
 				return Content("No pages to print.");
 
-			var doc1 = merger.Flatten("To-do Printout", true, true, GetUser().Organization.Settings.GetDateFormat(), recur.Name);
+			var doc1 = merger.Flatten("To-do Printout", true, true, GetUser().Organization.Settings.GetDateFormat(), angRecur._Recurrence.Item.Name);
 
 
 			return Pdf(doc1, now + "_" + angRecur.Basics.Name + "_TodoPrintout.pdf", true);

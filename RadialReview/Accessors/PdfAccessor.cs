@@ -927,6 +927,7 @@ namespace RadialReview.Accessors {
 			var section = AddTitledPage(doc, "To-do List", addPageNumber: addPageNumber);
 
 			var format = caller.Organization.NotNull(x => x.Settings.NotNull(y => y.GetDateFormat())) ?? "MM-dd-yyyy";
+			Dictionary<string, string> padTexts = null;
 
 			var table = section.AddTable();
 			table.Format.Font.Size = 9;
@@ -987,11 +988,12 @@ namespace RadialReview.Accessors {
 				row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
 
 				todos = recur.Todos.Where(x => x.CompleteTime == null && x.DeleteTime == null);
+				var pads = todos.Select(x => x.GetPadId()).ToList();
+				padTexts = await PadAccessor.GetTexts(pads);
 
 			} else {
 				todos = todos.Where(x => x.Complete == false);
 			}
-
 
 			var mn = 1;
 			foreach (var m in todos.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
@@ -1014,7 +1016,14 @@ namespace RadialReview.Accessors {
 				row.Cells[3].Format.Alignment = ParagraphAlignment.Left;
 
 				if (printTileTodo) {
-					var getPadText = await PadAccessor.GetText(m.PadId);
+					var getPadText = string.Empty;
+					try {
+						getPadText = padTexts[m.GetPadId()].ToString();
+
+					} catch (Exception) {
+						
+					}
+					
 					row.Cells[4].AddParagraph(getPadText);
 					row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
 				}
