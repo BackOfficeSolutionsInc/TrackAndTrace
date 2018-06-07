@@ -28,12 +28,12 @@
         "<span ng-if='user.ImageUrl==\"/i/userplaceholder\"' class='picture keep-background' ng-style='getElementStyle(user.colorCode)'><span class='initials'>{{user.Initials}}</span></span>" +
         "<span ng-if='user.ImageUrl==null || user.ImageUrl==\"\"' class='picture keep-background' style='color:#ccc'>n/a</span>" +
         "</span>",
-        controller: function ($scope) {
+        controller: ["$scope",function ($scope) {
             $scope.getElementStyle = function (colorCode) {
                 return {
                     'background-color': 'hsla(' + colorCode + ', 36%, 49%, 1)', 'color': 'hsla(' + colorCode + ', 36%, 72%, 1)'
                 };
             };
-        }
+        }]
     };
 });

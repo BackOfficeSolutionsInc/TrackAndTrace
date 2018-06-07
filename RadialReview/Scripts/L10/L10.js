@@ -611,16 +611,17 @@ $(window).on("footer-resize", function () {
 function sharePeopleAnalyzer() {
 
 	showModal({
-		title: "Share your teams' people analyzers with this meeting? <small title='Share the results of any people analyzer you&#39;ve issued with this meeting.' color='gray'>[?]</small>",
+		title: "Share your department's people analyzers with people in this meeting? <small title='Share the results of any people analyzer you&#39;ve issued with this meeting.' color='gray'>[?]</small>",
 		icon: "info",
 		fields: [{
 			type: "yesno",
 			name: "share"
 		}],
 		success: function (data) {
-			var share = data.share;
+			var share = data.share == "True";
+			debugger;
 			$.ajax({
-				url: "/L10/SharePeopleAnalyzer/" + window.recurrenceId + "?share=" + data.share,
+				url: "/L10/SharePeopleAnalyzer/" + window.recurrenceId + "?share=" + share,
 				success: function () {
 					if (share) {
 						showAlert("Shared successfully!");
