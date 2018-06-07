@@ -211,7 +211,6 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 						allDone = false;
 					}
 					if (status == "Done") {
-					    debugger;
 						output.done = true;
 					}
 					if (!statusUndefined) {
