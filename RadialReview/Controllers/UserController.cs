@@ -442,7 +442,14 @@ namespace RadialReview.Controllers {
 			return View(details);
 		}
 
-		[HttpGet]
+        [Access(AccessLevel.Manager)]
+        public FileContentResult ExportAll() {
+
+            var csv = ExportAccessor.ExportAllUsers(GetUser(), GetUser().Organization.Id);
+            return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
+        }
+
+        [HttpGet]
 		[Access(AccessLevel.Any)]
 		public string Styles() {
 			try {

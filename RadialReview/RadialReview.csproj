@@ -173,6 +173,7 @@
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Controllers\Upload\Upload_OrgUsersController.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\SetPeopleToolsTrial.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IMilestoneHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IPositionHooks.cs" />
@@ -1107,6 +1108,7 @@
     <Content Include="Content\creditcard_icon\bank.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\etherpad\web.css" />
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
@@ -1852,6 +1854,7 @@
     <Content Include="Views\ClientSuccess\Close.cshtml" />
     <Content Include="Views\Data\Dashboard.cshtml" />
     <Content Include="Views\Admin\EmployeeCount.cshtml" />
+    <Content Include="Views\Upload\UploadOrg.cshtml" />
     <Content Include="Views\Faq\GenerateTokenInstruction.cshtml" />
     <Content Include="Views\L10\Delete.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
