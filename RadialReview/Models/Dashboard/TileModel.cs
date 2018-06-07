@@ -84,6 +84,7 @@ namespace RadialReview.Models.Dashboard {
 		[IgnoreDataMember]
 		public virtual UserModel ForUser { get; set; }
 		public virtual string KeyId { get; set; }
+		public virtual bool ShowPrintButton { get; set; }
 
 		public TileModel() {
 			CreateTime = DateTime.UtcNow;

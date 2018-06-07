@@ -3029,3 +3029,9 @@ l10-stats-tile .chart-legend {
   min-height: 10px !important;
   height: 11px;
 }
+.printbtnShow {
+  display: block;
+}
+.printbtnHide {
+  display: none;
+}

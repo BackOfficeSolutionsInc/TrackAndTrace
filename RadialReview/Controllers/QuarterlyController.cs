@@ -163,7 +163,7 @@ namespace RadialReview.Controllers {
 			}
 			if (todos) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout3");
-				PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false);
+				await PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}
