@@ -67,7 +67,7 @@
 										ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}"
 										data-measurable="{{::measurable.Id}}"
 										class="specialClass @(reorderable ? "reorderable" : "")"
-										ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering'] track by measurable.Key">
+										ng-repeat="measurable in measurableGroupItems | orderBy: functions.orderMeasurables((@(selector))) track by measurable.Key">
 										@if (reorderable) {
 											<td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.IsReorderable" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
 											<td class="button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.IsReorderable"></td>
@@ -173,7 +173,7 @@
 								</tr>
 							</thead>
 							<tbody as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
-								<tr as-sortable-item="measurable" ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering']"  ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}">
+								<tr as-sortable-item="measurable" ng-repeat="measurable in measurableGroupItems | orderBy: functions.orderMeasurables((@(selector)))"  ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}">
 									@if (reorderable) {
 											<td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.IsReorderable" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
 											<td class="button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.IsReorderable"></td>
