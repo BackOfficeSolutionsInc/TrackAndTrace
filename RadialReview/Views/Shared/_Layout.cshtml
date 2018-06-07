@@ -450,15 +450,19 @@
 				}catch(e){
 					console.warn(e);
 				}
-				ga('send', 'pageview');
-			</script>
-			<script async src='https://www.google-analytics.com/analytics.js'></script>
-			<!-- End Google Analytics -->
-		</div>
-		<div class="fb-script-container">
-			<!-- Facebook Pixel Code -->
-			@if (ViewBag.UserId != -1) {
-				<script>
+
+
+              ga('send', 'pageview');
+            </script>
+            <script async src='https://www.google-analytics.com/analytics.js'></script>
+            <!-- End Google Analytics -->
+        </div>
+        <div class="fb-script-container">
+            <!-- Facebook Pixel Code -->
+            @if (ViewBag.UserId != -1) {
+            <script async>
+				setTimeout(function(){
+
 					!function(f,b,e,v,n,t,s)
 					{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 					n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -469,16 +473,18 @@
 					'https://connect.facebook.net/en_US/fbevents.js');
 					fbq('init', '798215043695500');
 					fbq('track', 'PageView');
-				</script>
-				<noscript>
-					<img height="1" width="1" style="display:none"
-						 src="https://www.facebook.com/tr?id=798215043695500&ev=PageView&noscript=1" />
-				</noscript>
-			} else {
-				<script>					/*not logged in*/</script>
-			}
-			<!-- End Facebook Pixel Code -->
-		</div>
+
+				},1);
+            </script>
+            <noscript>
+                <img height="1" width="1" style="display:none"
+                     src="https://www.facebook.com/tr?id=798215043695500&ev=PageView&noscript=1" />
+            </noscript>
+            }else {
+                <script>/*not logged in*/</script>
+            }
+            <!-- End Facebook Pixel Code -->
+        </div>
 	</div>
 	<div class="copyrightPrintFooter">© 2003 - @DateTime.UtcNow.Year EOS and Traction® Tools. All Rights Reserved</div>
 </body>

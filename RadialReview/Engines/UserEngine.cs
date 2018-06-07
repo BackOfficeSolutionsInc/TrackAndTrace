@@ -68,6 +68,10 @@ namespace RadialReview.Engines {
 						model.AdminMeasurables = measurables.Where(x => x.AdminUserId == id && x.AccountableUserId != id).ToList();
 						model.CanViewMeasurables = true;
 					}
+
+					if (perms.IsPermitted(x => x.EditUserDetails(id))) {
+						model.CanEditUserDetails = true;
+					}
 					//foundUser.PopulatePersonallyManaging(caller, caller.AllSubordinates);
 
 

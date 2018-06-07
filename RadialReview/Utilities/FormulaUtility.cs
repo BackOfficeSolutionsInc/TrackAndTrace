@@ -14,6 +14,8 @@ namespace RadialReview.Utilities {
 			public ParsedFormula(string formula) {
 				formula = formula ?? "";
 				formula = formula.Trim();
+				formula = formula.Replace(" ", "");
+
 				this.Parts = new List<string>();
 				var open = false;
 				var current = "";

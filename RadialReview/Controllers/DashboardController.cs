@@ -105,7 +105,7 @@ namespace RadialReview.Controllers {
 				try {
 					//Todos
 					var todos = TodoAccessor.GetMyTodosAndMilestones(caller, dashboardId, !completed, dayDateRange/*dateRange*/, includeTodos: true, includeMilestones: false);//.Select(x => new AngularTodo(x));
-					var m = _UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
+					var m = UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
 					output.Todos = todos.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
 				} catch (Exception e) {
 					ProcessDeadTile(e);
@@ -115,7 +115,7 @@ namespace RadialReview.Controllers {
 				try {
 					//Milestones
 					var milestones = TodoAccessor.GetMyTodosAndMilestones(caller, dashboardId, !completed, nowDateRange, includeTodos: false, includeMilestones: true);//.Select(x => new AngularTodo(x));
-					var m = _UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
+					var m = UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
 					output.Milestones = milestones.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
 				} catch (Exception e) {
 					ProcessDeadTile(e);

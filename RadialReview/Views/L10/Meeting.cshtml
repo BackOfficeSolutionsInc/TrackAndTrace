@@ -33,7 +33,7 @@
 		window.RecurrenceId = @Model.Recurrence.Id;
 		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-		        }
+								        }
 
 
 	</script>
@@ -42,6 +42,13 @@
 	@Scripts.Render("~/bundles/L10")
 	@Html.Partial("_SetupScript", Model)
 	<script>
+		var meetingSettings = {};
+		try {
+			meetingSettings.showDelinquent = "@((new HtmlString( ViewBag.ShowDelinquentMessage??"")))";
+		} catch (e) {
+			console.error(e);
+		}
+
 		setPreviewMode(false);
 
 		var picturesLookup={};
@@ -57,16 +64,16 @@
 			@if (Model.Meeting != null){
 				foreach (var m in Model.MemberPictures.ToList()) {
 					@:addToPictureLookup(@m.UserId,"@m.Url","@m.Name","@m.Initials");
-			                                    																																		}
+												                                    																																		}
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-			                                    	@:var bmin = (@(Math.Round((Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0)*1000))/1000) + (@((DateTime.UtcNow.ToJavascriptMilliseconds()-(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds())))))/(60*1000);
-			                                    	@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin@*,Model.Meeting._MeetingLeaderCurrentPageType*@);
-			                                    	foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
+												                                    	@:var bmin = (@(Math.Round((Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0)*1000))/1000) + (@((DateTime.UtcNow.ToJavascriptMilliseconds()-(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds())))))/(60*1000);
+												                                    	@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin@*,Model.Meeting._MeetingLeaderCurrentPageType*@);
+												                                    	foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
 						@:setPageTime("@i.Item1",@(Math.Round(i.Item2*10000))/10000);
-			                                    																						}
+												                                    																						}
 			}else{
 					@:isLeader =false;
-			                                    																					}
+												                                    																					}
 			initL10();
 			try {
 				resetClickables();
@@ -105,6 +112,10 @@
 
 			$(".ac-button").click(function(){
 				showAltPage("ac","/accountability/chart/@(Html.Organization().AccountabilityChartId)?noheading=true#/","32px",1000);
+			});
+
+			$(".pa-button").click(function(){
+				showAltPage("pa","/people/PeopleAnalyzer/?noheading=true&recurrenceId=@Model.Recurrence.Id#/","32px",1000);
 			});
 
 			$("body").on("click",".editMeeting-button",function(){
@@ -162,9 +173,20 @@
 					e.preventDefault();
 				}
 			});
+
+			try {
+				if (meetingSettings.showDelinquent) {
+					showAlert(meetingSettings.showDelinquent, 1000000);
+					$(".alert .todoModal").one("click", function () {
+						setTimeout(function () {
+							clearAlerts();
+						}, 100);
+					});
+				}
+			} catch (e) {
+				console.error(e);
+			}
 		});
-
-
 	</script>
 
 }
@@ -271,7 +293,14 @@
 					@if (ViewBag.ViewAccountabilityChart ?? false) {
 						<div class="component additional-pages">
 							<div>
-								<div class="alignRight" style1="padding-left:24px;"><div class="ac-button clickable gray" data-location="ac" href="#ac">View Accountability Chart <span class="glyphicon glyphicon-chevron-right"></span></div></div>
+								<div class="alignRight" style1="padding-left:24px;">
+									<div class="ac-button clickable gray" data-location="ac" href="#ac">
+										
+										<span class="hidden-md">View Accountability Chart</span>
+										<span class="visible-md-inline-block">Accountability Chart</span>
+										<span class="glyphicon glyphicon-chevron-right"></span>
+									</div>
+								</div>
 
 							</div>
 							@*<div class="alignCenter">
@@ -280,6 +309,27 @@
 
 						</div>
 					}
+
+					@if (ViewBag.ViewPeopleAnalyzer ?? false) {
+						<div class="component additional-pages">
+							<div>
+								<div class="alignRight" style1="padding-left:24px;">
+									<div class="clickable gray">
+										<label class="io-switch pa-io-slider">
+											<input type="checkbox" @(Model.SharingPeopleAnalyzer?"checked":"")>
+											<span class="slider round"></span>
+										</label>
+										<div class="pa-button" data-location="pa" href="#pa" style="padding-left: 33px;" title ="Share your People Analyzer with this team?">
+											<span class="hidden-md">View People Analyzer</span>
+											<span class="visible-md-inline-block">People Analyzer</span>
+											<span class="glyphicon glyphicon-chevron-right"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					}
+
 					<div class="clearfix"></div>
 					@*Chat*@
 					<div class="chat-container">
@@ -361,7 +411,7 @@
 		@if (Model.EnableTranscript)
 		{
 			@:shouldStartTranscribe = true;
-				}
+										}
 		var notesUrl = "@RadialReview.Utilities.Config.NotesUrl()";
 		$(function() {
 			InitTranscribe(@Model.Recurrence.Id,@(Model.Meeting==null?-1:Model.Meeting.Id),shouldStartTranscribe);
