@@ -578,7 +578,7 @@ namespace RadialReview.Controllers {
 		}
 		[Access(AccessLevel.Any)]
 		public PartialViewResult ErrorMessage(String message = null, MeetingExceptionType? type = null) {
-			return PartialView("Error", new MeetingException(message ?? "An error has occurred.", type ?? MeetingExceptionType.Error));
+			return PartialView("Error", new MeetingException(-1,message ?? "An error has occurred.", type ?? MeetingExceptionType.Error));
 		}
 		#endregion
 	}
