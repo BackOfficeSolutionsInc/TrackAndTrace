@@ -12,8 +12,9 @@ namespace RadialReview
 
 	    public static string GetBestTitle(this AboutType self)
 	    {
-			switch (self.GetBestAboutType())
-			{
+			switch (self.GetBestAboutType()) {
+				case AboutType.Invalid:
+					return "No Relationship";
 				case AboutType.NoRelationship:
 					return "No Relationship";
 				case AboutType.Self:
@@ -34,10 +35,12 @@ namespace RadialReview
 
 	    public static string GetBestShape(this AboutType self)
 	    {
-		    switch(self.GetBestAboutType()){
-			    case AboutType.NoRelationship:
-				    return "shape-circle";
-			    case AboutType.Self:
+		    switch(self.GetBestAboutType()) {
+				case AboutType.Invalid:
+					return "shape-circle";
+				case AboutType.NoRelationship:
+					return "shape-circle";
+				case AboutType.Self:
 				    return "shape-x";
 			    case AboutType.Subordinate:
 				    return "shape-diamond";
@@ -61,11 +64,13 @@ namespace RadialReview
 			if (self.HasFlag(AboutType.Subordinate))
 				return AboutType.Subordinate; 
 			if (self.HasFlag(AboutType.Peer))
-				return AboutType.Peer; 
+				return AboutType.Peer;
 			/*if (self.HasFlag(AboutType.Teammate))
 				return AboutType.Teammate; */
 			if (self.HasFlag(AboutType.NoRelationship))
-				return AboutType.NoRelationship; 
+				return AboutType.NoRelationship;
+			if (self.HasFlag(AboutType.Invalid))
+				return AboutType.Invalid;
 			throw new ArgumentException("Unknown about type (" + self + ")");
 	    }
 

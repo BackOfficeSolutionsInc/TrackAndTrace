@@ -355,6 +355,11 @@
 .rock-details .rock-duedate .date input {
   text-align: left;
   padding-left: 12px;
+  -webkit-box-shadow: none;
+  -box-shadow: none;
+  color: #767F99;
+  cursor: pointer;
+  border: 0px;
 }
 .rock-details .client-date {
   border: none;

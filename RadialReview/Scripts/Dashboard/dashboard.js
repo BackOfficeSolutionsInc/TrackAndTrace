@@ -47,6 +47,10 @@ var isMobile = function () {
     return $(window).width() < 768;
 }
 
+var printTileData = function (id) {
+    window.open("/L10/PrintoutTodoList/" + id, '_blank');
+}
+
 //This is commented because no way to know when the scorecard is loaded.
 //zoomScorecards();
 //$(window).resize($.debounce(250, zoomScorecards));

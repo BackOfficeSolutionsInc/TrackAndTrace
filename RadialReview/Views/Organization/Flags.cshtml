@@ -1,0 +1,36 @@
+﻿@model List<OrganizationFlagType>
+@using RadialReview.Crosscutting.Flags
+
+
+
+<h1>Organization Flags</h1>
+<h2 style="color:orange">@ViewBag.Organization.GetName()</h2>
+<br />
+@foreach(OrganizationFlagType f in Enum.GetValues(typeof(OrganizationFlagType))) {
+
+	<div>
+		<input type="checkbox" @(Model.Any(x=>x==f)?"checked":"") name="@f.ToString()" onchange="flip(this)" />
+		<span>@f.ToString()</span>
+	</div>
+
+}
+
+@using (Html.BeginScripts()) {
+<script>
+
+	function flip(self) {
+		var newStatus = $(self).is(":checked");
+		var name = $(self).attr("name");
+		$("input").attr("disabled", true);
+
+		$.ajax({
+			method:"post",
+			url: "/organization/SetFlags/@ViewBag.OrganizationId?status=" + newStatus + "&flag=" + name,
+			complete: function (e) {
+				window.location.reload();
+			}
+		});
+	}
+
+</script>
+}

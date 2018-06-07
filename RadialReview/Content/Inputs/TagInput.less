@@ -73,12 +73,13 @@
 	.token-editor[contenteditable=true] .token > span {
 		background: darkgray;
 		color: #fff;
+		margin: 1px;
 	}
 	/*.token-editor .token:after{
         content : attr(data-content);
         color:red;
     }*/
-	.token-editor[contenteditable=true] .token > span:after {
+	.token-editor[contenteditable=true] .token .offset /*:after*/ {
 		content: "\25BE";
 		top: 1px;
 		position: relative;

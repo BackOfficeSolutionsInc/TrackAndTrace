@@ -221,7 +221,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
 				if (updates.UnitTypeChanged) {
 					applySelf = true;
-					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "unittype", m.UnitType.ToTypeString(), m.UnitType));
+					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "unitType", m.UnitType.ToTypeString(), m.UnitType));
 				}
 
 				if (updates.GoalDirectionChanged)

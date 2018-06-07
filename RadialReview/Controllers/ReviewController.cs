@@ -1022,7 +1022,7 @@ namespace RadialReview.Controllers {
 			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ReviewerUserId, review.ForReviewContainerId).Alive().ToList();
 			var managers = _UserAccessor.GetManagers(GetUser(), review.ReviewerUserId, PermissionType.ViewReviews);
 
-			var user = _UserAccessor.GetUserOrganization(GetUser(), review.ReviewerUserId, false, false, PermissionType.ViewReviews);
+			var user = UserAccessor.GetUserOrganization(GetUser(), review.ReviewerUserId, false, false, PermissionType.ViewReviews);
 
 
 			foreach (var c in review.ClientReview.Charts.ToListAlive()) {

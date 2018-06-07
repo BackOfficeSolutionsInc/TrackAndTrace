@@ -13,6 +13,8 @@ using RadialReview.Models.Accountability;
 using RadialReview.Models.Angular.Accountability;
 using System.Threading.Tasks;
 using static RadialReview.Accessors.PdfAccessor;
+using RadialReview.Areas.People.Accessors.PDF;
+using RadialReview.Areas.People.Accessors;
 
 namespace RadialReview.Controllers {
 	public class QuarterlyController : BaseController {
@@ -24,6 +26,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id) {
+			ViewBag.IncludePeople = GetUser().Organization.Settings.EnablePeople;
 			return PartialView(id);
 		}
 
@@ -36,6 +39,7 @@ namespace RadialReview.Controllers {
 			public bool vto { get; set; }
 			public bool l10 { get; set; }
 			public bool acc { get; set; }
+			public bool pa { get; set; }
 		}
 
 
@@ -57,7 +61,8 @@ namespace RadialReview.Controllers {
 				model["l10"].ToBooleanJS(),
 				model["acc"].ToBooleanJS(),
 				model["print"].ToBooleanJS(),
-				model["quarterly"].ToBooleanJS()
+				model["quarterly"].ToBooleanJS(),
+				model["pa"].ToBooleanJS()
 
 			// root:root
 			);
@@ -89,7 +94,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
-		public async Task<ActionResult> Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool headlines = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, bool quarterly = true/*, PdfAccessor.AccNodeJs root = null*/) {
+		public async Task<ActionResult> Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool headlines = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, bool quarterly = true/*, PdfAccessor.AccNodeJs root = null*/, bool pa = false) {
 
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
 
@@ -163,7 +168,7 @@ namespace RadialReview.Controllers {
 			}
 			if (todos) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout3");
-				PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false);
+				await PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}
@@ -171,6 +176,13 @@ namespace RadialReview.Controllers {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout4");
 				PdfAccessor.AddIssues(GetUser(), doc, angRecur, todos, addPageNumber: false);
 				merger.AddDoc(doc);
+				anyPages = true;
+			}
+			if (pa) {
+				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout5");
+				var peopleAnalyzer = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(GetUser(), GetUser().Id, id);
+				var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(GetUser(), doc, peopleAnalyzer, DateTime.MaxValue);
+				merger.AddDoc(renderer);
 				anyPages = true;
 			}
 

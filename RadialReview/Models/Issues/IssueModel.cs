@@ -8,10 +8,8 @@ using RadialReview.Accessors;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.L10;
 
-namespace RadialReview.Models.Issues
-{
-	public class IssueModel : ILongIdentifiable, IDeletable, ITodo
-	{
+namespace RadialReview.Models.Issues {
+	public class IssueModel : ILongIdentifiable, IDeletable, ITodo {
 		public virtual long Id { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		//public virtual DateTime? CloseTime { get; set; }
@@ -25,13 +23,13 @@ namespace RadialReview.Models.Issues
 		public virtual L10Meeting CreatedDuringMeeting { get; set; }
 		public virtual List<L10Recurrence> _MeetingRecurrences { get; set; }
 		public virtual long? _Order { get; set; }
-        public virtual int _Priority { get; set; }
+		public virtual int _Priority { get; set; }
 
 		public virtual String ForModel { get; set; }
 		public virtual long ForModelId { get; set; }
 		public virtual long OrganizationId { get; set; }
-        public virtual OrganizationModel Organization { get; set; }
-        public virtual int _Rank { get; set; }
+		public virtual OrganizationModel Organization { get; set; }
+		public virtual int _Rank { get; set; }
 
 		//public virtual long _RecurrenceIssueId { get; set; }
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -41,31 +39,26 @@ namespace RadialReview.Models.Issues
 			return "";
 		}
 
-		public virtual async Task<string> GetTodoDetails()
-		{
+		public virtual async Task<string> GetTodoDetails() {
 
 			var padDetails = await PadAccessor.GetText(PadId);
 
 			var header = "RESOLVE ISSUE: " + Message;
-			if (!String.IsNullOrWhiteSpace(padDetails))
-			{
+			if (!String.IsNullOrWhiteSpace(padDetails)) {
 				header += "\n\n" + padDetails;
 			}
 			return header;
 		}
 
 
-		public IssueModel()
-		{
-			CreateTime = DateTime.UtcNow; 
+		public IssueModel() {
+			CreateTime = DateTime.UtcNow;
 			_Order = -CreateTime.Ticks;
 			PadId = Guid.NewGuid().ToString();
 		}
 
-		public class IssueMap : ClassMap<IssueModel>
-		{
-			public IssueMap()
-			{
+		public class IssueMap : ClassMap<IssueModel> {
+			public IssueMap() {
 				Id(x => x.Id);
 				//Map(x => x.CloseTime);
 				Map(x => x.CreateTime);
@@ -74,7 +67,7 @@ namespace RadialReview.Models.Issues
 				Map(x => x.ForModel);
 				Map(x => x.ForModelId);
 
-                Map(x => x.PadId);
+				Map(x => x.PadId);
 
 				Map(x => x.Message).Length(10000);
 				Map(x => x.Description).Length(10000);
@@ -95,11 +88,10 @@ namespace RadialReview.Models.Issues
 		}
 
 
-		public class IssueModel_Recurrence : ILongIdentifiable, IDeletable
-		{
-            public virtual long Id { get; set; }
-            public virtual int Priority { get; set; }
-            public virtual DateTime LastUpdate_Priority { get; set; }
+		public class IssueModel_Recurrence : ILongIdentifiable, IDeletable {
+			public virtual long Id { get; set; }
+			public virtual int Priority { get; set; }
+			public virtual DateTime LastUpdate_Priority { get; set; }
 			public virtual DateTime CreateTime { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual DateTime? CloseTime { get; set; }
@@ -115,27 +107,24 @@ namespace RadialReview.Models.Issues
 			public virtual IssueModel_Recurrence ParentRecurrenceIssue { get; set; }
 			public virtual long? Ordering { get; set; }
 
-            public virtual int Rank { get; set; }
+			public virtual int Rank { get; set; }
 			public virtual bool AwaitingSolve { get; set; }
 			public virtual bool MarkedForClose { get; set; }
 
-			public IssueModel_Recurrence()
-			{
+			public IssueModel_Recurrence() {
 				CreateTime = DateTime.UtcNow;
 				Ordering = -CreateTime.Ticks;
 			}
 
-			public class IssueModel_RecurrenceMap : ClassMap<IssueModel_Recurrence>
-			{
-				public IssueModel_RecurrenceMap()
-				{
+			public class IssueModel_RecurrenceMap : ClassMap<IssueModel_Recurrence> {
+				public IssueModel_RecurrenceMap() {
 					Id(x => x.Id);
-                    Map(x => x.CreateTime);
-                    Map(x => x.DeleteTime);
-                    Map(x => x.LastUpdate_Priority);
+					Map(x => x.CreateTime);
+					Map(x => x.DeleteTime);
+					Map(x => x.LastUpdate_Priority);
 					Map(x => x.CloseTime);
-                    Map(x => x.Priority);
-                    Map(x => x.Ordering);
+					Map(x => x.Priority);
+					Map(x => x.Ordering);
 					Map(x => x.Rank);
 
 					//Map(x => x.BackupOwner);
@@ -157,7 +146,7 @@ namespace RadialReview.Models.Issues
 			}
 
 
-        }
+		}
 
-    }
+	}
 }

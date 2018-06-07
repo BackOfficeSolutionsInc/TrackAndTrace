@@ -477,6 +477,22 @@ namespace RadialReview.Accessors {
 			return sam.Scores;
 		}
 
+		public class MeasurableCount {
+			public int Measurables { get; set; }
+			public int Dividers { get; set; }
+		}
+
+		public static MeasurableCount GetMeasurableCount(ISession s, PermissionsUtility perms, long recurrenceId) {
+			perms.ViewL10Recurrence(recurrenceId);
+
+			var dividers = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId).Select(x => x.IsDivider).List<bool>().ToList();
+			
+			return new MeasurableCount {
+				Measurables = dividers.Count(isDivider => !isDivider),
+				Dividers= dividers.Count(isDivider => isDivider),
+			};
+		}
+
 		public static List<Tuple<long, int?, bool>> GetMeasurableOrdering(UserOrganizationModel caller, long recurrenceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {

@@ -1,4 +1,19 @@
-﻿.people.quarterly-conversation .md-radio {
+﻿.disabled-qc.people.quarterly-conversation survey-container .current-section .title,
+.disabled-qc.people.quarterly-conversation survey-container .current-section .decoration {
+  background: repeating-linear-gradient(45deg, #dd2c00, #dd2c00 10px, red 10px, red 20px) !important;
+}
+.disabled-qc.people.quarterly-conversation survey-container .current-section .decoration:after {
+  content: "This assessment has concluded. You cannot edit your answers.";
+  color: white;
+  top: -3px;
+  position: absolute;
+  /* left: 3px; */
+  /* float: right; */
+  right: 6px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.people.quarterly-conversation .md-radio {
   display: inline-block;
   padding-right: 18px;
 }
@@ -18,6 +33,11 @@
 .people.quarterly-conversation .disabled {
   color: rgba(0, 0, 0, 0.5);
   font-style: italic;
+}
+.people.quarterly-conversation .disabled .responses .md-radio,
+.people.quarterly-conversation .disabled .responses textarea,
+.people.quarterly-conversation .disabled .responses input {
+  pointer-events: none;
 }
 .people.quarterly-conversation survey-container {
   display: inline-block;

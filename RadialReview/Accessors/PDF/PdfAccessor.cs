@@ -29,6 +29,7 @@ using RadialReview.Properties;
 using PdfSharp.Pdf.IO;
 using System.Collections;
 using RadialReview.Models.Angular.Rocks;
+using System.Threading.Tasks;
 
 namespace RadialReview.Accessors {
 	public class LayoutHelper {
@@ -83,6 +84,9 @@ namespace RadialReview.Accessors {
 			docs.Add(doc);
 		}
 		public void AddDoc(Document doc) {
+			docs.Add(doc);
+		}
+		public void AddDoc(PdfDocumentRenderer doc) {
 			docs.Add(doc);
 		}
 
@@ -189,6 +193,26 @@ namespace RadialReview.Accessors {
 						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
 						pages += 1;
 					}
+				}
+				if (doc is PdfDocumentRenderer) {
+					var mdoc = (PdfDocumentRenderer)doc;
+					PdfDocument newPdfDoc;
+
+					using (var stream = new MemoryStream()) {
+						mdoc.Save(stream, false);
+						newPdfDoc = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+					}
+
+					foreach (var p in newPdfDoc.Pages) {
+						var page = document.AddPage(p);
+						page.Width = p.Width;
+						page.Height = p.Height;
+						page.Orientation = p.Orientation;
+						XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
+						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
+						pages += 1;
+					}
+
 				}
 			}
 
@@ -783,7 +807,7 @@ namespace RadialReview.Accessors {
 		public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting, bool addPageNumber = false) {
 			//CreateDoc(caller,"THE LEVEL 10 MEETING");
 			var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™", addPageNumber: addPageNumber);
-			var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS. All Rights Reserved.");
+			var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS and Traction® Tools. All Rights Reserved.");
 			p.Format.Font.Size = 8;
 			p.Format.Font.Color = TableGray;
 			p.Format.LeftIndent = Unit.FromPoint(0);
@@ -918,7 +942,7 @@ namespace RadialReview.Accessors {
 			return doc;
 		}
 
-		public static void AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool addPageNumber = true) {
+		public static async Task AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool addPageNumber = true, bool printTileTodo = false) {
 			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -926,6 +950,7 @@ namespace RadialReview.Accessors {
 			var section = AddTitledPage(doc, "To-do List", addPageNumber: addPageNumber);
 
 			var format = caller.Organization.NotNull(x => x.Settings.NotNull(y => y.GetDateFormat())) ?? "MM-dd-yyyy";
+			Dictionary<string, string> padTexts = null;
 
 			var table = section.AddTable();
 			table.Format.Font.Size = 9;
@@ -948,8 +973,18 @@ namespace RadialReview.Accessors {
 
 
 			//Rock
-			column = table.AddColumn(Unit.FromInch(4.85 + .75));
-			column.Format.Alignment = ParagraphAlignment.Left;
+			//Todos
+			if (printTileTodo) {
+				column = table.AddColumn(Unit.FromInch(2.8));
+				column.Format.Alignment = ParagraphAlignment.Left;
+
+				//details
+				column = table.AddColumn(Unit.FromInch(2.8));
+				column.Format.Alignment = ParagraphAlignment.Left;
+			} else {
+				column = table.AddColumn(Unit.FromInch(4.85 + .75));
+				column.Format.Alignment = ParagraphAlignment.Left;
+			}
 
 			var row = table.AddRow();
 			row.HeadingFormat = true;
@@ -968,8 +1003,23 @@ namespace RadialReview.Accessors {
 			row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 			row.Cells[3].Format.Alignment = ParagraphAlignment.Left;
 
+			var todos = recur.Todos;
+
+			if (printTileTodo) {
+				row.Cells[4].AddParagraph("Details");
+				row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
+				row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
+
+				todos = recur.Todos.Where(x => x.CompleteTime == null && x.DeleteTime == null);
+				var pads = todos.Select(x => x.GetPadId()).ToList();
+				padTexts = await PadAccessor.GetTexts(pads);
+
+			} else {
+				todos = todos.Where(x => x.Complete == false);
+			}
+
 			var mn = 1;
-			foreach (var m in recur.Todos.Where(x => x.Complete == false).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
+			foreach (var m in todos.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
 				row = table.AddRow();
 				row.HeadingFormat = false;
@@ -987,6 +1037,20 @@ namespace RadialReview.Accessors {
 				row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
 				row.Cells[3].AddParagraph(m.Name);
 				row.Cells[3].Format.Alignment = ParagraphAlignment.Left;
+
+				if (printTileTodo) {
+					var getPadText = string.Empty;
+					try {
+						getPadText = padTexts[m.GetPadId()].ToString();
+
+					} catch (Exception) {
+						
+					}
+					
+					row.Cells[4].AddParagraph(getPadText);
+					row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
+				}
+
 				mn++;
 			}
 		}
@@ -1988,7 +2052,7 @@ namespace RadialReview.Accessors {
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
 
-			var section = AddTitledPage(doc, "HeadLines", Orientation.Landscape, addPageNumber: addPageNumber);
+			var section = AddTitledPage(doc, "Headlines", Orientation.Landscape, addPageNumber: addPageNumber);
 			Table table;
 			double mult;
 			Row row;
@@ -2593,29 +2657,29 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null,bool isCoreValues=false) {
+		public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null, bool isCoreValues = false) {
 			var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, height.Inch), XGraphicsUnit.Inch, XPageDirection.Downwards);
 			var fontSize = maxFontSize ?? Unit.FromPoint(12);
 			var minSize = minFontSize ?? Unit.FromPoint(8);
-            var row=new Row();
+			var row = new Row();
 
 
-            if (isCoreValues)
-                minSize = Unit.FromPoint(7);
+			if (isCoreValues)
+				minSize = Unit.FromPoint(7);
 
-            List<DocumentObject> paragraphsToAdd;
+			List<DocumentObject> paragraphsToAdd;
 
 			if (!(cell is Cell || cell is Paragraph || cell is Section))
 				throw new Exception("cant handle:" + cell.NotNull(x => x.GetType()));
 
 
-            if(isCoreValues) {
-                var _cell = (Cell)cell;
-                var _tbl = _cell.Elements.AddTable();
-                Column column = _tbl.AddColumn(Unit.FromInch(2.7));
-                column = _tbl.AddColumn(Unit.FromInch(2.7));
-                 row = _tbl.AddRow();
-            }
+			if (isCoreValues) {
+				var _cell = (Cell)cell;
+				var _tbl = _cell.Elements.AddTable();
+				Column column = _tbl.AddColumn(Unit.FromInch(2.7));
+				column = _tbl.AddColumn(Unit.FromInch(2.7));
+				row = _tbl.AddRow();
+			}
 
 
 			while (true) {
@@ -2653,16 +2717,14 @@ namespace RadialReview.Accessors {
 				fontSize -= Unit.FromPoint(1);
 			}
 
-            if (fontSize == Unit.FromPoint(7) && isCoreValues) {
-                AppendAll(row.Cells[0], paragraphsToAdd.Take(7).ToList());
-                AppendAll(row.Cells[1], paragraphsToAdd.Skip(7).ToList());
-            }
-            else
-            AppendAll(cell, paragraphsToAdd);
+			if (fontSize == Unit.FromPoint(7) && isCoreValues) {
+				AppendAll(row.Cells[0], paragraphsToAdd.Take(7).ToList());
+				AppendAll(row.Cells[1], paragraphsToAdd.Skip(7).ToList());
+			} else
+				AppendAll(cell, paragraphsToAdd);
 
 			return fontSize;
 		}
-
 
 		public class AccNodeJs {
 			public List<AccNodeJs> children { get; set; }

@@ -21,7 +21,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
     <TargetFrameworkProfile />
     <UseGlobalApplicationHostFile />
     <Use64BitIISExpress />
@@ -93,6 +93,7 @@
     <Compile Include="Accessors\AttachAccessor.cs" />
     <Compile Include="Accessors\BaseAccessor.cs" />
     <Compile Include="Accessors\CategoryAccessor.cs" />
+    <Compile Include="Accessors\ConsentAccessor.cs" />
     <Compile Include="Accessors\CustomizeAccessor.cs" />
     <Compile Include="Accessors\DashboardAccessor.cs" />
     <Compile Include="Accessors\DatabaseUtility.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Accessors\ForModelAccessor.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\HeadlineAccessor.cs" />
+    <Compile Include="Accessors\L10Accessor\L10AccessorPeopleTools.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorVideo.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorHelpers.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorAudit.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\People\Accessors\PDF\PeopleAnalyzerPdf.cs" />
     <Compile Include="Areas\People\Controllers\ErrorController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
     <Content Include="Content\Angular\angular-material.css">
@@ -173,8 +176,13 @@
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Controllers\Upload\Upload_OrgUsersController.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\SetPeopleToolsTrial.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IMilestoneHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IPositionHooks.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IQuarterlyConversationHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IRecurrenceSettings.cs" />
+    <Compile Include="Crosscutting\Hooks\QuarterlyConversation\QuarterlyConversationCreationNotifications.cs" />
     <Compile Include="Crosscutting\Hooks\Realtime\Position\RealTime_Positions.cs" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
@@ -245,6 +253,8 @@
     <Compile Include="Models\Frontend\EditorModels.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
     <Compile Include="Models\Notifications\NotificationModel.cs" />
+    <Compile Include="Models\UserModels\ConsentModel.cs" />
+    <Compile Include="Models\Payments\PaymentCredit.cs" />
     <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateMeasurableViewModel.cs" />
     <Compile Include="Models\UserModels\UserRole.cs" />
@@ -1103,6 +1113,7 @@
     <Content Include="Content\creditcard_icon\bank.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\etherpad\web.css" />
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
@@ -1398,6 +1409,7 @@
     <Content Include="Scripts\Main\beta.js" />
     <Content Include="Scripts\Main\chart.js" />
     <Content Include="Scripts\Main\clickableclass.js" />
+    <Content Include="Scripts\Main\compliance.js" />
     <Content Include="Scripts\Main\datatable.js" />
     <Content Include="Scripts\Main\datepickers.js" />
     <Content Include="Scripts\Main\iefixes.js" />
@@ -1848,10 +1860,14 @@
     <Content Include="Views\ClientSuccess\Close.cshtml" />
     <Content Include="Views\Data\Dashboard.cshtml" />
     <Content Include="Views\Admin\EmployeeCount.cshtml" />
+    <Content Include="Views\Upload\UploadOrg.cshtml" />
     <Content Include="Views\Faq\GenerateTokenInstruction.cshtml" />
     <Content Include="Views\L10\Delete.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
     <Content Include="Views\ClientSuccess\HFCategories.cshtml" />
+    <Content Include="Views\Account\Consent.cshtml" />
+    <Content Include="Views\User\EditUserDetails.cshtml" />
+    <Content Include="Views\Organization\Flags.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -2044,7 +2060,6 @@
     <Content Include="Scripts\table\fixedTabel.js" />
     <Content Include="Scripts\table\grid.js" />
     <Content Include="Scripts\table\sortable_table.js" />
-    <Content Include="Scripts\typings\Charts.js" />
     <Content Include="Views\Review\Details\ChartBuilder2.cshtml" />
     <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
     <Content Include="Views\JobDescription\Edit.cshtml" />
@@ -2081,7 +2096,6 @@
     <Content Include="Scripts\d3\LICENSE" />
     <Content Include="Views\Charts\Histogram.cshtml" />
     <Content Include="Scripts\Charts.js.map" />
-    <Content Include="Scripts\typings\Charts.js.map" />
     <Content Include="Views\L10\BasePage.cshtml" />
     <Content Include="Views\L10\_SetupScript.cshtml" />
     <Content Include="Views\Issues\ScorecardIssueModal.cshtml" />
@@ -2673,10 +2687,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Scripts\d3\Charts.ts" />
     <TypeScriptCompile Include="Scripts\Models\Charts.ts" />
-    <TypeScriptCompile Include="Scripts\typings\d3\d3.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\d3\plugins\d3.superformula.d.ts" />
     <Content Include="SoftwareUpdates\20151217.txt" />
   </ItemGroup>
   <ItemGroup>

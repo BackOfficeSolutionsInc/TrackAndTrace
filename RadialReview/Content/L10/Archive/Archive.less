@@ -89,13 +89,40 @@ body, html {
 	}
 
 	.scorecard-list-container {
+
+		.edit-formula {
+			float: right;
+			right: 14px;
+			position: relative;
+			background-color: white;
+			width: 16px;
+			height: 16px;
+			margin-top: 7px;
+			border-radius: 11px;
+			border: 1px solid lightgray;
+			margin-right: -16px;
+			outline: none;
+
+			&:after {
+				content: "f";
+				color: lightgray;
+				position: absolute;
+				margin-top: 1px;
+				font-size: 80%;
+				text-align: center;
+				/* color: white; */
+				padding-left: 5px;
+			}
+		}
+
+
 		table {
 			.dataTableTiny();
 
 
 			tr span.delete-row:after {
 				position: relative;
-				top: 5px;
+				/*top: 5px;*/
 			}
 
 
@@ -120,6 +147,7 @@ body, html {
 				padding-left: 0px !important;
 				padding-right: 0px;
 				font-size: 12px;
+				padding-top: 0px;
 			}
 
 			score input {
@@ -198,7 +226,7 @@ body, html {
 		.date-column,
 		.checkbox-column {
 			vertical-align: top !important;
-			padding-top:12px !important;
+			padding-top: 12px !important;
 		}
 
 		.checkbox-column {
@@ -531,6 +559,7 @@ body, html {
 	input[type='checkbox'].on-edit-enabled {
 		.opacity(.65);
 	}
+
 	.add-note-btn,
 	.handle-cell *,
 	.upload,
@@ -571,8 +600,8 @@ body, html {
 			.opacity(.65);
 		}
 
-		.md-datepicker-triangle-button{
-			display:none;
+		.md-datepicker-triangle-button {
+			display: none;
 		}
 
 		&.btn,

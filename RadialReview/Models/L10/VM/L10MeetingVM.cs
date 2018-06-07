@@ -116,6 +116,7 @@ namespace RadialReview.Models.L10.VM {
 		//public bool AutoPrioritize { get; set; }
 
 		public bool SeenTodoFireworks { get; set; }
+		public bool SharingPeopleAnalyzer { get; set; }
 	}
 
 	public enum ConcludeSendEmail {

@@ -58,6 +58,9 @@ namespace RadialReview.Models.Dashboard {
 		public static TileTypeBuilder L10Issues(long recurrenceId) {
 			return new TileTypeBuilder(TileType.L10Issues, "/TileData/L10Issues/" + recurrenceId, "" + recurrenceId);
 		}
+		public static TileTypeBuilder L10PeopleHeadlines(long recurrenceId) {
+			return new TileTypeBuilder(TileType.L10Issues, "/TileData/L10Headlines/" + recurrenceId, "" + recurrenceId);
+		}
 
 	}
 
@@ -81,6 +84,7 @@ namespace RadialReview.Models.Dashboard {
 		[IgnoreDataMember]
 		public virtual UserModel ForUser { get; set; }
 		public virtual string KeyId { get; set; }
+		public virtual bool ShowPrintButton { get; set; }
 
 		public TileModel() {
 			CreateTime = DateTime.UtcNow;

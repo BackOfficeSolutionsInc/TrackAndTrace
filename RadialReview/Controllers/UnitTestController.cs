@@ -19,6 +19,7 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.ViewModels;
 using RadialReview.Exceptions;
+using Hangfire;
 
 namespace RadialReview.Controllers
 {
@@ -240,8 +241,11 @@ namespace RadialReview.Controllers
             throw new SyncException(id);
         }
 
+		[Access(AccessLevel.Radial)]
+		public JsonResult Hangfire(int seconds = 10) {
+			BackgroundJob.Enqueue(() => Task.Delay(seconds*1000));
+			return Json(new { status = "Started" }, JsonRequestBehavior.AllowGet);
+		}
 
-
-
-    }
+	}
 }
