@@ -12,6 +12,7 @@ using System.Web;
 
 namespace RadialReview.Accessors {
 	public class ForModelAccessor {
+		
 
 		public static long GetOrganizationId(ISession s, IForModel forModel) {
 			if (forModel.Is<UserOrganizationModel>()) {
@@ -43,7 +44,6 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-
 
 		public static string GetEmail_Unsafe(ISession s, IForModel forModel) {
 			if (forModel.Is<UserOrganizationModel>()) {

@@ -46,11 +46,23 @@ namespace RadialReview.Controllers {
 			ViewBag.OrgId = id;
 			return View("List", list);
 		}
+
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Details(long id) {
-			var invoice = InvoiceAccessor.GetInvoice(GetUser(), id);
-
+			var invoice = InvoiceAccessor.GetInvoice(GetUser(), id).AsList();
 			return View(invoice);
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult All(long? id = null) {
+			var orgid = id ?? GetUser().Organization.Id;
+			var list = InvoiceAccessor.GetInvoicesForOrganization(GetUser(), orgid)
+							.Select(x=>InvoiceAccessor.GetInvoice(GetUser(),x.Id))
+							.ToList();
+			ViewBag.OrgId = id;
+			
+			return View("Details",list);
 		}
 
 		[Access(AccessLevel.Radial)]

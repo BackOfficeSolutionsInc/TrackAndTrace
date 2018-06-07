@@ -24,7 +24,7 @@ namespace RadialReview.Controllers
 
 			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
 
-			var user = _UserAccessor.GetUserOrganization(GetUser(), id, false, false);
+			var user = UserAccessor.GetUserOrganization(GetUser(), id, false, false);
 			return PartialView(new JobDescriptionVM{JobDescription = user.JobDescription, UserId = user.Id, Locked = user.JobDescriptionFromTemplateId!=null});
 		}
 

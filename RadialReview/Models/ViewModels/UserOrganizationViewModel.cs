@@ -11,24 +11,22 @@ using RadialReview.Models.UserModels;
 using RadialReview.Exceptions;
 using System.ComponentModel.DataAnnotations;
 
-namespace RadialReview.Models.ViewModels
-{
-    public class CreateUserOrganizationViewModel
-    {
+namespace RadialReview.Models.ViewModels {
+	public class CreateUserOrganizationViewModel {
 		//Creation variables
 		#region Creation Variables
 		[Required]
 		public String FirstName { get; set; }
 		[Required]
 		public String LastName { get; set; }
-		
+
 		[EmailAddress]
 		public String Email { get; set; }
 
-        public bool IsManager { get; set; }
-        public long OrgId { get; set; }
-        public bool StrictlyHierarchical { get; set; }
-        public long? ManagerNodeId { get; set; }
+		public bool IsManager { get; set; }
+		public long OrgId { get; set; }
+		public bool StrictlyHierarchical { get; set; }
+		public long? ManagerNodeId { get; set; }
 		public bool EvalOnly { get; set; }
 		public bool OnLeadershipTeam { get; set; }
 		public bool PlaceholderOnly { get; set; }
@@ -37,10 +35,10 @@ namespace RadialReview.Models.ViewModels
 
 		public bool IsClient { get; set; }
 		public string ClientOrganizationName { get; set; }
-		
+
 		public bool SendEmail { get; set; }
 		public long? NodeId { get; set; }
-		
+
 
 		public long? OrgPositionId {
 			get {
@@ -62,16 +60,15 @@ namespace RadialReview.Models.ViewModels
 		//ViewModel Variables
 		#region VM Variables
 		public UserPositionViewModel Position { get; set; }
-        public List<SelectListItem> PotentialManagers { get; set; }
+		public List<SelectListItem> PotentialManagers { get; set; }
 		#endregion
 	}
 
-    public class EditUserOrganizationViewModel
-    {
-        public long UserId { get; set; }
-        public bool IsManager { get; set; }
-        //public long ManagerId { get; set; }
-        public Boolean? ManagingOrganization { get; set; }
+	public class EditUserOrganizationViewModel {
+		public long UserId { get; set; }
+		public bool IsManager { get; set; }
+		//public long ManagerId { get; set; }
+		public Boolean? ManagingOrganization { get; set; }
 		public Boolean CanSetManagingOrganization { get; set; }
 		public Boolean? EvalOnly { get; set; }
 
@@ -79,28 +76,30 @@ namespace RadialReview.Models.ViewModels
 		//public List<SelectListItem> PotentialManagers { get; set; }
 	}
 
-    public class UserViewModel : ICompletable
-    {
-        public UserModel User { get; set; }
+	public class UserViewModel : ICompletable {
+		public UserModel User { get; set; }
 
-        public int ReviewToComplete { get; set; }
+		public int ReviewToComplete { get; set; }
 
-        public ICompletionModel GetCompletion(bool split = false)
-        {
-            int complete = 1;
-            int total = 1;
+		public ICompletionModel GetCompletion(bool split = false) {
+			int complete = 1;
+			int total = 1;
 
-	        if (User != null){
-		        complete += (User.ImageGuid != null).ToInt();
+			if (User != null) {
+				complete += (User.ImageGuid != null).ToInt();
 				total++;
-	        }
+			}
 
-            return new CompletionModel(complete, total);
-        }
-    }
+			return new CompletionModel(complete, total);
+		}
+	}
 
-    public class UserOrganizationDetails
-    {
+	public class UserOrganizationDetails {
+
+		public UserOrganizationDetails() {
+			
+		}
+
 		public long SelfId { get; set; }
 		public UserOrganizationModel User { get; set; }
 		public List<String> Responsibilities { get; set; }
@@ -110,17 +109,18 @@ namespace RadialReview.Models.ViewModels
 		public List<MeasurableModel> AdminMeasurables { get; set; }
 		public bool ManagingOrganization { get; set; }
 		public bool Editable {
-			get
-			{
+			get {
 				return ForceEditable || ManagingOrganization || User.GetPersonallyManaging() ||
-				       (User.Organization.Settings.ManagersCanEditSelf  && User.Id == SelfId && User.ManagerAtOrganization) ||
+					   (User.Organization.Settings.ManagersCanEditSelf && User.Id == SelfId && User.ManagerAtOrganization) ||
 					   (User.Organization.Settings.EmployeesCanEditSelf && User.Id == SelfId);
 			}
 		}
-	    public bool ForceEditable { get; set; }
+		public bool ForceEditable { get; set; }
 
 		public bool CanViewRocks { get; set; }
 
 		public bool CanViewMeasurables { get; set; }
+
+		public bool CanEditUserDetails { get; set; }
 	}
 }

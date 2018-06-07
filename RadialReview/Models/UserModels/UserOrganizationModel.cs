@@ -87,7 +87,15 @@ namespace RadialReview.Models {
 		[DataMember]
 		public virtual string Name { get { return GetName(); } }
 		[DataMember]
-		public virtual string UserName { get { return GetUsername(); } }
+		public virtual string UserName {
+			get {
+				try {
+					return GetUsername();
+				} catch (Exception e) {
+					return null;
+				}
+			}
+		}
 
 		[ScriptIgnore]
 		[IgnoreDataMember]

@@ -23,14 +23,23 @@
 	<div class="row smallBreak2">
 		<div class="col-sm-8 col-sm-offset-2">
 			<label class="control-label" id="name_field">Name this Quarterly Conversation:</label>
-			@Html.TextBoxFor(x => x.Name, new { @class = "form-control smallBreak2" })
+			@Html.TextBoxFor(x => x.Name, new { @class = "form-control smallBreak2", autocomplete = "off" })
 			@Html.ValidationMessageFor(x => x.Name)
 		</div>
 	</div>
 	<div class="row smallBreak2">
 		<div class="col-sm-8 col-sm-offset-2">
-			<label class="control-label">Add to Quarterly Conversation:</label>
-			<span class="pull-right"><span class="gray small">sort: </span> &nbsp;<span class="sort-btn clickable" data-sort="name">name</span> | <span class="sort-btn  clickable" data-sort="team">team</span></span>
+			<div>
+				<label class="control-label" style="padding-top: 18px;">Add to Quarterly Conversation:</label>
+				<div class="pull-right clearfix">
+					<div>
+						<span class="gray small" style="padding-right: 10px;">select: </span> &nbsp;<span class="select-btn clickable noselect" data-select="all">all</span> | <span class="select-btn clickable" data-select="none">none</span>
+					</div>
+					<div>
+						<span class="gray small">sort: </span> &nbsp;<span class="sort-btn clickable" data-sort="name">name</span> | <span class="sort-btn  clickable" data-sort="team">team</span>
+					</div>
+				</div>
+			</div>
 			<div id="qc-issue"></div>
 		</div>
 	</div>
@@ -372,6 +381,13 @@
 			};
 		})();
 
+		$("body").on("click",".select-btn",function(){
+			var btn = $(this);
+			var all = btn.data("select")=="all";
+			$("#qc-issue table tr input[type='checkbox']").each(function(){
+				$(this).prop('checked', all);
+			});
+		});
 
 		$("body").on("click",".sort-btn",function(){
 			var sorter = $(this).attr("data-sort");

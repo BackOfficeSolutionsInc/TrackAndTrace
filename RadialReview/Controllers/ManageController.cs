@@ -121,15 +121,12 @@ namespace RadialReview.Controllers {
 		public ActionResult Members() {
 			UpdateViewbag();
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Members", LifeTime.Request/*Session*/);
-			//var user = GetUser().Hydrate().ManagingUsers(true).Execute();
 
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
-
 			var hasAdminDelete = _PermissionsAccessor.AnyTrue(GetUser(), PermissionType.DeleteEmployees, x => x.ManagingOrganization);
-
 			var messages = MessageAccessor.GetManageMembers_Messages(GetUser(), GetUser().Organization.Id);
-
 			var canUpgrade = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
+			var canEditUserDetails = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.EditDeleteUserDataForOrganization, GetUser().Organization.Id));
 
 			for (int i = 0; i < members.Count(); i++) {
 				var u = members[i];
@@ -140,7 +137,7 @@ namespace RadialReview.Controllers {
 
 			var roles = UserAccessor.GetUserRolesAtOrganization(GetUser(), GetUser().Organization.Id);
 
-			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization, hasAdminDelete, canUpgrade, roles);
+			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization, hasAdminDelete, canUpgrade, canEditUserDetails, canEditUserDetails, roles);
 			model.Messages = messages;
 			return View(model);
 		}
@@ -227,7 +224,7 @@ namespace RadialReview.Controllers {
 				OrganizationName = user.Organization.Name.Standard,
 				StrictHierarchy = user.Organization.StrictHierarchy,
 				ManagersCanEditPositions = user.Organization.ManagersCanEditPositions,
-				ManagersCanRemoveUsers = user.Organization.ManagersCanRemoveUsers,
+				//ManagersCanRemoveUsers = user.Organization.ManagersCanRemoveUsers,
 
 				SendEmailImmediately = user.Organization.SendEmailImmediately,
 				ManagersCanEditSelf = user.Organization.Settings.ManagersCanEditSelf,
@@ -287,7 +284,6 @@ namespace RadialReview.Controllers {
 				model.StrictHierarchy,
 				model.ManagersCanEditPositions,
 				model.SendEmailImmediately,
-				model.ManagersCanRemoveUsers,
 				model.ManagersCanEditSelf,
 				model.EmployeesCanEditSelf,
 				model.ManagersCanCreateSurvey,

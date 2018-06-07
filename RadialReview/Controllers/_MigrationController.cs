@@ -2420,6 +2420,50 @@ namespace RadialReview.Controllers {
 			return "Updated: " + a;
 		}
 
+		[Access(Controllers.AccessLevel.Radial)]
+		public async Task<string> M04_05_2018() {
+			var a = 0;
+			var b = 0;
+			var pageCount = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var orgsF = s.QueryOver<OrganizationModel>().Future();
+					var teamsF = s.QueryOver<OrganizationTeamModel>().Where(x => x.Type == TeamType.Managers && x.DeleteTime == null).Future();
+					var permItemsF = s.QueryOver<PermItem>().Where(x => x.ResType == PermItem.ResourceType.EditDeleteUserDataForOrganization).Future();
+
+					var orgs = orgsF.ToList();
+					var teams = teamsF.ToDefaultDictionary(x => x.Organization.Id, x => (long?)x.Id, x => null);
+					var permItems = permItemsF.ToList();
+
+					foreach (var org in orgs) {
+						if (!permItems.Any(x => x.ResId == org.Id && x.CanAdmin)) {
+							var tempUser = new UserOrganizationModel() {
+								Id = -12,
+								Organization = org,
+							};
+							var arr = new List<PermTiny>() {
+								PermTiny.Admins(true, true, true)
+							};							
+							var teamId = teams[org.Id];
+							if (teamId != null) {
+								var managersCanEdit = false;
+								if (org.ManagersCanRemoveUsers) {
+									b++;
+									managersCanEdit = true;
+								}
+								arr.Add(PermTiny.RGM(teamId.Value, managersCanEdit, managersCanEdit, false));
+							}
+							PermissionsAccessor.CreatePermItems(s, tempUser, PermItem.ResourceType.EditDeleteUserDataForOrganization, org.Id, arr.ToArray());
+							a++;
+						}
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "Updated: " + a+"/"+b;
+		}
 	}
 
 }

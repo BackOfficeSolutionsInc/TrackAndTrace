@@ -109,24 +109,28 @@ x:-webkit-any-link {
 input[type=checkbox].blend {
   -webkit-appearance: none;
   /* Hides the default checkbox style */
-  height: 47px;
-  width: 47px;
+  height: 47px !important;
+  width: 47px !important;
   /*height: 18px;
     width: 18px;*/
   cursor: pointer;
   position: relative;
   padding: 0px;
-  border: none;
   background-color: transparent;
   border-radius: 36px;
   margin-top: -3px;
   margin-bottom: -10px;
   margin-left: -10px;
-  -moz-transform: scale(0.6);
-  -ms-transform: scale(0.6);
-  -o-transform: scale(0.6);
-  -webkit-transform: scale(0.6);
-  transform: scale(0.6);
+  border: none;
+  -moz-transform: scale(1) !important;
+  -ms-transform: scale(1) !important;
+  -o-transform: scale(1) !important;
+  -webkit-transform: scale(1) !important;
+  transform: scale(1) !important;
+  -moz-transition: transform 0.4s, background-color 0.2s, border-color 0.4s;
+  -o-transition: transform 0.4s, background-color 0.2s, border-color 0.4s;
+  -webkit-transition: transform 0.4s, background-color 0.2s, border-color 0.4s;
+  transition: transform 0.4s, background-color 0.2s, border-color 0.4s;
 }
 input[type=checkbox].blend,
 input[type=checkbox].blend:before,
@@ -1475,6 +1479,14 @@ body.resizing .notes-tile:after,
   -webkit-transition: background .2s;
   transition: background .2s;
   width: 100%;
+  /*.table-header,
+		.picture-column,
+		.createtime-column,
+		.due-column,
+		.company-rock-column,
+		.delete-column {
+			display: none;
+		}*/
 }
 .dashboard .rock-list-container th {
   font-size: 12px;
@@ -1593,11 +1605,25 @@ body.resizing .notes-tile:after,
 .dashboard .rock-list-container md-select {
   margin-top: -1px;
 }
+.dashboard .rock-list-container .icon-column-text {
+  margin-top: -22px;
+  margin-left: 18px;
+}
 .dashboard .rock-list-container .icon-column {
-  display: table-cell;
-  padding-right: 2px;
+  /*display: table-cell;*/
+  padding-right: 6px;
   vertical-align: top;
   padding-top: 6px;
+}
+.dashboard .rock-list-container .icon-column-1 {
+  padding-top: 5px !important;
+  /*width: 45px;*/
+}
+.dashboard .rock-list-container .icon-column-1-text {
+  margin-top: -20px;
+  /*float: left;*/
+  margin-left: 2px;
+  /*width: 45px;*/
 }
 .dashboard .rock-list-container .icon-column:before {
   font-family: "fontastic" !important;
@@ -1611,7 +1637,7 @@ body.resizing .notes-tile:after,
   -moz-osx-font-smoothing: grayscale;
   display: inline-block;
   position: relative;
-  top: -1px;
+  top: 5px;
   font-size: 18px;
   height: 14px;
   width: 14px;
@@ -1624,11 +1650,17 @@ body.resizing .notes-tile:after,
   width: 16px;
   height: 16px;
   position: relative;
-  left: 12px;
+  left: 14px;
   border-radius: 14px;
   float: left;
   position: absolute;
-  /* margin-top: -2px; */
+  margin-top: 6px;
+}
+.dashboard .rock-list-container .icon-column-1:before {
+  top: 1px !important;
+}
+.dashboard .rock-list-container .icon-column-1:after {
+  margin-top: 2px !important;
 }
 .dashboard .rock-list-container tr .icon-column:before {
   content: "\e203";
@@ -1678,13 +1710,13 @@ body.resizing .notes-tile:after,
   vertical-align: top;
   padding-top: 3px;
 }
-.dashboard .rock-list-container .table-header,
-.dashboard .rock-list-container .picture-column,
 .dashboard .rock-list-container .createtime-column,
 .dashboard .rock-list-container .due-column,
-.dashboard .rock-list-container .company-rock-column,
 .dashboard .rock-list-container .delete-column {
   display: none;
+}
+.dashboard .rock-list-container .company-rock-column {
+  max-width: none;
 }
 .dashboard .rock-list-container .status-column {
   padding: 2px !important;
