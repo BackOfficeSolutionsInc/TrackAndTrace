@@ -1,5 +1,5 @@
 ﻿<div class="people-analyzer">
-	<div class="print-all-btn btn-group" ng-hide="model.Rows.length==0">
+	<div class="print-all-btn btn-group" ng-hide="model.Rows.length==0" ng-if="showQuarterlyConversationActions">
 		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			<span class="glyphicon glyphicon-print"></span>&nbsp; Print &nbsp;<span class="caret"></span>
 		</button>
@@ -7,6 +7,11 @@
 			<li><a href="/People/QuarterlyConversation/PrintAll?surveyContainerId={{functions.selectedSurveyContainer().Id}}" target="_blank">Quarterly Conversations</a></li>
 			<li><a href="#" onclick="window.print();">People Analyer</a></li>
 		</ul>
+	</div>
+	<div class="print-all-btn btn-group" ng-hide="model.Rows.length==0" ng-if="!showQuarterlyConversationActions">
+		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="window.print();">
+			<span class="glyphicon glyphicon-print" ></span>&nbsp; Print </span>
+		</button>		
 	</div>
 	<!--<div class="print-all-btn" ng-hide="model.Rows.length==0"><a href="/People/QuarterlyConversation/PrintAll?surveyContainerId={{functions.selectedSurveyContainer().Id}}" target="_blank" class="btn btn-primary btn-invert">Print Quarterly Conversations</a></div>-->
 	<div class="survey-title">{{functions.selectedSurveyContainer().Name}}</div>
@@ -18,20 +23,20 @@
 				<th class="header column person-column"></th>
 				<th class="header column value-column" ng-repeat="value in model.Values"><span>{{value.Source.PrettyString}}</span></th>
 				<th class="header column gwc-column get-column">Get it</th>
-				<th class="header column gwc-column want-column">Wants it</th>
+				<th class="header column gwc-column want-column">Want it</th>
 				<th class="header column gwc-column cap-column">Capacity to do it</th>
-				<th class="header column completion-column"></th>
-				<th class="header column print-column"></th>
+				<th class="header column completion-column" ng-if="showQuarterlyConversationActions"></th>
+				<th class="header column print-column" ng-if="showQuarterlyConversationActions"></th>
 			</tr>
 		</thead>
 		<tbody ng-show="model.Rows.length>0">
 			<tr ng-repeat="row in model.Rows" data-name="row_{{row.Id}}">
 				<th class="column person-column"><span>{{row.About.PrettyString}}</span></th>
-				<td class="column value-column" ng-class="{'inactive':functions.inactive(row,value)}" ng-repeat="value in model.Values"><span class="resp resp-{{functions.lookup(row,value).Answer}}">{{functions.lookup(row,value).AnswerFormatted}}</span></td>
-				<td class="column gwc-column get-column" ng-class="{'inactive':functions.inactive(row,'get')}"><span class="resp resp-{{functions.lookup(row,'get').Answer}}">{{functions.lookup(row,"get").AnswerFormatted}}</span></td>
-				<td class="column gwc-column want-column" ng-class="{'inactive':functions.inactive(row,'want')}"><span class="resp resp-{{functions.lookup(row,'want').Answer}}">{{functions.lookup(row,"want").AnswerFormatted}}</span></td>
-				<td class="column gwc-column cap-column" ng-class="{'inactive':functions.inactive(row,'cap')}"><span class="resp resp-{{functions.lookup(row,'cap').Answer}}">{{functions.lookup(row,"cap").AnswerFormatted}}</span></td>
-				<td class="column completion-column">
+				<td title="{{functions.lookupWhen(row,value)}}" class="column value-column" ng-class="{'inactive':functions.inactive(row,value)}" ng-repeat="value in model.Values"><span class="resp resp-{{functions.lookup(row,value).Answer}}">{{functions.lookup(row,value).AnswerFormatted}}</span></td>
+				<td title="{{functions.lookupWhen(row,'get')}}" class="column gwc-column get-column" ng-class="{'inactive':functions.inactive(row,'get')}"><span class="resp resp-{{functions.lookup(row,'get').Answer}}">{{functions.lookup(row,"get").AnswerFormatted}}</span></td>
+				<td title="{{functions.lookupWhen(row,'want')}}" class="column gwc-column want-column" ng-class="{'inactive':functions.inactive(row,'want')}"><span class="resp resp-{{functions.lookup(row,'want').Answer}}">{{functions.lookup(row,"want").AnswerFormatted}}</span></td>
+				<td title="{{functions.lookupWhen(row,'cap')}}" class="column gwc-column cap-column" ng-class="{'inactive':functions.inactive(row,'cap')}"><span class="resp resp-{{functions.lookup(row,'cap').Answer}}">{{functions.lookup(row,"cap").AnswerFormatted}}</span></td>
+				<td class="column completion-column" ng-if="showQuarterlyConversationActions">
 					<div ng-if="functions.personallyOwning(row)" ng-switch="functions.isLockedIn(row)">
 						<span class="btn btn-default disabled transparen1t" ng-switch-when="true">Completed</span><!--if="functions.isLockedIn(row)"--><!--ng-if="!functions.isLockedIn(row)"-->
 						<span class="btn btn-default btn-remind"
@@ -42,7 +47,7 @@
 						</span>
 					</div>
 				</td>
-				<td class="column print-column">
+				<td class="column print-column" ng-if="showQuarterlyConversationActions">
 					<span class="print-btn" ng-if="functions.personallyOwning(row)" ng-click="functions.printRow(row)"></span>
 				</td>
 			</tr>

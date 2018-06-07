@@ -59,6 +59,7 @@ namespace RadialReview.Controllers {
 			};
 
 			ViewBag.ViewAccountabilityChart = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanView(ResourceType.AccountabilityHierarchy, GetUser().Organization.AccountabilityChartId));
+			ViewBag.ViewPeopleAnalyzer = GetUser().Organization.Settings.EnablePeople;
 
 
 			var model = new L10MeetingVM() {
@@ -88,6 +89,13 @@ namespace RadialReview.Controllers {
 
 				model.Connected = L10Accessor.GetConnected(GetUser(), id.Value, true);
 
+			}
+
+
+			try {
+				var me = model.Recurrence.NotNull(x => x._DefaultAttendees.FirstOrDefault(y => y.User.Id == GetUser().Id));
+				model.SharingPeopleAnalyzer = me.SharePeopleAnalyzer == L10Recurrence.SharePeopleAnalyzer.Yes;
+			} catch (Exception) {
 			}
 
 

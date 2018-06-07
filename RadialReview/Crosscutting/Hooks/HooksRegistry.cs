@@ -49,7 +49,12 @@ namespace RadialReview.Hooks {
 		}
 
 		//[Untested("RunAfterDispose", "Does it run?")]
-		public static async Task Each<T>(Expression<Func<ISession, T, Task>> action) where T : IHook {
+
+		public static async Task Each<T>( Expression<Func<ISession, T, Task>> action) where T : IHook {
+			await Each<T>(null, action);
+		}
+
+		public static async Task Each<T>(ISession waitUntilFinished,Expression<Func<ISession, T, Task>> action) where T : IHook {
 
 			var logMethod = "--Debug is off--";
 
@@ -72,7 +77,7 @@ namespace RadialReview.Hooks {
 							hookData = hookData.ToDictionary()
 						}));
 					} else {
-						await HibernateSession.RunAfterSuccessfulDisposeOrNow(async (s, tx) => {
+						await HibernateSession.RunAfterSuccessfulDisposeOrNow(waitUntilFinished,async(s, tx) => {
 							try {
 								var sw = new Stopwatch();
 								sw.Start();

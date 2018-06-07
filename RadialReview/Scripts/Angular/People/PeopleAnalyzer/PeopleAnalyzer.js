@@ -6,17 +6,28 @@
 		bindings: {
 			//	"surveyContainerId": "<?",
 			//	surveyId: "<?",
+			"recurrence": "<?",
+			"showQcActions":"<?"
 		},
 		controller: ["$scope", "$element", "$scope", "$http", 'radial', "$log", "$timeout", "$window", function ($scope, $element, $attrs, $http, radial, $log, $timeout, $window) {
 			var ctrl = this;
 			$scope.functions = {};
 			//$log.log("survComp:", $scope);
+			var query = "";
+			if (this.recurrence) {
+				query = "?recurrenceId=" + this.recurrence;
+			}
+
+
+			$scope.showQuarterlyConversationActions=this.showQcActions;
+
+
 			var r = radial($scope, {
 				hubName: "PeopleHub",
 				hubJoinMethod: "Join",
 				hubJoinArgs: [null, null],//ctrl.surveyContainerId, ctrl.surveyId],
 				sendUpdateUrl: function (self) { return "/People/PeopleAnalyzer/Update" + self.Type; },
-				loadDataUrl: "/People/PeopleAnalyzer/Data",
+				loadDataUrl: "/People/PeopleAnalyzer/Data" + query,
 				loadDataOptions: {
 					success: function (data) {
 						//$log.log("survComp2:", $scope);
@@ -25,12 +36,14 @@
 
 						//var dates = [];
 						$scope.surveyContainerLookup = {};
+						$scope.surveyContainerLookupById = {};
 
 						var dates = $scope.model.SurveyContainers.map(function (x) { return x.IssueDate; });
 
 						for (var i = 0; i < $scope.model.SurveyContainers.length; i++) {
 							var a = $scope.model.SurveyContainers[i];
 							$scope.surveyContainerLookup[+a.IssueDate] = a;
+							$scope.surveyContainerLookupById[+a.Id] = a;
 						}
 
 						$scope.slider = {
@@ -128,7 +141,7 @@
 				//var pid = $scope.functions.getSunId(r);
 				//$window.open('/people/quarterlyconversation/print?surveyContainerId=' + scid + '&sunId=' + pid + '', '_blank');
 			};
-
+			
 			$scope.functions.inactive = function (row, question) {
 				var response = $scope.functions.lookup(row, question);
 				if (response) {
@@ -136,6 +149,21 @@
 					return response.SurveyContainerId != scid;
 				}
 				return true;
+			};
+
+			$scope.functions.lookupWhen = function (row, question) {
+				var response = $scope.functions.lookup(row, question);
+				
+				if (response) {
+					var surveyContainerId = response.SurveyContainerId;
+					var sc = $scope.surveyContainerLookupById[surveyContainerId];
+					try {
+						return sc.Name + "  (" + getFormattedDate(sc.IssueDate)+")";
+					} catch (e) {
+						console.error(e);
+					}
+				}
+				return "";
 			};
 
 			$scope.functions.lookup = function (row, question) {

@@ -95,10 +95,10 @@ namespace RadialReview.Areas.People.Models.Survey {
 				//Map(x => x.Relationship);
 				Map(x => x.PositionName);
 
-				Map(x => x.AccountabilityNodeId).Column("AccountabilityNodeId");
+				Map(x => x.AccountabilityNodeId).Column("AccountabilityNodeId").Index("idx__SurveyUserNode_AccountabilityNodeId");
 				References(x => x.AccountabilityNode).Column("AccountabilityNodeId").LazyLoad().ReadOnly();
 
-				Map(x => x.UserOrganizationId).Column("UserOrganizationId");
+				Map(x => x.UserOrganizationId).Column("UserOrganizationId").Index("idx__SurveyUserNode_UserId");
 				References(x => x.User).Column("UserOrganizationId").LazyLoad().ReadOnly();
 			}
 		}
