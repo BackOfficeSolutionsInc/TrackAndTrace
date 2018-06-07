@@ -131,7 +131,7 @@ namespace RadialReview.Utilities.Synchronize {
 			var hasError = false;
 			var hasWarning = false;
 
-			if (clientUpdateTime == null) {
+			if (clientUpdateTime == null && shouldThrowSyncException) {
 				hasWarning = true;
 			}
 

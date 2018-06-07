@@ -159,13 +159,12 @@ namespace RadialReview.Accessors {
 						.Select(x => new AngularIssue(x))
 						.ToList();
 
-
-
 					group.update(new AngularRecurrence(recurrenceId) {
 						IssuesList = new AngularIssuesList(recurrenceId) {
 							Issues = AngularList.Create(AngularListType.ReplaceAll, issues)
 						}
 					});
+          
 
 					Audit.L10Log(s, caller, recurrenceId, "UpdateIssues", ForModel.Create<L10Recurrence>(recurrenceId));
 
@@ -180,28 +179,9 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create(connectionId)) {
 						var perm = PermissionsUtility.Create(s, caller);
-						var recurIssue = s.Get<IssueModel.IssueModel_Recurrence>(issue_recurrence);
 
+						var str = IssuesAccessor.MoveIssueToVto(s, perm, issue_recurrence, connectionId);
 
-						recurIssue.Rank = 0;
-						recurIssue.Priority = 0;
-						recurIssue.DeleteTime = DateTime.UtcNow;
-						s.Update(recurIssue);
-
-						var recur = s.Get<L10Recurrence>(recurIssue.Recurrence.Id);
-
-						//remove from list
-						rt.UpdateRecurrences(recur.Id).AddLowLevelAction(x => x.removeIssueRow(recurIssue.Id));
-						var arecur = new AngularRecurrence(recur.Id);
-						arecur.IssuesList.Issues = AngularList.CreateFrom(AngularListType.Remove, new AngularIssue(recurIssue));
-						rt.UpdateRecurrences(recur.Id).Update(arecur);
-
-						perm.EditVTO(recur.VtoId);
-						var vto = s.Get<VtoModel>(recur.VtoId);
-
-						var str = VtoAccessor.AddString(s, perm, recur.VtoId, VtoItemType.List_Issues,
-							(v, list) => new AngularVTO(v.Id) { Issues = list },
-							true, forModel: ForModel.Create(recurIssue), value: recurIssue.Issue.Message);
 
 						tx.Commit();
 						s.Flush();
@@ -217,49 +197,10 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var now = DateTime.UtcNow;
 					var perm = PermissionsUtility.Create(s, caller);
-					var vtoIssueStr = s.Get<VtoItem_String>(vtoIssue);
 
-					IssueModel.IssueModel_Recurrence issueRecur;
-					perm.EditVTO(vtoIssueStr.Vto.Id);
+					var issueRecur = await IssuesAccessor.MoveIssueFromVto(s, perm, vtoIssue);
 
-					vtoIssueStr.DeleteTime = now;
-					s.Update(vtoIssueStr);
-
-					if (vtoIssueStr.ForModel != null) {
-						if (vtoIssueStr.ForModel.ModelType != ForModel.GetModelType<IssueModel.IssueModel_Recurrence>())
-							throw new PermissionsException("ModelType was unexpected");
-						issueRecur = s.Get<IssueModel.IssueModel_Recurrence>(vtoIssueStr.ForModel.ModelId);
-
-						var recur = s.Get<L10Recurrence>(issueRecur.Recurrence.Id);
-
-						perm.EditL10Recurrence(issueRecur.Recurrence.Id);
-
-						issueRecur.DeleteTime = null;
-						s.Update(issueRecur);
-						//Add back to issues list (does not need to be added below. CreateIssue calls this.
-						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-						var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(issueRecur.Recurrence.Id));
-						meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(issueRecur), recur.OrderIssueBy);
-					} else {
-						var vto = s.Get<VtoModel>(vtoIssueStr.Vto.Id);
-						if (vto.L10Recurrence == null)
-							throw new PermissionsException("Expected L10Recurrence was null");
-						var creation = IssueCreation.CreateL10Issue(vtoIssueStr.Data, null, caller.Id, vto.L10Recurrence.Value);
-						var issue = await IssuesAccessor.CreateIssue(s, perm, creation);/* vto.L10Recurrence.Value, caller.Id, new IssueModel() {
-							Message = vtoIssueStr.Data,
-							OrganizationId = vto.Organization.Id,
-							CreatedById = caller.Id
-						});*/
-						var recur = s.Get<L10Recurrence>(vto.L10Recurrence.Value);
-
-						issueRecur = issue.IssueRecurrenceModel;
-					}
-					//Remove from vto
-					var vtoHub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-					var group = vtoHub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoIssueStr.Vto.Id));
-					vtoIssueStr.Vto = null;
-					group.update(new AngularUpdate() { AngularVtoString.Create(vtoIssueStr) });
-
+					
 					tx.Commit();
 					s.Flush();
 					return issueRecur;
