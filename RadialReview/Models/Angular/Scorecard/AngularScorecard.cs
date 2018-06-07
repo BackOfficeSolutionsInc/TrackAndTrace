@@ -23,7 +23,6 @@ namespace RadialReview.Models.Angular.Scorecard {
 		//public AngularScorecard(long id, DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart,DateRange range=null,bool includeNextWeek=true,DateTime? now=null) : base(id)
 		//      public AngularScorecard(long id, TimeSettings settings, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null)
 		//          : this(id,settings, new List<AngularMeasurableGroup>() { new AngularMeasurableGroup(id, measurables) },scores,currentWeek,range,includeNextWeek,now){
-
 		//}
 
 		public AngularScorecard(long id, TimeSettings settings, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null, bool reverseScorecard = false) : base(id) {
@@ -38,19 +37,31 @@ namespace RadialReview.Models.Angular.Scorecard {
 
 			ReverseScorecard = reverseScorecard;
 			Measurables = measurables;
-			Scores = scores.Select(x => new AngularScore(x, null, false)).ToList();
+			if (scores != null) {
+				Scores = scores.Select(x => new AngularScore(x, null, false)).ToList();
+			}
 
 			DateFormat1 = TimingUtility.ScorecardFormat1(settings.GetTimeSettings().Period);
 			DateFormat2 = TimingUtility.ScorecardFormat2(settings.GetTimeSettings().Period);
 
 			//var allMeasurables = measurableGroups.SelectMany(x => x.Measurables);
-
-			foreach (var s in Scores) {
-				var found = Measurables.FirstOrDefault(x => x.Id == s.Measurable.Id);
-				if (found != null) {
-					s.Measurable.Ordering = found.Ordering;
-					s.Measurable.RecurrenceId = found.RecurrenceId;
+			if (scores != null) {
+				foreach (var s in Scores) {
+					var measurable = Measurables.FirstOrDefault(x => x.Id == s.Measurable.Id);
+					if (measurable != null) {
+						s.Measurable.Ordering = measurable.Ordering;
+						s.Measurable.RecurrenceId = measurable.RecurrenceId;
+					}
 				}
+			}
+			if (Measurables != null) {
+				var mOrder = new List<AngularMeasurableOrder>();
+				foreach (var m in Measurables) {
+					if (m.Ordering != null) {
+						mOrder.Add(new AngularMeasurableOrder(id, m.Id, m.Ordering.Value));
+					}
+				}
+				MeasurableOrder = mOrder;
 			}
 
 			Period = "" + settings.GetTimeSettings().Period;
@@ -76,6 +87,8 @@ namespace RadialReview.Models.Angular.Scorecard {
 		public AngularScorecard() {
 		}
 
+		public IEnumerable<AngularMeasurableOrder> MeasurableOrder { get; set; }
+
 		public IEnumerable<AngularMeasurable> Measurables { get; set; }
 		public IEnumerable<AngularScore> Scores { get; set; }
 		public IEnumerable<AngularWeek> Weeks { get; set; }
@@ -89,4 +102,14 @@ namespace RadialReview.Models.Angular.Scorecard {
 		public string DateFormat2 { get; set; }
 	}
 
+	public class AngularMeasurableOrder : BaseStringAngular {
+		public long ScorecardId { get; set; }
+		public long MeasurableId { get; set; }
+		public int? Ordering { get; set; }
+		public AngularMeasurableOrder(long scorecardId,long measurableId,int order) :base(scorecardId+"_"+measurableId) {
+			ScorecardId = scorecardId;
+			MeasurableId = measurableId;
+			Ordering = order;
+		}
+	}
 }

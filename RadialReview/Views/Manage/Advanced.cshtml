@@ -54,27 +54,28 @@
 </div>
 
 <div class="panel panel-primary">
-	<div class="panel-heading">Data</div>
-	<div class="panel-body">
-		<a class="btn btn-default" href="/rocks/listing">All rocks</a>
-		<a class="btn btn-default" href="/scorecard/listing">All scorecards</a>
-		<a class="btn btn-default" href="/todo/listing">All to-dos</a>
-		@*<a class="btn btn-default" href="/issues/listing">All issues</a>*@
-		<div class="btn-group">
-			<a type="button" class="btn btn-default" href="/issues/listing">All issues</a>
-			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				<span class="caret"></span>
-				<span class="sr-only">Toggle Dropdown</span>
-			</button>
-			<ul class="dropdown-menu">
-				<li><a href="/issues/listing">All Issues</a></li>
-				<li class="shift-hidden"><a href="/issues/issuesandtodos">All Issues and their Context-Aware To-dos™</a></li>
-				<li class="shift-visible"><a href="/issues/issuesandtodos?details=true">All Issues and their Context-Aware To-dos™ <small class="gray"> (and notes)</small></a></li>
-			</ul>
-		</div>
+    <div class="panel-heading">Data</div>
+    <div class="panel-body">
+        <a class="btn btn-default" href="/rocks/listing">All rocks</a>
+        <a class="btn btn-default" href="/scorecard/listing">All scorecards</a>
+        <a class="btn btn-default" href="/todo/listing">All to-dos</a>
+        @*<a class="btn btn-default" href="/issues/listing">All issues</a>*@
+        <div class="btn-group">
+            <a type="button" class="btn btn-default" href="/issues/listing">All issues</a>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="/issues/listing">All Issues</a></li>
+                <li class="shift-hidden"><a href="/issues/issuesandtodos">All Issues and their Context-Aware To-dos™</a></li>
+                <li class="shift-visible"><a href="/issues/issuesandtodos?details=true">All Issues and their Context-Aware To-dos™ <small class="gray"> (and notes)</small></a></li>
+            </ul>
+        </div>
+        <a class="btn btn-default" href="/user/ExportAll">All users</a>
 
-		<a class="btn btn-default pull-right" href="/data/dashboard">Account Statistics</a>
-	</div>
+        <a class="btn btn-default pull-right" href="/data/dashboard">Account Statistics</a>
+    </div>
 </div>
 
 <div class="panel panel-primary">
@@ -103,7 +104,7 @@
 				</div>
 				<div class="row">
 					<div class="col-xs-5  ttt">
-						<label class="control-label">Edit organization hierarchy:</label>
+						<label class="control-label">Edit Accountability Chart:</label>
 					</div>
 					<div class="col-xs-3">
 						<div class="pull-left">
@@ -115,13 +116,25 @@
 				</div>
 				<div class="row">
 					<div class="col-xs-5  ttt">
-						<label class="control-label">Upgrade users:</label>
+						<label class="control-label">Add/Upgrade users:</label>
 					</div>
 					<div class="col-xs-3">
 						<div class="pull-left">
 							@{
 								Html.RenderAction("Dropdown", "Permissions", new { id = Model.Id, type = PermItem.ResourceType.UpgradeUsersForOrganization, buttonClass = "btn-xs" });
-							}<abbr class="info" title="Who can upgrade users."></abbr>
+							}<abbr class="info" title="Who can add users, change users to paying, upgrade an existing users' products"></abbr>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-5  ttt">
+						<label class="control-label">Edit/Delete users:</label>
+					</div>
+					<div class="col-xs-3">
+						<div class="pull-left">
+							@{
+								Html.RenderAction("Dropdown", "Permissions", new { id = Model.Id, type = PermItem.ResourceType.EditDeleteUserDataForOrganization, buttonClass = "btn-xs" });
+							}<abbr class="info" title="Who can edit users' names, emails"></abbr>
 						</div>
 					</div>
 				</div>
@@ -135,7 +148,7 @@
 
 				<div class="row">
 					<div class="col-xs-5  ttt">
-						<label class="control-label">Managers have admin ability:</label>
+						<label class="control-label">Managers are admins:</label>
 					</div>
 					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanEdit, new { @class = "checkbox cb-managers-edit", onclick = "managersEdit()" })

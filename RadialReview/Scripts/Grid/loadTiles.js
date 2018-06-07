@@ -42,26 +42,29 @@ var Grid = {
             resizers += "</div>";
         }
 
+        var showPrintBtn = item.ShowPrintButton ? "printbtnShow" : "printbtnHide";
+
         var classes = "";
         classes += "width_" + w;
 
         var $item = $(
-				'<li class="grid-tile ' + classes + '">' +
-					'<div class="inner">' +
-						'<div class="settings-container">' +
-							'<span class="glyphicon glyphicon-fullscreen icon settings resize-control"></span>' +
-							'<span class="glyphicon glyphicon-trash icon settings trash" onclick="Grid.removeTile(' + id + ')"></span>' +
-							'<div class="controls" style="width:' + (Grid.currentSize * 10 + 6) + 'px;">' +
-								resizers +
-							'</div>' +
-						'</div>' +
-						'<div class="content" id="' + id + '_tile" ></div>' +
-                        '<div class="resize-bottom resizer resize-vertical"></div>' +
-                        '<div class="resize-right resizer resize-horizontal"></div>' +
-                        '<div class="resize-bottom-right resizer resize-nwse"></div>' +
-					'</div>' +
-				'</li>'
-			);
+            '<li class="grid-tile ' + classes + '">' +
+            '<div class="inner">' +
+            '<div class="settings-container">' +
+            '<span class="glyphicon glyphicon-fullscreen icon settings resize-control"></span>' +
+            '<span class="glyphicon glyphicon-trash icon settings trash" onclick="Grid.removeTile(' + id + ')"></span>' +
+            '<span class="glyphicon glyphicon-print icon settings ' + showPrintBtn +' " style="top:18px;" onclick="printTileData(' + item.KeyId + ')"></span>' +
+            '<div class="controls" style="width:' + (Grid.currentSize * 10 + 6) + 'px;">' +
+            resizers +
+            '</div>' +
+            '</div>' +
+            '<div class="content" id="' + id + '_tile" ></div>' +
+            '<div class="resize-bottom resizer resize-vertical"></div>' +
+            '<div class="resize-right resizer resize-horizontal"></div>' +
+            '<div class="resize-bottom-right resizer resize-nwse"></div>' +
+            '</div>' +
+            '</li>'
+        );
         $item.attr({
             'data-w': w,
             'data-h': h,
@@ -148,8 +151,8 @@ var Grid = {
         $gridContainer.on("click", 'li .resize', function (e) {
             e.preventDefault();
             var itemElement = $(e.currentTarget).closest('li'),
-				itemWidth = $(e.currentTarget).data('w'),
-				itemHeight = $(e.currentTarget).data('h');
+                itemWidth = $(e.currentTarget).data('w'),
+                itemHeight = $(e.currentTarget).data('h');
 
             runResize(itemElement, itemWidth, itemHeight);
 
@@ -157,30 +160,30 @@ var Grid = {
 
         if (Grid.first) {
             $(window).resize(function () {
-            	Grid.container.gridList('reflow');
-            	$($gridContainer).find("li.grid-tile").each(function () { $(this).trigger("resize-tile"); });
+                Grid.container.gridList('reflow');
+                $($gridContainer).find("li.grid-tile").each(function () { $(this).trigger("resize-tile"); });
             });
             var resizeing = false;
             var resizeDir = "vertical";
             var resizeSide = "bottom";
             var resizeCell = null;
 
-            var resizerFunc = function (self,dir, side, unlocks) {
+            var resizerFunc = function (self, dir, side, unlocks) {
                 if (resizeing == false) {
-                	$(self).closest("li").addClass("tile-resizing");
-                	$("body").addClass("resizing");
-                	$("body").addClass("resize-" + dir);
-                	//try{
-                	//	html2canvas($(self).closest(".inner").find(".content")).then(function (canvas) {
-					//		$("body").addClass("resizing");
-					//		$("body").addClass("resize-"+dir);
-                	//		var c = $("<span class='canvas'></span>");
-                	//		c.append(canvas);
-                	//		$(self).closest(".inner").prepend(c);
-                	//	});
-                	//} catch (e) {
-                	//	console.error(e);
-                	//}
+                    $(self).closest("li").addClass("tile-resizing");
+                    $("body").addClass("resizing");
+                    $("body").addClass("resize-" + dir);
+                    //try{
+                    //	html2canvas($(self).closest(".inner").find(".content")).then(function (canvas) {
+                    //		$("body").addClass("resizing");
+                    //		$("body").addClass("resize-"+dir);
+                    //		var c = $("<span class='canvas'></span>");
+                    //		c.append(canvas);
+                    //		$(self).closest(".inner").prepend(c);
+                    //	});
+                    //} catch (e) {
+                    //	console.error(e);
+                    //}
 
                     resizeing = true;
                     resizeDir = dir;
@@ -195,8 +198,8 @@ var Grid = {
                     var originalX = null;
                     var originalY = null;
                     $(window).on("mousemove.gridresize", function (e) {
-                        if (originalX == null)originalX = e.clientX;
-                        if (originalY == null)originalY = e.clientY;
+                        if (originalX == null) originalX = e.clientX;
+                        if (originalY == null) originalY = e.clientY;
                         var diffX = (e.clientX - originalX);
                         var diffY = (e.clientY - originalY);
                         var curH = $(resizeCell).data("h");
@@ -204,16 +207,16 @@ var Grid = {
                         var newH = curH;
                         var newW = curW;
                         if (unlocks.indexOf("vertical") != -1) {
-                            var shift=-.2
+                            var shift = -.2
                             if (diffY < 0)
-                                shift = -.8;                            
+                                shift = -.8;
                             var newH = Math.max(1, Math.ceil(originalH + diffY / (height / originalH) + shift));
                         }
                         if (unlocks.indexOf("horizontal") != -1) {
-                            var shift=-.2
+                            var shift = -.2
                             if (diffX < 0)
                                 shift = -.8;
-                            var newW = Math.max(1, Math.ceil(originalW + diffX / (width / originalW) +shift));
+                            var newW = Math.max(1, Math.ceil(originalW + diffX / (width / originalW) + shift));
                         }
                         if (curH != newH || curW != newW) {
                             runResize(resizeCell, newW, newH);
@@ -232,13 +235,13 @@ var Grid = {
                 resizeing = false;
                 $(window).off(".gridresize");
 
-               //$(".tile-resizing .canvas").remove();
+                //$(".tile-resizing .canvas").remove();
                 $(".tile-resizing").removeClass("tile-resizing");
                 $("body").removeClass("resizing").removeClass("resize-vertical").removeClass("resize-horizontal").removeClass("resize-nwse");
                 var originalX = null;
                 var originalY = null;
             });
-            
+
             $("body").on("mouseover", ".resize", function () {
                 var hh = $(this).attr("data-h");
                 var ww = $(this).attr("data-w");
@@ -259,14 +262,14 @@ var Grid = {
         Grid.container.gridList('resize', this.currentSize);
     },
     refreshGrid: function (first) {
-    	var allowDragDrop = true;
+        var allowDragDrop = true;
 
-    	if (typeof (window.AllowDragDrop) !== "undefined") {
-    		allowDragDrop = window.AllowDragDrop;
-    	}
+        if (typeof (window.AllowDragDrop) !== "undefined") {
+            allowDragDrop = window.AllowDragDrop;
+        }
 
-    	Grid.container.gridList({
-    		dragAndDrop: allowDragDrop,
+        Grid.container.gridList({
+            dragAndDrop: allowDragDrop,
             lanes: Grid.currentSize,
             direction: "vertical",
             minWidth: 191,

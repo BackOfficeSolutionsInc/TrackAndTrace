@@ -435,19 +435,24 @@ namespace RadialReview.Accessors {
 
 		}
 		[Obsolete("Did you mean DeepAccessor.Users.GetSubordinatesAndSelfModels")]
-		public static List<AccountabilityNode> GetChildrenAndSelfModels(ISession s, UserOrganizationModel caller, long nodeId) {
+		public static List<AccountabilityNode> GetChildrenAndSelfModels(ISession s, UserOrganizationModel caller, long nodeId, bool allowAnyFromSameOrg = false) {
 			var node = s.Get<AccountabilityNode>(nodeId);
 
 			if (caller.Id != node.UserId && !PermissionsUtility.IsAdmin(caller)) {
-				AccountabilityNode parent = null;
 
-				var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ChildId == nodeId)
-							.JoinAlias(x => x.Parent, () => parent)
-								.Where(x => parent.DeleteTime == null && parent.UserId == caller.Id)
-								.Take(1)
-								.SingleOrDefault();
-				if (found == null)
-					throw new PermissionsException("You don't have access to this user");
+				if (allowAnyFromSameOrg && node.OrganizationId == caller.Organization.Id) {
+					//warning... this overrides the following permissions check...
+				} else {
+					AccountabilityNode parent = null;
+					var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ChildId == nodeId)
+								.JoinAlias(x => x.Parent, () => parent)
+									.Where(x => parent.DeleteTime == null && parent.UserId == caller.Id)
+									.Take(1)
+									.SingleOrDefault();
+
+					if (found == null)
+						throw new PermissionsException("You don't have access to this user");
+				}
 			}
 			var allPermissions = new List<long>() { nodeId };
 

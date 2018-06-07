@@ -50,8 +50,8 @@ namespace RadialReview.Accessors.PDF {
 				children = children.Select(x => dive(x, settings)).ToList(),
 				width = settings.baseWidth - settings.hSeparation,
 				height = settings.baseHeight,
-				hasHiddenChildren = aanode.HasChildren() && aanode.collapsed,				
-				
+				hasHiddenChildren = aanode.HasChildren() && aanode.collapsed,
+				order = aanode.order ?? 0
 			};
 
 			return node;
@@ -80,6 +80,7 @@ namespace RadialReview.Accessors.PDF {
 				width = settings.baseWidth - settings.hSeparation,
 				height = settings.baseHeight,
 				hasHiddenChildren = aanode.HasChildren() && aanode.collapsed,
+				order = aanode.order ?? 0,
 
 			};
 
@@ -237,6 +238,12 @@ namespace RadialReview.Accessors.PDF {
 
 			var linePad = 12 * pageProps.scale / 6.0;
 
+			var shouldDrawLine = true;
+			if (!(me.Roles != null && me.Roles.Any())/*&&me.Position==null && me.Name ==null*/) {
+				shouldDrawLine = false;
+				linePad = 0;
+			}
+
 			var tf = new XTextFormatter(gfx);
 
 			tf.Alignment = XParagraphAlignment.Center;
@@ -274,7 +281,8 @@ namespace RadialReview.Accessors.PDF {
 			//var size = positionWrapper.Size;
 			//ch += 12 * pageProps.scale / 6.0;
 
-			if (me.height > ch) {
+
+			if (shouldDrawLine && me.height > ch) {
 				gfx.DrawLine(XPens.Black, x + pad, y + ch, x + (me.width - 2 * pad), y + ch);
 			}
 
@@ -354,7 +362,7 @@ namespace RadialReview.Accessors.PDF {
 			var vSeparation = Math.Max(separation * 2.0 / 3.0, separation - 6.6667);
 			var hSeparation = settings.hSeparation * pageProps.scale;
 
-			var adjS = pageProps.linePen.Width * .5 /** pageProps.scale*/;
+			var adjS = pageProps.linePen.Width * .5/* *pageProps.scale*/;
 
 
 			var sx = parent.x - origin[0] + parent.width / 2;
@@ -401,8 +409,6 @@ namespace RadialReview.Accessors.PDF {
 					//	//ax = sx /*- origin[0]*/ + parent.width / 2 - adjS;// - d.source.width / 2;
 					//	ax = sx /*- origin[0]*/ - parent.width / 2 - adjS;// - d.source.width / 2;
 					//}
-
-
 					var ay = (sy - parent.height) + Math.Min(10, parent.height / 2) /*- origin[1]*/ - adjS;//d.source.height / 2;
 																										   //points.Add(Tuple.Create(ax, ay));
 					points.Add(Tuple.Create(lx, ay));
@@ -414,7 +420,9 @@ namespace RadialReview.Accessors.PDF {
 
 				DrawLine(gfx, pageProps, points);
 				if (DEBUG) {
-					gfx.DrawString(sideL + "_" + tx + "_" + tyy, tempFont, XBrushes.Red, tx, tyy);
+					gfx.DrawString(sideL + "_" + tx + "_" + tyy, tempFont, XBrushes.Red, tx + 2, tyy - 2);
+					var tempFont2 = new XFont("Times New Roman", Math.Max(1, 15 * pageProps.scale), XFontStyle.Bold);
+					gfx.DrawString(me.GetDebugNotes(), tempFont2, XBrushes.HotPink, tx + 2, tyy - 4);
 				}
 			} else {
 				var tw = me.width;
@@ -477,6 +485,8 @@ namespace RadialReview.Accessors.PDF {
 
 				if (DEBUG) {
 					gfx.DrawString(me.side + "_" + tx + "_" + ty, tempFont, XBrushes.DarkRed, tx, ty);
+					var tempFont2 = new XFont("Times New Roman", Math.Max(1, 15 * pageProps.scale), XFontStyle.Bold);
+					gfx.DrawString(me.GetDebugNotes(), tempFont2, XBrushes.HotPink, tx + 2, ty - 4);
 				}
 				DrawLine(gfx, pageProps, points);
 			}
@@ -501,7 +511,14 @@ namespace RadialReview.Accessors.PDF {
 
 		private static void ACDrawEllipse(XGraphics gfx, ACNode root, PageProp pageProps, double[] origin = null, bool above = false) {
 			origin = origin ?? new[] { 0.0, 0.0 };
+
 			var x = root.x + root.width / 2.0 - origin[0];
+			if (root.side == "left") {
+				x = root.x + root.width - origin[0];
+			} else if (root.side == "right") {
+				x = root.x - origin[0];
+			}
+
 			var y = root.y - origin[1];
 
 			var mult = 1;

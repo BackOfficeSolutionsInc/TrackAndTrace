@@ -104,18 +104,6 @@
 ]</ExpectedJson>
     <GeneratedDate>2017-10-26T00:45:27.9741009Z</GeneratedDate>
   </XmlApiResult>
-  <XmlApiResult Name="UsersApiTests_v0.TestGetUserRoles" GeneratedVersion="0.0">
-    <ExpectedJson>[
-  {
-    "Id": 25,
-    "Type": "AngularRole",
-    "Key": "AngularRole_25",
-    "Name": null,
-    "CreateTime": "2017-10-26T00:45:29"
-  }
-]</ExpectedJson>
-    <GeneratedDate>2017-10-26T00:45:30.4197293Z</GeneratedDate>
-  </XmlApiResult>
   <XmlApiResult Name="UsersApiTests_v0.TestGetSeats" GeneratedVersion="0.0">
     <ExpectedJson>[
   {
@@ -185,5 +173,18 @@
   }
 }</ExpectedJson>
     <GeneratedDate>2018-01-15T10:02:38.8291967Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v0.TestGetUserRoles" GeneratedVersion="0.0">
+    <ExpectedJson>[
+  {
+    "Id": 5,
+    "Type": "AngularRole",
+    "Key": "AngularRole_5",
+    "Name": null,
+    "Ordering": null,
+    "CreateTime": "2018-04-19T06:42:54"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2018-04-19T06:42:55.5237801Z</GeneratedDate>
   </XmlApiResult>
 </ArrayOfXmlApiResult>

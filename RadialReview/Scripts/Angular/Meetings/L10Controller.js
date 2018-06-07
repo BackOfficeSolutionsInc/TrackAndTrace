@@ -134,9 +134,9 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			console.error("Can't process:" + date);
 		}
 
-	$scope.functions.showFormula = function (id) {
-		setFormula(id);
-	};
+		$scope.functions.showFormula = function (id) {
+			setFormula(id);
+		};
 
 		$scope.functions.startCoreProcess = function (coreProcess) {
 			$http.get("/CoreProcess/Process/StartProcess/" + coreProcess.Id)
@@ -149,7 +149,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
 		$scope.functions.adjustToMidnight = function (date) {
 			//adjusts local time to end of day local time
-			return new Date(((+date) + (24 * 60 * 60 * 1000 - 1)));
+			return Time.adjustToMidnight(date);
 		}
 
 		$scope.$watch('model.LoadUrls.length', function (newValue, oldValue) {
@@ -314,7 +314,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 					url += "&end=" + dateToNumber(range.endDate);
 				if (firstLoad)
 					url += "&fullScorecard=true";
-
 				loadDataFromUrl(url);
 			}
 		}
@@ -328,6 +327,24 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 				} else {
 					return 0;
 				}
+			};
+		}
+
+		$scope.functions.orderMeasurables = function (scorecard) {
+			var dict = {};
+			if (scorecard.MeasurableOrder) {
+				for (var i in scorecard.MeasurableOrder) {
+					var m = scorecard.MeasurableOrder[i];
+					dict[m.MeasurableId] = m.Ordering;
+				}
+			}
+			return function (a) {
+				debugger;
+				if (a.Id in dict)
+					return dict[a.Id];
+				if (a.Ordering)
+					return a.Ordering;
+				return a.Id;
 			};
 		}
 
@@ -530,7 +547,15 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		$scope.possibleOwners = {};
 		$scope.loadPossibleOwners = function (id) {
 			if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.Attendees) !== "undefined") {
-				$scope.possibleOwners[id] = $scope.model.Attendees;
+				var attendes = [];
+				for (var i = 0; i < $scope.model.Attendees.length; i++) {
+					if ($scope.model.Attendees[i].Managing) {
+						attendes.push($scope.model.Attendees[i]);
+					}
+
+				}
+				//$scope.possibleOwners[id] = $scope.model.Attendees;
+				$scope.possibleOwners[id] = attendes;
 				$scope.possibleOwners[id];
 			} else {
 				if (!(id in $scope.possibleOwners)) {
@@ -613,11 +638,15 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			$scope.options.l10teamtypes = $scope.loadSelectOptions('/dropdown/type/l10teamtype');
 		}, 1);
 
+		/**
+		 * You must format all dates to be server dates before entering this function
+		 */
 		$scope.functions.sendUpdate = function (self, args) {
 			var dat = angular.copy(self);
 			//var _clientTimestamp = new Date().getTime();
-
-			r.updater.convertDatesForServer(dat, Time.tzoffset());
+			//Angular automatically converts dates to UTC from local time zone.
+			//r.updater.convertDatesForServer(dat, Time.tzoffset());
+			console.warn("Dates were not converted for server, please confirm");
 			var builder = "";
 			args = args || {};
 
@@ -629,12 +658,63 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 					builder += "&" + i + "=" + args[i];
 				}
 			}
-
 			var url = Time.addTimestamp("/L10/Update" + self.Type) + builder;
-
-			$http.post(url, dat)
-				.then(function () { }, showAngularError);
+			$http.post(url, dat).then(function () { }, showAngularError);
 		};
+
+		var updateDebounce = {};
+		$scope.functions.sendUpdateDebounce = function (self, args) {
+			function debounce(key, func, wait, immediate) {
+				if (!(key in updateDebounce)) {
+					updateDebounce[key] = null;
+				}
+				var timeout = updateDebounce[key];
+				return function () {
+					var context = this, args = arguments;
+					var later = function () {
+						timeout = null;
+						if (!immediate) func.apply(context, args);
+					};
+					var callNow = immediate && !timeout;
+					clearTimeout(timeout);
+					updateDebounce[key] = setTimeout(later, wait);
+					if (callNow) func.apply(context, args);
+				};
+			};
+			debounce(self.Key, function () {
+				console.warn("debounce sent");
+				$scope.functions.sendUpdate(self, args);
+			}, 300)();
+
+		};
+
+
+		var updateDebounce = {};
+		$scope.functions.sendUpdateDebounce = function (self, args) {
+			function debounce(key, func, wait, immediate) {
+				if (!(key in updateDebounce)) {
+					updateDebounce[key] = null;
+				}
+				var timeout = updateDebounce[key];
+				return function () {
+					var context = this, args = arguments;
+					var later = function () {
+						timeout = null;
+						if (!immediate) func.apply(context, args);
+					};
+					var callNow = immediate && !timeout;
+					clearTimeout(timeout);
+					updateDebounce[key] = setTimeout(later, wait);
+					if (callNow) func.apply(context, args);
+				};
+			};
+			debounce(self.Key, function () {
+				console.warn("debounce sent");
+				$scope.functions.sendUpdate(self, args);
+			}, 300)();
+		};
+
+
 
 		$scope.functions.checkFutureAndSend = function (self) {
 			var m = self;
@@ -904,25 +984,25 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 					mid = event.source.itemScope.measurable.RecurrenceId;
 
 
-			//Adj order
-			var ordered = $scope.model.Scorecard.Measurables.slice().sort(function (a, b) { return a.Ordering - b.Ordering; })
-			var adjArr = [];
-			var adj = 0;
-			for (var i = 0; i < ordered.length; i++) {
-				var o = ordered[i];
-				adjArr.push(adj);
-				if (o.Id < 0 && !o.IsDivider)
-					adj += 1;
-			}
+				//Adj order
+				var ordered = $scope.model.Scorecard.Measurables.slice().sort(function (a, b) { return a.Ordering - b.Ordering; })
+				var adjArr = [];
+				var adj = 0;
+				for (var i = 0; i < ordered.length; i++) {
+					var o = ordered[i];
+					adjArr.push(adj);
+					if (o.Id < 0 && !o.IsDivider)
+						adj += 1;
+				}
 
 
 				var dat = {
 					id: event.source.itemScope.measurable.Id,
 					recurrence: mid,
-				oldOrder: event.source.index - adjArr[event.source.index],
-				newOrder: event.dest.index - adjArr[event.dest.index],
+					oldOrder: event.source.index - adjArr[event.source.index],
+					newOrder: event.dest.index - adjArr[event.dest.index],
 				}
-			//event.source.itemScope.measurable.Ordering = event.dest.index;
+				//event.source.itemScope.measurable.Ordering = event.dest.index;
 				var url = Time.addTimestamp("/L10/OrderAngularMeasurable");
 
 				$http.post(url, dat).then(function () { }, showAngularError);
@@ -937,10 +1017,10 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			//console.log(week.LocalDate);
 			//console.log(week.ForWeek);
 
-		var forWeek = new Date(70, 0, 4);
-		forWeek.setDate(forWeek.getDate() + 7 * (week.ForWeekNumber - 1));
-		forWeek = new Date(+forWeek - 1);
-		//forWeek = week.ForWeek;
+			var forWeek = new Date(70, 0, 4);
+			forWeek.setDate(forWeek.getDate() + 7 * (week.ForWeekNumber - 1));
+			forWeek = new Date(+forWeek - 1);
+			//forWeek = week.ForWeek;
 			var dat = $scope.functions.startOfWeek(forWeek, selector.ScorecardWeekDay);
 
 			if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
@@ -951,17 +1031,16 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		}
 
 		$scope.functions.topDate = function (week, selector) {
-		//debugger;
 			var dat = decideOnDate(week, selector);
-		var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, false/* !(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
+			var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, false/* !(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
 			return $filter('date')(date, selector.DateFormat1);
 		};
 		$scope.functions.bottomDate = function (week, selector) {
 			// debugger;
 			var dat = decideOnDate(week, selector);
-		var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6, false/*!(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
+			var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6, false/*!(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
 			if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
-			date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0, false/*!(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
+				date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0, false/*!(selector.Period == "Monthly" || selector.Period == "Quarterly")*/);
 			}
 			return $filter('date')(date, selector.DateFormat2);
 		};

@@ -142,8 +142,8 @@ namespace RadialReview.Accessors {
 					}
 
 
-					/// match up attendees, measureables, and rocks
-					/// 
+					// match up attendees, measureables, and rocks
+					// 
 
 					l10Recurrence._DefaultAttendees.ToList().ForEach(a => {
 						if (oldRecur != null)

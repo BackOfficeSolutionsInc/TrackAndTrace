@@ -24,6 +24,8 @@ using System.Threading.Tasks;
 using RadialReview.Models.ViewModels;
 using static RadialReview.Utilities.SelectExistingOrCreateUtility;
 using Newtonsoft.Json;
+using RadialReview.Variables;
+using RadialReview.Models.Application;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -59,6 +61,18 @@ namespace RadialReview.Controllers {
 			};
 
 			ViewBag.ViewAccountabilityChart = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanView(ResourceType.AccountabilityHierarchy, GetUser().Organization.AccountabilityChartId));
+			ViewBag.ViewPeopleAnalyzer = GetUser().Organization.Settings.EnablePeople;
+
+			if (PaymentAccessor.ShowDelinquent(GetUser(), GetUser().Organization.Id, 7)) {
+				var dflt =	"Your free trial of Traction Tools is over. <br/>"+
+							"<u><a href='#' class='todoModal' data-method='createtodo' data-recurrence='{0}' data-todo='Enter payment information into Traction Tools' data-details='Go to https://traction.tools/Manage/Payment and add a payment method. Contact support@mytractiontools.com with questions.'>Take a to-do</a></u> " +
+							"to enter your payment information?";
+				var msg = VariableAccessor.Get<string>(Variable.Names.DELINQUENT_MESSAGE_MEETING, () =>dflt);
+				msg=msg.Replace("{0}", "" + id);
+				if (!string.IsNullOrWhiteSpace(msg)) {
+					ViewBag.ShowDelinquentMessage = msg;
+				}
+			}
 
 
 			var model = new L10MeetingVM() {
@@ -88,6 +102,13 @@ namespace RadialReview.Controllers {
 
 				model.Connected = L10Accessor.GetConnected(GetUser(), id.Value, true);
 
+			}
+
+
+			try {
+				var me = model.Recurrence.NotNull(x => x._DefaultAttendees.FirstOrDefault(y => y.User.Id == GetUser().Id));
+				model.SharingPeopleAnalyzer = me.SharePeopleAnalyzer == L10Recurrence.SharePeopleAnalyzer.Yes;
+			} catch (Exception) {
 			}
 
 
@@ -161,6 +182,11 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
+		private void AddUnstored(long recurrenceId, L10EditVM model) {
+			ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), recurrenceId);
+
+		}
+
 		private L10EditVM AddExtras(long recurrenceId, L10EditVM model) {
 			var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
@@ -191,8 +217,7 @@ namespace RadialReview.Controllers {
 				model.SelectedMembers = model.SelectedMembers ?? new long[0];
 				model.SelectedRocks = model.SelectedRocks ?? new long[0];
 			}
-
-			ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), recurrenceId);
+			AddUnstored(recurrenceId, model);
 			return model;
 		}
 
@@ -326,7 +351,9 @@ namespace RadialReview.Controllers {
 			model.PossibleMembers = allMembers;
 			model.PossibleMeasurables = allMeasurables.Where(x => x != null).ToList();
 
-
+			if (model.Recurrence.Id != 0) {
+				AddUnstored(model.Recurrence.Id, model);
+			}
 			//model.SelectedRocks = model.SelectedRocks ?? new long[0];
 			//model.SelectedMembers = model.SelectedMembers ?? new long[0];
 			//model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
@@ -353,7 +380,7 @@ namespace RadialReview.Controllers {
 			var recurrence = id;
 			var audits = L10Accessor.GetL10Audit(GetUser(), recurrence);
 			var transcripts = TranscriptAccessor.GetRecurrenceTranscript(GetUser(), recurrence);
-			var meetings = L10Accessor.GetL10Meetings(GetUser(), id, false);
+			var meetings = L10Accessor.GetL10Meetings(GetUser(), id, false,true);
 			var list = new List<MeetingTimeline>();
 			var user = GetUser();
 			foreach (var m in meetings) {
@@ -427,7 +454,7 @@ namespace RadialReview.Controllers {
 			var existingAttendees = string.Join(",", L10Accessor.GetAttendees(GetUser(), meetingId).Select(x => x.Id));
 
 			var obj = UserAccessor.BuildCreateUserVM(GetUser(), ViewBag);
-			var settings = SelectExistingOrCreateUtility.Create<CreateUserOrganizationViewModel>("/User/Search?exclude=" + existingAttendees, "CreateUserOrganizationViewModel", obj, false);
+			var settings = SelectExistingOrCreateUtility.Create<CreateUserOrganizationViewModel>("/User/Search?exclude=" + existingAttendees, "CreateUserOrganizationViewModel", obj, false,multiple:true);
 			ViewBag.meetingId = meetingId;
 			return PartialView(settings);
 		}
@@ -442,7 +469,7 @@ namespace RadialReview.Controllers {
 			var attendees = L10Accessor.GetAttendees(GetUser(), meetingId);
 
 			var obj = ScorecardAccessor.BuildCreateMeasurableVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id));
-			var settings = SelectExistingOrCreateUtility.Create<CreateMeasurableViewModel>("/Measurable/Search?exclude=" + existingIds, "CreateMeasurableViewModel", obj, true);
+			var settings = SelectExistingOrCreateUtility.Create<CreateMeasurableViewModel>("/Measurable/Search?exclude=" + existingIds, "CreateMeasurableViewModel", obj, true, multiple: true);
 			ViewBag.meetingId = meetingId;
 			return PartialView(settings);
 		}
@@ -455,8 +482,9 @@ namespace RadialReview.Controllers {
 
 			var attendees = L10Accessor.GetAttendees(GetUser(), meetingId);
 
-			var obj = RockAccessor.BuildCreateRockVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id));
-			var settings = SelectExistingOrCreateUtility.Create<CreateRockViewModel>("/Rocks/Search?exclude=" + existingIds, "CreateRockViewModel", obj, true);
+			var obj = RockAccessor.BuildCreateRockVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id),true,meetingId);
+
+            var settings = SelectExistingOrCreateUtility.Create<CreateRockViewModel>("/Rocks/Search?exclude=" + existingIds, "CreateRockViewModel", obj, true, multiple: true);
 			ViewBag.meetingId = meetingId;
 			return PartialView(settings);
 		}
@@ -473,7 +501,9 @@ namespace RadialReview.Controllers {
 					throw new PermissionsException("Could not add to meeting.");
 				}
 			} else {
-				await L10Accessor.AddAttendee(GetUser(), meetingId, model.SelectedValue.Value);
+				foreach (var userId in model.SelectedValue) {
+					await L10Accessor.AddAttendee(GetUser(), meetingId, userId);
+				}
 			}
 
 			return Json(ResultObject.SilentSuccess());
@@ -493,7 +523,9 @@ namespace RadialReview.Controllers {
 					throw new PermissionsException("Could not add to meeting.");
 				}
 			} else {
-				await L10Accessor.AttachMeasurable(GetUser(), meetingId, model.SelectedValue.Value);
+				foreach (var measurableId in model.SelectedValue) {
+					await L10Accessor.AttachMeasurable(GetUser(), meetingId, measurableId);
+				}
 			}
 
 			return Json(ResultObject.SilentSuccess());
@@ -513,7 +545,9 @@ namespace RadialReview.Controllers {
 					throw new PermissionsException("Could not add to meeting.");
 				}
 			} else {
-				await L10Accessor.AttachRock(GetUser(), meetingId, model.SelectedValue.Value, false);
+				foreach (var rockId in model.SelectedValue) {
+					await L10Accessor.AttachRock(GetUser(), meetingId, rockId, false);
+				}
 			}
 
 			return Json(ResultObject.SilentSuccess());
@@ -544,7 +578,7 @@ namespace RadialReview.Controllers {
 		}
 		[Access(AccessLevel.Any)]
 		public PartialViewResult ErrorMessage(String message = null, MeetingExceptionType? type = null) {
-			return PartialView("Error", new MeetingException(message ?? "An error has occurred.", type ?? MeetingExceptionType.Error));
+			return PartialView("Error", new MeetingException(-1,message ?? "An error has occurred.", type ?? MeetingExceptionType.Error));
 		}
 		#endregion
 	}

@@ -14,6 +14,7 @@ using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Scorecard;
 using static RadialReview.Accessors.L10Accessor;
 using RadialReview.Models.Enums;
+using NHibernate;
 
 namespace RadialReview.Accessors {
 	public class ExportAccessor : BaseAccessor {
@@ -23,24 +24,6 @@ namespace RadialReview.Accessors {
 			switch (type.ToLower()) {
 				case "csv": {
 						return GenerateScorecardCsv("Measurable", data).ToCsv();
-						//var csv = new Csv();
-						//csv.SetTitle("Measurable");
-						//foreach (var s in scores.GroupBy(x => x.MeasurableId))
-						//{
-						//	var ss = s.First();
-						//	csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.NotNull(x=>x.GetName()));
-						//	csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.NotNull(x=>x.GetName()));
-						//	csv.Add(ss.Measurable.Title, "Goal", "" + ss.Measurable.Goal.NotNull(x => ss.Measurable.UnitType.Format(x)));
-						//	csv.Add(ss.Measurable.Title, "GoalDirection", "" + ss.Measurable.GoalDirection);
-						//}
-						//foreach (var s in scores.OrderBy(x => x.ForWeek))
-						//{
-						//	csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(),s.Measured.NotNull(x => s.Measurable.UnitType.Format(x.Value)) ?? "");
-						//}
-						//var csvTxt = csv.ToCsv();
-						//return csvTxt;
-						//return new System.Text.UTF8Encoding().GetBytes(csvTxt);
-						//break;
 					}
 				default:
 					throw new Exception("Unrecognized Type");
@@ -51,9 +34,7 @@ namespace RadialReview.Accessors {
 			var csv = new Csv();
 			csv.SetTitle("Measurable");
 
-
-
-			foreach (var s in data.MeasurablesAndDividers.OrderBy(x => x._Ordering)) {// scores.GroupBy(x => x.MeasurableId).OrderBy(x=>x.First().Measurable._Ordering)) {
+            foreach (var s in data.MeasurablesAndDividers.OrderBy(x => x._Ordering)) {// scores.GroupBy(x => x.MeasurableId).OrderBy(x=>x.First().Measurable._Ordering)) {
 				var measurable = s.Measurable;
 				//var ss = s.First();
 				if (measurable != null) {
@@ -75,9 +56,6 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var todos = L10Accessor.GetAllTodosForRecurrence(s, PermissionsUtility.Create(s, caller), recurrenceId);
 					var csv = new Csv();
-					//foreach (var t in todos) {
-					//    await 
-					//}
 
 					Dictionary<string, string> padTexts = null;
 					if (includeDetails) {
@@ -120,29 +98,13 @@ namespace RadialReview.Accessors {
 				var padDetails = padLookup.GetOrDefault(t.PadId, "");
 				csv.Add("" + t.Id, "Details", Csv.CsvQuote(padDetails));
 			}
-
-			//if (includeDetails) {
-			//	var padDetails = await PadAccessor.GetText(t.PadId);
-			//	csv.Add("" + t.Id, "Details", "" + padDetails);
-			//}
 		}
 
 		public static async Task<byte[]> IssuesList(UserOrganizationModel caller, long recurrenceId, bool includeDetails) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var issues = L10Accessor.GetAllIssuesForRecurrence(s, PermissionsUtility.Create(s, caller), recurrenceId);
-					//var csv = new Csv();
-					//foreach (var t in issues)
-					//{
-					//	csv.Add("" + t.Id, "Owner", t.Owner.NotNull(x=>x.GetName()));
-					//	csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
-					//	var time = "";
-					//	if (t.CloseTime != null)
-					//		time = t.CloseTime.Value.ToShortDateString();
-					//	csv.Add("" + t.Id, "Closed", time);
-					//	csv.Add("" + t.Id, "Issue", "" + t.Issue.Message);
-					//	csv.Add("" + t.Id, "Details", "" + t.Issue.Description);
-					//}
+					
 					var sb = new StringBuilder();
 
 					sb.Append("Id," +/*Depth,*/"Owner,Created,Closed,Issue");
@@ -167,10 +129,7 @@ namespace RadialReview.Accessors {
 					var tasks = issues.Select((i, id) => {
 						return RecurseIssue(rows, id, i, 0, padTexts);
 					});
-					//foreach (var i in issues){
-					//    id++;
-					//    await ;
-					//}
+					
 					await Task.WhenAll(tasks);
 
 					foreach (var r in rows.OrderBy(x => x.Item1)) {
@@ -179,8 +138,6 @@ namespace RadialReview.Accessors {
 						}
 						sb.AppendLine();
 					}
-
-
 					return new System.Text.UTF8Encoding().GetBytes(sb.ToString());
 				}
 			}
@@ -210,9 +167,7 @@ namespace RadialReview.Accessors {
 			//var meetingId = L10Accessor.GetLatestMeetingId(caller, recurrenceId);
 			var rocks = L10Accessor.GetRocksForRecurrence(caller, recurrenceId, true);
 
-
 			Dictionary<string, string> padTexts = null;
-
 			if (includeDetails) {
 				try {
 					var pads = rocks.Select(x => x.ForRock.PadId).ToList();
@@ -235,8 +190,6 @@ namespace RadialReview.Accessors {
 
 				csv.Add("" + t.Id, "Status", RockStateExtensions.GetCompletionVal(t.Completion));
 				csv.Add("" + t.Id, "ArchivedTime", "" + t.DeleteTime);
-
-
 
 				if (includeDetails) {
 					var padDetails = padTexts.GetOrDefault(t.PadId, "");
@@ -320,38 +273,34 @@ namespace RadialReview.Accessors {
 			var time = "";
 			if (parent.CloseTime != null)
 				time = parent.CloseTime.Value.ToShortDateString();
-			cells.Add("" + index);
-			//cells.Add("" + depth);
+			cells.Add("" + index);			
 			cells.Add("" + Csv.CsvQuote(parent.Owner.NotNull(x => x.GetName())));
 			cells.Add("" + parent.CreateTime.ToShortDateString());
 			cells.Add("" + time);
 			cells.Add("" + Csv.CsvQuote(parent.Issue.Message));
 
-
-			//.Append(depth).Append(",")
-			//.Append().Append(",")
-			//.Append().Append(",")
-			//.Append().Append(",");
-			/*		for (var d = 0; d < depth - 1; d++)
-						sb.Append(",");*/
-			//sb.Append(Csv.CsvQuote(parent.Issue.Message)).Append(",");
-
-			//if (includeDetails) {
-			// var padDetails = await PadAccessor.GetText(parent.Issue.PadId);
-			//var bytes = new System.Text.UTF8Encoding().GetBytes(padDetails);
 			if (padLookup != null) {
 				var padDetails = padLookup.GetOrDefault(parent.Issue.PadId, "");
 				cells.Add(Csv.CsvQuote(padDetails));
 			}
-			//}
-
+			
 			rows.Add(row);
-
 			foreach (var child in parent._ChildIssues)
 				await RecurseIssue(rows, index, child, depth + 1, padLookup);
 		}
 
 
+        public static Csv ExportAllUsers(UserOrganizationModel caller,long orgId) {
+            PermissionsAccessor.EnsurePermitted(caller, x => x.ManagingOrganization(orgId));
 
-	}
+	    var users = TinyUserAccessor.GetOrganizationMembers(caller, orgId, true);
+	    var csv = new Csv("Users");
+	    foreach(var u in users) {
+		    csv.Add("" + u.UserOrgId, "Email", u.Email);
+		    csv.Add("" + u.UserOrgId, "FirstName", u.FirstName);
+		    csv.Add("" + u.UserOrgId, "LastName", u.LastName);                            
+	    }
+	    return csv;
+        }
+    }
 }

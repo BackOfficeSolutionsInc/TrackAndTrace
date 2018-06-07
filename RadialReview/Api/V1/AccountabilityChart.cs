@@ -256,10 +256,11 @@ namespace RadialReview.Api.V1 {
 		//[PUT] /positions/
 		[Route("positions/create")]
 		[HttpPost]
-		public AngularPosition CreatePosition([FromBody]TitleModel body) {
+		public async Task<AngularPosition> CreatePosition([FromBody]TitleModel body) {
 			//need to discuss?
 			OrganizationAccessor _accessor = new OrganizationAccessor();
-			return new AngularPosition(_accessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, body.title));
+			var position = await _accessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, body.title);
+			return new AngularPosition(position);
 		}
 
 		/// <summary>
@@ -284,7 +285,8 @@ namespace RadialReview.Api.V1 {
 		[HttpPut]
 		public async Task UpdatePositions(long POSITION_ID, [FromBody]TitleModel body) {
 			OrganizationAccessor _accessor = new OrganizationAccessor();
-			new AngularPosition(_accessor.EditOrganizationPosition(GetUser(), POSITION_ID, GetUser().Organization.Id, body.title));
+			var position = await _accessor.EditOrganizationPosition(GetUser(), POSITION_ID, GetUser().Organization.Id, body.title);
+			new AngularPosition(position);
 		}
 
 

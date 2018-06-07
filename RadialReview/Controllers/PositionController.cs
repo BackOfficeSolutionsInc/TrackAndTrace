@@ -5,22 +5,20 @@ using RadialReview.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace RadialReview.Controllers
-{
-    public class PositionController : BaseController
-    {
+namespace RadialReview.Controllers {
+	public class PositionController : BaseController {
 
-        //
-        // GET: /Position/
-        [Access(AccessLevel.Any)]
-        public ActionResult Index()
-        {
-            return View();
-        }
-        /*
+		//
+		// GET: /Position/
+		[Access(AccessLevel.Any)]
+		public ActionResult Index() {
+			return View();
+		}
+		/*
         public ActionResult Responsiblities(long id)
         {
             var responsibilities = _ResponsibilitiesAccessor.GetResponsibilities(GetUser(), id);
@@ -33,36 +31,34 @@ namespace RadialReview.Controllers
             var position=_OrganizationAccessor.GetOrganizationPosition(GetUser(), id);
         }*/
 
-        [Access(AccessLevel.Manager)]
-        public PartialViewResult Modal(long id = 0)
-        {
-            var positions = _PositionAccessor.AllPositions().ToList();
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult Modal(long id = 0) {
+			var positions = _PositionAccessor.AllPositions().ToList();
 
-            PositionViewModel model = new PositionViewModel() { Positions = positions.OrderBy(x => x.Name.Translate()).ToList(),Id=id };
-            if (id != 0)
-            {
-                var found= _OrganizationAccessor.GetOrganizationPosition(GetUser(), id);
-                model.PositionName = found.CustomName;
-               /* model.Position = found.Position.Id;*/
-            }
+			PositionViewModel model = new PositionViewModel() { Positions = positions.OrderBy(x => x.Name.Translate()).ToList(), Id = id };
+			if (id != 0) {
+				var found = _OrganizationAccessor.GetOrganizationPosition(GetUser(), id);
+				model.PositionName = found.CustomName;
+				/* model.Position = found.Position.Id;*/
+			}
 
-            return PartialView(model);
-        }
+			return PartialView(model);
+		}
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
-		public JsonResult Modal(PositionViewModel model) {
+		public async Task<JsonResult> Modal(PositionViewModel model) {
 			var caller = GetUser();
-			_OrganizationAccessor.EditOrganizationPosition(caller, model.Id, caller.Organization.Id, /*model.Position.Value,*/model.PositionName);
+			await _OrganizationAccessor.EditOrganizationPosition(caller, model.Id, caller.Organization.Id, /*model.Position.Value,*/model.PositionName);
 			return Json(ResultObject.Success("Updated position.").ForceRefresh());
 		}
 
-		
+
 		[Access(AccessLevel.Manager)]
-		public JsonResult Delete(long id) {
+		public async Task<JsonResult> Delete(long id) {
 			var caller = GetUser();
-			PositionAccessor.DeletePosition(caller, id);
-			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+			await PositionAccessor.DeletePosition(caller, id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 		/*
 public ActionResult EditAccountabilities(long positionId)

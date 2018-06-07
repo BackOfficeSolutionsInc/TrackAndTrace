@@ -1,6 +1,8 @@
 ﻿using RadialReview.Accessors.Hooks;
+using RadialReview.Crosscutting.Hooks.CrossCutting;
 using RadialReview.Crosscutting.Hooks.CrossCutting.Formula;
 using RadialReview.Crosscutting.Hooks.Payment;
+using RadialReview.Crosscutting.Hooks.QuarterlyConversation;
 using RadialReview.Hooks;
 using RadialReview.Hooks.CrossCutting;
 using RadialReview.Hooks.CrossCutting.ActiveCampaign;
@@ -61,12 +63,24 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new CreateFinancialPermItems());
 
 			HooksRegistry.RegisterHook(new UpdatePlaceholder());
+			HooksRegistry.RegisterHook(new RealTime_L10_Milestone());
+			//HooksRegistry.RegisterHook(new TodoEdit())
+			HooksRegistry.RegisterHook(new CascadeScorecardFormulaUpdates());
+			HooksRegistry.RegisterHook(new RealTime_Positions());
 
 			HooksRegistry.RegisterHook(new CascadeScorecardFormulaUpdates());
 
 			HooksRegistry.RegisterHook(new ExecutePaymentCardUpdate());
 			HooksRegistry.RegisterHook(new FirstPaymentEmail());
 			HooksRegistry.RegisterHook(new SetDelinquentFlag());
+			HooksRegistry.RegisterHook(new CardExpireEmail());
+
+
+
+			HooksRegistry.RegisterHook(new QuarterlyConversationCreationNotifications());
+			HooksRegistry.RegisterHook(new SetPeopleToolsTrial());
+			
+
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
 	}

@@ -606,7 +606,7 @@ function updateIssueAwaitingSolve(issueRecurId, status) {
     $(".issue-row[data-recurrence_issue='" + issueRecurId + "']").attr("data-awaitingsolve", status);
 }
 
-function updateModedIssueSolve(issueRecurId, status) {
+function updateModedIssueSolve(issueRecurId, status) {  
     var row = $(".issue-row[data-recurrence_issue='" + issueRecurId + "']");
     row.attr("data-markedforclose", status);
     row.attr("data-checked", status);
@@ -753,35 +753,36 @@ function sendIssueMessage(self, id) {
 }
 
 function unstarAll() {
-    $(".ids .issue-row").filter(function () {
-        var i = $(this).find(".number-priority > .priority");
-        return i.data("priority") > 0;
-    }).each(function () {
-        sendPriority($(this).data("recurrence_issue"), 0);
-    });
 
-    $(".ids .issue-row").filter(function () {
-        var i = $(this).find(".number-priority > .rank123 ");
-        return i.data("rank") > 0;
-    }).each(function () {
-        var id = $(this).attr("data-recurrence_issue");
-        updateIssueRank(id, 0, true);
-        refreshRanks();
+	$(".ids .issue-row").filter(function () {
+		var i = $(this).find(".number-priority > .priority");
+		return i.data("priority") > 0;
+	}).each(function () {
+		sendPriority($(this).data("recurrence_issue"), 0);
+	});
 
-        ////DEBOUNCE
-        var pp = +$(this).data("rank");
-        var d = { rank: pp, time: new Date().getTime() };
-        //console.log("D - " + pp);
-        $.ajax({
-            url: "/L10/UpdateIssue/" + id,
-            data: d,
-            method: "POST",
-            success: function (d) {
-                showJsonAlert(d);
-            }
-        });
-    });
+	$(".ids .issue-row").filter(function () {
+		var i = $(this).find(".number-priority > .rank123 ");
+		return i.data("rank") > 0;
+	}).each(function () {
+		var id = $(this).attr("data-recurrence_issue");
+		updateIssueRank(id, 0, true);
+		//refreshRanks();
 
+		////DEBOUNCE
+		var pp = +$(this).data("rank");
+		var d = { rank: pp, time: new Date().getTime() };
+		//console.log("D - " + pp);
+		$.ajax({
+			url: "/L10/UpdateIssue/" + id,
+			data: d,
+			method: "POST",
+			success: function (d) {
+				showJsonAlert(d);
+			}
+		});
+	});
+  
 }
 
 //$("body").on("blur", ".issueDetails .details", function () {

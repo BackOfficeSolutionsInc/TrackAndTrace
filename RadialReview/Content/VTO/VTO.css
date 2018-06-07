@@ -386,7 +386,7 @@ body {
 .vto .core-values .title .boxed,
 .vto .ten-year-target .title .boxed,
 .vto .marketing-strategy .title .boxed,
-.vto .three-year-picture .title.boxed {
+.vto .box-section .title.boxed {
   text-align: center;
   padding: 5px;
   background-color: #cac8c8;
@@ -479,7 +479,7 @@ body {
     min-height: 208px;
     height: calc(48vh - 105px);
   }
-  .vto .three-year-picture .boxed.content {
+  .vto .box-section .boxed.content {
     min-height: 405px;
     height: calc(100vh - 284px);
   }

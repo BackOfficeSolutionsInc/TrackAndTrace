@@ -26,6 +26,74 @@
 		return new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
 	}
 
+	//this.toUtc = function (date) {
+	//	new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+	//}
+
+	this.adjustToMidnight = function (date) {
+		var d = new Date(date);
+		//Adj for daylight savings time screws up the UI when outside DST (3-10-2018), selecting in DST (4-10-2018)
+		//d.setHours(this.dst(d) ? 24 : 23, 59, 59, 999);
+		d.setHours(23, 59, 59, 999);
+		return d;
+	}
+
+	this.eachDate = function (obj,func) {
+		function _each(obj, seen) {
+			if (typeof (obj) === "undefined" || obj == null)
+				return obj;
+			for (var key in obj) {
+				if (arrayHasOwnIndex(obj, key)) {
+					var value = obj[key];
+					var type = typeof (value);
+					if (obj[key] == null) {
+						//Do nothing
+					} else {
+						var parsed = parseJsonDate(obj[key], false);
+						if (parsed.getDate !== undefined) {
+							var res = func(parsed,obj,key);
+							if (typeof(res)!=="undefined" && res!=false && res!=null) {
+								obj[key] = res;//new Date(obj[key].getTime() + tzoffset() * 60 * 1000);
+							}
+						} else if (type == 'object') {
+							_continueIfUnseen(value, seen, function () {
+								_each(value, seen);
+							});
+						}
+					}
+				}
+			}
+		}
+
+		function _continueIfUnseen(item, seen, onUnseen) {
+			if (item) {
+				if (item.Key) {
+					if (!(item.Key in seen)) {
+						seen[item.Key] = true;
+						onUnseen();
+					} else {
+					}
+				} else {
+					onUnseen();
+				}
+			} else {
+				onUnseen();
+			}
+		}
+		_each(obj, []);
+		return obj;
+	};
+
+	this.stdTimezoneOffset = function (date) {
+		var jan = new Date(date.getFullYear(), 0, 1);
+		var jul = new Date(date.getFullYear(), 6, 1);
+		return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+	}
+
+	this.dst = function (date) {
+		return date.getTimezoneOffset() < this.stdTimezoneOffset(date);
+	}
+
 	var convertDateFromString = function (value) {
 		var type = typeof (value);
 		var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
@@ -82,7 +150,7 @@
 				}
 			}
 			if (value.getDate !== undefined) {
-				console.warn("timezone not applied");
+				//console.warn("timezone not applied");
 				return new Date(value.getTime());
 			}
 		}

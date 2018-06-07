@@ -76,11 +76,22 @@ namespace RadialReview.Accessors {
 
 		#region Angular
 
-		public static async Task<AngularRecurrence> GetOrGenerateAngularRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false, DateRange scorecardRange = null) {
+		public static async Task<AngularRecurrence> GetOrGenerateAngularRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false, DateRange scorecardRange = null, bool populateManaging = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					var angular = await GetOrGenerateAngularRecurrence(s, perms, recurrenceId, includeScores, includeHistorical, fullScorecard, range, forceIncludeTodoCompletion, scorecardRange);
+
+					if (populateManaging) {
+						var permissionLookup = new DefaultDictionary<long, bool>(id => perms.IsPermitted(x => x.CanAdminMeetingItemsForUser(id, recurrenceId)));
+						foreach (var item in angular.Rocks) {
+							item.Owner.Managing = permissionLookup[item.Owner.Id]; 
+						}
+
+						foreach (var item in angular.Attendees) {
+							item.Managing = permissionLookup[item.Id];
+						}
+					}
 
 					tx.Commit();
 					s.Flush();
@@ -306,7 +317,8 @@ namespace RadialReview.Accessors {
 
 		//[Untested("Vto_Rocks",/* "Is the rock correctly removed in real-time from L10",/* "Is the rock correctly removed in real-time from VTO",*/ "Is rock correctly archived when existing in no meetings?")]
 		public static async Task UnarchiveRock(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long rockId) {
-			perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+			//perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+			perm.AdminL10Recurrence(recurrenceId).EditRock_UnArchive(rockId);
 
 			await RockAccessor.UnArchiveRock(s, perm, rockId);
 

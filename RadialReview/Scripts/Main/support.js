@@ -149,24 +149,25 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
 			}
 		});
 	};
-	try {
-		$.getScript("/Scripts/home/screenshot.js").done(function () {
-			try {
-				console.log("begin render");
-				screenshotPage(function (res) {
-					image = res;
-					console.log("end render");
-				});
-				show();
-			} catch (e) {
-				show();
-			}
-		}).error(function () {
-			show();
-		});
-	} catch (e) {
-		show();
-	}
+	show();
+	//try {
+	//	$.getScript("/Scripts/home/screenshot.js").done(function () {
+	//		try {
+	//			console.log("begin render");
+	//			screenshotPage(function (res) {
+	//				image = res;
+	//				console.log("end render");
+	//			});
+	//			show();
+	//		} catch (e) {
+	//			show();
+	//		}
+	//	}).error(function () {
+	//		show();
+	//	});
+	//} catch (e) {
+	//	show();
+	//}
 
 }
 

@@ -47,10 +47,10 @@ namespace RadialReview.Models
 			//Map(x => x.ManagerIsNode);
 			//Map(x => x.SubordinateIsNode);
 
-			Map(x => x.ParentId).Column("ParentId");
+			Map(x => x.ParentId).Column("ParentId").Index("idx__DeepAccountability_ChildId");
 			References(x => x.Parent).Column("ParentId").LazyLoad().ReadOnly();
 
-            Map(x => x.ChildId).Column("ChildId");
+            Map(x => x.ChildId).Column("ChildId").Index("idx__DeepAccountability_ChildId");
 			References(x => x.Child).Column("ChildId").LazyLoad().ReadOnly();
 
 		}
