@@ -188,7 +188,7 @@ namespace RadialReview.Accessors {
             if (userName != null) {
                 var devices = s.QueryOver<UserDevice>()
                     .Where(x => x.DeleteTime == null && x.IgnoreDevice == false && x.UserName == userName)
-                    .List().ToList();
+                    .List().Distinct(x=>x.DeviceId).ToList();
 
                 foreach (var d in devices) {
                     await NotifcationCreation.SendToDevice(d, this);

@@ -44,7 +44,7 @@ setInterval(function () {
 		var text = $(this).text();
 		$(this).html("");
 		$(this).jsonView(text);
-		
+
 		var self = $(this);
 		addCopyButton(self);
 	});

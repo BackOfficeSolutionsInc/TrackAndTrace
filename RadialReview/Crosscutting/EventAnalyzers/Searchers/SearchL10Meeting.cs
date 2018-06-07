@@ -19,11 +19,11 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Searchers {
 			RecurrenceId = recurrenceId;
 		}
 
-        protected override IEnumerable<string> UniqueKeys(IEventSettings settings) {
-           yield return "" + RecurrenceId;
+		protected override IEnumerable<string> UniqueKeys(IEventSettings settings) {
+			yield return "" + RecurrenceId;
 		}
 
-        public override async Task<List<L10Meeting>> PerformSearch(IEventSettings settings) {
+		public override async Task<List<L10Meeting>> PerformSearch(IEventSettings settings) {
 			return settings.Session.QueryOver<L10Meeting>()
 				.Where(x => x.DeleteTime == null && x.Preview == false && x.L10RecurrenceId == RecurrenceId)
 				.List().ToList();

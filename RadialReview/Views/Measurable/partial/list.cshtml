@@ -1,31 +1,31 @@
 ﻿@{
-    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
-    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
-    var forceMin = ViewBag.ForceMin == null ? ",undefined" : "," + ((int)ViewBag.ForceMin);
-    var reorderable = (ViewBag.Reorderable != null && ((bool)ViewBag.Reorderable) == true);
-    var disableName = ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false;
-    var editOwner = ViewBag.EditOwner != null && ((bool)ViewBag.EditOwner) == true;
-    var selector = ViewBag.Selector as string ?? "(model.Scorecard)";
-    var elasticInputs = ViewBag.ElasticInput == null || ((bool)ViewBag.ElasticInput) == true;
+	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+	var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+	var forceMin = ViewBag.ForceMin == null ? ",undefined" : "," + ((int)ViewBag.ForceMin);
+	var reorderable = (ViewBag.Reorderable != null && ((bool)ViewBag.Reorderable) == true);
+	var disableName = ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false;
+	var editOwner = ViewBag.EditOwner != null && ((bool)ViewBag.EditOwner) == true;
+	var selector = ViewBag.Selector as string ?? "(model.Scorecard)";
+	var elasticInputs = ViewBag.ElasticInput == null || ((bool)ViewBag.ElasticInput) == true;
 
-    var localization = "localization=\"" + (ViewBag.Localization ?? "") + "\"";
+	var localization = "localization=\"" + (ViewBag.Localization ?? "") + "\"";
 	
-    var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
+	var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 	
-    var elastic = elasticInputs ? "pu-elastic-input" : "";
-    var scorecardKey = "(" + selector + ").Key";
+	var elastic = elasticInputs ? "pu-elastic-input" : "";
+	var scorecardKey = "(" + selector + ").Key";
 }
 
 <div @(headers ? "ng-app=L10App" : "") class="scorecard meeting-page app scorecard-list-container angular-scorecard ng-cloak" style="clear: both;">
-    <div @(headers || controller ? "ng-controller=L10Controller" : "")>
-        <div class="rowAA">
-            <div class="col-md-12AA">
-                <div class="component">
-                    <div class="clearfix"></div>
-                    <div style="position: relative;" ng-show="(@(selector)).Measurables.length">
-                        <div class="table-responsive scroller repeater-container-scorecard tile-height-resize fixOverlayScroll" style1="min-height: 200px;" ng-class="{'scroll-right':(@(selector)).ReverseScorecard==false}">
-                            <table id="ScorecardTable"  class="scorecard-table ng-cloak">
-                                <thead>
+	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
+		<div class="rowAA">
+			<div class="col-md-12AA">
+				<div class="component">
+					<div class="clearfix"></div>
+					<div style="position: relative;" ng-show="(@(selector)).Measurables.length">
+						<div class="table-responsive scroller repeater-container-scorecard tile-height-resize fixOverlayScroll" style1="min-height: 200px;" ng-class="{'scroll-right':(@(selector)).ReverseScorecard==false}">
+							<table id="ScorecardTable"  class="scorecard-table ng-cloak">
+								<thead>
 									<tr class="top-row">
 										@if (reorderable) {
 											<th class="button-column">&nbsp;</th>
@@ -44,215 +44,214 @@
 										<th class="delete-column"></th>
 									</tr>
 
-                                    <tr>
-                                        @if (reorderable) {
-                                            <th class="button-column">&nbsp;</th>
-                                        }
-                                        @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
-                                            <th class="who alignRight accountable-column  text-column" title="This person is accountable for reaching the goal">Acc</th>
-                                            <th class="who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
-                                        }
-                                        <th class="measurable measurable-column text-column">Measurable</th>
+									<tr>
+										@if (reorderable) {
+											<th class="button-column">&nbsp;</th>
+										}
+										@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
+											<th class="who alignRight accountable-column  text-column" title="This person is accountable for reaching the goal">Acc</th>
+											<th class="who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
+										}
+										<th class="measurable measurable-column text-column">Measurable</th>
 										<th class="delete-column-alt button-column"></th>
-                                        <th class="target goal-column data-column" colspan="2">Goal</th>
+										<th class="target goal-column data-column" colspan="2">Goal</th>
 										<th class="cumulative-column"></th>
-                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  data-column score-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
+										<th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  data-column score-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
 											{{functions.bottomDate(week,@(selector))}}
-                                        </th>
+										</th>
 										<th class="delete-column button-column"></th>
-                                    </tr>
-                                </thead>
-                                <tbody @*New>vs-repeat vs-autoresize vs-scroll-parent="@(ViewBag.ViewParent??".table-responsive")"<New*@ as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
-                                    <tr as-sortable-item="measurable" ng-hide="measurable.Hide"
-                                        ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}"
-                                        data-measurable="{{::measurable.Id}}"
-                                        class="specialClass @(reorderable ? "reorderable" : "")"
-                                        ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering'] track by measurable.Key">
-                                        @if (reorderable) {
-                                            <td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.IsReorderable" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
+									</tr>
+								</thead>
+								<tbody @*New>vs-repeat vs-autoresize vs-scroll-parent="@(ViewBag.ViewParent??".table-responsive")"<New*@ as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
+									<tr as-sortable-item="measurable" ng-hide="measurable.Hide"
+										ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}"
+										data-measurable="{{::measurable.Id}}"
+										class="specialClass @(reorderable ? "reorderable" : "")"
+										ng-repeat="measurable in measurableGroupItems | orderBy: functions.orderMeasurables((@(selector))) track by measurable.Key">
+										@if (reorderable) {
+											<td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.IsReorderable" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
 											<td class="button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.IsReorderable"></td>
-                                        }
+										}
 
-                                        @if (disableName) {
-                                            <td class="who first1 alignRight accountable-column  text-column" ng-class="{handle: measurable.IsDivider}">
-                                                <span class="item-wrapper place-right">
-                                                    <span class=""
-                                                          @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disabled"
+										@if (disableName) {
+											<td class="who first1 alignRight accountable-column  text-column" ng-class="{handle: measurable.IsDivider}">
+												<span class="item-wrapper place-right">
+													<span class=""
+														  @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disabled"
 																			  @: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
 														}>
-                                                        <profile-image class="" user="measurable.Owner"></profile-image>
-                                                    </span>
-                                                </span>
-                                            </td>
-                                            <td class="who first1 alignLeft admin-column text-column" ng-class="{handle: measurable.IsDivider}">
-                                                <span class="item-wrapper place-right">
-                                                    <span class=""
-                                                          @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"
-                                                              @: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
-                                                          }>
-                                                        <profile-image class="desaturate" user="measurable.Admin"></profile-image>
-                                                    </span>
-                                                </span>
-                                            </td>
-                                        }
-                                        <td class="measurable first1  measurable-column text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
-                                            <span ng-class="{'inlineEdit': measurable.Disabled!=true}">
-                                                <input ng-disabled="measurable.Disabled" placeholder="Enter measurable here" class="blend" ng-model-options="{ debounce: 250 }" ng-model="measurable.Name" @(elastic) ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
-                                            </span>
-                                            <span class="shift-visible edit-formula" title="Edit Formula" ng-click="showFormula(measurable.Id)"></span>
-                                        </td>
+														<profile-image class="" user="measurable.Owner"></profile-image>
+													</span>
+												</span>
+											</td>
+											<td class="who first1 alignLeft admin-column text-column" ng-class="{handle: measurable.IsDivider}">
+												<span class="item-wrapper place-right">
+													<span class=""
+														  @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"
+															  @: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
+														  }>
+														<profile-image class="desaturate" user="measurable.Admin"></profile-image>
+													</span>
+												</span>
+											</td>
+										}
+										<td class="measurable first1  measurable-column text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
+											<span ng-class="{'inlineEdit': measurable.Disabled!=true}">
+												<input ng-disabled="measurable.Disabled" placeholder="Enter measurable here" class="blend" ng-model-options="{ debounce: 250 }" ng-model="measurable.Name" @(elastic) ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
+											</span>
+											<span class="shift-visible edit-formula" title="Edit Formula" ng-click="showFormula(measurable.Id)"></span>
+										</td>
 										<td class="delete-column-alt button-column">
 											<span class="delete-row" ng-click="functions.removeRow($event,measurable)"></span>
 										</td>
-                                        <td class="target direction goal-column  data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
-                                            <span class="item-wrapper place-right">
-                                                <span class="direction direction_{{measurable.Direction}}"
-                                                      onaftersave="functions.checkFutureAndSend(measurable)"
-                                                      editable-select="measurable.Direction" onshow="loadPossibleDirections()"
-                                                      e-ng-options="s.value as s.text for s in possibleDirections"
-                                                      e-ng-readonly="measurable.Disabled"></span>
-                                            </span>
-                                        </td>
-                                        <td class="target value goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
-                                            <input ng-if="measurable.Direction!='Between'"
-                                                   ng-disabled="measurable.Disabled"
-                                                   @(elastic)
-                                                   class="blend modifiers {{measurable.Modifiers}}"
-                                                   fcsa-number="{{functions.getFcsa(measurable)}}"
-                                                   ng-model-options="{ debounce: 250 }"
-                                                   ng-model="measurable.Target"
-                                                   ng-change="functions.sendUpdate(measurable)"
-                                                   ng-blur="functions.checkFutureAndSend(measurable)" />
-                                            <span ng-if="measurable.Direction=='Between'" ng-click="functions.checkFutureAndSend(measurable)">{{measurable.Target}}-{{measurable.AltTarget}}</span>
-                                            <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::recurrenceId}}" data-url="/L10/UpdateMeasurable"></span>
-                                        </td>
+										<td class="target direction goal-column  data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
+											<span class="item-wrapper place-right">
+												<span class="direction direction_{{measurable.Direction}}"
+													  onaftersave="functions.checkFutureAndSend(measurable)"
+													  editable-select="measurable.Direction" onshow="loadPossibleDirections()"
+													  e-ng-options="s.value as s.text for s in possibleDirections"
+													  e-ng-readonly="measurable.Disabled"></span>
+											</span>
+										</td>
+										<td class="target value goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
+											<input ng-if="measurable.Direction!='Between'"
+												   ng-disabled="measurable.Disabled"
+												   @(elastic)
+												   class="blend modifiers {{measurable.Modifiers}}"
+												   fcsa-number="{{functions.getFcsa(measurable)}}"
+												   ng-model-options1="{ debounce: 250 }"
+												   ng-model="measurable.Target"
+												   ng-blur="functions.sendUpdate(measurable);functions.checkFutureAndSend(measurable);" />
+											<span ng-if="measurable.Direction=='Between'" ng-click="functions.checkFutureAndSend(measurable)">{{measurable.Target}}-{{measurable.AltTarget}}</span>
+											<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::recurrenceId}}" data-url="/L10/UpdateMeasurable"></span>
+										</td>
 										<td class="cumulative-column" ng-click="functions.checkFutureAndSend(measurable)">
 											<input ng-show="measurable.ShowCumulative==true" pu-elastic-input fcsa-number="{{functions.getFcsa(measurable)}}" ng-model="measurable.Cumulative"  disabled/>
 										</td>
-                                        <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)  track by week.ForWeekNumber" class="score score-column data-column" ng-class="{current:week.IsCurrentWeek}">
-                                            <score week="week"
-                                                   @(new HtmlString(localization))
-                                                   score="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey))"
-                                                   tt-onchange="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))">
-                                            </score>
-                                        </td>
+										<td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)  track by week.ForWeekNumber" class="score score-column data-column" ng-class="{current:week.IsCurrentWeek}">
+											<score week="week"
+												   @(new HtmlString(localization))
+												   score="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey))"
+												   tt-onchange="functions.sendUpdateDebounce(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))">
+											</score>
+										</td>
 										<td class="delete-column button-column">
 											<span class="delete-row" title="Remove Measurable" ng-click="functions.removeRow($event,measurable)"></span>
 										</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm ng-cloak resizable background-color tile-height-resize"  data-tile-resize-diff="11">
-                            <thead>
-                                <tr class="top-row">
-                                    @if (reorderable) {
-                                        <th class="button-column">&nbsp;</th>
-                                    }
-                                    @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
-                                        <th class="who alignRight accountable-column text-column"></th>
-                                        <th class="who alignLeft admin-column text-column"></th>
-                                    }
-                                    <th class="measurable-column  text-column">&nbsp;</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm ng-cloak resizable background-color tile-height-resize"  data-tile-resize-diff="11">
+							<thead>
+								<tr class="top-row">
+									@if (reorderable) {
+										<th class="button-column">&nbsp;</th>
+									}
+									@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
+										<th class="who alignRight accountable-column text-column"></th>
+										<th class="who alignLeft admin-column text-column"></th>
+									}
+									<th class="measurable-column  text-column">&nbsp;</th>
 									<th class="delete-column-alt button-column"></th>
-                                    <th class="goal-column  dta-column" colspan="2">&nbsp;</th>
+									<th class="goal-column  dta-column" colspan="2">&nbsp;</th>
 									<th class="cumulative-column"></th>
-                                </tr>
-                                <tr>
-                                    @if (reorderable) {
-                                        <th class="button-column">&nbsp;</th>
-                                    }
-                                    @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
-                                        <th class="who alignRight accountable-column text-column" title="This person is accountable for reaching the goal">Acc</th>
-                                        <th class="who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
-                                    }
-                                    <th class="measurable measurable-column text-column">Measurable</th>
+								</tr>
+								<tr>
+									@if (reorderable) {
+										<th class="button-column">&nbsp;</th>
+									}
+									@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
+										<th class="who alignRight accountable-column text-column" title="This person is accountable for reaching the goal">Acc</th>
+										<th class="who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
+									}
+									<th class="measurable measurable-column text-column">Measurable</th>
 									<th class="delete-column-alt button-column"></th>
-                                    <th class="target  goal-column data-column" colspan="2">Goal</th>
+									<th class="target  goal-column data-column" colspan="2">Goal</th>
 									<th class="cumulative-column"></th>
-                                </tr>
-                            </thead>
-                            <tbody as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
-                                <tr as-sortable-item="measurable" ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering']"  ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}">
-                                    @if (reorderable) {
-                                            <td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.IsReorderable" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
+								</tr>
+							</thead>
+							<tbody as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
+								<tr as-sortable-item="measurable" ng-repeat="measurable in measurableGroupItems | orderBy: functions.orderMeasurables((@(selector)))"  ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}">
+									@if (reorderable) {
+											<td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="measurable.IsReorderable" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
 											<td class="button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.IsReorderable"></td>
-                                    }
-                                    @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
-                                        <td class="who first1 alignRight accountable-column text-column" ng-class="{handle: measurable.IsDivider}">
-                                            <span class="item-wrapper place-right">
-                                                <span class=""
-                                                      @if (editOwner) { @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disable"
-                                                                        @: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
-                                                      }>
-                                                    <profile-image user="measurable.Owner"></profile-image>
-                                                </span>
-                                            </span>
-                                        </td>
-                                        <td class="who first1 alignLeft admin-column text-column" ng-class="{handle: measurable.IsDivider}">
-                                            <span class="item-wrapper place-right">
-                                                <span class=""
-                                                      @if (editOwner) { 
-                                                          @:onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"                                                                                                                
-                                                          @: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
-                                                       }>
-                                                    <profile-image class="desaturate" user="measurable.Admin"></profile-image>
-                                                </span>
-                                            </span>
-                                        </td>
-                                    }
-                                    <td class="measurable first1 measurable-column text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
-                                        <span ng-class="{'inlineEdit': measurable.Disabled!=true}">
-                                            <input ng-disabled="measurable.Disabled" class="blend" @(elastic) ng-model="measurable.Name" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
-                                        </span>
-                                        <span class="shift-visible edit-formula" title="Edit Formula" ng-click="functions.showFormula(measurable.Id)"></span>
-                                    </td>
+									}
+									@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
+										<td class="who first1 alignRight accountable-column text-column" ng-class="{handle: measurable.IsDivider}">
+											<span class="item-wrapper place-right">
+												<span class=""
+													  @if (editOwner) { @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disable"
+																		@: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
+													  }>
+													<profile-image user="measurable.Owner"></profile-image>
+												</span>
+											</span>
+										</td>
+										<td class="who first1 alignLeft admin-column text-column" ng-class="{handle: measurable.IsDivider}">
+											<span class="item-wrapper place-right">
+												<span class=""
+													  @if (editOwner) { 
+														  @:onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"																												
+														  @: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
+													   }>
+													<profile-image class="desaturate" user="measurable.Admin"></profile-image>
+												</span>
+											</span>
+										</td>
+									}
+									<td class="measurable first1 measurable-column text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
+										<span ng-class="{'inlineEdit': measurable.Disabled!=true}">
+											<input ng-disabled="measurable.Disabled" class="blend" @(elastic) ng-model="measurable.Name" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
+										</span>
+										<span class="shift-visible edit-formula" title="Edit Formula" ng-click="functions.showFormula(measurable.Id)"></span>
+									</td>
 									<td class="delete-column-alt button-column">
 										<span class="delete-row" title="Remove Measurable" ng-click="functions.removeRow($event,measurable)"></span>
 									</td>
-                                    <td class="target direction goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
-                                        <span class="item-wrapper place-right">
-                                            <span class="direction direction_{{measurable.Direction}}"
-                                                  onaftersave="functions.checkFutureAndSend(measurable)"
-                                                  editable-select="measurable.Direction"
-                                                  onshow="loadPossibleDirections()"
-                                                  e-ng-options="s.value as s.text for s in possibleDirections"
-                                                  e-ng-readonly="measurable.Disabled"></span>
-                                        </span>
-                                    </td>
-                                    <td class="target value goal-column data-column" data-measurable="{{::measurable.Id}}">
-                                        <input ng-if="measurable.Direction!='Between'"
-                                               ng-disabled="measurable.Disabled"
-                                               @(elastic)
-                                               ng-model-options="{ debounce: 250 }"
-                                               class="blend modifiers {{measurable.Modifiers}}"
-                                               fcsa-number="{{functions.getFcsa(measurable)}}"
-                                               ng-model="measurable.Target"
-                                               ng-change="functions.sendUpdate(measurable)"
-                                               ng-blur="functions.checkFutureAndSend(measurable)" />
-                                        <span ng-if="measurable.Direction=='Between'" ng-click="functions.checkFutureAndSend(measurable)">{{measurable.Target}}-{{measurable.AltTarget}}</span>
-                                        <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::recurrenceId}}" data-url="/L10/UpdateMeasurable"></span>
-                                    </td>
+									<td class="target direction goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
+										<span class="item-wrapper place-right">
+											<span class="direction direction_{{measurable.Direction}}"
+												  onaftersave="functions.checkFutureAndSend(measurable)"
+												  editable-select="measurable.Direction"
+												  onshow="loadPossibleDirections()"
+												  e-ng-options="s.value as s.text for s in possibleDirections"
+												  e-ng-readonly="measurable.Disabled"></span>
+										</span>
+									</td>
+									<td class="target value goal-column data-column" data-measurable="{{::measurable.Id}}">
+										<input ng-if="measurable.Direction!='Between'"
+											   ng-disabled="measurable.Disabled"
+											   @(elastic)
+											   ng-model-options1="{ debounce: 250 }"
+											   class="blend modifiers {{measurable.Modifiers}}"
+											   fcsa-number="{{functions.getFcsa(measurable)}}"
+											   ng-model="measurable.Target"
+											   ng-change="functions.sendUpdateDebounce(measurable)"
+											   ng-blur="functions.checkFutureAndSend(measurable)" />
+										<span ng-if="measurable.Direction=='Between'" ng-click="functions.checkFutureAndSend(measurable)">{{measurable.Target}}-{{measurable.AltTarget}}</span>
+										<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::recurrenceId}}" data-url="/L10/UpdateMeasurable"></span>
+									</td>
 									<td class="cumulative-column" ng-click="functions.checkFutureAndSend(measurable)">
 										<input ng-show="measurable.ShowCumulative==true" pu-elastic-input fcsa-number="{{functions.getFcsa(measurable)}}" ng-model="measurable.Cumulative" disabled />
 									</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
 					<div class="create-row create-new-btn" ng-click="functions.showMeasurableSearch($event)" data-toggle="tooltip" data-placement="left" title="Add Measurable"></div>
-                    @*<div class="create-row" ng-click="functions.addRow($event,'AngularMeasurable')" data-toggle="tooltip" data-placement="left" title="New Measurable"></div>*@
-                    <div class="gray empty-search" style="padding: 30px 15px;" ng-show="(@(selector)).Measurables.length==0">
-                        No measurables fit your search criteria.
-                    </div>
-                    <div class="gray empty-search" style="padding: 30px 15px;" ng-hide="(@(selector)).Measurables || (@(selector)).Measurables.length==0">
-                        Loading measurables...
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+					@*<div class="create-row" ng-click="functions.addRow($event,'AngularMeasurable')" data-toggle="tooltip" data-placement="left" title="New Measurable"></div>*@
+					<div class="gray empty-search" style="padding: 30px 15px;" ng-show="(@(selector)).Measurables.length==0">
+						No measurables fit your search criteria.
+					</div>
+					<div class="gray empty-search" style="padding: 30px 15px;" ng-hide="(@(selector)).Measurables || (@(selector)).Measurables.length==0">
+						Loading measurables...
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script>
@@ -279,56 +278,57 @@
 </script>
 
 @using (Html.BeginStyles()) {
-    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
-    <style>
-        .grid.gray {
-            background-color: #eee;
-            height: 100%;
-        }
-    </style>
+	<link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
+	<style>
+		.grid.gray {
+			background-color: #eee;
+			height: 100%;
+		}
+	</style>
 }
 @using (Html.BeginScripts()) {
-    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    @Scripts.Render("~/bundles/MeasurableList")
-    <script>
-        $(function () {
-            fixHelperModified = function (e, tr) {
-                var $originals = tr.children();
-                var $helper = tr.clone();
-                $helper.children().each(function (index) {
-                    $(this).width($originals.eq(index).width());
-                });
-                return $helper;
-            };
+	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+	@Scripts.Render("~/bundles/MeasurableList")
+	<script>
+		$(function () {
+			fixHelperModified = function (e, tr) {
+				var $originals = tr.children();
+				var $helper = tr.clone();
+				$helper.children().each(function (index) {
+					$(this).width($originals.eq(index).width());
+				});
+				return $helper;
+			};
 
-            var updateIndex = function (e, ui) {
-                var order = [];
-                var i = 0;
-                $('tr', ui.item.parent()).each(function (i) {
-                    order.push(+$(this).attr("data-measurable"));
-                });
+			var updateIndex = function (e, ui) {
+				var order = [];
+				var i = 0;
+				$('tr', ui.item.parent()).each(function (i) {
+					order.push(+$(this).attr("data-measurable"));
+				});
 
-                var data = {
-                    ordering: order,
-                    recurrenceId: angular.element(document.querySelector('#ScorecardContainer')).scope().recurrenceId
-                };
-                $.ajax({
-                    url: "/L10/UpdateRecurrenceMeasurableOrdering",
-                    method: "POST",
-                    data: $.param(data, true),
-                    success: function (d) {
-                        showJsonAlert(d);
-                        angular.element(document.querySelector('#ScorecardContainer')).scope().$apply();
-                    }
-                });
-            };
-            $(".scorecard-table tbody").xsortable({
-                items: ">.reorderable",
-                handle: ".handle",
-                helper: fixHelperModified,
-                stop: updateIndex,
-                placeholder: "xsortable-placeholder"
-            }).disableSelection();
-        });
-    </script>
+				var data = {
+					ordering: order,
+					recurrenceId: angular.element(document.querySelector('#ScorecardContainer')).scope().recurrenceId
+				};
+				$.ajax({
+					url: "/L10/UpdateRecurrenceMeasurableOrdering",
+					method: "POST",
+					data: $.param(data, true),
+					success: function (d) {
+						showJsonAlert(d);
+						angular.element(document.querySelector('#ScorecardContainer')).scope().$apply();
+					}
+				});
+			};
+			$(".scorecard-table tbody").xsortable({
+				items: ">.reorderable",
+				handle: ".handle",
+				helper: fixHelperModified,
+				stop: updateIndex,
+				placeholder: "xsortable-placeholder"
+			}).disableSelection();
+		});
+	</script>
 }
+

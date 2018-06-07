@@ -264,14 +264,14 @@ namespace RadialReview.Accessors {
 
 				AccountabilityNode child = null;
 				var subordinateQueries = new List<IEnumerable<long>>();
-				
+
 
 				subordinateQueries.Add(
 					s.QueryOver<DeepAccountability>()
 						.Where(x => x.DeleteTime == null)
 						////////////////
 						//Added vvv
-						.WithSubquery.WhereProperty(x=>x.ParentId).In(allMyNodesQuery)
+						.WithSubquery.WhereProperty(x => x.ParentId).In(allMyNodesQuery)
 						//removed vvv
 						//.WhereRestrictionOn(x => x.ParentId).IsIn(allPermitted)
 						//////////////
@@ -286,7 +286,7 @@ namespace RadialReview.Accessors {
 						.Where(x => x.DeleteTime == null && x.ForUser.Id == userId && x.Permissions == type)
 						.Select(x => x.AsUser.Id);
 
-					subordinateQueries.Add(												
+					subordinateQueries.Add(
 						s.QueryOver<DeepAccountability>()
 							.Where(x => x.DeleteTime == null)
 							////////////////
@@ -348,16 +348,16 @@ namespace RadialReview.Accessors {
 				return users;
 			}
 #pragma warning restore CS0618 // Type or member is obsolete
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="s"></param>
-            /// <param name="perms"></param>
-            /// <param name="managerId"></param>
-            /// <param name="subordinateId"></param>
-            /// <param name="allowDeletedSubordinateUser">for viewing user details page</param>
-            /// <returns></returns>
-			public static bool ManagesUser(ISession s, PermissionsUtility perms, long managerId, long subordinateId,bool allowDeletedSubordinateUser=false) {
+			/// <summary>
+			/// 
+			/// </summary>
+			/// <param name="s"></param>
+			/// <param name="perms"></param>
+			/// <param name="managerId"></param>
+			/// <param name="subordinateId"></param>
+			/// <param name="allowDeletedSubordinateUser">for viewing user details page</param>
+			/// <returns></returns>
+			public static bool ManagesUser(ISession s, PermissionsUtility perms, long managerId, long subordinateId, bool allowDeletedSubordinateUser = false) {
 				perms.ViewUserOrganization(managerId, false).ViewUserOrganization(subordinateId, false);
 				var m = s.Get<UserOrganizationModel>(managerId);
 				var sub = s.Get<UserOrganizationModel>(subordinateId);
@@ -435,19 +435,24 @@ namespace RadialReview.Accessors {
 
 		}
 		[Obsolete("Did you mean DeepAccessor.Users.GetSubordinatesAndSelfModels")]
-		public static List<AccountabilityNode> GetChildrenAndSelfModels(ISession s, UserOrganizationModel caller, long nodeId) {
+		public static List<AccountabilityNode> GetChildrenAndSelfModels(ISession s, UserOrganizationModel caller, long nodeId, bool allowAnyFromSameOrg = false) {
 			var node = s.Get<AccountabilityNode>(nodeId);
 
 			if (caller.Id != node.UserId && !PermissionsUtility.IsAdmin(caller)) {
-				AccountabilityNode parent = null;
 
-				var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ChildId == nodeId)
-							.JoinAlias(x => x.Parent, () => parent)
-								.Where(x => parent.DeleteTime == null && parent.UserId == caller.Id)
-								.Take(1)
-								.SingleOrDefault();
-				if (found == null)
-					throw new PermissionsException("You don't have access to this user");
+				if (allowAnyFromSameOrg && node.OrganizationId == caller.Organization.Id) {
+					//warning... this overrides the following permissions check...
+				} else {
+					AccountabilityNode parent = null;
+					var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ChildId == nodeId)
+								.JoinAlias(x => x.Parent, () => parent)
+									.Where(x => parent.DeleteTime == null && parent.UserId == caller.Id)
+									.Take(1)
+									.SingleOrDefault();
+
+					if (found == null)
+						throw new PermissionsException("You don't have access to this user");
+				}
 			}
 			var allPermissions = new List<long>() { nodeId };
 
@@ -462,8 +467,8 @@ namespace RadialReview.Accessors {
 										.Where(d => d.ChildId == alias.Id)
 										.Select(d => d.Id))
 										.List().ToList();
-			
-			if (node != null && !subordinates.Any(x=>x.Id==nodeId)) {
+
+			if (node != null && !subordinates.Any(x => x.Id == nodeId)) {
 				subordinates.Add(node);
 			}
 

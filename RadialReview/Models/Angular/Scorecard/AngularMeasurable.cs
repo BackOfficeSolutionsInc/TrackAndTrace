@@ -11,19 +11,17 @@ using RadialReview.Models.L10;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
-namespace RadialReview.Models.Angular.Scorecard
-{
-	
-	
-	
-	public class AngularMeasurable : BaseAngular
-	{
-        //public AngularMeasurable(L10Recurrence.L10Recurrence_Measurable measurable, bool skipUser = false) : this(measurable.Measurable,skipUser)
-        //{
-        //    RecurrenceMeasurableId = measurable.Id;
-        //}
-        public AngularMeasurable(long id) : base(id) {
-        }
+namespace RadialReview.Models.Angular.Scorecard {
+
+
+
+	public class AngularMeasurable : BaseAngular {
+		//public AngularMeasurable(L10Recurrence.L10Recurrence_Measurable measurable, bool skipUser = false) : this(measurable.Measurable,skipUser)
+		//{
+		//    RecurrenceMeasurableId = measurable.Id;
+		//}
+		public AngularMeasurable(long id) : base(id) {
+		}
 
 		public static AngularMeasurable Create(L10Recurrence.L10Recurrence_Measurable meetingMeasurable) {
 			if (meetingMeasurable.IsDivider) {
@@ -36,16 +34,16 @@ namespace RadialReview.Models.Angular.Scorecard
 		}
 
 
-		public AngularMeasurable(MeasurableModel measurable,bool skipUser=false):base(measurable.Id){
+		public AngularMeasurable(MeasurableModel measurable, bool skipUser = false) : base(measurable.Id) {
 
-			Owner = AngularUser.CreateUser(skipUser?null : measurable.AccountableUser);
+			Owner = AngularUser.CreateUser(skipUser ? null : measurable.AccountableUser);
 			Admin = AngularUser.CreateUser(skipUser ? null : measurable.AdminUser);
 			Name = measurable.Title;
-            Target = measurable.Goal;
-            AltTarget = measurable.AlternateGoal;
-            Direction = measurable.GoalDirection;
+			Target = measurable.Goal;
+			AltTarget = measurable.AlternateGoal;
+			Direction = measurable.GoalDirection;
 			Modifiers = measurable.UnitType;
-            IsFormula = !string.IsNullOrWhiteSpace(measurable.Formula);
+			IsFormula = !string.IsNullOrWhiteSpace(measurable.Formula);
 			if (measurable.Id < 0 || IsFormula.Value) {
 				Disabled = true;
 			}
@@ -71,27 +69,26 @@ namespace RadialReview.Models.Angular.Scorecard
 			return CreateDivider(meetingMeasurable._Ordering, meetingMeasurable.Id, meetingMeasurable.Measurable.NotNull(x => (bool?)x._Editable) ?? true);
 		}
 
-		public static AngularMeasurable CreateDivider(int ordering,long id,bool isReorderable)
-		{
-			return new AngularMeasurable(){
+		public static AngularMeasurable CreateDivider(int ordering, long id, bool isReorderable) {
+			return new AngularMeasurable() {
 				Ordering = ordering,
 				IsDivider = true,
 				Id = -id,
-				IsReorderable = isReorderable,	
+				IsReorderable = isReorderable,
 			};
 		}
 
-		public AngularMeasurable(){
-			
+		public AngularMeasurable() {
+
 		}
 		[JsonProperty(Order = -10)]
 		public string Name { get; set; }
 
 		public AngularUser Owner { get; set; }
 		public AngularUser Admin { get; set; }
-        public decimal? Target { get; set; }
-        public decimal? AltTarget { get; set; }
-        public LessGreater? Direction { get; set; }
+		public decimal? Target { get; set; }
+		public decimal? AltTarget { get; set; }
+		public LessGreater? Direction { get; set; }
 
 		public bool IsDivider { get; set; }
 		public bool? IsReorderable { get; set; }
@@ -100,7 +97,7 @@ namespace RadialReview.Models.Angular.Scorecard
 		public decimal? Cumulative { get; set; }
 		public DateTime? CumulativeRange { get; set; }
 
-		
+
 		public UnitType? Modifiers { get; set; }
 
 		public int? Ordering { get; set; }
@@ -112,6 +109,6 @@ namespace RadialReview.Models.Angular.Scorecard
 		public long? RecurrenceMeasurableId { get; set; }
 		[IgnoreDataMember]
 		public AngularMeasurableGroup Grouping { get; set; }
-        public bool? IsFormula { get; set; }
-    }
+		public bool? IsFormula { get; set; }
+	}
 }

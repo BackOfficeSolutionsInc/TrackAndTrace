@@ -6,7 +6,7 @@ using System.Linq;
 using System.Web;
 
 namespace RadialReview.Models.Angular.Notifications {
-	public class AngularAppNotification : BaseAngular{
+	public class AngularAppNotification : BaseAngular {
 
 		public string Name { get; set; }
 		public string Details { get; set; }
@@ -15,16 +15,16 @@ namespace RadialReview.Models.Angular.Notifications {
 		public bool? IsRead { get; set; }
 		public DateTime? Seen { get; set; }
 
-        public AngularAppNotification(long id) :base(id) {
-        }
+		public AngularAppNotification(long id) : base(id) {
+		}
 
-        public AngularAppNotification(NotificationModel notification):this(notification.Id) {
-            Name = notification.Name;
-            Details = notification.Details;
-            ImageUrl = notification.ImageUrl;
-            Date = notification.CreateTime;
-            IsRead = notification.Seen != null;
-            Seen = notification.Seen;
-        }
+		public AngularAppNotification(NotificationModel notification) : this(notification.Id) {
+			Name = notification.Name;
+			Details = notification.Details;
+			ImageUrl = notification.ImageUrl;
+			Date = notification.CreateTime;
+			IsRead = notification.Seen != null;
+			Seen = notification.Seen;
+		}
 	}
 }

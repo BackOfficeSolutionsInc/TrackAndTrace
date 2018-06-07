@@ -1,0 +1,9 @@
+{
+  "name": "Traction-Tools-Notes",
+  "version": "0.0.2",
+  "private": true,
+  "dependencies": {},
+  "scripts": {
+    "start": "node app.js"
+  }
+}

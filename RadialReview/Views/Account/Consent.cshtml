@@ -1,0 +1,200 @@
+﻿
+@{
+	Layout = null;
+	ViewBag.Title = "Consent";
+}
+
+
+<!DOCTYPE html>
+<html class="@(ViewBag.FullHeight ?? false ? "body-full-height" : "body-normal-height")  @(ViewBag.NoTitleBar?? false?"body-notitlebar":"")">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	@*<meta http-equiv="X-UA-Compatible" content="IE=8">*@
+	<meta http-equiv="X-UA-Compatible" content="IE=9">
+
+	<link rel="apple-touch-icon" sizes="57x57" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-180x180.png">
+	@*<link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/favicon-16x16.png" sizes="16x16">
+		<link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/favicon-32x32.png" sizes="32x32">*@
+	<link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/favicon-96x96.png" sizes="96x96">
+	<link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/android-chrome-192x192.png" sizes="192x192">
+	<meta name="msapplication-square70x70logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-72x72.png" @*content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-72x72.png"content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/smalltile.png"*@ />
+	<meta name="msapplication-square150x150logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-152x152.png" @*content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-152x152.png" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/mediumtile.png"*@ />
+	@*<meta name="msapplication-square310x310logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/largetile.png" />*@
+
+	@if (ViewBag.IsLocal ?? false) {
+		<link rel="SHORTCUT ICON" href="/content/favicon-local.ico?v=4" />
+	} else {
+		<link rel="SHORTCUT ICON" href="/content/favicon.ico?v=3" />
+	}
+
+	<style>
+		[ng\:cloak], [ng-cloak], .ng-cloak {
+			display: none !important;
+		}
+
+		.debuginfo, .debug-info {
+			display: none;
+			color: gray;
+			border-left: 2px solid red;
+			padding: 4px;
+			margin: 4px;
+			white-space: pre;
+			background-color: #ff000014;
+		}
+
+		.show-debug .debug-info, .show-debug .debuginfo, .showdebug .debug-info, .showdebug .debuginfo {
+			display: block;
+		}
+	</style>
+
+
+	<link href='https://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
+	@if (ViewBag.Title == null) {
+		<title>@Html.ProductName()</title>
+	} else {
+		<title>@ViewBag.Title - @Html.ProductName()</title>
+	}
+	@Styles.Render("~/Content/css")
+	@Html.PageStyles()
+	@if (ViewBag.VideoChatRoom != null) {
+		<link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
+	}
+	<!--User Styles-->
+	<style>
+		@{
+			try {
+				Html.RenderAction("Styles", "User", new { area = "" });
+			} catch (Exception e) {
+				@: .style-render-error{ /*@(e!=null?e.ToString():"null") */}
+			}
+		}
+	</style>
+
+
+
+
+	<style>
+		html {
+			padding: 0% 20% 5%;
+			background-color: #ef7622;
+			font: 'Lato';
+			overflow:auto;
+		}
+
+		body {
+			padding: 20px;
+			background-color: transparent;
+		}
+
+		a {
+			text-decoration: underline;
+		}
+
+		form {
+			padding-top: 40px;
+			text-align: center;
+			margin-right: -100px;
+		}
+
+		.btn-invert.btn-primary {
+			color: #ef7622;
+			background-color: #fff;
+			border-color: #ef7622;
+			font-weight: bold;
+		}
+
+		button, html input[type="button"], input[type="reset"], input[type="submit"] {
+			-webkit-appearance: button;
+			cursor: pointer;
+		}
+		h2{
+			font-weight:bold;
+			text-align:center;
+		}
+		.btn {
+			font-size: 16px;
+		}
+		br{
+			margin-top:2px;
+		}
+
+		.btn {
+			-webkit-transition: all .25s ease;
+			-moz-transition: all .25s ease;
+			-ms-transition: all .25s ease;
+			-o-transition: all .25s ease;
+			transition: all .25s ease;
+		}
+
+		.btn-invert {
+			border-width: 2px;
+		}
+
+		.btn-primary {
+			color: #fff;
+			background-color: #ef7622;
+			border-color: #e76811;
+		}
+
+		.btn {
+			display: inline-block;
+			margin-bottom: 0;
+			font-weight: normal;
+			text-align: center;
+			vertical-align: middle;
+			touch-action: manipulation;
+			cursor: pointer;
+			background-image: none;
+			border: 1px solid transparent;
+			white-space: nowrap;
+			padding: 6px 12px;
+			font-size: 14px;
+			line-height: 1.42857143;
+			border-radius: 4px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+		.message {
+			background-color: #eee;
+			padding:10px 20px 25px;
+			border-radius: 10px;
+		}
+
+		img{
+			max-height:30vh;
+			max-width:60vw;
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			
+		}
+
+	</style>
+
+</head>
+<body>
+	<img src="/Content/img/TRACTION-TOOLS_large_stacked_wh.png"/>
+	<div class="message">
+		<h2>PLEASE CONSENT TO USE TRACTION<sup style="font-size:60%">®</sup> TOOLS</h2>
+		@(new HtmlString(ViewBag.Message))
+	</div>
+	<br />
+	<form method="post">
+		<button name="btn" class="btn btn-invert btn-primary" value="ok" type="submit">I Agree</button>
+		<button name="btn" class="btn btn-link" value="no" type="submit">No Thanks</button>
+	</form>
+
+</body>
+</html>

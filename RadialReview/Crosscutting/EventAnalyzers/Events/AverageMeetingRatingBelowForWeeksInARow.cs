@@ -77,7 +77,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 
 		private string _MeetingName { get; set; }
 		public async Task PreSaveOrUpdate(ISession s) {
-			_MeetingName= s.Get<L10Recurrence>(RecurrenceId).Name;
+			_MeetingName = s.Get<L10Recurrence>(RecurrenceId).Name;
 		}
 		/*
 		  _MeetingName.NotNull(x=>" for "+x)??"");
@@ -90,7 +90,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 		}
 		public string Description {
 			get {
-				return string.Format("{0} for {1} weeks in a row{2}", Direction.ToDescription(RatingTheshold), WeeksInARow, _MeetingName.NotNull(x=>" for "+x)??"");
+				return string.Format("{0} for {1} weeks in a row{2}", Direction.ToDescription(RatingTheshold), WeeksInARow, _MeetingName.NotNull(x => " for " + x) ?? "");
 			}
 		}
 

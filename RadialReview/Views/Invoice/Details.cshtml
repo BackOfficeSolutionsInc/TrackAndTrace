@@ -1,287 +1,269 @@
-﻿@model RadialReview.Models.InvoiceModel
+﻿@model List<RadialReview.Models.InvoiceModel>
 
 @{
-    ViewBag.Title = "Invoice Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Invoice Details";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@*<h2>Details</h2>
-    <div>
-        <h4>Invoice (@Html.DisplayFor(model => model.TransactionId))</h4>
-        <hr />
-        <dl class="dl-horizontal">
-            <dt>@Html.DisplayNameFor(model => model.InvoiceSentDate)</dt>
-            <dd>@Html.DisplayFor(model => model.InvoiceSentDate)</dd>
-
-            <dt>@Html.DisplayNameFor(model => model.InvoiceDueDate)</dt>
-            <dd>@Html.DisplayFor(model => model.InvoiceDueDate)</dd>
-
-            <dt>@Html.DisplayNameFor(model => model.PaidTime)</dt>
-            <dd>@Html.DisplayFor(model => model.PaidTime)</dd>
-
-            <dt>@Html.DisplayNameFor(model => model.ServiceEnd)</dt>
-            <dd>@Html.DisplayFor(model => model.ServiceEnd)</dd>
-
-            <dt>@Html.DisplayNameFor(model => model.AmountDue)</dt>
-            <dd>@Html.DisplayFor(model => model.AmountDue)</dd>
-        </dl>
-
-        <hr />
-        <dl class="dl-horizontal">
-            @for(var i=0;i<Model.InvoiceItems.Count;i++)
-            {
-                <dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].Id)</dt>			<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].Id)</dd>
-                <dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].Name)</dt>			<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].Name)</dd>
-                <dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].Description)</dt>	<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].Description)</dd>
-                <dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].PricePerItem)</dt>	<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].PricePerItem)</dd>
-                <dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].Quantity)</dt>		<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].Quantity)</dd>
-                <dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].AmountDue)</dt>		<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].AmountDue)</dd>
-            }
-        </dl>
-
-    </div>*@
-
+@section top{
+	<div class="jumbotron">
+		<h1>Invoices</h1>
+	</div>
+}
 <style>
-    .invoice-box {
-        max-width: 800px;
-        margin: auto;
-        padding: 30px;
-        border: 1px solid #eee;
-        box-shadow: 0 0 10px rgba(0, 0, 0, .15);
-        font-size: 16px;
-        line-height: 24px;
-        font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
-        color: #555;
-        background-color: #fefefe;
-        padding-bottom: 90px;
-    }
+	.invoice-container {
+		position: relative;
+	}
 
-        .invoice-box table {
-            width: 100%;
-            line-height: inherit;
-            text-align: left;
-        }
+	.invoice-box {
+		max-width: 800px;
+		margin: auto;
+		padding: 30px;
+		border: 1px solid #eee;
+		box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+		font-size: 16px;
+		line-height: 24px;
+		font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+		color: #555;
+		background-color: #fefefe;
+		padding-bottom: 90px;
+		page-break-after: always;
+		margin-bottom: 15px;
+	}
 
-            .invoice-box table td {
-                padding: 5px;
-                vertical-align: top;
-            }
+		.invoice-box table {
+			width: 100%;
+			line-height: inherit;
+			text-align: left;
+		}
 
-            .invoice-box table tr td:nth-child(2) {
-                text-align: right;
-            }
+			.invoice-box table td {
+				padding: 5px;
+				vertical-align: top;
+			}
 
-            .invoice-box table tr.top table td {
-                padding-bottom: 20px;
-            }
+			.invoice-box table tr td:nth-child(2) {
+				text-align: right;
+			}
 
-                .invoice-box table tr.top table td.title {
-                    font-size: 45px;
-                    line-height: 45px;
-                    color: #333;
-                }
+			.invoice-box table tr.top table td {
+				padding-bottom: 20px;
+			}
 
-            .invoice-box table tr.information table td {
-                padding-bottom: 40px;
-            }
+				.invoice-box table tr.top table td.title {
+					font-size: 45px;
+					line-height: 45px;
+					color: #333;
+				}
 
-            .invoice-box table tr.heading td {
-                background: #eee;
-                border-bottom: 1px solid #ddd;
-                font-weight: bold;
-            }
+			.invoice-box table tr.information table td {
+				padding-bottom: 40px;
+			}
 
-            .invoice-box table tr.details td {
-                padding-bottom: 20px;
-            }
+			.invoice-box table tr.heading td {
+				background: #eee;
+				border-bottom: 1px solid #ddd;
+				font-weight: bold;
+			}
 
-            .invoice-box table tr.item td {
-                border-bottom: 1px solid #eee;
-            }
+			.invoice-box table tr.details td {
+				padding-bottom: 20px;
+			}
 
-            .invoice-box table tr.item.last td {
-                border-bottom: none;
-            }
+			.invoice-box table tr.item td {
+				border-bottom: 1px solid #eee;
+			}
 
-            .invoice-box table tr.total td:nth-child(2) {
-                border-top: 2px solid #eee;
-                font-weight: bold;
-            }
+			.invoice-box table tr.item.last td {
+				border-bottom: none;
+			}
 
-    @@media only screen and (max-width: 600px) {
-        .invoice-box table tr.top table td {
-            width: 100%;
-            display: block;
-            text-align: center;
-        }
+			.invoice-box table tr.total td:nth-child(2) {
+				border-top: 2px solid #eee;
+				font-weight: bold;
+			}
 
-        .invoice-box table tr.information table td {
-            width: 100%;
-            display: block;
-            text-align: center;
-        }
-    }
+	@@media only screen and (max-width: 600px) {
+		.invoice-box table tr.top table td {
+			width: 100%;
+			display: block;
+			text-align: center;
+		}
 
-    .headW {
-        width: 85px;
-        display: inline-block;
-        color: #333;
-        font-size: 14px;
-    }
+		.invoice-box table tr.information table td {
+			width: 100%;
+			display: block;
+			text-align: center;
+		}
+	}
 
-    /** RTL **/
-    .rtl {
-        direction: rtl;
-        font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
-    }
+	.headW {
+		min-width: 85px;
+		display: inline-block;
+		color: #333;
+		font-size: 14px;
+	}
 
-        .rtl table {
-            text-align: right;
-        }
+		.headW.gray {
+			color: rgba(0, 0, 0, 0.5) !important;
+		}
 
-            .rtl table tr td:nth-child(2) {
-                text-align: left;
-            }
+	/** RTL **/
+	.rtl {
+		direction: rtl;
+		font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+	}
 
-    @@media print {
+		.rtl table {
+			text-align: right;
+		}
 
-        .noPrint {
-            display: none !important;
-        }
-    }
+			.rtl table tr td:nth-child(2) {
+				text-align: left;
+			}
 
-    .paid {
-        color: lightgray;
-        transform: rotate(-25deg);
-        font-weight: bold;
-        display: inline-block;
-        font-size: 60px;
-        position: absolute;
-        left: calc(50% - 67px);
-        text-align: center;
-        top: 180px;
-    }
+	@@media print {
+		.invoice-box {
+			border: none;
+		}
 
-    .unpaid {
-        color: darkred;
-        padding: 0px 50px;
-        border: 5px solid darkred;
-        border-radius: 8px;
-        transform: rotate(-25deg);
-        font-weight: bold;
-        display: inline-block;
-        font-size: 40px;
-        position: absolute;
-        left: calc(50% - 115px);
-        text-align: center;
-        top: 170px;
-        opacity: 0.4;
-    }
+		.noPrint {
+			display: none !important;
+		}
+	}
 
-    .negDollar {
-        position: relative;
-        right: -5px;
-    }
+	.paid {
+		color: lightgray;
+		transform: rotate(-25deg);
+		font-weight: bold;
+		display: inline-block;
+		font-size: 60px;
+		position: absolute;
+		left: calc(50% - 67px);
+		text-align: center;
+		top: 80px;
+	}
 
-    .enterCard {
-        float: right;
-        position: relative;
-        top: 30px;
-    }
+	.unpaid {
+		color: darkred;
+		padding: 0px 50px;
+		border: 5px solid darkred;
+		border-radius: 8px;
+		transform: rotate(-25deg);
+		font-weight: bold;
+		display: inline-block;
+		font-size: 40px;
+		position: absolute;
+		left: calc(50% - 115px);
+		text-align: center;
+		top: 70px;
+		opacity: 0.4;
+	}
+
+	.negDollar {
+		position: relative;
+		right: -5px;
+	}
+
+	.enterCard {
+		float: right;
+		position: relative;
+		top: 30px;
+	}
+
+	@@media (min-width: 1048px) {
+		.backBtn {
+			position: fixed;
+			top: 110px;
+			right: 40px;
+		}
+	}
 </style>
 
-<div class="pull-right noPrint" style="margin-right: -16px;">
-    @Html.ActionLink("Back to List", "List")
+<div class="pull-right noPrint backBtn" style="margin-right: -16px;">
+	@Html.ActionLink("Back to list", "List")
 </div>
-@if (!Model.AnythingDue()) {
-    <div class="paid noPrint">PAID</div>
-} else {
-    <div class="unpaid noPrint">UNPAID</div>
+@foreach (var m in Model) {
+	<div class="invoice-container">
+		@if (!m.AnythingDue()) {
+			<div class="paid noPrint">PAID</div>
+		} else {
+			<div class="unpaid noPrint">UNPAID</div>
+		}
+		<div class="invoice-box">
+			<table cellpadding="0" cellspacing="0">
+				<tr class="top">
+					<td colspan="4">
+						<table>
+							<tr>
+								<td class="title">
+									<img src="~/Content/img/TRACTION-TOOLS_large_stacked_2c.png" style="width:100%; max-width:200px;width:200px; margin-left: -20px;margin-top: -20px;">
+								</td>
+								<td>
+									Invoice Id <span class="headW gray">@(m.TransactionId ?? ("" + m.Id)) </span><br>
+									Issued <span class="headW gray">@m.CreateTime.ToShortDateString() </span><br>
+									Due <span class="headW gray">@m.InvoiceDueDate.ToShortDateString() </span>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr class="information">
+					<td colspan="4">
+						<table>
+							<tr>
+								<td>
+									Traction Tools<br>
+									1201 Infinity Ct.<br>
+									Lincoln, NE 68512
+								</td>
+
+								<td>
+									@m.Organization.GetName()<br>
+									@m.EmailAddress
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				@*<tr class="heading">
+						<td>Payment Method</td>
+						<td>Check #</td>
+					</tr>
+					<tr class="details">
+						<td>Check</td><td>1000</td>
+					</tr>*@
+
+				<tr class="heading">
+					<td>Item</td>
+					<td>Rate</td>
+					<td class="alignCenter">Qty.</td>
+					<td class="alignRight">Price</td>
+				</tr>
+				@foreach (var i in m.InvoiceItems) {
+					<tr class="item">
+						<td>@i.Name</td>
+						<td class="@(i.PricePerItem<0?"negDollar":"")">@string.Format("{0:C}", i.PricePerItem)</td>
+						<td class="alignCenter">@i.Quantity</td>
+						<td class="alignRight @(i.AmountDue<0?"negDollar":"")">@string.Format("{0:C}", i.AmountDue)</td>
+					</tr>
+				}
+
+				<tr class="total">
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="alignRight">
+						Total: @string.Format("{0:C}", m.AmountDue)
+					</td>
+				</tr>
+			</table>
+			@if (m.AnythingDue()) {
+				<div class="enterCard btn btn-info noPrint"><a href="/manage/payment">Enter payment information.</a></div>
+			}
+		</div>
+	</div>
+
 }
-<div class="invoice-box">
-    <table cellpadding="0" cellspacing="0">
-        <tr class="top">
-            <td colspan="4">
-                <table>
-                    <tr>
-                        <td class="title">
-                            <img src="~/Content/img/TRACTION-TOOLS_large_stacked_2c.png" style="width:100%; max-width:200px;width:200px; margin-left: -20px;margin-top: -20px;">
-                        </td>
-                        <td>
-                            Invoice # <span class="headW">@(Model.TransactionId ?? ("" + Model.Id)) </span><br>
-                            Created <span class="headW">@Model.CreateTime.ToShortDateString() </span><br>
-                            Due <span class="headW">@Model.InvoiceDueDate.ToShortDateString() </span>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-
-        <tr class="information">
-
-            <td colspan="4">
-                <table>
-                    <tr>
-                        <td>
-                            Traction Tools<br>
-                            1201 Infinity Ct.<br>
-                            Lincoln, NE 68512
-                        </td>
-
-                        <td>
-                            @Model.Organization.GetName()<br>
-                            @Model.EmailAddress
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-
-        @*<tr class="heading">
-                <td>
-                    Payment Method
-                </td>
-
-                <td>
-                    Check #
-                </td>
-            </tr>
-
-            <tr class="details">
-                <td>
-                    Check
-                </td>
-
-                <td>
-                    1000
-                </td>
-            </tr>*@
-
-        <tr class="heading">
-            <td>Item</td>
-            <td>Rate</td>
-            <td class="alignCenter">Qty.</td>
-            <td class="alignRight">Price</td>
-        </tr>
-        @foreach (var i in Model.InvoiceItems) {
-            <tr class="item">
-                <td>@i.Name</td>
-                <td class="@(i.PricePerItem<0?"negDollar":"")">@string.Format("{0:C}", i.PricePerItem)</td>
-                <td class="alignCenter">@i.Quantity</td>
-                <td class="alignRight @(i.AmountDue<0?"negDollar":"")">@string.Format("{0:C}", i.AmountDue)</td>
-            </tr>
-        }
-
-        <tr class="total">
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="alignRight">
-                Total: @string.Format("{0:C}", Model.AmountDue)
-            </td>
-        </tr>
-    </table>
-    @if (Model.AnythingDue()) {
-        <div class="enterCard btn btn-info noPrint"><a href="/manage/payment">Enter payment information.</a></div>
-    }
-</div>

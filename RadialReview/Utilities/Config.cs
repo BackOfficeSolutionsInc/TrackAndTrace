@@ -51,6 +51,15 @@ namespace RadialReview.Utilities {
 			Sqlite = 2
 		}
 
+		public static string GetCookieDomains() {
+			if (IsLocal())
+				return null;
+			var res = GetAppSetting("AdditionalCookieDomains", null);
+			if (string.IsNullOrWhiteSpace(res))
+				return null;
+			return res;
+		}
+
 		public static DbType GetDatabaseType() {
 			switch (GetEnv()) {
 				case Env.local_test_sqlite:
@@ -122,6 +131,24 @@ namespace RadialReview.Utilities {
 				public long CoachThatReferred { get; internal set; }
 			}
 
+		}
+
+		public static string GetHangfireConnectionString() {
+			switch (GetEnv()) {
+				case Env.invalid:
+					break;
+				case Env.local_sqlite:
+					break;
+				case Env.local_mysql:
+					break;
+				case Env.local_test_sqlite:
+					break;
+				case Env.production:
+					return System.Configuration.ConfigurationManager.ConnectionStrings["ProductionHangfireConnection"].ConnectionString;					
+				default:
+					break;
+			}
+			return System.Configuration.ConfigurationManager.ConnectionStrings["LocalHangfireConnection"].ConnectionString;
 		}
 
 		[Obsolete("Must remove when ready for production")]
@@ -253,7 +280,7 @@ namespace RadialReview.Utilities {
 
 			switch (env) {
 				case Env.local_test_sqlite:
-                    return true;
+					return true;
 				case Env.local_mysql:
 					goto case Env.local_sqlite;
 				case Env.local_sqlite: {
@@ -433,7 +460,7 @@ namespace RadialReview.Utilities {
 		}
 
 		public static string FixEmail(string email) {
-			return Config.IsLocal() ? "clay.upton+test_" + (email??"").Replace("@", "_at_") + "@mytractiontools.com" : email;
+			return Config.IsLocal() ? "clay.upton+test_" + (email ?? "").Replace("@", "_at_") + "@mytractiontools.com" : email;
 		}
 
 		public static Env GetEnv() {
@@ -465,7 +492,7 @@ namespace RadialReview.Utilities {
 		}
 
 		public static bool DisableMinification() {
-			
+
 			switch (GetEnv()) {
 				case Env.local_sqlite:
 					return GetAppSetting("DisableMinification", "False").ToBoolean();

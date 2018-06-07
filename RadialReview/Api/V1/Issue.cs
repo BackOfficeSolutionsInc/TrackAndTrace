@@ -10,11 +10,12 @@ using RadialReview.Models.Issues;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations;
+using static RadialReview.Accessors.IssuesAccessor;
 
 namespace RadialReview.Api.V1 {
 	[RoutePrefix("api/v1")]
 	public class IssuesController : BaseApiController {
-		
+
 		public class CreateIssueModel {
 			///<summary>
 			///Level 10 meeting ID
@@ -86,6 +87,8 @@ namespace RadialReview.Api.V1 {
 			return list.Select(x => new AngularIssue(x));
 		}
 
+
+
 		public class UpdateIssueModel {
 			///<summary>
 			///Title for the issue
@@ -95,6 +98,11 @@ namespace RadialReview.Api.V1 {
 			///Owner's user ID
 			///</summary>
 			public long? ownerId { get; set; }
+
+			/// <summary>
+			/// The compartment this issue belongs to. Short Term = Level 10, Long Term = V/TO 
+			/// </summary>
+			public IssueCompartment? compartment { get; set; }
 		}
 
 		/// <summary>
@@ -105,7 +113,7 @@ namespace RadialReview.Api.V1 {
 		[Route("issues/{ISSUE_ID}")]
 		[HttpPut]
 		public async Task EditIssue(long ISSUE_ID, [FromBody]UpdateIssueModel body) {
-			await IssuesAccessor.EditIssue(GetUser(), ISSUE_ID, message: body.title, owner: body.ownerId);
+			await IssuesAccessor.EditIssue(GetUser(), ISSUE_ID, message: body.title, owner: body.ownerId, compartment:body.compartment);
 		}
 	}
 }

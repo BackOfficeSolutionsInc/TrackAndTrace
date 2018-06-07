@@ -23,6 +23,7 @@ using RadialReview.Utilities;
 using RadialReview.Hooks;
 using RadialReview.Variables;
 using NHibernate;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Controllers {
 	[Authorize]
@@ -166,7 +167,7 @@ namespace RadialReview.Controllers {
 			var userOrgs = GetUserOrganizations(null);
 			ViewBag.Admin = GetUserModel().IsRadialAdmin;
 			ViewBag.ReturnUrl = ReturnUrl;
-			return View(userOrgs.Where(x=>x.DeleteTime==null && x.Organization.DeleteTime==null && x.Organization.AccountType != AccountType.Cancelled).ToList());
+			return View(userOrgs.Where(x => x.DeleteTime == null && x.Organization.DeleteTime == null && x.Organization.AccountType != AccountType.Cancelled).ToList());
 		}
 
 		[Access(AccessLevel.Any)]
@@ -609,13 +610,37 @@ namespace RadialReview.Controllers {
 		}
 
 
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Consent() {
+			var u = GetUser();
+			ViewBag.Message = ConsentAccessor.GetConsentMessage(u);
+			return View();
+		}
+
+	
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Consent(FormCollection form) {
+			var u = GetUser();
+			if (form["btn"] == "no") {
+				ConsentAccessor.ApplyConsent(u,false);
+				return LogOff();
+			}
+			ConsentAccessor.ApplyConsent(u,true);
+			return RedirectToAction("Index", "Home");
+		}
+
+		
+
 		public class AppVersionVM {
 			public string VersionId { get; set; }
 			public bool ShowMessage { get; set; }
 			public string Message { get; set; }
-            public string MessageType { get; set; }
-            public string MessageId { get; set; }
-        }
+			public string MessageType { get; set; }
+			public string MessageId { get; set; }
+		}
 
 		[Access(AccessLevel.Any)]
 		public async Task<JsonResult> AppVersion(string versionId = null, string deviceId = null, string deviceType = null, string deviceVersion = null, string userId = null) {

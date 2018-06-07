@@ -266,7 +266,7 @@ namespace RadialReview.Controllers {
 									for (var i = 0; i < dates.Count; i++) {
 										var week = TimingUtility.GetWeekSinceEpoch(dates[i].AddDays(7).AddDays(6).StartOfWeek(DayOfWeek.Sunday))+weekShift;
 										var score = scoresFound[i];
-										await ScorecardAccessor.UpdateScore(OrderedSession.Indifferent(s), perms, measurable.Id, TimingUtility.GetDateSinceEpoch(week), score);
+										await ScorecardAccessor.UpdateScore_Unordered(s, perms, measurable.Id, TimingUtility.GetDateSinceEpoch(week), score);
 										//await L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
 									}
 								}

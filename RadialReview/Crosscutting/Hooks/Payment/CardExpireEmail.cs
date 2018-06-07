@@ -15,49 +15,52 @@ using RadialReview.Accessors;
 using RadialReview.Variables;
 
 namespace RadialReview.Crosscutting.Hooks.Payment {
-    public class CardExpireEmail : IPaymentHook {
-        public bool CanRunRemotely() {
-            return false;
-        }
+	public class CardExpireEmail : IPaymentHook {
+		public bool CanRunRemotely() {
+			return false;
+		}
 
-        public async Task CardExpiresSoon(ISession s, PaymentSpringsToken token) {
-            var org = s.Get<OrganizationModel>(token.OrganizationId);
-            var admins  = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null && x.ManagingOrganization == true && x.Id == token.OrganizationId).List().ToList();
-            var emails = new List<Mail>();
-            foreach (var a in admins) {
-                var mail = Mail
-                    .To("CardExpire", a.GetEmail())
-                    .SubjectPlainText("[Action Required] Traction® Tools - Update Payment Information")
-                    .Body(EmailStrings.UpdateCard_Body, Config.ProductName(), Config.BaseUrl(null));
-                mail.ReplyToAddress = s.GetSettingOrDefault("SupportEmail", "client-success@mytractiontools.com");
-                mail.ReplyToName = "Traction Tools Support";
-            }
-            await Emailer.SendEmails(emails);
-        }
+		public async Task CardExpiresSoon(ISession s, PaymentSpringsToken token) {
+			var org = s.Get<OrganizationModel>(token.OrganizationId);
+			var admins = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null && x.ManagingOrganization == true && x.Id == token.OrganizationId).List().ToList();
+			var emails = new List<Mail>();
 
-        public async Task FirstSuccessfulCharge(ISession s, PaymentSpringsToken token) {
-            //noop
-        }
+			var subject = s.GetSettingOrDefault(Variable.Names.UPDATE_CARD_SUBJECT, "[Action Required] Traction® Tools - Update Payment Information");
 
-        public HookPriority GetHookPriority() {
-            //noop
-            return HookPriority.Low;
-        }
+			foreach (var a in admins) {
+				var mail = Mail
+					.To("CardExpire", a.GetEmail())
+					.SubjectPlainText(subject)
+					.Body(EmailStrings.UpdateCard_Body, Config.ProductName(), Config.BaseUrl(null));
+				mail.ReplyToAddress = s.GetSettingOrDefault("SupportEmail", "client-success@mytractiontools.com");
+				mail.ReplyToName = "Traction Tools Support";
+			}
+			await Emailer.SendEmails(emails);
+		}
 
-        public async Task PaymentFailedCaptured(ISession s, long orgId, DateTime executeTime, PaymentException e,bool firstAttempt) {
-            //noop
-        }
+		public async Task FirstSuccessfulCharge(ISession s, PaymentSpringsToken token) {
+			//noop
+		}
 
-        public async Task PaymentFailedUncaptured(ISession s, long orgId, DateTime executeTime, string errorMessage, bool firstAttempt) {
-            //noop
-        }
+		public HookPriority GetHookPriority() {
+			//noop
+			return HookPriority.Low;
+		}
 
-        public async Task SuccessfulCharge(ISession s, PaymentSpringsToken token) {
-            //noop
-        }
+		public async Task PaymentFailedCaptured(ISession s, long orgId, DateTime executeTime, PaymentException e, bool firstAttempt) {
+			//noop
+		}
 
-        public async Task UpdateCard(ISession s, PaymentSpringsToken token) {
-            //noop
-        }
-    }
+		public async Task PaymentFailedUncaptured(ISession s, long orgId, DateTime executeTime, string errorMessage, bool firstAttempt) {
+			//noop
+		}
+
+		public async Task SuccessfulCharge(ISession s, PaymentSpringsToken token) {
+			//noop
+		}
+
+		public async Task UpdateCard(ISession s, PaymentSpringsToken token) {
+			//noop
+		}
+	}
 }

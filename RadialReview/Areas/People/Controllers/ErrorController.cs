@@ -5,10 +5,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace RadialReview.Areas.People.Controllers
-{
-    public class ErrorController : RadialReview.Controllers.ErrorController
-    {
+namespace RadialReview.Areas.People.Controllers {
+	public class ErrorController : RadialReview.Controllers.ErrorController {
 		//// GET: People/Main
 		//[Access(AccessLevel.UserOrganization)]
 		//public ActionResult Index() {

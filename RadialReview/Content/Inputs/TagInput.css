@@ -63,8 +63,9 @@
 .taginput .token-editor[contenteditable=true] .token > span {
   background: darkgray;
   color: #fff;
+  margin: 1px;
 }
-.taginput .token-editor[contenteditable=true] .token > span:after {
+.taginput .token-editor[contenteditable=true] .token .offset {
   content: "\25BE";
   top: 1px;
   position: relative;
@@ -72,7 +73,7 @@
   color: lightgrey;
   cursor: pointer;
 }
-.taginput .token-editor[contenteditable=true] .token > span:after:hover {
+.taginput .token-editor[contenteditable=true] .token .offset:hover {
   color: white;
 }
 .taginput .token-editor .token:focus {

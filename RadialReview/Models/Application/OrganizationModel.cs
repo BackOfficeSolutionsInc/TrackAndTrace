@@ -41,11 +41,11 @@ namespace RadialReview.Models {
 	}
 
 	public enum CoachType {
-		Unknown=0,
-		CertifiedOrProfessionalEOSi=1,
-		BaseCamp=2,
-		BusinessCoach=3,
-		Other=4,		
+		Unknown = 0,
+		CertifiedOrProfessionalEOSi = 1,
+		BaseCamp = 2,
+		BusinessCoach = 3,
+		Other = 4,
 	}
 
 	public enum HasCoach {
@@ -82,7 +82,7 @@ namespace RadialReview.Models {
 		public virtual AccountType AccountType { get; set; }
 
 		public virtual bool StartDeactivated { get; set; }
-		
+
 		public virtual long? AssignedTo { get; set; }
 		public virtual string ReferralSource { get; set; }
 
@@ -162,14 +162,14 @@ namespace RadialReview.Models {
 			public virtual bool EmployeesCanEditSelf { get; set; }
 			public virtual bool OnlySeeRocksAndScorecardBelowYou { get; set; }
 
-            public virtual bool AllowAddClient { get; set; }
+			public virtual bool AllowAddClient { get; set; }
 
-			
+
 			public virtual bool EnableL10 { get; set; }
 			public virtual bool EnableReview { get; set; }
-            public virtual bool EnablePeople { get; set; }
-            public virtual bool EnableCoreProcess { get; set; }
-            public virtual bool DisableAC { get; set; }
+			public virtual bool EnablePeople { get; set; }
+			public virtual bool EnableCoreProcess { get; set; }
+			public virtual bool DisableAC { get; set; }
 
 			public virtual int? DefaultSendTodoTime { get; set; }
 
@@ -243,7 +243,7 @@ namespace RadialReview.Models {
 					Map(x => x.ManagersCanEditSelf);
 					Map(x => x.EmployeesCanEditSelf);
 
-                    Map(x => x.AllowAddClient);
+					Map(x => x.AllowAddClient);
 
 					Map(x => x.EmployeesCanCreateSurvey);
 					Map(x => x.ManagersCanCreateSurvey);
@@ -252,9 +252,9 @@ namespace RadialReview.Models {
 
 					Map(x => x.OnlySeeRocksAndScorecardBelowYou);
 
-                    Map(x => x.EnableCoreProcess);
-                    Map(x => x.EnableL10);
-                    Map(x => x.EnableReview);
+					Map(x => x.EnableCoreProcess);
+					Map(x => x.EnableL10);
+					Map(x => x.EnableReview);
 					Map(x => x.EnableSurvey);
 					Map(x => x.EnablePeople);
 
@@ -302,7 +302,7 @@ namespace RadialReview.Models {
 			}
 		}
 
-		
+
 		public virtual long? PrimaryContactUserId { get; set; }
 
 		/// <summary>
@@ -363,6 +363,7 @@ namespace RadialReview.Models {
 
 		[Display(Name = "managerCanAddQuestions", ResourceType = typeof(DisplayNameStrings))]
 		public virtual Boolean ManagersCanEdit { get; set; }
+		[Obsolete("Do not use, use PermItem (EditDeleteUserDataForOrganization) instead.")]
 		public virtual Boolean ManagersCanRemoveUsers { get; set; }
 		public virtual bool StrictHierarchy { get; set; }
 

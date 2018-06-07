@@ -13,57 +13,57 @@ using RadialReview.Crosscutting.Flags;
 using RadialReview.Models;
 
 namespace RadialReview.Crosscutting.Hooks.Payment {
-    public class SetDelinquentFlag : IPaymentHook, IInvoiceHook {
+	public class SetDelinquentFlag : IPaymentHook, IInvoiceHook {
 
-        public async Task PaymentFailedCaptured(ISession s, long orgId, DateTime executeTime, PaymentException e, bool firstAttempt) {
-            await OrganizationAccessor.AddFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
-        }
+		public async Task PaymentFailedCaptured(ISession s, long orgId, DateTime executeTime, PaymentException e, bool firstAttempt) {
+			await OrganizationAccessor.AddFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
+		}
 
-        public async Task PaymentFailedUncaptured(ISession s, long orgId, DateTime executeTime, string errorMessage, bool firstAttempt) {
-            await OrganizationAccessor.AddFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
-        }
+		public async Task PaymentFailedUncaptured(ISession s, long orgId, DateTime executeTime, string errorMessage, bool firstAttempt) {
+			await OrganizationAccessor.AddFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
+		}
 
-        public async Task<bool> UpdateFlag(ISession s, long orgId) {
-            var allInvoice = s.QueryOver<InvoiceModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List().ToList();
-            if (allInvoice.All(x => !x.AnythingDue())) {
-                await OrganizationAccessor.RemoveFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
-                return false;
-            }else {             
-                await OrganizationAccessor.AddFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
-                return true;
-            }
-        }
+		public async Task<bool> UpdateFlag(ISession s, long orgId) {
+			var allInvoice = s.QueryOver<InvoiceModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List().ToList();
+			if (allInvoice.All(x => !x.AnythingDue())) {
+				await OrganizationAccessor.RemoveFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
+				return false;
+			} else {
+				await OrganizationAccessor.AddFlag(s, PermissionsUtility.CreateAdmin(s), orgId, OrganizationFlagType.Delinquent);
+				return true;
+			}
+		}
 
-        public async Task SuccessfulCharge(ISession s, PaymentSpringsToken token) {
-            await UpdateFlag(s, token.OrganizationId);
-        }
+		public async Task SuccessfulCharge(ISession s, PaymentSpringsToken token) {
+			await UpdateFlag(s, token.OrganizationId);
+		}
 
-        public async Task UpdateInvoice(ISession s, InvoiceModel invoice, IInvoiceUpdates updates) {
-            await UpdateFlag(s, invoice.Organization.Id);
-        }
+		public async Task UpdateInvoice(ISession s, InvoiceModel invoice, IInvoiceUpdates updates) {
+			await UpdateFlag(s, invoice.Organization.Id);
+		}
 
-        public bool CanRunRemotely() {
-            return false;
-        }
+		public bool CanRunRemotely() {
+			return false;
+		}
 
-        public HookPriority GetHookPriority() {
-            return HookPriority.Low;
-        }
-        #region noop
-        public async Task CardExpiresSoon(ISession s, PaymentSpringsToken token) {
-            //noop
-        }
+		public HookPriority GetHookPriority() {
+			return HookPriority.Low;
+		}
+		#region noop
+		public async Task CardExpiresSoon(ISession s, PaymentSpringsToken token) {
+			//noop
+		}
 
-        public async Task FirstSuccessfulCharge(ISession s, PaymentSpringsToken token) {
-            //noop
-        }
-        public async Task UpdateCard(ISession s, PaymentSpringsToken token) {
-            //noop
-        }
+		public async Task FirstSuccessfulCharge(ISession s, PaymentSpringsToken token) {
+			//noop
+		}
+		public async Task UpdateCard(ISession s, PaymentSpringsToken token) {
+			//noop
+		}
 
-        public async Task InvoiceCreated(ISession s, InvoiceModel invoice) {
-            //noop
-        }
-        #endregion
-    }
+		public async Task InvoiceCreated(ISession s, InvoiceModel invoice) {
+			//noop
+		}
+		#endregion
+	}
 }

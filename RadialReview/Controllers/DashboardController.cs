@@ -36,6 +36,7 @@ using RadialReview.Models.Angular.Headlines;
 using RadialReview.Models.Enums;
 using static RadialReview.Accessors.DashboardAccessor;
 using RadialReview.Models;
+using NHibernate;
 
 namespace RadialReview.Controllers {
 	[SessionState(SessionStateBehavior.ReadOnly)]
@@ -52,7 +53,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[OutputCache(NoStore = true, Duration = 0)]
 		public async Task<JsonResult> Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false, long? dashboardId = null) {
-												
+
 			//Response.AddHeader("Content-Encoding", "gzip");
 			var userId = id;
 			Dashboard dash;
@@ -61,9 +62,9 @@ namespace RadialReview.Controllers {
 			else
 				dash = DashboardAccessor.GetDashboard(GetUser(), dashboardId.Value);
 
-            List<TileModel> tiles = new List<TileModel>();
-            if (dash!=null)
-                tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
+			List<TileModel> tiles = new List<TileModel>();
+			if (dash != null)
+				tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
 			ListDataVM output = await GetTileData(GetUser(), id, userId, tiles, completed, name, start, end, fullScorecard);
 
 			return Json(output, JsonRequestBehavior.AllowGet);
@@ -104,7 +105,7 @@ namespace RadialReview.Controllers {
 				try {
 					//Todos
 					var todos = TodoAccessor.GetMyTodosAndMilestones(caller, dashboardId, !completed, dayDateRange/*dateRange*/, includeTodos: true, includeMilestones: false);//.Select(x => new AngularTodo(x));
-					var m = _UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
+					var m = UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
 					output.Todos = todos.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
 				} catch (Exception e) {
 					ProcessDeadTile(e);
@@ -114,7 +115,7 @@ namespace RadialReview.Controllers {
 				try {
 					//Milestones
 					var milestones = TodoAccessor.GetMyTodosAndMilestones(caller, dashboardId, !completed, nowDateRange, includeTodos: false, includeMilestones: true);//.Select(x => new AngularTodo(x));
-					var m = _UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
+					var m = UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
 					output.Milestones = milestones.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
 				} catch (Exception e) {
 					ProcessDeadTile(e);
@@ -127,6 +128,9 @@ namespace RadialReview.Controllers {
 				startEnd += "&start=" + startRange.ToJsMs();//start;
 															//if (end != null)
 				startEnd += "&end=" + endRange.ToJsMs();//end;
+
+				output.Scorecard = await ScorecardAccessor.GetAngularScorecardForUser(caller, caller.Id, dateRange,true,true,null,false);
+				output.Scorecard.Weeks = null;
 
 				output.LoadUrls.Add(new AngularString(-15291127 * userId, $"/DashboardData/UserScorecardData/{dashboardId}?userId={userId}&completed={completed}&fullScorecard={fullScorecard}" + startEnd));
 			}
@@ -181,7 +185,7 @@ namespace RadialReview.Controllers {
 			}
 
 
-			
+
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -434,7 +438,7 @@ namespace RadialReview.Controllers {
 			public DashboardVM() {
 				L10s = new List<L10>();
 				Dashboards = new List<SelectListItem>();
-			}			
+			}
 		}
 		public class TileVM {
 			public int w { get; set; }
@@ -443,6 +447,26 @@ namespace RadialReview.Controllers {
 			public int y { get; set; }
 			public long id { get; set; }
 		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult TestTile() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var t = s.Get<TileModel>(1L);
+					return Json(t, JsonRequestBehavior.AllowGet);
+				}
+			}
+		}
+		[Access(AccessLevel.Radial)]
+		public JsonResult TestUser() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					//var t = s.Get<TileModel>(1L);
+					return Json(GetUser(), JsonRequestBehavior.AllowGet);
+				}
+			}
+		}
+
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Tiles(long id) {
 			var dashboardId = id;
@@ -514,7 +538,7 @@ namespace RadialReview.Controllers {
 			return View(dashboard);
 		}
 
-		private DashboardVM GenerateDashboardViewModel(long? id, bool useDefault, List<TileModel> tiles,string workspaceName = null) {
+		private DashboardVM GenerateDashboardViewModel(long? id, bool useDefault, List<TileModel> tiles, string workspaceName = null) {
 			var l10s = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, onlyDashboardRecurrences: true);
 			var notes = L10Accessor.GetVisibleL10Notes_Unsafe(l10s.Select(x => x.Id).ToList());
 

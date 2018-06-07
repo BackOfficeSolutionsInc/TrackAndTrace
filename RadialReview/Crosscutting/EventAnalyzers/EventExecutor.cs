@@ -45,7 +45,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers {
 		//	return _Singleton;
 		//}
 
-		
+
 
 
 		//public static async Task Execute(ISession s,long orgId, List<IEventAnalyzer> analyzers) {
@@ -83,10 +83,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers {
 		//				if (a.IsEnabled(settings)) {
 		//					var shouldTrigger = await EventProcessor.ShouldTrigger(settings, a);
 
-  //                          if (shouldTrigger) {
-  //                              anyExecuted = true;
-  //                              await HooksRegistry.Each<IEventHook>((ses, x) => x.HandleEventTriggered(ses, a, settings));
-  //                          }
+		//                          if (shouldTrigger) {
+		//                              anyExecuted = true;
+		//                              await HooksRegistry.Each<IEventHook>((ses, x) => x.HandleEventTriggered(ses, a, settings));
+		//                          }
 		//					//Run the analyzer
 		//				}
 		//			//}

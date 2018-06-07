@@ -150,7 +150,7 @@
 				}
 			}
 			if (value.getDate !== undefined) {
-				console.warn("timezone not applied");
+				//console.warn("timezone not applied");
 				return new Date(value.getTime());
 			}
 		}

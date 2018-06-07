@@ -27,12 +27,12 @@ angular.module('people').component('surveyContainer', {
 			r.sendUpdate(a);
 		};
 
-        $scope.showSurvey = function (survey) {
-            for (var i = 0; i < survey.Sections.length; i++) {
-                if (survey.Sections[i].Items.length > 0)
-		            return true;
-		    }
-		    return false;
+		$scope.showSurvey = function (survey) {
+			for (var i = 0; i < survey.Sections.length; i++) {
+				if (survey.Sections[i].Items.length > 0)
+					return true;
+			}
+			return false;
 		}
 
 		var sectionNames = {};
@@ -48,9 +48,9 @@ angular.module('people').component('surveyContainer', {
 			return "survey-" + survey.Id + builder;
 		}
 		$scope.anchorShift = function (titlebar) {
-		    var s = -90;
-		    if (titlebar)
-		        s = -48;
+			var s = -90;
+			if (titlebar)
+				s = -48;
 			$timeout(function () {
 				$window.scrollTo($window.scrollX, $window.scrollY + s);
 			}, 1);
@@ -79,11 +79,11 @@ angular.module('people').component('surveyContainer', {
 		};
 
 		$scope.showSurvey = function () {
-		    for (var i = 0; i < $scope.model.Sections.length; i++) {
-		        if ($scope.model.Sections[i].Items.length > 0)
-		            return true;
-		    }
-		    return false;
+			for (var i = 0; i < $scope.model.Sections.length; i++) {
+				if ($scope.model.Sections[i].Items.length > 0)
+					return true;
+			}
+			return false;
 		}
 
 	}]

@@ -121,7 +121,6 @@ namespace RadialReview.Controllers {
 			return Content("done " + DateTime.UtcNow.ToJsMs());
 		}
 
-
 		[Access(AccessLevel.Radial)]
 		public ActionResult Signups(int days = 14) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -672,7 +671,45 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-		[Access(AccessLevel.Radial)]
+
+		[Access(AccessLevel.RadialData)]
+		public ActionResult AllDeleted() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					UserModel userAlias = null;
+					TempUserModel tempUserAlias = null;
+					OrganizationModel orgAlias = null;
+
+					var allDeleted = s.QueryOver<UserOrganizationModel>()
+						.Left.JoinAlias(x => x.User, () => userAlias)
+						.Left.JoinAlias(x => x.TempUser, () => tempUserAlias)
+						.Left.JoinAlias(x => x.Organization, () => orgAlias)
+						.Where(x => x.DeleteTime != null || orgAlias.DeleteTime !=null )
+							.Select(x => x.Id, x => x.DeleteTime, x=>userAlias.UserName, x => tempUserAlias.Email, x => orgAlias.DeleteTime)
+						.List<object[]>().ToList();
+
+					var csv = new Csv();
+					csv.Title = "UserId";
+					foreach (var d in allDeleted) {
+						var userName = (string)d[2];
+						if (userName == null)
+							userName = (string)d[3];
+
+						csv.Add("" + (long)d[0], "UserEmail", "" + userName);
+
+						var deleteTime = (DateTime?)d[1];
+						if (deleteTime == null)
+							deleteTime = (DateTime?)d[4];
+
+						csv.Add("" + (long)d[0], "DeleteTime", "" + deleteTime);
+					}
+
+					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllDeletedUsers.csv");
+				}
+			}
+		}
+
+		[Access(AccessLevel.RadialData)]
 		public ActionResult AllEmails() {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -681,12 +718,31 @@ namespace RadialReview.Controllers {
 
 					var allUsersF = s.QueryOver<UserLookup>().Where(x => x.HasJoined).Future();
 
-					var allOrgsF = s.QueryOver<OrganizationModel>().JoinAlias(x=>x.PaymentPlan,()=>paymentPlanAlias).Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType,x=>paymentPlanAlias.FreeUntil).Future<object[]>();
+					var allOrgsF = s.QueryOver<OrganizationModel>().JoinAlias(x => x.PaymentPlan, () => paymentPlanAlias).Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType, x => paymentPlanAlias.FreeUntil).Future<object[]>();
 					var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
 
+
+
+					UserModel uAlias = null;
+					TempUserModel tempUserAlias = null;
+					OrganizationModel orgAlias = null;
+					var allDeletedQ = s.QueryOver<UserOrganizationModel>()
+						//.Left.JoinAlias(x => x.User, () => uAlias)
+						//.Left.JoinAlias(x => x.TempUser, () => tempUserAlias)
+						.Left.JoinAlias(x => x.Organization, () => orgAlias)
+						.Where(x => x.DeleteTime != null || orgAlias.DeleteTime != null)
+							.Select(x => x.Id, x => x.DeleteTime,/*x => uAlias.UserName, x => tempUserAlias.Email,*/ x => orgAlias.DeleteTime)
+						.Future<object[]>()
+						.Select(x => new {
+							Id = (long)x[0],
+							DeleteTime = ((DateTime?)x[1] ?? (DateTime?)x[2]),
+							//Email = ((string)x[2]) ?? ((string)x[3]),
+						});
+
+
 					var meetingsByCompanyF = s.QueryOver<L10Meeting>()
-						.Where(x=>x.CompleteTime!=null && x.Preview==false)
-						.Select(x=>x.OrganizationId, x => x.StartTime, x=>x.CompleteTime)
+						.Where(x => x.CompleteTime != null && x.Preview == false)
+						.Select(x => x.OrganizationId, x => x.StartTime, x => x.CompleteTime)
 						.Future<object[]>()
 						.Select(x => new {
 							OrgId = (long)x[0],
@@ -696,13 +752,13 @@ namespace RadialReview.Controllers {
 
 					var paymentTokens = s.QueryOver<PaymentSpringsToken>()
 						.Where(x => x.Active == true && x.DeleteTime == null)
-						.Select(x=>x.OrganizationId ,x=>x.MonthExpire,x=>x.YearExpire,x=>x.TokenType)
+						.Select(x => x.OrganizationId, x => x.MonthExpire, x => x.YearExpire, x => x.TokenType)
 						.Future<object[]>()
-						.Select(x=> new {
-							OrgId = (long) x[0],
+						.Select(x => new {
+							OrgId = (long)x[0],
 							MonthExpire = (int)x[1],
 							YearExpire = (int)x[2],
-							TokenType = (PaymentSpringTokenType)x[3],
+							TokenType = x[3] == null ? PaymentSpringTokenType.CreditCard : (PaymentSpringTokenType)x[3],
 						});
 
 					var allUserNames = s.QueryOver<UserModel>()
@@ -714,6 +770,7 @@ namespace RadialReview.Controllers {
 							LN = (string)x[2],
 							Deleted = ((DateTime?)x[3]) != null
 						});
+
 
 					var chartsF = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Select(x => x.RootId).Future<long>();
 					var nodesF = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).Select(
@@ -741,10 +798,11 @@ namespace RadialReview.Controllers {
 
 					}).ToDictionary(x => x.Id, x => x);
 
+
 					var items = allUsers.Select(x => {
 						var org = allOrgs.GetOrDefault(x.OrganizationId, null);
-						if (org.DeleteTime != null)
-							return null;
+						//if (org.DeleteTime != null)
+						//	return null;
 						return new AllUserEmail() {
 							UserName = x.Name,
 							UserEmail = x.Email,
@@ -803,16 +861,18 @@ namespace RadialReview.Controllers {
 					var userFlags = userFlagsF.GroupBy(x => x.UserId).ToDictionary(x => x.Key, x => x.ToList());
 
 					var meetingsByCompany = meetingsByCompanyF.GroupBy(x => x.OrgId).ToDictionary(x => x.Key, x => x.ToList());
-					var meetingsByCompanyInCriteria = meetingsByCompanyF.GroupBy(x => x.OrgId).ToDictionary(x => x.Key, x => x.Count(y=> {
+					var meetingsByCompanyInCriteria = meetingsByCompanyF.GroupBy(x => x.OrgId).ToDictionary(x => x.Key, x => x.Count(y => {
 						var duration = (y.CompleteTime - y.StartTime).Value.TotalMinutes;
 						return duration >= 30 && duration <= 60 * 3;
 					}));
-					var lastMeetingsDateByCompany = meetingsByCompanyF.GroupBy(x => x.OrgId).ToDefaultDictionary(x => x.Key, x => x.Max(y=>y.StartTime).Value.ToShortDateString(),x=>"");
+					var lastMeetingsDateByCompany = meetingsByCompanyF.GroupBy(x => x.OrgId).ToDefaultDictionary(x => x.Key, x => x.Max(y => y.StartTime).Value.ToShortDateString(), x => "");
 
 
 					var hasPaymentLookupByCompany = paymentTokens.GroupBy(x => x.OrgId).ToDefaultDictionary(x => x.Key, x => true, x => false);
 					var paymentTypeLookupByCompany = paymentTokens.GroupBy(x => x.OrgId).ToDefaultDictionary(x => x.Key, x => "" + x.First().TokenType, x => "None");
-					var paymentExpireLookupByCompany = paymentTokens.GroupBy(x => x.OrgId).ToDefaultDictionary(x => x.Key, x => "" + x.First().MonthExpire+"/"+x.First().YearExpire, x => "");
+					var paymentExpireLookupByCompany = paymentTokens.GroupBy(x => x.OrgId).ToDefaultDictionary(x => x.Key, x => "" + x.First().MonthExpire + "/" + x.First().YearExpire, x => "");
+					var allDeletedLookup = allDeletedQ.ToDefaultDictionary(x => x.Id, x => x.DeleteTime,x=>null);
+
 
 					var csv = new Csv();
 					csv.Title = "UserId";
@@ -825,6 +885,13 @@ namespace RadialReview.Controllers {
 
 						var of = orgFlags.GetOrAddDefault(o.OrgId, (x) => new List<OrganizationFlag>()).Select(x => x.FlagType).ToArray();
 						var uf = userFlags.GetOrAddDefault(o.UserId, (x) => new List<UserRole>()).Select(x => x.RoleType).ToArray();
+						
+						var ofStrings = of.Select(x => "" + x).ToList();
+						ofStrings.Add(o.AccountType);
+
+
+						var deleteTime = o.UserDeleteTime ?? allDeletedLookup[o.UserId];
+
 
 						//csv.Add("" + o.UserId, "UserName", o.UserName);
 						csv.Add("" + o.UserId, "UserName", o.UserName);
@@ -836,16 +903,16 @@ namespace RadialReview.Controllers {
 						csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
 						csv.Add("" + o.UserId, "LastLogin", "" + o.LastLogin);
 						csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
-						csv.Add("" + o.UserId, "UserDeleteTime", "" + o.UserDeleteTime);
+						csv.Add("" + o.UserId, "UserDeleteTime", "" + deleteTime);
 						csv.Add("" + o.UserId, "AccountType", o.AccountType);
 						csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
-						csv.Add("" + o.UserId, "UserDeleteTime", "" + o.OrgDeleteTime);
+						csv.Add("" + o.UserId, "OrgDeleteTime", "" + o.OrgDeleteTime);
 						csv.Add("" + o.UserId, "LeadershipTeam_Guess", "" + leadershipMembers[o.UserId]);
 						csv.Add("" + o.UserId, "LeadershipTeam_ClientMarked", "" + uf.Any(x => x == UserRoleType.LeadershipTeamMember));
 						csv.Add("" + o.UserId, "UserType_AccountContact", "" + uf.Any(x => x == UserRoleType.AccountContact));
 						csv.Add("" + o.UserId, "UserType_Placeholder", "" + uf.Any(x => x == UserRoleType.PlaceholderOnly));
 						csv.Add("" + o.UserId, "Delinquent", "" + of.Any(x => x == OrganizationFlagType.Delinquent));
-						csv.Add("" + o.UserId, "OrgFlags", string.Join("|", of));
+						csv.Add("" + o.UserId, "OrgFlags", string.Join("|", ofStrings));
 						csv.Add("" + o.UserId, "UserFlags", string.Join("|", uf));
 						csv.Add("" + o.UserId, "TT_Blacklist", "" + uf.Any(x => x == UserRoleType.EmailBlackList));
 						csv.Add("" + o.UserId, "IsAdmin", "" + o.IsAdmin);
@@ -855,7 +922,7 @@ namespace RadialReview.Controllers {
 						csv.Add("" + o.UserId, "PaymentType", "" + paymentTypeLookupByCompany[o.OrgId]);
 						csv.Add("" + o.UserId, "PaymentExpire", "" + paymentExpireLookupByCompany[o.OrgId]);
 						csv.Add("" + o.UserId, "TrialExpire", (hasPaymentLookupByCompany[o.OrgId] ? "" : ("" + o.TrialExpire.NotNull(z => z.Value.ToShortDateString()))));
-						csv.Add("" + o.UserId, "LastMeetingTime", ""+lastMeetingsDateByCompany[o.OrgId] );
+						csv.Add("" + o.UserId, "LastMeetingTime", "" + lastMeetingsDateByCompany[o.OrgId]);
 
 
 					}
@@ -1168,7 +1235,7 @@ Flag For Disabled / Blacklisted from CS
 			return "ok: \"" + id + "\"";
 		}
 
-		[Access(AccessLevel.Radial)]
+		[Access(AccessLevel.RadialData)]
 		public ActionResult Version() {
 
 			var version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -1232,7 +1299,6 @@ Flag For Disabled / Blacklisted from CS
 
 		[Access(AccessLevel.Radial)]
 		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
-
 		public ActionResult FixEmail() {
 			return View();
 		}
@@ -1248,10 +1314,6 @@ Flag For Disabled / Blacklisted from CS
 
 			if (!IsValidEmail(newEmail))
 				throw new PermissionsException("Email invalid.");
-
-
-
-
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -1744,7 +1806,7 @@ Flag For Disabled / Blacklisted from CS
 			return Json("cleared", JsonRequestBehavior.AllowGet);
 		}
 
-		[Access(AccessLevel.Radial)]
+		[Access(AccessLevel.RadialData)]
 		public JsonResult CalculateOrganizationCharge(long id) {
 
 			using (var s = HibernateSession.GetCurrentSession()) {

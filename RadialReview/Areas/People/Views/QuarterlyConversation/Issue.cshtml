@@ -1,492 +1,511 @@
 ﻿@model RadialReview.Areas.People.Controllers.QuarterlyConversationController.IssueViewModel
 @{
-    ViewBag.Title = "Issue Quarterly Conversation";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Issue Quarterly Conversation";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="row" id="top">
-    <div class="col-sm-10 col-sm-offset-1">
-        <div class="instructions">
-            <h2>Instructions</h2>
-            <ol>
-                <li>The Quarterly Conversation is an informal, face-to-face, one-on-one meeting to talk about what’s working and what’s not.</li>
-                <li>It’s not a performance review and doesn’t require filling out a form (or even this software!)</li>
-                <li>It’s okay to take notes for yourself, but not for the employee's file.</li>
-                <li>Use the 5-5-5 as your guide, not your master.</li>
-            </ol>
-            <div class="ref gray">For more information, please read <a href='https://www.amazon.com/How-Great-Boss-Gino-Wickman/dp/1942952848/'>How to Be a Great Boss</a></div>
-        </div>
-    </div>
+	<div class="col-sm-10 col-sm-offset-1">
+		<div class="instructions">
+			<h2>Instructions</h2>
+			<ol>
+				<li>The Quarterly Conversation is an informal, face-to-face, one-on-one meeting to talk about what’s working and what’s not.</li>
+				<li>It’s not a performance review and doesn’t require filling out a form (or even this software!)</li>
+				<li>It’s okay to take notes for yourself, but not for the employee's file.</li>
+				<li>Use the 5-5-5 as your guide, not your master.</li>
+			</ol>
+			<div class="ref gray">For more information, please read <a href='https://www.amazon.com/How-Great-Boss-Gino-Wickman/dp/1942952848/'>How to Be a Great Boss</a></div>
+		</div>
+	</div>
 </div>
 
 @using (Html.BeginForm()) {
-    <div class="row smallBreak2">
-        <div class="col-sm-8 col-sm-offset-2">
-            <label class="control-label" id="name_field">Name this Quarterly Conversation:</label>
-            @Html.TextBoxFor(x => x.Name, new { @class = "form-control smallBreak2" })
-            @Html.ValidationMessageFor(x => x.Name)
-        </div>
-    </div>
-    <div class="row smallBreak2">
-        <div class="col-sm-8 col-sm-offset-2">
-            <label class="control-label">Add to Quarterly Conversation:</label>
-            <span class="pull-right"><span class="gray small">sort: </span> &nbsp;<span class="sort-btn clickable" data-sort="name">name</span> | <span class="sort-btn  clickable" data-sort="team">team</span></span>
-            <div id="qc-issue"></div>
-        </div>
-    </div>
-    <div class="row smallBreak2">
-        <div class="col-sm-8 col-sm-offset-2 material">
-            <div class="row smallBreak2">
-                <div class="col-sm-7 smallBreak2">
-                    <label class="control-label">Selected team members evaluate themselves:</label>
+	<div class="row smallBreak2">
+		<div class="col-sm-8 col-sm-offset-2">
+			<label class="control-label" id="name_field">Name this Quarterly Conversation:</label>
+			@Html.TextBoxFor(x => x.Name, new { @class = "form-control smallBreak2", autocomplete = "off" })
+			@Html.ValidationMessageFor(x => x.Name)
+		</div>
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-sm-8 col-sm-offset-2">
+			<div>
+				<label class="control-label" style="padding-top: 18px;">Add to Quarterly Conversation:</label>
+				<div class="pull-right clearfix">
+					<div>
+						<span class="gray small" style="padding-right: 10px;">select: </span> &nbsp;<span class="select-btn clickable noselect" data-select="all">all</span> | <span class="select-btn clickable" data-select="none">none</span>
+					</div>
+					<div>
+						<span class="gray small">sort: </span> &nbsp;<span class="sort-btn clickable" data-sort="name">name</span> | <span class="sort-btn  clickable" data-sort="team">team</span>
+					</div>
+				</div>
+			</div>
+			<div id="qc-issue"></div>
+		</div>
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-sm-8 col-sm-offset-2 material">
+			<div class="row smallBreak2">
+				<div class="col-sm-7 smallBreak2">
+					<label class="control-label">Selected team members evaluate themselves:</label>
 
-                    <div class="responses radio-responses">
-                        <div class="md-radio active">
-                            <label>
-                                <input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="true" checked>
-                                <span class="circle"></span>
-                                <span class="check"></span>
-                                <span class="response-title radio-response-title">Yes</span>
-                            </label>
-                        </div>
-                        <div class="md-radio">
-                            <label>
-                                <input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="false">
-                                <span class="circle"></span>
-                                <span class="check"></span>
-                                <span class="response-title radio-response-title">No</span>
-                            </label>
-                        </div>
-                    </div>
+					<div class="responses radio-responses">
+						<div class="md-radio active">
+							<label>
+								<input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="true" checked>
+								<span class="circle"></span>
+								<span class="check"></span>
+								<span class="response-title radio-response-title">Yes</span>
+							</label>
+						</div>
+						<div class="md-radio">
+							<label>
+								<input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="false">
+								<span class="circle"></span>
+								<span class="check"></span>
+								<span class="response-title radio-response-title">No</span>
+							</label>
+						</div>
+					</div>
 
-                    @*<div class="btn-group" style="display:block;" data-toggle="buttons">
-                            <label class="btn btn-default active">
-                                <input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="true" autocomplete="off" checked> Yes
-                            </label>
-                            <label class="btn btn-default">
-                                <input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="false" autocomplete="off"> No
-                            </label>
-                        </div>*@
-                </div>
-                <div class="col-md-5">
-                    @*<span class="well label-comment1">Team members will perform a self evaluation.</span>*@
-                </div>
-            </div>
-            <div class="row smallBreak2">
-                <div class="col-sm-12">
-                    <div class="row">
-                        <div class="col-md-7">
-                            <label class="control-label">Selected team members evaluate me (LMA Questionnaire):</label>
-                            <div class="responses radio-responses">
-                                <div class="md-radio active">
-                                    <label>
-                                        <input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="true" checked>
-                                        <span class="circle"></span>
-                                        <span class="check"></span>
-                                        <span class="response-title radio-response-title">Yes</span>
-                                    </label>
-                                </div>
-                                <div class="md-radio">
-                                    <label>
-                                        <input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="false">
-                                        <span class="circle"></span>
-                                        <span class="check"></span>
-                                        <span class="response-title radio-response-title">No</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <span class="well label-comment1">We recommend that employees review managers once per year, not quarterly.</span>
-                        </div>
-                    </div>
+					@*<div class="btn-group" style="display:block;" data-toggle="buttons">
+							<label class="btn btn-default active">
+								<input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="true" autocomplete="off" checked> Yes
+							</label>
+							<label class="btn btn-default">
+								<input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="false" autocomplete="off"> No
+							</label>
+						</div>*@
+				</div>
+				<div class="col-md-5">
+					@*<span class="well label-comment1">Team members will perform a self evaluation.</span>*@
+				</div>
+			</div>
+			<div class="row smallBreak2">
+				<div class="col-sm-12">
+					<div class="row">
+						<div class="col-md-7">
+							<label class="control-label">Selected team members evaluate me (LMA Questionnaire):</label>
+							<div class="responses radio-responses">
+								<div class="md-radio active">
+									<label>
+										<input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="true" checked>
+										<span class="circle"></span>
+										<span class="check"></span>
+										<span class="response-title radio-response-title">Yes</span>
+									</label>
+								</div>
+								<div class="md-radio">
+									<label>
+										<input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="false">
+										<span class="circle"></span>
+										<span class="check"></span>
+										<span class="response-title radio-response-title">No</span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-5">
+							<span class="well label-comment1">We recommend that employees review managers once per year, not quarterly.</span>
+						</div>
+					</div>
 
 
-                    @*<div class="btn-group" style="display:block;" data-toggle="buttons">
-                            <label class="btn btn-default active">
-                                <input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="true" autocomplete="off" checked> Yes
-                            </label>
-                            <label class="btn btn-default">
-                                <input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="false" autocomplete="off"> No
-                            </label>
-                        </div>*@
-                </div>
-            </div>
-            <div class="row smallBreak2">
-                <div class="col-sm-12">
-                    <label class="control-label">Send email notification:</label>
+					@*<div class="btn-group" style="display:block;" data-toggle="buttons">
+							<label class="btn btn-default active">
+								<input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="true" autocomplete="off" checked> Yes
+							</label>
+							<label class="btn btn-default">
+								<input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="false" autocomplete="off"> No
+							</label>
+						</div>*@
+				</div>
+			</div>
+			<div class="row smallBreak2">
+				<div class="col-sm-12">
+					<label class="control-label">Send email notification:</label>
 
-                    <div class="responses radio-responses">
-                        <div class="md-radio active">
-                            <label>
-                                <input type="radio" name="@Html.NameFor(x=>x.Email)" value="true" checked>
-                                <span class="circle"></span>
-                                <span class="check"></span>
-                                <span class="response-title radio-response-title">Yes</span>
-                            </label>
-                        </div>
-                        <div class="md-radio">
-                            <label>
-                                <input type="radio" name="@Html.NameFor(x=>x.Email)" value="false">
-                                <span class="circle"></span>
-                                <span class="check"></span>
-                                <span class="response-title radio-response-title">No</span>
-                            </label>
-                        </div>
-                    </div>
+					<div class="responses radio-responses">
+						<div class="md-radio active">
+							<label>
+								<input type="radio" name="@Html.NameFor(x=>x.Email)" value="true" checked>
+								<span class="circle"></span>
+								<span class="check"></span>
+								<span class="response-title radio-response-title">Yes</span>
+							</label>
+						</div>
+						<div class="md-radio">
+							<label>
+								<input type="radio" name="@Html.NameFor(x=>x.Email)" value="false">
+								<span class="circle"></span>
+								<span class="check"></span>
+								<span class="response-title radio-response-title">No</span>
+							</label>
+						</div>
+					</div>
 
-                    @*<div class="btn-group" style="display:block;" data-toggle="buttons">
-                            <label class="btn btn-default active">
-                                <input type="radio" name="@Html.NameFor(x=>x.Email)" value="true" autocomplete="off" checked> Yes
-                            </label>
-                            <label class="btn btn-default">
-                                <input type="radio" name="@Html.NameFor(x=>x.Email)" value="false" autocomplete="off"> No
-                            </label>
-                        </div>*@
-                </div>
-            </div>
-        </div>
+					@*<div class="btn-group" style="display:block;" data-toggle="buttons">
+							<label class="btn btn-default active">
+								<input type="radio" name="@Html.NameFor(x=>x.Email)" value="true" autocomplete="off" checked> Yes
+							</label>
+							<label class="btn btn-default">
+								<input type="radio" name="@Html.NameFor(x=>x.Email)" value="false" autocomplete="off"> No
+							</label>
+						</div>*@
+				</div>
+			</div>
+		</div>
 
-    </div>
-    <div class="row smallBreak2">
-        <div class="col-sm-3 col-sm-offset-2">
-            <label class="control-label">When did the quarter start:<span class="help-icon" title="Choose the start date for the quarter you want to review over."></span></label>
-            <div class="btn-group" style="display:block;" data-toggle="buttons">
-                @Html.EditorFor(x => x.QuarterStart, new { endDate = "today" })
-            </div>
-        </div>
-        @*<div class="col-md-5 col-sm-offset-2">
-                <span class="well label-comment1" style="margin-top:12px;"></span>
-            </div>*@
-    </div>
-    <div class="row smallBreak2">
-        <div class="col-sm-3 col-sm-offset-2">
-            <label class="control-label">Due date:</label>
-            <div class="btn-group" style="display:block;" data-toggle="buttons">
-                @Html.EditorFor(x => x.DueDate, new { startDate = "tomorrow" })
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6 col-sm-offset-2">
-            <hr />
-            <button class="btn btn-primary" type="submit">Create</button>
-        </div>
-        <div class="col-sm-4">
-            @Html.ValidationSummary()
-        </div>
-    </div>
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-sm-3 col-sm-offset-2">
+			<label class="control-label">When did the quarter start:<span class="help-icon" title="Choose the start date for the quarter you want to review over."></span></label>
+			<div class="btn-group" style="display:block;" data-toggle="buttons">
+				@Html.EditorFor(x => x.QuarterStart, new { endDate = "today" })
+			</div>
+		</div>
+		@*<div class="col-md-5 col-sm-offset-2">
+				<span class="well label-comment1" style="margin-top:12px;"></span>
+			</div>*@
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-sm-3 col-sm-offset-2">
+			<label class="control-label">Due date:</label>
+			<div class="btn-group" style="display:block;" data-toggle="buttons">
+				@Html.EditorFor(x => x.DueDate, new { startDate = "tomorrow" })
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6 col-sm-offset-2">
+			<hr />
+			<button class="btn btn-primary" type="submit">Create</button>
+		</div>
+		<div class="col-sm-4">
+			@Html.ValidationSummary()
+		</div>
+	</div>
 }
 
 @using (Html.BeginStyles()) {
-    @Styles.Render("~/styles/people")
+	@Styles.Render("~/styles/people")
 
-    <style>
-        .md-radio {
-            display: inline-block;
-            padding-right: 17px;
-        }
+	<style>
+		.md-radio {
+			display: inline-block;
+			padding-right: 17px;
+		}
 
-        .clickable {
-            text-decoration: underline;
-        }
+		.clickable {
+			text-decoration: underline;
+		}
 
-        #qc-issue .panel {
-            border-color: #cccccc;
-        }
+		#qc-issue .panel {
+			border-color: #cccccc;
+		}
 
-        .well {
-            margin-bottom: 0px;
-            display: block;
-        }
+		.well {
+			margin-bottom: 0px;
+			display: block;
+		}
 
-        .label-comment {
-            display: block;
-            padding: 0px 7px 0px 12px;
-            /* padding-bottom: 14px; */
-            color: gray;
-            border-left: 3px solid #ccc;
-            margin-bottom: 7px;
-            margin-left: 5px;
-        }
+		.label-comment {
+			display: block;
+			padding: 0px 7px 0px 12px;
+			/* padding-bottom: 14px; */
+			color: gray;
+			border-left: 3px solid #ccc;
+			margin-bottom: 7px;
+			margin-left: 5px;
+		}
 
-        .instructions {
-            padding: 20px;
-            padding-top: 50px;
-            padding-right: 60px;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            margin: 30px;
-            background: #fff;
-            border-radius: 2px;
-            display: inline-block;
-            position: relative;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        }
+		.instructions {
+			padding: 20px;
+			padding-top: 50px;
+			padding-right: 60px;
+			background-color: white;
+			border: 1px solid #ccc;
+			border-radius: 6px;
+			margin: 30px;
+			background: #fff;
+			border-radius: 2px;
+			display: inline-block;
+			position: relative;
+			box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+		}
 
-            .instructions h2 {
-                margin-top: -22px;
-                margin-left: 25px;
-                text-transform: uppercase;
-                margin-bottom: 13px;
-            }
+			.instructions h2 {
+				margin-top: -22px;
+				margin-left: 25px;
+				text-transform: uppercase;
+				margin-bottom: 13px;
+			}
 
-            .instructions ol {
-                margin-bottom: 0px;
-            }
+			.instructions ol {
+				margin-bottom: 0px;
+			}
 
-                .instructions ol li {
-                    padding: 2px 0 2px 15px;
-                }
+				.instructions ol li {
+					padding: 2px 0 2px 15px;
+				}
 
-            .instructions .ref {
-                text-align: right;
-                padding-top: 14px;
-                font-size: 13px;
-            }
+			.instructions .ref {
+				text-align: right;
+				padding-top: 14px;
+				font-size: 13px;
+			}
 
-                .instructions .ref a {
-                    font-style: italic;
-                    text-decoration: underline;
-                }
+				.instructions .ref a {
+					font-style: italic;
+					text-decoration: underline;
+				}
 
-                    .instructions .ref a:hover {
-                        color: black;
-                    }
+					.instructions .ref a:hover {
+						color: black;
+					}
 
-        *:focus {
-            outline: none;
-        }
+		*:focus {
+			outline: none;
+		}
 
-        .team-block-cell{
-            min-width:30px;
-        }
+		.team-block-cell {
+			min-width: 30px;
+		}
 
-        [data-sorted="name"] .team-block {
-            width: 23px;
-            height: 23px;
-            display: inline-block;
-            margin: -7px;
-            margin-left: -2px;
-            /* height: 100%; */
-            border-radius: 4px;
-        }
+		[data-sorted="name"] .team-block {
+			width: 23px;
+			height: 23px;
+			display: inline-block;
+			margin: -7px;
+			margin-left: -2px;
+			/* height: 100%; */
+			border-radius: 4px;
+		}
 
-        [data-sorted="name"] .team-block.team-color-0,
-        [data-sorted="team"] .team-color-0 {
-            background-color: #00aedb !important;
-        }
-        
-        [data-sorted="name"] .team-block.team-color-1,
-        [data-sorted="team"] .team-color-1 {
-            background-color: #e39e54 !important;
-        }
-        
-        [data-sorted="name"] .team-block.team-color-2,
-        [data-sorted="team"] .team-color-2 {
-            background-color: #d64d4d !important;
-        }
-        
-        [data-sorted="name"] .team-block.team-color-3,
-        [data-sorted="team"] .team-color-3 {
-            background-color: #4d7358 !important;
-        }
-        
-        [data-sorted="name"] .team-block.team-color-4,
-        [data-sorted="team"] .team-color-4 {
-            background-color: #f37735 !important;
-        }
-        
-        [data-sorted="name"] .team-block.team-color-5,
-        [data-sorted="team"] .team-color-5 {
-            background-color: #d11141 !important;
-        }
-        
-        [data-sorted="name"] .team-block.team-color-6,
-        [data-sorted="team"] .team-color-6 {
-            background-color: #e8d174 !important;
-        }
-        
-        [data-sorted="name"] .team-block.team-color-7,
-        [data-sorted="team"] .team-color-7 {
-            background-color: #9e9e9e !important;
-        }
-        
-        [data-sorted="name"] .team-block.team-color-8,
-        [data-sorted="team"] .team-color-8 {
-            background-color: #9ed670 !important;
-        }
-        
-        [data-sorted="name"] .team-block.team-color-9,
-        [data-sorted="team"] .team-color-9 {
-            background-color: #ffc425 !important;
-        }
-        
-        [data-sorted="name"] .team-block.team-color-10,
-        [data-sorted="team"] .team-color-10 {
-            background-color: #00b159 !important;
-        }
-        [data-sorted="name"] .team-block.team-color-11,
-        [data-sorted="team"] .team-color-11 {
-            background-color: #607d8b !important;
-        }
-    </style>
+			[data-sorted="name"] .team-block.team-color-0,
+			[data-sorted="team"] .team-color-0 {
+				background-color: #00aedb !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-1,
+			[data-sorted="team"] .team-color-1 {
+				background-color: #e39e54 !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-2,
+			[data-sorted="team"] .team-color-2 {
+				background-color: #d64d4d !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-3,
+			[data-sorted="team"] .team-color-3 {
+				background-color: #4d7358 !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-4,
+			[data-sorted="team"] .team-color-4 {
+				background-color: #f37735 !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-5,
+			[data-sorted="team"] .team-color-5 {
+				background-color: #d11141 !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-6,
+			[data-sorted="team"] .team-color-6 {
+				background-color: #e8d174 !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-7,
+			[data-sorted="team"] .team-color-7 {
+				background-color: #9e9e9e !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-8,
+			[data-sorted="team"] .team-color-8 {
+				background-color: #9ed670 !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-9,
+			[data-sorted="team"] .team-color-9 {
+				background-color: #ffc425 !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-10,
+			[data-sorted="team"] .team-color-10 {
+				background-color: #00b159 !important;
+			}
+
+			[data-sorted="name"] .team-block.team-color-11,
+			[data-sorted="team"] .team-color-11 {
+				background-color: #607d8b !important;
+			}
+	</style>
 }
 @using (Html.BeginScripts()) {
 
-    <script>
-        jQuery.fn.sortElements = (function(){
-            var sort = [].sort;
-            return function(comparator, getSortable) {
-                getSortable = getSortable || function(){return this;};
-                var placements = this.map(function(){
-                    var sortElement = getSortable.call(this),
-                        parentNode = sortElement.parentNode,
-                        // Since the element itself will change position, we have
-                        // to have some way of storing it's original position in
-                        // the DOM. The easiest way is to have a 'flag' node:
-                        nextSibling = parentNode.insertBefore(
-                            document.createTextNode(''),
-                            sortElement.nextSibling
-                        );
+	<script>
+		jQuery.fn.sortElements = (function(){
+			var sort = [].sort;
+			return function(comparator, getSortable) {
+				getSortable = getSortable || function(){return this;};
+				var placements = this.map(function(){
+					var sortElement = getSortable.call(this),
+						parentNode = sortElement.parentNode,
+						// Since the element itself will change position, we have
+						// to have some way of storing it's original position in
+						// the DOM. The easiest way is to have a 'flag' node:
+						nextSibling = parentNode.insertBefore(
+							document.createTextNode(''),
+							sortElement.nextSibling
+						);
 
-                    return function() {
-                        if (parentNode === this) {
-                            throw new Error(
-                                "You can't sort elements if any one is a descendant of another."
-                            );
-                        }
-                        // Insert before flag:
-                        parentNode.insertBefore(this, nextSibling);
-                        // Remove flag:
-                        parentNode.removeChild(nextSibling);
+					return function() {
+						if (parentNode === this) {
+							throw new Error(
+								"You can't sort elements if any one is a descendant of another."
+							);
+						}
+						// Insert before flag:
+						parentNode.insertBefore(this, nextSibling);
+						// Remove flag:
+						parentNode.removeChild(nextSibling);
 
-                    };
-                });
+					};
+				});
 
-                return sort.call(this, comparator).each(function(i){
-                    placements[i].call(getSortable.call(this));
-                });
-            };
-        })();
+				return sort.call(this, comparator).each(function(i){
+					placements[i].call(getSortable.call(this));
+				});
+			};
+		})();
 
+		$("body").on("click",".select-btn",function(){
+			var btn = $(this);
+			var all = btn.data("select")=="all";
+			$("#qc-issue table tr input[type='checkbox']").each(function(){
+				$(this).prop('checked', all);
+			});
+		});
 
-        $("body").on("click",".sort-btn",function(){
-            var sorter = $(this).attr("data-sort");
-            $("#qc-issue").attr("data-sorted",sorter);
+		$("body").on("click",".sort-btn",function(){
+			var sorter = $(this).attr("data-sort");
+			$("#qc-issue").attr("data-sorted",sorter);
 
-            function vars(ele,sort){
-                var className = $(ele).attr("class");
-                var check = sort+"-";
-                var cls = [];
-                $.map(className.split(' '), function (val, i) {
-                    if (val.indexOf(check) > -1) {
-                        var rs = +(val.slice(check.length, val.length));
-                        if (!isNaN(rs))
-                            cls.push(rs);
-                    }
-                });
-                if (cls.length>0)
-                    return cls[0];
-                return 0;
-            }
+			function vars(ele,sort){
+				var className = $(ele).attr("class");
+				var check = sort+"-";
+				var cls = [];
+				$.map(className.split(' '), function (val, i) {
+					if (val.indexOf(check) > -1) {
+						var rs = +(val.slice(check.length, val.length));
+						if (!isNaN(rs))
+							cls.push(rs);
+					}
+				});
+				if (cls.length>0)
+					return cls[0];
+				return 0;
+			}
 
-            $("#qc-issue table tr").sortElements(function(a,b){
-                var aa= vars(a,sorter);
-                var bb= vars(b,sorter);
-                //debugger;
-                if (aa==bb)
-                    return Math.sign(vars(a,"name")-vars(b,"name"));
-                return Math.sign(aa-bb);
-                //return $(a).attr("data-"+sort)<$(a).attr("data-"+sort);
-            },function(){
-                return this;
-            });
+			$("#qc-issue table tr").sortElements(function(a,b){
+				var aa= vars(a,sorter);
+				var bb= vars(b,sorter);
+				//debugger;
+				if (aa==bb)
+					return Math.sign(vars(a,"name")-vars(b,"name"));
+				return Math.sign(aa-bb);
+				//return $(a).attr("data-"+sort)<$(a).attr("data-"+sort);
+			},function(){
+				return this;
+			});
 
-        });
+		});
 
-        $("form").submit(function validateForm(event) {
-            event = event || window.event || event.srcElement;
-            var name = $('#Name').val();
-            if (!name) {
-                $("[data-valmsg-for=\"Name\"]").removeClass("field-validation-valid").addClass("field-validation-error").text("Name is required");
-                $("#Name").addClass("input-validation-error");//.text("Name is required");
-                showAlert("Name is required");
-                window.location.hash = "top";
-                event.preventDefault();
-            }else{
-                $(this).find("button[type=submit]").addClass("noclick").prop("disabled","disabled").prop("title","Please wait.").html("Issuing...");
-            }
-        });
+		$("form").submit(function validateForm(event) {
+			event = event || window.event || event.srcElement;
+			var name = $('#Name').val();
+			if (!name) {
+				$("[data-valmsg-for=\"Name\"]").removeClass("field-validation-valid").addClass("field-validation-error").text("Name is required");
+				$("#Name").addClass("input-validation-error");//.text("Name is required");
+				showAlert("Name is required");
+				window.location.hash = "top";
+				event.preventDefault();
+			}else{
+				$(this).find("button[type=submit]").addClass("noclick").prop("disabled","disabled").prop("title","Please wait.").html("Issuing...");
+			}
+		});
 
-        $("[name=@Html.NameFor(x => x.EvalSelf)],[name=@Html.NameFor(x => x.EvalManager)]").on("change",function(){
-            var selected = $("[name=@Html.NameFor(x => x.EvalSelf)]:checked").val()=="true" || $("[name=@Html.NameFor(x => x.EvalManager)]:checked").val()=="true";
-            $("[name=@Html.NameFor(x => x.Email)]").closest(".btn-group").find(".btn").toggleClass("disabled",!selected).attr("disabled",!selected?"true":null).toggleClass("noclick",!selected).replaceClass("active","was-active",!selected);
-            $("[name=@Html.NameFor(x => x.Email)]").closest(".md-radio").find("input").toggleClass("disabled",!selected).attr("disabled",!selected?"true":null).toggleClass("noclick",!selected).replaceClass("active","was-active",!selected);
-        });
+		$("[name=@Html.NameFor(x => x.EvalSelf)],[name=@Html.NameFor(x => x.EvalManager)]").on("change",function(){
 
-        var  teamColors = {};
-        var currTeam = 0;
-        var teamCount = 0;
+			var selected = $("[name=@Html.NameFor(x => x.EvalSelf)]:checked").val()=="true" || $("[name=@Html.NameFor(x => x.EvalManager)]:checked").val()=="true";
+			debugger;
+			$("[name=@Html.NameFor(x => x.Email)]").closest(".btn-group").find(".btn").toggleClass("disabled",!selected).attr("disabled",!selected?"true":null).toggleClass("noclick",!selected).replaceClass("active","was-active",!selected);
+			$("[name=@Html.NameFor(x => x.Email)]").closest(".md-radio").find("input").toggleClass("disabled",!selected).attr("disabled",!selected?"true":null).toggleClass("noclick",!selected).replaceClass("active","was-active",!selected);
+		});
 
-        DataTable({
-            nodataText:"No direct reports. Ensure you have direct reports on the Accountability Chart.",
-            container: "#qc-issue",
-            data: @Html.ArrayToString(Model.AvailableUsers.OrderBy(x=>x.ToPrettyString()).Select((x,i)=>new { x, i }), y => {
-                 var x = y.x;
-                 var i = y.i;
-                 return new {
-                     NameOrder = i,
-                     Name = x.ToPrettyString(),
-                     Id = x.ToViewModelKey(),
-                     Hidden = x._Hidden,
-                     TeamId = x.AccountabilityNode.ParentNodeId
-                 };
-             }),
-            //title
-            table:{
-                rows:{
-                    classes:function(x){
-                        // debugger;
-                        if (x.Hidden)
-                            return "";
+		var  teamColors = {};
+		var currTeam = 0;
+		var teamCount = 0;
 
-                        if (!(x.TeamId in teamColors)){
-                            teamColors[x.TeamId]=currTeam;
-                            currTeam +=1;
-                            currTeam = currTeam % 12;
-                            teamCount +=1;
-                        }
-                        return "team team-"+x.TeamId+" name-"+x.NameOrder+" team-color-"+teamColors[x.TeamId];
-                    },
-                }
-            },
-            cells:[{
-                contents:function(x) {return "<span class='team-block team-color-"+teamColors[x.TeamId]+"'></span>";},
-                classes:function(x){return x.Hidden?"hidden":" nowrap team-block-cell";}
-            },{
-                contents:function(x){ return "&nbsp;<input type='checkbox' checked name='selected' value ='"+x.Id+"'/>"; },
-                classes:function(x){return x.Hidden?"hidden":" nowrap";}
-            },{
-                //name: "Add to Quarterly Conversation",
-                contents:function(x){ return x.Name; },
-                classes:function(x){return "fullWidth "+(x.Hidden?"hidden":"");}
-            }
-            //,{
-            //	name: "Id",
-            //	contents:function(x){ return x.Id; }
-            //}
+		DataTable({
+			nodataText:"No direct reports. Ensure you have direct reports on the Accountability Chart.",
+			container: "#qc-issue",
+			data: @Html.ArrayToString(Model.AvailableUsers.OrderBy(x=>x.ToPrettyString()).Select((x,i)=>new { x, i }), y => {
+				 var x = y.x;
+				 var i = y.i;
+				 return new {
+					 NameOrder = i,
+					 Name = x.ToPrettyString(),
+					 Id = x.ToViewModelKey(),
+					 Hidden = x._Hidden,
+					 TeamId = x.AccountabilityNode.ParentNodeId
+				 };
+			 }),
+			//title
+			table:{
+				rows:{
+					classes:function(x){
+						// debugger;
+						if (x.Hidden)
+							return "";
 
-            ]
-        });
+						if (!(x.TeamId in teamColors)){
+							teamColors[x.TeamId]=currTeam;
+							currTeam +=1;
+							currTeam = currTeam % 12;
+							teamCount +=1;
+						}
+						return "team team-"+x.TeamId+" name-"+x.NameOrder+" team-color-"+teamColors[x.TeamId];
+					},
+				}
+			},
+			cells:[{
+				contents:function(x) {return "<span class='team-block team-color-"+teamColors[x.TeamId]+"'></span>";},
+				classes:function(x){return x.Hidden?"hidden":" nowrap team-block-cell";}
+			},{
+				contents:function(x){ return "&nbsp;<input type='checkbox' checked name='selected' value ='"+x.Id+"'/>"; },
+				classes:function(x){return x.Hidden?"hidden":" nowrap";}
+			},{
+				//name: "Add to Quarterly Conversation",
+				contents:function(x){ return x.Name; },
+				classes:function(x){return "fullWidth "+(x.Hidden?"hidden":"");}
+			}
+			//,{
+			//	name: "Id",
+			//	contents:function(x){ return x.Id; }
+			//}
 
-        setTimeout(function(){
-            if(teamCount<=1){
-                $(".team-block-cell").hide();
-            }
-            $("#qc-issue").attr("data-sorted","name");
+			]
+		});
 
-        },1);
-    </script>
+		setTimeout(function(){
+			if(teamCount<=1){
+				$(".team-block-cell").hide();
+			}
+			$("#qc-issue").attr("data-sorted","name");
+
+		},1);
+	</script>
 }

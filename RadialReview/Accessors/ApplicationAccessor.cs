@@ -296,15 +296,17 @@ namespace RadialReview.Accessors {
 						s.Flush();
 					}
 					using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
-						var found = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
-						if (found == null) {
-							s.Save(new SyncLock() {
-								Id = SyncLock.CREATE_KEY
-							});
+						for (var i = 0; i < SyncLock.MAX_SYNC_KEYS; i++) {
+							var found = s.Get<SyncLock>(SyncLock.CREATE_KEY(i), LockMode.Upgrade);
+							if (found == null) {
+								s.Save(new SyncLock() {
+									Id = SyncLock.CREATE_KEY(i)
+								});
+							}
 						}
 						tx.Commit();
 						s.Flush();
-					}					
+					}
 
 					// must be last
 					using (var tx = s.BeginTransaction()) {

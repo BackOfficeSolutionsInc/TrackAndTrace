@@ -171,12 +171,12 @@ namespace TractionTools.Tests.Crosscutting.Events {
 			DbQuery(async s => {
 				var settings = new BaseEventSettings(s, 0, new DateTime(2017, 1, 14));
 				var meetings = new List<L10Meeting>() {
-					new L10Meeting() { StartTime = new DateTime(2017,1,1) },
-					new L10Meeting() { StartTime = new DateTime(2017,1,2) },
-					new L10Meeting() { StartTime = new DateTime(2017,1,8) },
-					new L10Meeting() { StartTime = new DateTime(2017,1,15) },
-					new L10Meeting() { StartTime = new DateTime(2017,2,15) },
-				};
+				new L10Meeting() { StartTime = new DateTime(2017,1,1) },
+				new L10Meeting() { StartTime = new DateTime(2017,1,2) },
+				new L10Meeting() { StartTime = new DateTime(2017,1,8) },
+				new L10Meeting() { StartTime = new DateTime(2017,1,15) },
+				new L10Meeting() { StartTime = new DateTime(2017,2,15) },
+			};
 				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
 				settings.SetLookup(new SearchLeadershipL10RecurrenceIds(), settings, new List<long> { 0 });
 
@@ -204,12 +204,12 @@ namespace TractionTools.Tests.Crosscutting.Events {
 			DbQuery(async s => {
 				var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
 				var meetings = new List<L10Meeting>() {
-					new L10Meeting() { StartTime = new DateTime(2017,1,1) , AverageMeetingRating = new Ratio(10,1)},
-					new L10Meeting() { StartTime = new DateTime(2017,1,2) , AverageMeetingRating = new Ratio(10,1)},
-					new L10Meeting() { StartTime = new DateTime(2017,1,8) , AverageMeetingRating = new Ratio(7,1)},
-					new L10Meeting() { StartTime = new DateTime(2017,1,15) , AverageMeetingRating = new Ratio(7,1)},
-					new L10Meeting() { StartTime = new DateTime(2017,2,15) , AverageMeetingRating = new Ratio(10,1)},
-				};
+				new L10Meeting() { StartTime = new DateTime(2017,1,1) , AverageMeetingRating = new Ratio(10,1)},
+				new L10Meeting() { StartTime = new DateTime(2017,1,2) , AverageMeetingRating = new Ratio(10,1)},
+				new L10Meeting() { StartTime = new DateTime(2017,1,8) , AverageMeetingRating = new Ratio(7,1)},
+				new L10Meeting() { StartTime = new DateTime(2017,1,15) , AverageMeetingRating = new Ratio(7,1)},
+				new L10Meeting() { StartTime = new DateTime(2017,2,15) , AverageMeetingRating = new Ratio(10,1)},
+			};
 				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
 				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 
@@ -234,12 +234,12 @@ namespace TractionTools.Tests.Crosscutting.Events {
 			DbQuery(async s => {
 				var settings = new BaseEventSettings(null, 0, new DateTime(2017, 1, 14));
 				var meetings = new List<L10Meeting>() {
-					new L10Meeting() { StartTime = new DateTime(2017,1,1) , TodoCompletion = new Ratio(.8m,1)},
-					new L10Meeting() { StartTime = new DateTime(2017,1,2) , TodoCompletion = new Ratio(.8m,1)},
-					new L10Meeting() { StartTime = new DateTime(2017,1,8) , TodoCompletion = new Ratio(.5m,1)},
-					new L10Meeting() { StartTime = new DateTime(2017,1,15) , TodoCompletion= new Ratio(.5m,1)},
-					new L10Meeting() { StartTime = new DateTime(2017,2,15) , TodoCompletion= new Ratio(.8m,1)},
-				};
+				new L10Meeting() { StartTime = new DateTime(2017,1,1) , TodoCompletion = new Ratio(.8m,1)},
+				new L10Meeting() { StartTime = new DateTime(2017,1,2) , TodoCompletion = new Ratio(.8m,1)},
+				new L10Meeting() { StartTime = new DateTime(2017,1,8) , TodoCompletion = new Ratio(.5m,1)},
+				new L10Meeting() { StartTime = new DateTime(2017,1,15) , TodoCompletion= new Ratio(.5m,1)},
+				new L10Meeting() { StartTime = new DateTime(2017,2,15) , TodoCompletion= new Ratio(.8m,1)},
+			};
 				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
 				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 
@@ -267,12 +267,12 @@ namespace TractionTools.Tests.Crosscutting.Events {
 
 				var settings = new BaseEventSettings(s, 0, new DateTime(2017, 1, 14));
 				var meetings = new List<L10Meeting>() {
-					new L10Meeting() { StartTime = new DateTime(2017,1,1,1,1,0)  },
-					new L10Meeting() { StartTime = new DateTime(2017,1,8,0,58,0) },
-					new L10Meeting() { StartTime = new DateTime(2017,1,15,1,6,0) },
-					new L10Meeting() { StartTime = new DateTime(2017,1,22,1,7,0) },
-					new L10Meeting() { StartTime = new DateTime(2017,2,22,1,1,0) },
-				};
+				new L10Meeting() { StartTime = new DateTime(2017,1,1,1,1,0)  },
+				new L10Meeting() { StartTime = new DateTime(2017,1,8,0,58,0) },
+				new L10Meeting() { StartTime = new DateTime(2017,1,15,1,6,0) },
+				new L10Meeting() { StartTime = new DateTime(2017,1,22,1,7,0) },
+				new L10Meeting() { StartTime = new DateTime(2017,2,22,1,1,0) },
+			};
 				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
 				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 
@@ -298,20 +298,20 @@ namespace TractionTools.Tests.Crosscutting.Events {
 
 				var settings = new BaseEventSettings(s, 0, new DateTime(2017, 1, 14));
 				var meetings = new List<L10Meeting>() {
-					new L10Meeting() { StartTime = new DateTime(2017,1,1)  , CompleteTime = new DateTime(2017,1,1,0,30,0)},
-					new L10Meeting() { StartTime = new DateTime(2017,1,8)  , CompleteTime = new DateTime(2017,1,8,0,30,0)},
-					new L10Meeting() { StartTime = new DateTime(2017,1,15) , CompleteTime = new DateTime(2017,1,15,0,50,0)},
-					new L10Meeting() { StartTime = new DateTime(2017,1,22) , CompleteTime = new DateTime(2017,1,22,0,50,0)},
-					new L10Meeting() { StartTime = new DateTime(2017,2,22) , CompleteTime = new DateTime(2017,2,22,0,30,0)},
-					new L10Meeting() { StartTime = new DateTime(2017,2,22) , CompleteTime = null},
-				};
+				new L10Meeting() { StartTime = new DateTime(2017,1,1)  , CompleteTime = new DateTime(2017,1,1,0,30,0)},
+				new L10Meeting() { StartTime = new DateTime(2017,1,8)  , CompleteTime = new DateTime(2017,1,8,0,30,0)},
+				new L10Meeting() { StartTime = new DateTime(2017,1,15) , CompleteTime = new DateTime(2017,1,15,0,50,0)},
+				new L10Meeting() { StartTime = new DateTime(2017,1,22) , CompleteTime = new DateTime(2017,1,22,0,50,0)},
+				new L10Meeting() { StartTime = new DateTime(2017,2,22) , CompleteTime = new DateTime(2017,2,22,0,30,0)},
+				new L10Meeting() { StartTime = new DateTime(2017,2,22) , CompleteTime = null},
+			};
 				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
 				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 				settings.SetLookup(new SearchPageTimerSettings(0), settings, new List<L10Recurrence.L10Recurrence_Page> {
-					new L10Recurrence.L10Recurrence_Page() {
-						Minutes = 30
-					}
-				});
+				new L10Recurrence.L10Recurrence_Page() {
+					Minutes = 30
+				}
+			});
 
 				Assert.IsTrue(await EventProcessor.ShouldTrigger(settings, evtGen));
 
@@ -319,10 +319,10 @@ namespace TractionTools.Tests.Crosscutting.Events {
 				settings.SetLookup(new SearchRealL10Meeting(0), settings, meetings);
 				settings.SetLookup(new SearchL10RecurrenceIds(), settings, new List<long> { 0 });
 				settings.SetLookup(new SearchPageTimerSettings(0), settings, new List<L10Recurrence.L10Recurrence_Page> {
-					new L10Recurrence.L10Recurrence_Page() {
-						Minutes = 30
-					}
-				});
+				new L10Recurrence.L10Recurrence_Page() {
+					Minutes = 30
+				}
+			});
 
 				Assert.IsFalse(await EventProcessor.ShouldTrigger(settings, evtGen));
 			});

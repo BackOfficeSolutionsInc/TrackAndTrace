@@ -6,7 +6,7 @@
 			list-style-type: decimal;
 		}
 	</style>
-    @Styles.Render("~/styles/snackbar")
+	@Styles.Render("~/styles/snackbar")
 }
 @{
 	var edit = Model.Editable;//Model.User.GetPersonallyManaging() || Model.ManagingOrganization;
@@ -25,14 +25,21 @@
 				<div class="alignCenter smallBreak2">
 					<a class="btn btn-link alignCenter" href="/Todo/List/@Model.User.Id">View To-Dos</a>
 				</div>
-                <div class="alignCenter smallBreak2">
-                    <a class="btn btn-link alignCenter" href="/Rocks/Archive/@Model.User.Id">View Archived Rocks</a>
-                </div>
-                <div class="alignCenter smallBreak2">
-                    <a class="btn btn-link alignCenter" href="/people/quarterlyconversation/surveys/@Model.User.Id">View Quarterly Conversations</a>
-                </div>
+				<div class="alignCenter smallBreak2">
+					<a class="btn btn-link alignCenter" href="/Rocks/Archive/@Model.User.Id">View Archived Rocks</a>
+				</div>
+				<div class="alignCenter smallBreak2">
+					<a class="btn btn-link alignCenter" href="/people/quarterlyconversation/surveys/@Model.User.Id">View Quarterly Conversations</a>
+				</div>
 			}
-		</div>
+
+			@if (Model.CanEditUserDetails) {
+				<div class="alignCenter smallBreak2">
+					<a href="#" onclick="editUserDetails(@Model.User.Id)">Edit User</a>
+				</div>
+			}
+
+				</div>
 		<div class="col-sm-9">
 			<div class="panel panel-default">
 				@if (edit) {<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Job Description", "/JobDescription/Modal/" + Model.User.Id, "/JobDescription/Modal?refresh=true&silent=true")">Edit</a>}<div class="panel-heading"><h3 class="panel-title">Job Description</h3></div>
@@ -168,7 +175,7 @@
 										<tr>
 											<th style="width: 40px;"></th>
 											<th>Admin for measurables</th>
-                                            <th></th>
+											<th></th>
 											<th style="width: 90px;" class="alignCenter">Weekly Goal</th>
 											<th style="width: 160px;" class="alignCenter">Owner</th>
 											<th style="width:20px"></th>
@@ -185,8 +192,8 @@
 														<span class="icon fontastic-icon-link-2 template-link" title="This measurable was created by a template."></span>
 													}
 												</td>
-                                                <td class="shift-hidden"></td>
-                                                <td class="shift-visible gray small nowrap"><span class="clickable" onclick="showFormula(@r.Id)">(edit formula)</span></td>
+												<td class="shift-hidden"></td>
+												<td class="shift-visible gray small nowrap"><span class="clickable" onclick="showFormula(@r.Id)">(edit formula)</span></td>
 												<td class="alignCenter">@r.GoalDirection.GetDisplayName() @r.Goal.ToString("0.#####")</td>
 												<td class="alignCenter"><a href="/Manage/UserDetails/@r.AccountableUserId">@r.AccountableUser.NotNull(x => x.GetName())</a></td>
 												<td>
@@ -225,7 +232,10 @@
 
 <script>
 
-    
+	
+	function editUserDetails(id){
+		showModal("Edit User","@Url.Action("EditUserDetails", "User")/"+id,"@Url.Action("EditUserDetails", "User")/"+id,null,null,null,null,"enctype=\"multipart/form-data\"");
+	}
 	
 	function removeRock(id) {
 		$.ajax("/api/v1/rocks/" + id, {
@@ -268,8 +278,8 @@
 </script>
 
 <style>
-    .hoverable:hover{
-        /*background-color:#fdece0;*/
-        color:#cf5e0f;
-    }
+	.hoverable:hover{
+		/*background-color:#fdece0;*/
+		color:#cf5e0f;
+	}
 </style>

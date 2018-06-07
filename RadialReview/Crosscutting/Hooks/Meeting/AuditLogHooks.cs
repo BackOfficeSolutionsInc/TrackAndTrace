@@ -117,19 +117,19 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
 			Audit.L10Log(s, caller, recurRock.L10Recurrence.Id, "CreateRock", ForModel.Create(recurRock), rock.Rock);
 		}
-		
+
 		public async Task AttachMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, L10Recurrence.L10Recurrence_Measurable recurMeasurable) {
 			Audit.L10Log(s, caller, recurMeasurable.L10Recurrence.Id, "CreateMeasurable", ForModel.Create(measurable), measurable.Title);
 		}
-		
+
 		public async Task DetachMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
 			Audit.L10Log(s, caller, recurrenceId, "DeleteMeasurable", ForModel.Create(measurable), measurable.Title);
 		}
-        
+
 		public async Task CreateMeasurable(ISession s, MeasurableModel m) {
 			//throw new NotImplementedException();
 		}
-		
+
 		public async Task UpdateMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, List<ScoreModel> updatedScores, IMeasurableHookUpdates updates) {
 			var updateText = new List<String>();
 
@@ -150,16 +150,16 @@ namespace RadialReview.Hooks.Meeting {
 
 			if (updates.AlternateGoalChanged)
 				updateText.Add("AltGoal: " + measurable.AlternateGoal);
-			
-			if (updates.AccountableUserChanged) 
+
+			if (updates.AccountableUserChanged)
 				updateText.Add("Accountable: " + measurable.AccountableUser.GetName());
-			
-			if (updates.AdminUserChanged) 
-				updateText.Add("Admin: " + measurable.AdminUser.GetName());			
+
+			if (updates.AdminUserChanged)
+				updateText.Add("Admin: " + measurable.AdminUser.GetName());
 
 			var updatedText = "Updated Measurable: \"" + measurable.Title + "\" \n " + String.Join("\n", updateText);
 
-			var recurrenceIds = RealTimeHelpers.GetRecurrencesForMeasurable(s,measurable.Id);
+			var recurrenceIds = RealTimeHelpers.GetRecurrencesForMeasurable(s, measurable.Id);
 
 			foreach (var recurrenceId in recurrenceIds) {
 				Audit.L10Log(s, caller, recurrenceId, "UpdateArchiveMeasurable", ForModel.Create(measurable), updatedText);
@@ -174,21 +174,18 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
 			//noop
 		}
-        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
-        {
-            //Nothing to do...
-        }
-        public async Task UpdateHeadline(ISession s, PeopleHeadline headline, IHeadlineHookUpdates updates) {
+		public async Task UnArchiveRock(ISession s, RockModel rock, bool v) {
+			//Nothing to do...
+		}
+		public async Task UpdateHeadline(ISession s, PeopleHeadline headline, IHeadlineHookUpdates updates) {
 			//noop
 		}
-        public async Task ArchiveHeadline(ISession s, PeopleHeadline headline)
-        {
-            //noop
-        }
-        public async Task UnArchiveHeadline(ISession s, PeopleHeadline headline)
-        {
-            //Nothing to do...
-        }
+		public async Task ArchiveHeadline(ISession s, PeopleHeadline headline) {
+			//noop
+		}
+		public async Task UnArchiveHeadline(ISession s, PeopleHeadline headline) {
+			//Nothing to do...
+		}
 		public async Task DetachRock(ISession s, RockModel rock, long recurrenceId) {
 			//Noop
 		}
@@ -196,7 +193,7 @@ namespace RadialReview.Hooks.Meeting {
 			//Noop
 		}
 
-		public async Task DeleteMeasurable(ISession s, MeasurableModel measurable) {          
+		public async Task DeleteMeasurable(ISession s, MeasurableModel measurable) {
 			//Noop
 		}
 

@@ -1,12 +1,14 @@
 ﻿using NHibernate;
 using NHibernate.Criterion;
 using RadialReview.Exceptions;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
+using RadialReview.Utilities.Hooks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +60,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static void DeletePosition(UserOrganizationModel caller, long id)
+        public static async Task DeletePosition(UserOrganizationModel caller, long id)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -73,7 +75,9 @@ namespace RadialReview.Accessors
 
                     tx.Commit();
                     s.Flush();
-                }
+
+					await HooksRegistry.Each<IPositionHooks>((ses, x) => x.UpdatePosition(ses, orgPos, new IPositionHookUpdates() { WasDeleted = true }));
+				}
             }
         }
 

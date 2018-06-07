@@ -88,7 +88,7 @@ namespace RadialReview.Accessors {
 			};
 			s.Save(dash);
 			if (defaultDashboard) {
-				var perms = PermissionsUtility.Create(s, caller);				
+				var perms = PermissionsUtility.Create(s, caller);
 				//x: 0, y: 0, w: 1, h: 1
 				CreateTile(s, perms, dash.Id, 1, 1 * TILE_HEIGHT, 0, 0 * TILE_HEIGHT, "/TileData/UserProfile2", "Profile", TileType.Profile);
 				CreateTile(s, perms, dash.Id, 1, 1 * TILE_HEIGHT, 0, 1 * TILE_HEIGHT, "/TileData/FAQTips", "FAQ Guide", TileType.FAQGuide);
@@ -112,8 +112,8 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var dash = s.Get<Dashboard>(dashboardId);
-                    if (dash == null)
-                        return null;
+					if (dash == null)
+						return null;
 					PermissionsUtility.Create(s, caller).ViewDashboardForUser(dash.ForUser.Id);
 					return dash;
 				}
@@ -240,10 +240,10 @@ namespace RadialReview.Accessors {
 
 				}
 			}
-			foreach (var tile in tiles) {
-				tile.ForUser = null;
-				tile.Dashboard = null;
-			}
+			//foreach (var tile in tiles) {
+			//	tile.ForUser = null;
+			//	tile.Dashboard = null;
+			//}
 			return tiles;
 		}
 
@@ -303,31 +303,43 @@ namespace RadialReview.Accessors {
 						//	(perms.ViewClient(id);)>
 						//	return GenerateClientDashboard(s, id);							
 						case DashboardType.L10:
-							return GenerateL10Dashboard(s,perms, id);
+							return GenerateL10Dashboard(s, perms, id);
 						default:
 							throw new ArgumentOutOfRangeException("DashboardType", "" + type);
 					}
 				}
-			}			
+			}
 		}
 
 
-		private static DashboardAndTiles GenerateL10Dashboard(ISession s,PermissionsUtility perms, long id) {
+		private static DashboardAndTiles GenerateL10Dashboard(ISession s, PermissionsUtility perms, long id) {
 			perms.ViewL10Recurrence(id);
 			var recur = s.Get<L10Recurrence>(id);
 			var now = DateTime.UtcNow;
 
 			var d = new Dashboard() {
-				Id =-1,
+				Id = -1,
 				CreateTime = DateTime.UtcNow,
-				Title =recur.Name ??" L10 Dashboard",				
+				Title = recur.Name ?? " L10 Dashboard",
 			};
 			var o = new DashboardAndTiles(d);
-			
-			o.Tiles.Add(new TileModel(0, 0 * TILE_HEIGHT, 6, 2 * TILE_HEIGHT, "Scorecard", TileTypeBuilder.L10Scorecard(id), d, now));
-			o.Tiles.Add(new TileModel(0, 2 * TILE_HEIGHT, 2, 3 * TILE_HEIGHT, "Rocks", TileTypeBuilder.L10Rocks(id), d, now));
-			o.Tiles.Add(new TileModel(2, 2 * TILE_HEIGHT, 2, 3 * TILE_HEIGHT, "To-dos", TileTypeBuilder.L10Todos(id), d, now));
-			o.Tiles.Add(new TileModel(4, 2 * TILE_HEIGHT, 2, 3 * TILE_HEIGHT, "Issues", TileTypeBuilder.L10Issues(id), d, now));
+
+			var measurableRowCounts = L10Accessor.GetMeasurableCount(s, perms, id);
+			//2 is for header and footer...
+			var scorecardHeight = (int)Math.Ceiling(2.0 + Math.Ceiling((measurableRowCounts.Measurables)*18.0/19.0)+ Math.Round(measurableRowCounts.Dividers/5.0));
+			var scorecardCount = (double)scorecardHeight / (double)TILE_HEIGHT;
+
+			//Rocks, todos, issues
+			var nonScorecardTileHeight = (int)Math.Max(3 * TILE_HEIGHT, Math.Ceiling((5.0 - scorecardCount) * TILE_HEIGHT));
+			var issueTileHeight = (int)Math.Ceiling(0.5 * nonScorecardTileHeight);
+
+
+			//						  x, y									w										h
+			o.Tiles.Add(new TileModel(0, 0,									6,						   scorecardHeight, "Scorecard", TileTypeBuilder.L10Scorecard(id), d, now));
+			o.Tiles.Add(new TileModel(0, scorecardHeight,					2,					nonScorecardTileHeight, "Rocks", TileTypeBuilder.L10Rocks(id), d, now));
+			o.Tiles.Add(new TileModel(2, scorecardHeight,					2, 				    nonScorecardTileHeight, "To-dos", TileTypeBuilder.L10Todos(id), d, now));
+			o.Tiles.Add(new TileModel(4, scorecardHeight,					2, 				 		   issueTileHeight, "Issues", TileTypeBuilder.L10Issues(id), d, now));
+			o.Tiles.Add(new TileModel(4, scorecardHeight + issueTileHeight,	2,  nonScorecardTileHeight-issueTileHeight, "People Headlines", TileTypeBuilder.L10PeopleHeadlines(id), d, now));
 
 			return o;
 		}

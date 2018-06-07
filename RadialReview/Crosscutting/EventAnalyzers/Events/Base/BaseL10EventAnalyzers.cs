@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
 	//public abstract class BaseL10EventAnalyzer : IEventAnalyzer, IEventAnalyzerGenerator {
 
- //       public virtual BaseSearch<List<long>> GetRecurrenceIdSearcher() {
- //           return new SearchL10RecurrenceIds();
- //       }
+	//       public virtual BaseSearch<List<long>> GetRecurrenceIdSearcher() {
+	//           return new SearchL10RecurrenceIds();
+	//       }
 
- //       public abstract EventFrequency GetExecutionFrequency();
+	//       public abstract EventFrequency GetExecutionFrequency();
 
 	//	public abstract int GetNumberOfFailsToTrigger(IEventSettings settings);
 
@@ -44,10 +44,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
 	//	}
 	//}
 
- //   public abstract class BaseLeadershipTeamL10EventAnalyzer: BaseL10EventAnalyzer {
- //       public override BaseSearch<List<long>> GetRecurrenceIdSearcher() {
- //           return new SearchLeadershipL10RecurrenceIds();
- //       }
- //   }
+	//   public abstract class BaseLeadershipTeamL10EventAnalyzer: BaseL10EventAnalyzer {
+	//       public override BaseSearch<List<long>> GetRecurrenceIdSearcher() {
+	//           return new SearchLeadershipL10RecurrenceIds();
+	//       }
+	//   }
 
 }
