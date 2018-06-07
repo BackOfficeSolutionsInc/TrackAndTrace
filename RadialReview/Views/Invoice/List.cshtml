@@ -6,6 +6,16 @@
 	var j= 0;
 }
 
+
+@section top{
+	<div class="jumbotron">
+			<h1>Invoices</h1>
+	</div>
+}
+
+
+
+
 <style>
 	.amtDue {
 		text-align: right;
@@ -33,6 +43,8 @@
 	}
 </style>
 <div class="pull-right"><a href="/manage/payment">Back to Payments</a></div>
+<div class="clearfix"></div>
+<div class="pull-right"><a href="/invoice/all">View All</a></div>
 <div class="clearfix"></div>
 <div class="panel panel-primary">
 	<div class="panel-heading"><b>@Model.FirstOrDefault().NotNull(x => x.Organization.GetName() + " ") Invoices</b></div>

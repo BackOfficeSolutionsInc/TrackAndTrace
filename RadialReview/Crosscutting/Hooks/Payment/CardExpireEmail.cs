@@ -24,10 +24,13 @@ namespace RadialReview.Crosscutting.Hooks.Payment {
 			var org = s.Get<OrganizationModel>(token.OrganizationId);
 			var admins = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null && x.ManagingOrganization == true && x.Id == token.OrganizationId).List().ToList();
 			var emails = new List<Mail>();
+
+			var subject = s.GetSettingOrDefault(Variable.Names.UPDATE_CARD_SUBJECT, "[Action Required] Traction® Tools - Update Payment Information");
+
 			foreach (var a in admins) {
 				var mail = Mail
 					.To("CardExpire", a.GetEmail())
-					.SubjectPlainText("[Action Required] Traction® Tools - Update Payment Information")
+					.SubjectPlainText(subject)
 					.Body(EmailStrings.UpdateCard_Body, Config.ProductName(), Config.BaseUrl(null));
 				mail.ReplyToAddress = s.GetSettingOrDefault("SupportEmail", "client-success@mytractiontools.com");
 				mail.ReplyToName = "Traction Tools Support";

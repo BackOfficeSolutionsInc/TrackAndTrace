@@ -14,6 +14,8 @@ using Microsoft.Owin.Security.DataHandler.Encoder;
 using RadialReview.Utilities.Encrypt;
 using RadialReview.Utilities;
 using RadialReview.Areas.CoreProcess.Models;
+using Hangfire;
+using Hangfire.MySql;
 
 namespace RadialReview
 {
@@ -25,12 +27,25 @@ namespace RadialReview
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
-            // Enable the application to use a cookie to store information for the signed in user
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-                LoginPath = new PathString("/Account/Login")
-            });
+			// Enable the application to use a cookie to store information for the signed in user
+
+			var cookie = new CookieAuthenticationOptions {
+				AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+				LoginPath = new PathString("/Account/Login"),
+			};
+			
+            app.UseCookieAuthentication(cookie);
+
+			//if (!Config.IsLocal() && Config.GetCookieDomains()!=null) {
+			//	var subDomainCookie = new CookieAuthenticationOptions {
+			//		AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+			//		LoginPath = new PathString("/Account/Login"),
+			//		CookieName = ".AspNet.Subcookies",
+			//	};
+			//	subDomainCookie.CookieDomain = Config.GetCookieDomains();// "traction.tools";
+			//	app.UseCookieAuthentication(subDomainCookie);
+			//}
+
             // Use a cookie to temporarily store information about a user logging in with a third party login provider
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
@@ -41,69 +56,78 @@ namespace RadialReview
                 TokenEndpointPath = new PathString("/Token"),
                 Provider = new ApplicationOAuthProvider(PublicClientId),
                 AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
-                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
+                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),				
                 AllowInsecureHttp = true
             };
 
             // Enable the application to use bearer tokens to authenticate users
             app.UseOAuthBearerTokens(OAuthOptions);
 
-            // Uncomment the following lines to enable logging in with third party login providers
-            //app.UseMicrosoftAccountAuthentication(
-            //    clientId: "",
-            //    clientSecret: "");
-
-            //app.UseTwitterAuthentication(
-            //   consumerKey: "",
-            //   consumerSecret: "");
-
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
-
-            //app.UseGoogleAuthentication();
 
 
+			GlobalConfiguration.Configuration.UseStorage(new MySqlStorage(Config.GetHangfireConnectionString(), new MySqlStorageOptions()));
+			if (Config.IsLocal()) {
+				app.UseHangfireDashboard();
+			}
 
-            ////Added from https://dev.outlook.com/restapi/tutorial/dotnet
+			app.UseHangfireServer();
 
-            //app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
+			// Uncomment the following lines to enable logging in with third party login providers
+			//app.UseMicrosoftAccountAuthentication(
+			//    clientId: "",
+			//    clientSecret: "");
 
-            //app.UseCookieAuthentication(new CookieAuthenticationOptions());
+			//app.UseTwitterAuthentication(
+			//   consumerKey: "",
+			//   consumerSecret: "");
 
-            //app.UseOpenIdConnectAuthentication(
-            //  new OpenIdConnectAuthenticationOptions {
-            //	  ClientId = Config.Office365.AppId(),
-            //	  Authority = "https://login.microsoftonline.com/common/v2.0",
-            //	  Scope = "openid offline_access profile email " + string.Join(" ", Config.Office365.Scopes()),
-            //	  RedirectUri = Config.Office365.RedirectUrl(),
-            //	  PostLogoutRedirectUri = "/",
-            //	  TokenValidationParameters = new TokenValidationParameters {
-            //		  // For demo purposes only, see below
-            //		  ValidateIssuer = false
+			//app.UseFacebookAuthentication(
+			//   appId: "",
+			//   appSecret: "");
 
-            //		  // In a real multitenant app, you would add logic to determine whether the
-            //		  // issuer was from an authorized tenant
-            //		  //ValidateIssuer = true,
-            //		  //IssuerValidator = (issuer, token, tvp) =>
-            //		  //{
-            //		  //  if (MyCustomTenantValidation(issuer))
-            //		  //  {
-            //		  //    return issuer;
-            //		  //  }
-            //		  //  else
-            //		  //  {
-            //		  //    throw new SecurityTokenInvalidIssuerException("Invalid issuer");
-            //		  //  }
-            //		  //}
-            //	  },
-            //	  Notifications = new OpenIdConnectAuthenticationNotifications {
-            //		  AuthenticationFailed = OnAuthenticationFailed,
-            //		  AuthorizationCodeReceived = OnAuthorizationCodeReceived
-            //	  }
-            //  }
-            //);
-        }
+			//app.UseGoogleAuthentication();
+
+
+
+			////Added from https://dev.outlook.com/restapi/tutorial/dotnet
+
+			//app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
+
+			//app.UseCookieAuthentication(new CookieAuthenticationOptions());
+
+			//app.UseOpenIdConnectAuthentication(
+			//  new OpenIdConnectAuthenticationOptions {
+			//	  ClientId = Config.Office365.AppId(),
+			//	  Authority = "https://login.microsoftonline.com/common/v2.0",
+			//	  Scope = "openid offline_access profile email " + string.Join(" ", Config.Office365.Scopes()),
+			//	  RedirectUri = Config.Office365.RedirectUrl(),
+			//	  PostLogoutRedirectUri = "/",
+			//	  TokenValidationParameters = new TokenValidationParameters {
+			//		  // For demo purposes only, see below
+			//		  ValidateIssuer = false
+
+			//		  // In a real multitenant app, you would add logic to determine whether the
+			//		  // issuer was from an authorized tenant
+			//		  //ValidateIssuer = true,
+			//		  //IssuerValidator = (issuer, token, tvp) =>
+			//		  //{
+			//		  //  if (MyCustomTenantValidation(issuer))
+			//		  //  {
+			//		  //    return issuer;
+			//		  //  }
+			//		  //  else
+			//		  //  {
+			//		  //    throw new SecurityTokenInvalidIssuerException("Invalid issuer");
+			//		  //  }
+			//		  //}
+			//	  },
+			//	  Notifications = new OpenIdConnectAuthenticationNotifications {
+			//		  AuthenticationFailed = OnAuthenticationFailed,
+			//		  AuthorizationCodeReceived = OnAuthorizationCodeReceived
+			//	  }
+			//  }
+			//);
+		}
 
         //private Task OnAuthenticationFailed(AuthenticationFailedNotification<OpenIdConnectMessage,OpenIdConnectAuthenticationOptions> notification) {
         //	notification.HandleResponse();

@@ -108,9 +108,7 @@
 		</div>
 	}
 </div>
-<script>
-	
-
+<script>	
 	function showVideo(self) {
 		debugger;
 		var overlay = $("<div class='video-overlay'></div>");
@@ -132,5 +130,14 @@
 			$(overlay).remove();
 		});
 	}
-
 </script>  
+
+@if (ViewBag.AskToSharePeopleAnalyzer ?? false) {
+<script>
+	try{
+		sharePeopleAnalyzer();
+	} catch (e) {
+		console.error(e);
+	}
+</script>
+}

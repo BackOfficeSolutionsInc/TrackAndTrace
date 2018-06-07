@@ -12,8 +12,8 @@ namespace RadialReview.Models {
 		public string EditName { get; set; }
 		public string AdminName { get; set; }
 		public PermissionsHeading() {
-			ViewName  = "View";
-			EditName  = "Edit";
+			ViewName = "View";
+			EditName = "Edit";
 			AdminName = "Admin";
 
 		}
@@ -26,41 +26,45 @@ namespace RadialReview.Models {
 						EditName = "Edit",
 						AdminName = "Admin"
 					};
+				case ResourceType.EditDeleteUserDataForOrganization:
+					return new PermissionsHeading() {
+						ViewName = null,
+						EditName = "Edit/Delete",
+						AdminName = "Admin"
+					};
 				default:
 					return new PermissionsHeading();
 			};
 		}
 	}
 
-	public class PermItem : ILongIdentifiable, IHistorical
-	{
+	public class PermItem : ILongIdentifiable, IHistorical {
 
 
-		public enum AccessType
-		{
+		public enum AccessType {
 			Invalid = 0,
 			Creator = 100,
-            RGM     = 200,
-            Members = 300,
-            Admins  = 400,
-            Email   = 500,
+			RGM = 200,
+			Members = 300,
+			Admins = 400,
+			Email = 500,
 		}
-        public enum ResourceType {
-            Invalid = 0,
-            L10Recurrence = 1,
-            InvoiceForOrganization = 2,
-            VTO = 3,
-            AccountabilityHierarchy= 4,
+		public enum ResourceType {
+			Invalid = 0,
+			L10Recurrence = 1,
+			InvoiceForOrganization = 2,
+			VTO = 3,
+			AccountabilityHierarchy = 4,
 			UpgradeUsersForOrganization = 5,
 			CoreProcess = 6,
-            SurveyContainer = 7,
+			SurveyContainer = 7,
 			Survey = 8,
 			UpdatePaymentForOrganization = 9,
+			EditDeleteUserDataForOrganization = 10
 			//Survey = 7,
 		}
 		[Flags]
-		public enum AccessLevel
-		{
+		public enum AccessLevel {
 			Invalid = 0,
 			View = 1,
 			Edit = 2,
@@ -82,10 +86,9 @@ namespace RadialReview.Models {
 		public virtual String _DisplayText { get; set; }
 		public virtual string _ImageUrl { get; set; }
 		public virtual string _DisplayInitials { get; set; }
-        public virtual int _Color { get; set; }
-		
-		public virtual bool HasFlags(AccessLevel level)
-		{
+		public virtual int _Color { get; set; }
+
+		public virtual bool HasFlags(AccessLevel level) {
 			if (level.HasFlag(AccessLevel.View) && !CanView)
 				return false;
 			if (level.HasFlag(AccessLevel.Edit) && !CanEdit)
@@ -102,15 +105,12 @@ namespace RadialReview.Models {
 		public virtual ResourceType ResType { get; set; }
 		public virtual long ResId { get; set; }
 
-		public PermItem()
-		{
+		public PermItem() {
 			CreateTime = DateTime.UtcNow;
 		}
 
-		public class Map : ClassMap<PermItem>
-		{
-			public Map()
-			{
+		public class Map : ClassMap<PermItem> {
+			public Map() {
 				Id(x => x.Id);
 				Map(x => x.CanView);
 				Map(x => x.CanEdit);
@@ -128,29 +128,27 @@ namespace RadialReview.Models {
 			}
 		}
 
-    }
+	}
 }
 
-public class EmailPermItem : IHistorical{
-    public virtual long Id { get; set; }
-    public virtual string Email { get; set; }
-    public virtual long CreatorId { get; set; }
-    public virtual DateTime CreateTime { get; set; }
-    public virtual DateTime? DeleteTime { get; set; }
+public class EmailPermItem : IHistorical {
+	public virtual long Id { get; set; }
+	public virtual string Email { get; set; }
+	public virtual long CreatorId { get; set; }
+	public virtual DateTime CreateTime { get; set; }
+	public virtual DateTime? DeleteTime { get; set; }
 
-    public EmailPermItem()
-    {
-        CreateTime = DateTime.UtcNow;
-    }
+	public EmailPermItem() {
+		CreateTime = DateTime.UtcNow;
+	}
 
-    public class Map : ClassMap<EmailPermItem> {
-        public Map()
-        {
-            Id(x => x.Id);
-            Map(x => x.Email);
-            Map(x => x.CreatorId);
-            Map(x => x.CreateTime);
-            Map(x => x.DeleteTime);
-        }
-    }
+	public class Map : ClassMap<EmailPermItem> {
+		public Map() {
+			Id(x => x.Id);
+			Map(x => x.Email);
+			Map(x => x.CreatorId);
+			Map(x => x.CreateTime);
+			Map(x => x.DeleteTime);
+		}
+	}
 }

@@ -253,7 +253,8 @@ function updateRockCompletion(rockId, state, rockId1) {
 	if (rockId1 !== undefined) {
 		$("input[name='for_rock_" + rockId1 + "']").val(state);
 	}
-	recalculateMilestones();
+    recalculateMilestones();
+    recalculatePercentage();
 }
 
 function updateRockName(rockId, message) {
@@ -458,7 +459,7 @@ function updateRocks(html) {
 	$(".rock-empty-holder").addClass("hidden");
 	$(".rocks-container").removeClass("hidden");
 	console.log("accept milestones javascript");
-	recalculateMilestones();
+    recalculateMilestones();
 }
 
 function removeRock(rockId) {

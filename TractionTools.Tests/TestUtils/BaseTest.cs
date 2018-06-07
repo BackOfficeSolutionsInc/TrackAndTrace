@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MigraDoc.DocumentObjectModel;
+using MigraDoc.Rendering;
 using Moq;
 using Newtonsoft.Json.Linq;
 using NHibernate;
@@ -29,9 +31,11 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.SessionState;
+using TractionTools.Tests.Startup;
 using TractionTools.Tests.Utilities;
 
 namespace TractionTools.Tests.TestUtils {
+	[TestClass]
 	public class BaseTest {
 
 		private static Dictionary<Guid, UserOrganizationModel> AdminUsers = new Dictionary<Guid, UserOrganizationModel>();
@@ -426,6 +430,7 @@ namespace TractionTools.Tests.TestUtils {
 
 		[TestInitialize]
 		public void BaseTestInitialize() {
+			SetupAssemblyInitializer.ReconfigureSqlite();
 			HooksRegistry.Deregister();
 
 		}
@@ -437,6 +442,13 @@ namespace TractionTools.Tests.TestUtils {
 		}
 
 
+		protected void Save(Document doc, string name) {
+			PdfDocumentRenderer renderer = new PdfDocumentRenderer(true);
+			renderer.Document = doc;
+			renderer.RenderDocument();
+			renderer.PdfDocument.Save(Path.Combine(GetCurrentPdfFolder(), name));
+			renderer.PdfDocument.Save(Path.Combine(GetPdfFolder(), name));
+		}
 
 	}
 	public static class TestObjectExtensions {

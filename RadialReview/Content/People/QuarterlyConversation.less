@@ -6,6 +6,28 @@
 @import (reference)"../bootstrap/mixins/vendor-prefixes";
 @import (reference)"../bootstrap/mixins/border-radius";
 
+.disabled-qc {
+	&.people.quarterly-conversation survey-container .current-section {
+		.title, .decoration {
+			background: repeating-linear-gradient( 45deg, #dd2c00, #dd2c00 10px, red 10px, red 20px ) !important;
+		}
+
+		.decoration:after {
+			content: "This assessment has concluded. You cannot edit your answers.";
+			color: white;
+			top: -3px;
+			position: absolute;
+			/* left: 3px; */
+			/* float: right; */
+			right: 6px;
+			font-weight: bold;
+			letter-spacing: 1px;
+		}
+	}
+}
+
+
+
 .people.quarterly-conversation {
 
 	.md-radio {
@@ -32,6 +54,12 @@
 	.disabled {
 		color: rgba(0,0,0,.5);
 		font-style: italic;
+
+		.responses {
+			.md-radio, textarea, input {
+				pointer-events: none;
+			}
+		}
 	}
 
 	survey-container {

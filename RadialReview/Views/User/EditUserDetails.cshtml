@@ -1,0 +1,41 @@
+﻿@model RadialReview.Controllers.UserController.EditUserDetailsVM
+
+
+<div class="row smallBreak2">
+	<div class="col-xs-3"><label>Name:</label></div>
+	<div class="row col-xs-9 noPadLeft">
+		<div class="col-xs-6 noPadRight">
+			@Html.TextBoxFor(x => x.First, new {
+				placeholder = RadialReview.Properties.DisplayNameStrings.firstName,
+				@class = "fullWidth form-control blend"
+			})
+		</div>
+		<div class="col-xs-6 noPadRight noPadLeft">
+			@Html.TextBoxFor(x => x.Last, new {
+				placeholder = RadialReview.Properties.DisplayNameStrings.lastName,
+				@class = "fullWidth form-control blend"
+			})
+		</div>
+	</div>
+</div>
+<div class="row smallBreak2">
+	<div class="col-xs-3"><label>Image:</label></div>
+	<div class="row col-xs-9 noPadLeft">
+		<input type="file" name="image">
+
+		@*@Html.Partial("~/Views/Upload/Image.cshtml", new RadialReview.Models.ViewModels.ImageUploadViewModel() {
+			ForType = RadialReview.Models.Enums.UploadType.ProfileImage.ToString(),
+			ImageUrl = Model.Image,
+			UploadUrl = "/upload/image/" + Model.Id,
+			DeleteUrl = "/upload/deleteUserImage/" + Model.Id
+		})*@
+	</div>
+</div>
+
+<style>
+	#uploaded, #fileinfo {
+		display: inline-block;
+		float: left;
+		padding-right: 12px;
+	}
+</style>

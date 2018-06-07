@@ -62,11 +62,11 @@ namespace RadialReview.Utilities {
 			var privateApi = Config.PaymentSpring_PrivateKey(forceTest);
 			var byteArray = new UTF8Encoding().GetBytes(privateApi + ":");
 			client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-            
-            //added
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            var response = await client.PostAsync("https://api.paymentspring.com/api/v1/charge", requestContent);
+			//added
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+			var response = await client.PostAsync("https://api.paymentspring.com/api/v1/charge", requestContent);
 			var responseContent = response.Content;
 			using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
 				var result = await reader.ReadToEndAsync();

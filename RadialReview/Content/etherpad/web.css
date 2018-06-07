@@ -32,7 +32,7 @@ li.separator.acl-write {
 }
 
 span[style="display:block;"] ~ a[href]{
-	display:none !important;
+	/*display:none !important;*/
 }
 
 #editbar{

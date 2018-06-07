@@ -27,6 +27,7 @@ using Newtonsoft.Json;
 using RadialReview.Accessors.VideoConferenceProviders;
 using Ionic.Zip;
 using System.Text;
+using static RadialReview.Models.L10.L10Recurrence;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -776,6 +777,15 @@ namespace RadialReview.Controllers {
 
 		#endregion
 
+		#region PeopleTools
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> SharePeopleAnalyzer(long id, bool share) {
+			await L10Accessor.SharePeopleAnalyzer(GetUser(), GetUser().Id, id, share?L10Recurrence.SharePeopleAnalyzer.Yes:L10Recurrence.SharePeopleAnalyzer.No);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		#endregion
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult CreateL10Page(long id) {

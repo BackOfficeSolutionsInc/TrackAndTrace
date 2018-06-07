@@ -46,6 +46,21 @@ namespace RadialReview.Models {
 		Annual,
 	}
 
+	public static class SchedulePeriodTypeExt{
+		public static TimeSpan GetPeriod(this SchedulePeriodType self) {			
+			switch (self) {
+				case SchedulePeriodType.Monthly:
+					return TimespanExtensions.OneMonth();
+				case SchedulePeriodType.Quarterly:
+					return TimeSpan.FromDays(365.25 / 4);
+				case SchedulePeriodType.Annual:
+					return TimeSpan.FromDays(365.25);
+				default:
+					return TimespanExtensions.OneMonth();
+			}
+		}
+	}
+
 	public class PaymentPlan_Monthly : PaymentPlanModel {
 		public virtual decimal L10PricePerPerson { get; set; }
 		public virtual decimal ReviewPricePerPerson { get; set; }
@@ -97,16 +112,7 @@ namespace RadialReview.Models {
 		public override TimeSpan SchedulerPeriod() {
 			if (SchedulePeriod == null)
 				return TimespanExtensions.OneMonth();
-			switch (SchedulePeriod.Value) {
-				case SchedulePeriodType.Monthly:
-					return TimespanExtensions.OneMonth();
-				case SchedulePeriodType.Quarterly:
-					return TimeSpan.FromDays(365.25 / 4);
-				case SchedulePeriodType.Annual:
-					return TimeSpan.FromDays(365.25);
-				default:
-					return TimespanExtensions.OneMonth();
-			}
+			return SchedulePeriod.Value.GetPeriod();
 		}
 
 		public PaymentPlan_Monthly() {

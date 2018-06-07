@@ -19,7 +19,7 @@ namespace TractionTools.Tests.Startup {
 
 		[AssemblyInitialize]
 		public static void AssemblyInit(TestContext context) {
-            ReconfigureSqlite();
+            //ReconfigureSqlite();
 		}
 
         public static void ReconfigureSqlite() {

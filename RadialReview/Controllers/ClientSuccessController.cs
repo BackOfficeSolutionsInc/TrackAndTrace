@@ -43,7 +43,7 @@ namespace RadialReview.Controllers {
 			return Json(enabled, JsonRequestBehavior.AllowGet);
 		}
 
-		[Access(AccessLevel.Radial)]
+		[Access(AccessLevel.RadialData)]
 		public ActionResult Close(AccountType accountType = AccountType.Demo) {
 			Response.Cache.SetCacheability(HttpCacheability.NoCache);
 
