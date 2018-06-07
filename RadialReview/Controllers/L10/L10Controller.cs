@@ -24,6 +24,8 @@ using System.Threading.Tasks;
 using RadialReview.Models.ViewModels;
 using static RadialReview.Utilities.SelectExistingOrCreateUtility;
 using Newtonsoft.Json;
+using RadialReview.Variables;
+using RadialReview.Models.Application;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -60,6 +62,17 @@ namespace RadialReview.Controllers {
 
 			ViewBag.ViewAccountabilityChart = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanView(ResourceType.AccountabilityHierarchy, GetUser().Organization.AccountabilityChartId));
 			ViewBag.ViewPeopleAnalyzer = GetUser().Organization.Settings.EnablePeople;
+
+			if (PaymentAccessor.ShowDelinquent(GetUser(), GetUser().Organization.Id, 7)) {
+				var dflt =	"Your free trial of Traction Tools is over. <br/>"+
+							"<u><a href='#' class='todoModal' data-method='createtodo' data-recurrence='{0}' data-todo='Enter payment information into Traction Tools' data-details='Go to https://traction.tools/Manage/Payment and add a payment method. Contact support@mytractiontools.com with questions.'>Take a to-do</a></u> " +
+							"to enter your payment information?";
+				var msg = VariableAccessor.Get<string>(Variable.Names.DELINQUENT_MESSAGE_MEETING, () =>dflt);
+				msg=msg.Replace("{0}", "" + id);
+				if (!string.IsNullOrWhiteSpace(msg)) {
+					ViewBag.ShowDelinquentMessage = msg;
+				}
+			}
 
 
 			var model = new L10MeetingVM() {

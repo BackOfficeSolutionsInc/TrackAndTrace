@@ -42,6 +42,13 @@
 	@Scripts.Render("~/bundles/L10")
 	@Html.Partial("_SetupScript", Model)
 	<script>
+		var meetingSettings = {};
+		try {
+			meetingSettings.showDelinquent = "@((new HtmlString( ViewBag.ShowDelinquentMessage??"")))";
+		} catch (e) {
+			console.error(e);
+		}
+
 		setPreviewMode(false);
 
 		var picturesLookup={};
@@ -166,9 +173,20 @@
 					e.preventDefault();
 				}
 			});
+
+			try {
+				if (meetingSettings.showDelinquent) {
+					showAlert(meetingSettings.showDelinquent, 1000000);
+					$(".alert .todoModal").one("click", function () {
+						setTimeout(function () {
+							clearAlerts();
+						}, 100);
+					});
+				}
+			} catch (e) {
+				console.error(e);
+			}
 		});
-
-
 	</script>
 
 }

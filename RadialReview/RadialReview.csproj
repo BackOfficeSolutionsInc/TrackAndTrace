@@ -21,7 +21,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
     <TargetFrameworkProfile />
     <UseGlobalApplicationHostFile />
     <Use64BitIISExpress />
@@ -2052,7 +2052,6 @@
     <Content Include="Scripts\table\fixedTabel.js" />
     <Content Include="Scripts\table\grid.js" />
     <Content Include="Scripts\table\sortable_table.js" />
-    <Content Include="Scripts\typings\Charts.js" />
     <Content Include="Views\Review\Details\ChartBuilder2.cshtml" />
     <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
     <Content Include="Views\JobDescription\Edit.cshtml" />
@@ -2089,7 +2088,6 @@
     <Content Include="Scripts\d3\LICENSE" />
     <Content Include="Views\Charts\Histogram.cshtml" />
     <Content Include="Scripts\Charts.js.map" />
-    <Content Include="Scripts\typings\Charts.js.map" />
     <Content Include="Views\L10\BasePage.cshtml" />
     <Content Include="Views\L10\_SetupScript.cshtml" />
     <Content Include="Views\Issues\ScorecardIssueModal.cshtml" />
