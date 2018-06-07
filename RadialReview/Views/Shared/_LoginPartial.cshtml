@@ -4,122 +4,122 @@
 @using RadialReview.Properties
 
 @if (ViewBag.NoLogin != true) {
-	if (Request.IsAuthenticated) {
-		using (Html.BeginForm("LogOff", "Account",new { area = "" }, FormMethod.Post, new {  id = "logoutForm", @class = "navbar-right" })) {
-			@Html.AntiForgeryToken()
+    if (Request.IsAuthenticated) {
+        using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" })) {
+            @Html.AntiForgeryToken()
 
-			<span class="pull-left navbar-icon-container hidden-xs">
-				@if (((int?)ViewBag.Organizations ?? 0) > 0) {
-					if (ViewBag.ShowL10) {
-						<span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal populateMeetingData" data-listRecurrences="true" title="New People Headline"></span>
-						<span id="header-tab-new-issue" class="navbar-icon-button icon fontastic-icon-pinboard glyphico1n glyphicon-pushp1in issuesModal populateMeetingData" data-method="CreateIssueRecurrence" title="New Issue"></span>
-					}
-					<span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal populateMeetingData" data-method="CreateTodoRecurrence" title="New To-do"></span>
-				}
-			</span>
+            <span class="pull-left navbar-icon-container hidden-xs">
+                @if (((int?)ViewBag.Organizations ?? 0) > 0) {
+                    if (ViewBag.ShowL10) {
+                        <span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal populateMeetingData" data-listRecurrences="true" title="New People Headline"></span>
+                        <span id="header-tab-new-issue" class="navbar-icon-button icon fontastic-icon-pinboard glyphico1n glyphicon-pushp1in issuesModal populateMeetingData" data-method="CreateIssueRecurrence" title="New Issue"></span>
+                    }
+                    <span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal populateMeetingData" data-method="CreateTodoRecurrence" title="New To-do"></span>
+                }
+            </span>
 
-			<span class="hidden-sm hidden-xs test-ignore" id="header-tab-profile-picture">
-				@Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
-					{ "ImageTitle", ((string)ViewBag.UsersName) },
-					{ "Initials", ViewBag.UserInitials },
-					{ "Color", ViewBag.UserColor }
-				})
-			</span>
-			<ul class="nav navbar-nav navbar-right1">
-				<li>
-
-
-					<div class="btn-group heading test-ignore" style="padding:8px;" id="header-tab-dropdown">
-						<button type="button" href="@Url.Action("Details", "User", new { id = ViewBag.UserId,area="" })"
-								style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap; max-width:256px;padding-right:11px;"
-								class="btn btn-default heading " data-toggle="dropdown">
-							@(ViewBag.UserName ?? "Manage")
-						</button>
-						<button class="btn btn-default heading dropdown-toggle" data-toggle="dropdown">
-							<span class="sr-only">Toggle Dropdown</span>
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							@{var doDivider = false;}
-							@if (ViewBag.IsManager ?? false) {
-								<li>
-									<a href="@Url.Action("Index", "Manage",new { area = "" })" title1="Add members, edit teams, rocks, roles and measurables" id="header-tab-dropdown-manageorganization">
-										Manage Organization@*@(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")*@
-										<span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
-									</a>
-								</li>
-								doDivider = true;
-							}
-							@*<li>
-									<a onclick="setHints(@((!(bool?)ViewBag.Hints??true).ToString().ToLower()))">
-										Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
-									</a>
-								</li>*@
-							@*@if (ViewBag.ManagingOrganization ?? false) {
-								<li>
-									<a href="@Url.Action("Advanced", "Manage",new { area = "" })" title1="Add credit card information, edit advanced settings" id="header-tab-dropdown-advancedsettings">
-										@* @(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")* @ Admin Settings
-									</a>
-								</li>
-								doDivider = true;
-							}*@
-
-							@*@if (doDivider == true) {
-
-								<li class="divider"></li>
-							}*@
+            <span class="hidden-sm hidden-xs test-ignore" id="header-tab-profile-picture">
+                @Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
+            { "ImageTitle", ((string)ViewBag.UsersName) },
+            { "Initials", ViewBag.UserInitials },
+            { "Color", ViewBag.UserColor }
+        })
+            </span>
+            <ul class="nav navbar-nav navbar-right1">
+                <li>
 
 
-							@*@if (((int?)ViewBag.Organizations ?? 0) > 0) {
+                    <div class="btn-group heading test-ignore heading-margin-smiley" style="padding:8px;" id="header-tab-dropdown">
+                        <button type="button" href="@Url.Action("Details", "User", new { id = ViewBag.UserId,area="" })"
+                                style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap; max-width:256px;padding-right:11px;"
+                                class="btn btn-default heading " data-toggle="dropdown">
+                            @(ViewBag.UserName ?? "Manage")
+                        </button>
+                        <button class="btn btn-default heading dropdown-toggle" data-toggle="dropdown">
+                            <span class="sr-only">Toggle Dropdown</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            @{var doDivider = false;}
+                            @if (ViewBag.IsManager ?? false) {
+                                <li>
+                                    <a href="@Url.Action("Index", "Manage",new { area = "" })" title1="Add members, edit teams, rocks, roles and measurables" id="header-tab-dropdown-manageorganization">
+                                        Manage Organization@*@(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")*@
+                                        <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                    </a>
+                                </li>
+                                doDivider = true;
+                            }
+                            @*<li>
+                                    <a onclick="setHints(@((!(bool?)ViewBag.Hints??true).ToString().ToLower()))">
+                                        Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
+                                    </a>
+                                </li>*@
+                            @*@if (ViewBag.ManagingOrganization ?? false) {
+                                    <li>
+                                        <a href="@Url.Action("Advanced", "Manage",new { area = "" })" title1="Add credit card information, edit advanced settings" id="header-tab-dropdown-advancedsettings">
+                                            @* @(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")* @ Admin Settings
+                                        </a>
+                                    </li>
+                                    doDivider = true;
+                                }*@
 
-								<li id="header-tab-dropdown-myaccountabilities">@Html.ActionLink("My Accountabilities", "Details", "User", new { id = ViewBag.UserId , area="" }, null)</li>
-							}*@
-							<li>@Html.ActionLink("Edit My Profile", "Manage", "Account", new { area = "" }, null)</li>
+                            @*@if (doDivider == true) {
 
-							<li class="divider"></li>
-							<li><a href="#" onclick="supportEmail('@Html.Encode(ViewBag.Title)','@ProductStrings.SupportEmail')"><span class="icon fontastic-icon-lifebuoy pull-right" style="color:#EF7622"></span>Contact Support</a></li>
-							<li><a href="https://tractiontools.happyfox.com/home" target="_blank"><span class="icon fontastic-icon-book-bookmark pull-right" style="color:#EF7622"></span>Knowledge Base</a></li>
-							<li class="divider"></li>
-							@if (((int?)ViewBag.Organizations ?? 0) > 1) {
-								<li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")" id="header-tab-dropdown-changeorganization">
-									@if (((int?)ViewBag.Organizations ?? 0) > 1) {
-										@Html.ActionLink("Change Organization", "Role", "Account", new { ReturnUrl = Request.Url.AbsolutePath , area=""}, null)
-									} else {
-										<a href="#">Change Organization</a>
-									}
-								</li>
-							}
-							<li><a href="javascript:document.getElementById('logoutForm').submit()" id="header-tab-dropdown-logoff">Log off</a></li>
-						</ul>
-					</div>
-
-
-				</li>
-				<li></li>
-			</ul>
-
-								}
-
-								@*using (var s = Html.BeginScripts()) {
-									<script>
-										function setHints(b) {
-											//TODO hit hints url
-											$.ajax({
-												url: "@Url.Action("SetHint", "Account")",
-												data: { hint: b },
-												success: function (data) {
-													location.reload();
-												}
-											});
-										}
-									</script>
-									}*@
-								} else {
-									<ul class="nav navbar-nav navbar-right">
-										<li><a href="http://mytractiontools.com/contact-us/?type=tt">Sign Up Your Organization</a>@*@Html.ActionLink("Sign Up Your Organization", "Index", "GetStarted", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })*@</li>
-										<li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl, area="" }, htmlAttributes: new { id = "loginLink", })</li>
-									</ul>
-									}
+                                    <li class="divider"></li>
+                                }*@
 
 
-								}
+                            @*@if (((int?)ViewBag.Organizations ?? 0) > 0) {
+
+                                    <li id="header-tab-dropdown-myaccountabilities">@Html.ActionLink("My Accountabilities", "Details", "User", new { id = ViewBag.UserId , area="" }, null)</li>
+                                }*@
+                            <li>@Html.ActionLink("Edit My Profile", "Manage", "Account", new { area = "" }, null)</li>
+
+                            <li class="divider"></li>
+                            <li><a href="#" onclick="supportEmail('@Html.Encode(ViewBag.Title)','@ProductStrings.SupportEmail')"><span class="icon fontastic-icon-lifebuoy pull-right" style="color:#EF7622"></span>Contact Support</a></li>
+                            <li><a href="https://tractiontools.happyfox.com/home" target="_blank"><span class="icon fontastic-icon-book-bookmark pull-right" style="color:#EF7622"></span>Knowledge Base</a></li>
+                            <li class="divider"></li>
+                            @if (((int?)ViewBag.Organizations ?? 0) > 1) {
+                                <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")" id="header-tab-dropdown-changeorganization">
+                                    @if (((int?)ViewBag.Organizations ?? 0) > 1) {
+                                        @Html.ActionLink("Change Organization", "Role", "Account", new { ReturnUrl = Request.Url.AbsolutePath, area = "" }, null)
+                                    } else {
+                                        <a href="#">Change Organization</a>
+                                    }
+                                </li>
+                            }
+                            <li><a href="javascript:document.getElementById('logoutForm').submit()" id="header-tab-dropdown-logoff">Log off</a></li>
+                        </ul>
+                    </div>
+
+
+                </li>
+                <li></li>
+            </ul>
+
+        }
+
+        @*using (var s = Html.BeginScripts()) {
+            <script>
+                function setHints(b) {
+                    //TODO hit hints url
+                    $.ajax({
+                        url: "@Url.Action("SetHint", "Account")",
+                        data: { hint: b },
+                        success: function (data) {
+                            location.reload();
+                        }
+                    });
+                }
+            </script>
+            }*@
+    } else {
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="http://mytractiontools.com/contact-us/?type=tt">Sign Up Your Organization</a>@*@Html.ActionLink("Sign Up Your Organization", "Index", "GetStarted", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })*@</li>
+            <li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl, area = "" }, htmlAttributes: new { id = "loginLink", })</li>
+        </ul>
+    }
+
+
+}
