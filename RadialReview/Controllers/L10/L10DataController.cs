@@ -27,6 +27,7 @@ using Newtonsoft.Json;
 using RadialReview.Accessors.VideoConferenceProviders;
 using Ionic.Zip;
 using System.Text;
+using static RadialReview.Models.L10.L10Recurrence;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -649,7 +650,30 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess(state.ToString()));
 		}
 
+		[Access(AccessLevel.UserOrganization)]
+		[HttpGet]
+		public async Task<ActionResult> PrintoutTodoList(long id) {
 
+			var angRecur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, forceIncludeTodoCompletion: false);
+			var merger = new DocumentMerger();
+
+			//
+			var anyPages = false;
+
+			var doc = PdfAccessor.CreateDoc(GetUser(), "To-do Printout");
+			await PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false, printTileTodo: true);
+			merger.AddDoc(doc);
+			anyPages = true;
+
+			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
+			if (!anyPages)
+				return Content("No pages to print.");
+
+			var doc1 = merger.Flatten("To-do Printout", true, true, GetUser().Organization.Settings.GetDateFormat(), angRecur._Recurrence.Item.Name);
+
+
+			return Pdf(doc1, now + "_" + angRecur.Basics.Name + "_TodoPrintout.pdf", true);
+		}
 
 		#endregion
 
@@ -776,6 +800,15 @@ namespace RadialReview.Controllers {
 
 		#endregion
 
+		#region PeopleTools
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> SharePeopleAnalyzer(long id, bool share) {
+			await L10Accessor.SharePeopleAnalyzer(GetUser(), GetUser().Id, id, share?L10Recurrence.SharePeopleAnalyzer.Yes:L10Recurrence.SharePeopleAnalyzer.No);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		#endregion
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult CreateL10Page(long id) {

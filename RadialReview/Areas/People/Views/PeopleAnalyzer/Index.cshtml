@@ -10,12 +10,14 @@
 
 
 @section top{
-	<div class="jumbotron">
-		<h1>People Analyzer</h1>
-	</div>
+	@if (!(ViewBag.NoTitleBar ?? false)) {
+		<div class="jumbotron">
+			<h1>People Analyzer</h1>
+		</div>
+	}
 }
 <div ng-app="people" class="people quarterly-conversation ng-cloak">
-	<people-analyzer id="pa" class="hidden"></people-analyzer>
+	<people-analyzer id="pa" class="hidden" recurrence="@((long?)(ViewBag.RecurrenceId??null))" show-qc-actions="@(ViewBag.RecurrenceId==null?"true":"false")"></people-analyzer>
 </div>
 
 @using (Html.BeginStyles()) {
@@ -33,33 +35,33 @@
 
 		});
 	</script>
-		@*<script>
-				DataTable({
-					container: "#pa",
-					data: @Html.ArrayToString(Model.Rows),
-					cells:[{},{
-						name: "Name",
-						contents:function(x){ return x.Name; }
-					},
-					@foreach(var v in values) {
-						@:{name:"@v.Value",contents:function(x){return x.Value[@(v.ValueId)];}},
-					}
-					{
-						name:"Get it",
-						contents:function(x){return x.Get;}
-					},{
-						name:"Want it",
-						contents:function(x){return x.Want;}
-					},{
-						name:"Capacity to Do It",
-						contents:function(x){return x.Capacity;}
-					},
+	@*<script>
+			DataTable({
+				container: "#pa",
+				data: @Html.ArrayToString(Model.Rows),
+				cells:[{},{
+					name: "Name",
+					contents:function(x){ return x.Name; }
+				},
+				@foreach(var v in values) {
+					@:{name:"@v.Value",contents:function(x){return x.Value[@(v.ValueId)];}},
+				}
+				{
+					name:"Get it",
+					contents:function(x){return x.Get;}
+				},{
+					name:"Want it",
+					contents:function(x){return x.Want;}
+				},{
+					name:"Capacity to Do It",
+					contents:function(x){return x.Capacity;}
+				},
 
-					//},{
-					//	name: "Name",
-					//	contents:function(x){ return x.Name; }
-					//}]
-					]
-				});
-			</script>*@
+				//},{
+				//	name: "Name",
+				//	contents:function(x){ return x.Name; }
+				//}]
+				]
+			});
+		</script>*@
 }

@@ -65,6 +65,8 @@ namespace RadialReview.Controllers {
 			List<TileModel> tiles = new List<TileModel>();
 			if (dash != null)
 				tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
+			
+
 			ListDataVM output = await GetTileData(GetUser(), id, userId, tiles, completed, name, start, end, fullScorecard);
 
 			return Json(output, JsonRequestBehavior.AllowGet);
@@ -105,7 +107,7 @@ namespace RadialReview.Controllers {
 				try {
 					//Todos
 					var todos = TodoAccessor.GetMyTodosAndMilestones(caller, dashboardId, !completed, dayDateRange/*dateRange*/, includeTodos: true, includeMilestones: false);//.Select(x => new AngularTodo(x));
-					var m = _UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
+					var m = UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
 					output.Todos = todos.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
 				} catch (Exception e) {
 					ProcessDeadTile(e);
@@ -115,7 +117,7 @@ namespace RadialReview.Controllers {
 				try {
 					//Milestones
 					var milestones = TodoAccessor.GetMyTodosAndMilestones(caller, dashboardId, !completed, nowDateRange, includeTodos: false, includeMilestones: true);//.Select(x => new AngularTodo(x));
-					var m = _UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
+					var m = UserAccessor.GetUserOrganization(caller, dashboardId, false, true, PermissionType.ViewTodos);
 					output.Milestones = milestones.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
 				} catch (Exception e) {
 					ProcessDeadTile(e);
@@ -533,6 +535,10 @@ namespace RadialReview.Controllers {
 			}
 
 			var tiles = DashboardAccessor.GetTiles(GetUser(), id.Value);
+			foreach (var item in tiles) {
+				if (item.DataUrl.Contains("L10Todos"))
+					item.ShowPrintButton = true;
+			}
 			DashboardVM dashboard = GenerateDashboardViewModel(id, useDefault, tiles);
 
 			return View(dashboard);

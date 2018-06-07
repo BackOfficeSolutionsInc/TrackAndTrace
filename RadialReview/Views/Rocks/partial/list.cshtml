@@ -34,55 +34,55 @@
 				<table md-table @*ts-wrapper*@ width="100%" class="component" ng-show="(@(selector)  @(filter)).length">
 					<thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
 						<tr class="table-header" md-row>
-							<th class="icon-column"></th>
-							<th md-column @(attrLookup["status-column"]) class="status-column hidden-width-1" md-order-by="Completion">Status</th>
+							@*<th class="icon-column"></th>*@
+							<th md-column @(attrLookup["status-column"]) class="status-column hidden-width-1" md-order-by="Completion"><span class="icon-column icon-column-1"></span><span class="icon-column-1-text">Status</span> </th>
 							<th md-column @(attrLookup["picture-column"]) class="picture-column" style="width: 32px; display: table-cell;" md-order-by="Owner.Name" title="Accountable">Acc</th>
 							<th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Rock</th>
 							<th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column alignCenter" md-order-by="CreateTime">Create Time</th>
 							<th md-column md-numeric @(attrLookup["due-column"]) class="due-column alignCenter" md-order-by="DueDate">Due Date</th>
-							<th md-column @(attrLookup["company-rock-column"]) class="company-rock-column checkbox-column">V/TO</th>
+                            <th md-column @(attrLookup["company-rock-column"]) class="company-rock-column checkbox-column" md-order-by="VtoRock">V/TO</th>
 							<th md-column @(attrLookup["delete-column"]) class="delete-column"></th>
 						</tr>
 					</thead>
 					<tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
-						<tr ng-hide="rock.Hide" @*ts-repeat*@ class="{{rock.Completion}}  keep-background" ng-class="{grayRow:rock.Archived}" id="rock_{{::rock.Id}}" data-rock="{{::rock.Id}}" ng-repeat="rock in @(selector) | orderBy: @(orderVariable) @(filter)" md-row>
-							<td class="icon-column"></td>
-							<td md-cell class="rock-completion-container hidden-width-1 status-column" style="min-width: 80px;;vertical-align: top;">
-								<md-select placeholder="Not set" aria-label="Status" ng-model="rock.Completion" ng-change="functions.sendUpdate(rock)" ng-class="forRock_{{::rock.Id}}" class="keep-background rock-completion1 rock-completion-status {{rock.Completion}}">
-									<md-option ng-repeat="item in rockstates" value="{{item.value}}" ng-selected="{{ rock.Completion === item.value ? 'true' : 'false' }}">
-										{{item.name}}
-									</md-option>
-								</md-select>
-							</td>
-							<td md-cell class="picture-column">
-								<span class="item-wrapper place-right picture-icon-cursor">
-									<span ng-if="rock.Owner.Managing!=false" class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
-										<profile-image class="" user="rock.Owner"></profile-image>
-									</span>
-									<profile-image ng-if="rock.Owner.Managing==false" class="" user="rock.Owner"></profile-image>
-								</span>
-							</td>
-							<td md-cell class="message-column name" style="width:100%">
-								@if (usePopup) {
-									<div class="rockModal rock-name blend" data-method="EditModal" data-title="Edit rock" data-Id="{{rock.Id}}">{{rock.Name}}</div>
-								} else {
-									<input ng-model-options="{debounce: 200}" ng-model="rock.Name" placeholder="Enter rock here" type="text" class="rock-name blend" ng-change="functions.sendUpdate(rock)" title="{{rock.Name}}">
-								}
-							</td>
-							<td md-cell class="createtime-column">
-								{{::rock.CreateTime | date:dateFormat}}
-							</td>
-							<td md-cell class="due-column alignCenter due-date" style="min-width: 80px;">
-								<input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{::rock.Id}}" type="text" value="{{rock.DueDate | date:dateFormat}}" n ng-model-options="{debounce: 400}" />
-							</td>
-							<td md-cell class="company-rock-column checkbox-column" style="min-width: 15px;">
-								<md-checkbox aria-label="Show on V/TO" ng-model="rock.VtoRock" class="md-align-top-left" ng-change="functions.sendUpdate(rock)" title="Show on V/TO"></md-checkbox>
-							</td>
-							<td md-cell class="delete-column" style="min-width: 15px;">
-								<span ng-if="rock.Archived==false" class="delete-row-archive delete-row" ng-click="functions.removeRow($event,rock)" title="Archive Rock"></span>
-								<span ng-if="rock.Archived==true" class="delete-row-unarchive delete-row" ng-click="functions.unarchiveRow($event,rock)" title="Unarchive Rock"></span>
-							</td>
-						</tr>
+                        <tr ng-hide="rock.Hide" @*ts-repeat*@ class="{{rock.Completion}}  keep-background" ng-class="{grayRow:rock.Archived}" id="rock_{{::rock.Id}}" data-rock="{{::rock.Id}}" ng-repeat="rock in @(selector) | orderBy: @(orderVariable) @(filter)" md-row>
+                            <td md-cell class="rock-completion-container hidden-width-1 status-column" style="min-width: 80px;;vertical-align: top;">
+                            <span class="icon-column"></span>
+                            <md-select placeholder="Not set" aria-label="Status" ng-model="rock.Completion" ng-change="functions.sendUpdate(rock)"  ng-class="forRock_{{::rock.Id}}" class="icon-column-text keep-background rock-completion1 rock-completion-status {{rock.Completion}}">
+                                <md-option ng-repeat="item in rockstates" value="{{item.value}}" ng-selected="{{ rock.Completion === item.value ? 'true' : 'false' }}">
+                                    {{item.name}}
+                                </md-option>
+                            </md-select>
+                            </td>
+                            <td md-cell class="picture-column">
+                                <span class="item-wrapper place-right picture-icon-cursor">
+                                    <span ng-if="rock.Owner.Managing!=false" class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
+                                        <profile-image class="" user="rock.Owner"></profile-image>
+                                    </span>
+                                    <profile-image ng-if="rock.Owner.Managing==false" class="" user="rock.Owner"></profile-image>
+                                </span>
+                            </td>
+                            <td md-cell class="message-column name" style="width:100%">
+                                @if (usePopup) {
+                        <div class="rockModal rock-name blend" data-method="EditModal" data-title="Edit rock" data-Id="{{rock.Id}}">{{rock.Name}}</div>
+} else {
+                        <input ng-model-options="{debounce: 200}" ng-model="rock.Name" placeholder="Enter rock here" type="text" class="rock-name blend" ng-change="functions.sendUpdate(rock)" title="{{rock.Name}}">
+}
+                            </td>
+                            <td md-cell class="createtime-column">
+                                {{::rock.CreateTime | date:dateFormat}}
+                            </td>
+                            <td md-cell class="due-column alignCenter due-date" style="min-width: 80px;">
+                                <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{::rock.Id}}" type="text" value="{{rock.DueDate | date:dateFormat}}" n ng-model-options="{debounce: 400}" />
+                            </td>
+                            <td md-cell class="company-rock-column checkbox-column" style="min-width: 15px;">
+                                <md-checkbox aria-label="Show on V/TO" ng-model="rock.VtoRock" class="md-align-top-left" ng-change="functions.sendUpdate(rock)" title="Show on V/TO"></md-checkbox>
+                            </td>
+                            <td md-cell class="delete-column" style="min-width: 15px;">
+                                <span ng-if="rock.Archived==false" class="delete-row-archive delete-row" ng-click="functions.removeRow($event,rock)" title="Archive Rock"></span>
+                                <span ng-if="rock.Archived==true" class="delete-row-unarchive delete-row" ng-click="functions.unarchiveRow($event,rock)" title="Unarchive Rock"></span>
+                            </td>
+                        </tr>
 
 					</tbody>
 				</table>

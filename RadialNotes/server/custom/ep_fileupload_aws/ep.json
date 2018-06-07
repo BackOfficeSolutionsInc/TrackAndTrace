@@ -1,0 +1,14 @@
+{
+  "parts": [
+    {
+      "name": "fileupload_aws",
+      "hooks": {
+        "expressConfigure": "ep_fileupload_aws/hooks:expressConfigure",
+	"expressCreateServer": "ep_fileupload_aws/hooks:expressServer",
+	"eejsBlock_editbarMenuLeft": "ep_fileupload_aws/hooks:eejsBlock_editbarMenuLeft",
+	"eejsBlock_scripts": "ep_fileupload_aws/hooks:eejsBlock_scripts",
+	"eejsBlock_styles": "ep_fileupload_aws/hooks:eejsBlock_styles"
+      }
+    }
+  ]
+}

@@ -765,7 +765,7 @@ function unstarAll() {
 	}).each(function () {
 		var id = $(this).attr("data-recurrence_issue");
 		updateIssueRank(id, 0, true);
-		refreshRanks();
+		//refreshRanks();
 
 		////DEBOUNCE
 		var pp = +$(this).data("rank");

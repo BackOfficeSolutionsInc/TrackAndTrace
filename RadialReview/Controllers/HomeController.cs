@@ -31,6 +31,11 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Any)]
 		public ActionResult Index() {
 			if (IsLoggedIn()) {
+
+				if (!ConsentAccessor.HasConsented(GetUser())) {
+					return RedirectToAction("Consent", "Account");
+				}
+
 				return RedirectToAction("Index", "Dashboard");
 				//var model = new BackendViewModel();
 
