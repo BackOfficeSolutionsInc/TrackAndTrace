@@ -158,13 +158,13 @@ namespace TractionTools.Tests.Permissions {
 
 			DbCommit(s => {
 				var org = s.Get<OrganizationModel>(c.Org.Id);
-				org.ManagersCanRemoveUsers = true;
+				//org.ManagersCanRemoveUsers = true;
 				s.Update(org);
 			});
 
 			c.AssertAll(p => p.RemoveUser(c.Employee.Id), c.Manager);
 			c.AssertAll(p => p.RemoveUser(c.Middle.Id), c.Manager);
-			c.AssertAll(p => p.RemoveUser(c.E6.Id), c.Manager, c.E2, c.Middle);
+			c.AssertAll(p => p.RemoveUser(c.E6.Id), c.Manager/*, c.E2, c.Middle*/);
 			c.AssertAll(p => p.RemoveUser(c.E7.Id), c.Manager);
 			c.AssertAll(p => p.RemoveUser(c.Manager.Id), c.Manager);
 		}

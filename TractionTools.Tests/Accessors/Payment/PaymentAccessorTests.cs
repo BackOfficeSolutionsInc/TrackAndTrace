@@ -12,11 +12,187 @@ using System.Linq;
 using RadialReview;
 using RadialReview.Utilities;
 using RadialReview.Models.ViewModels;
+using RadialReview.Models.Payments;
+using System.Collections.Generic;
 
 namespace TractionTools.Tests.Accessors {
 	[TestClass]
 	public class PaymentAccessorTests : BaseTest {
 
+		[TestMethod]
+		public async Task TestCredits() {
+
+
+			//Not enough credits to cover
+			{
+				var org = await OrgUtil.CreateOrganization();
+				//Save credits
+				var credits = new List<PaymentCredit>();
+				credits.Add(new PaymentCredit() {
+					OriginalAmount = 10,
+					AmountRemaining = 10,
+					Message = "mesage",
+					OrgId = org.Id,
+
+				});
+				credits.Add(new PaymentCredit() {
+					OriginalAmount = 10,
+					AmountRemaining = 0,
+					Message = "mesage2",
+					OrgId = org.Id,
+
+				});
+				DbCommit(s => {
+					foreach (var o in credits)
+						s.Save(o);
+				});
+
+				DbQuery(s => {
+					var cs = s.QueryOver<PaymentCredit>().Where(x => x.DeleteTime == null && x.OrgId == org.Id).List().ToList();
+					Assert.AreEqual(2, cs.Count);
+					Assert.AreEqual(1, cs.Count(x => x.AmountRemaining > 0));
+				});
+
+				//Apply all the credits
+				DbCommit(s => {
+					var itemized = new List<Itemized>() {
+					new Itemized() {
+						Name = "Item1",
+						Price = 3,
+						Quantity = 1,
+						Description = "desc1",
+					}, new Itemized() {
+						Name = "Item2",
+						Price = 10,
+						Quantity = 1,
+						Description = "desc2",
+					}
+				};
+					Assert.AreEqual(2, itemized.Count());
+					Assert.AreEqual(13, itemized.Sum(x => x.Total()));
+					PaymentAccessor._ApplyCreditsToInvoice(s, org.Organization, itemized, credits);
+					Assert.AreEqual(3, itemized.Count());
+					Assert.AreEqual(3, itemized.Sum(x => x.Total()));
+				});
+
+				//Try and apply them again... but it should fail
+				DbCommit(s => {
+					var itemized = new List<Itemized>() {
+					new Itemized() {
+						Name = "Item3",
+						Price = 4,
+						Quantity = 1,
+						Description = "desc3",
+					}, new Itemized() {
+						Name = "Item4",
+						Price = 11,
+						Quantity = 1,
+						Description = "desc4",
+					}
+				};
+
+					Assert.AreEqual(2, itemized.Count());
+					Assert.AreEqual(15, itemized.Sum(x => x.Total()));
+
+					PaymentAccessor._ApplyCreditsToInvoice(s, org.Organization, itemized, credits);
+					Assert.AreEqual(2, itemized.Count());
+					Assert.AreEqual(15, itemized.Sum(x => x.Total()));
+
+				});
+
+				//Assert that there are none...
+				DbQuery(s => {
+					var cs = s.QueryOver<PaymentCredit>().Where(x => x.DeleteTime == null && x.OrgId == org.Id && x.AmountRemaining > 0).List().ToList();
+					Assert.AreEqual(0, cs.Count);
+				});
+			}
+
+
+			//Than enough credits to cover
+			{
+				var org = await OrgUtil.CreateOrganization();
+				//Save credits
+				var credits = new List<PaymentCredit>();
+				credits.Add(new PaymentCredit() {
+					OriginalAmount = 100,
+					AmountRemaining = 100,
+					Message = "mesage",
+					OrgId = org.Id,
+
+				});
+				credits.Add(new PaymentCredit() {
+					OriginalAmount = 10,
+					AmountRemaining = 0,
+					Message = "mesage2",
+					OrgId = org.Id,
+
+				});
+				DbCommit(s => {
+					foreach (var o in credits)
+						s.Save(o);
+				});
+
+				DbQuery(s => {
+					var cs = s.QueryOver<PaymentCredit>().Where(x => x.DeleteTime == null && x.OrgId == org.Id).List().ToList();
+					Assert.AreEqual(2, cs.Count);
+					Assert.AreEqual(1, cs.Count(x => x.AmountRemaining > 0));
+				});
+
+				//Apply all the credits
+				DbCommit(s => {
+					var itemized = new List<Itemized>() {
+					new Itemized() {
+						Name = "Item1",
+						Price = 3,
+						Quantity = 1,
+						Description = "desc1",
+					}, new Itemized() {
+						Name = "Item2",
+						Price = 10,
+						Quantity = 1,
+						Description = "desc2",
+					}
+				};
+					Assert.AreEqual(2, itemized.Count());
+					Assert.AreEqual(13, itemized.Sum(x => x.Total()));
+					PaymentAccessor._ApplyCreditsToInvoice(s, org.Organization, itemized, credits);
+					Assert.AreEqual(3, itemized.Count());
+					Assert.AreEqual(0, itemized.Sum(x => x.Total()));
+				});
+
+				//Try and apply them again... but it should fail
+				DbCommit(s => {
+					var itemized = new List<Itemized>() {
+					new Itemized() {
+						Name = "Item3",
+						Price = 4,
+						Quantity = 1,
+						Description = "desc3",
+					}, new Itemized() {
+						Name = "Item4",
+						Price = 11,
+						Quantity = 1,
+						Description = "desc4",
+					}
+				};
+
+					Assert.AreEqual(2, itemized.Count());
+					Assert.AreEqual(15, itemized.Sum(x => x.Total()));
+
+					PaymentAccessor._ApplyCreditsToInvoice(s, org.Organization, itemized, credits);
+					Assert.AreEqual(3, itemized.Count());
+					Assert.AreEqual(0, itemized.Sum(x => x.Total()));
+
+				});
+
+				//Assert that there are none...
+				DbQuery(s => {
+					var cs = s.QueryOver<PaymentCredit>().Where(x => x.DeleteTime == null && x.OrgId == org.Id && x.AmountRemaining > 0).List().ToList();
+					Assert.AreEqual(1, cs.Count);
+					Assert.AreEqual(72, cs.Single().AmountRemaining);
+				});
+			}
+		}
 
 #pragma warning disable CS0618 // Type or member is obsolete
 		[TestMethod]
@@ -88,10 +264,10 @@ namespace TractionTools.Tests.Accessors {
 			var t = PaymentSpringUtil.GetToken(org.Id);
 			//var logs = await PaymentSpringUtil.GetAllLogs(true, 1);
 			var log = result.Response;
-		//	var log = logs.Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
+			//	var log = logs.Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
 			Assert.IsNotNull(log);
 			Assert.AreEqual(t.CustomerToken, log.customer_id);
-			Assert.AreEqual("SETTLED",log.status);
+			Assert.AreEqual("SETTLED", log.status);
 			Assert.AreEqual("transaction", log.@class);
 			Assert.AreEqual(0, log.amount_refunded);
 			Assert.AreEqual(14900, log.amount_settled);

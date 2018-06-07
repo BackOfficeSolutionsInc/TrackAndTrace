@@ -131,7 +131,7 @@ namespace RadialReview.Utilities.Synchronize {
 			var hasError = false;
 			var hasWarning = false;
 
-			if (clientUpdateTime == null) {
+			if (clientUpdateTime == null && shouldThrowSyncException) {
 				hasWarning = true;
 			}
 
@@ -275,6 +275,7 @@ namespace RadialReview.Utilities.Synchronize {
 							}
 							key = keySelector(s);
 							var found = s.Get<SyncLock>(key, LockMode.Upgrade);
+							
 							if (found == null) {
 								//Didnt exists. Lets atomically create it
 								//LockMode.Upgrade prevents creating simultaniously 

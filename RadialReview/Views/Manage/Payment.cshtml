@@ -21,6 +21,7 @@
 @{
 	var l10Enabled = Html.Organization().Settings.EnableL10;
 	var reviewedEnabled = Html.Organization().Settings.EnableReview;
+	var peopleEnabled = Html.Organization().Settings.EnablePeople;
 	var surveyEnabled = Html.Organization().Settings.EnableSurvey;
 	var isImplementer = Html.Organization().AccountType == RadialReview.Models.Enums.AccountType.Implementer;
 }
@@ -62,7 +63,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					@foreach (var card in Model.Cards) {
+					@foreach (var card in Model.Cards.Where(x=>x.Active)) {
 						<tr>
 							<td style="width:40px"><img style="height: 23px;" src="@card.ImageUrl" /></td>
 							<td>@card.Owner</td>
@@ -132,11 +133,11 @@
 					<td style="border-top:1px solid #f1f1f1"></td>
 					<td style="border-top:1px solid #f1f1f1"></td>
 				</tr>
-				<tr>
-					<th>Review Software</th>
-					<td> @(reviewedEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
-				</tr>
 				@if (reviewedEnabled) {
+					<tr>
+						<th>Review Software</th>
+						<td> @(reviewedEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
+					</tr>
 					if (Model.PaymentPlan is PaymentPlan_Monthly) {
 						var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
 
@@ -155,22 +156,46 @@
 					<td style="border-top:1px solid #f1f1f1"></td>
 					<td style="border-top:1px solid #f1f1f1"></td>
 				</tr>
-				@*<tr>
-						<th>Survey Software </th>
-						<td>@(surveyEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
-					</tr>
-					@if (surveyEnabled)
-					{
-						if (Model.PaymentPlan is PaymentPlan_Monthly)
-						{
-							var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+				<tr>
+					<th>People Tools™</th>
+					<td> @(peopleEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
+				</tr>
+				@if (peopleEnabled) {
+					if (Model.PaymentPlan is PaymentPlan_Monthly) {
+						var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
 
+						<tr>
+							<td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.ReviewPricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
+							<td></td>
+						</tr>
+						if (plan.ReviewFreeUntil != null && plan.ReviewFreeUntil > DateTime.UtcNow) {
 							<tr>
-								<td>&nbsp;&nbsp;<span class="price">Free</span></td>
+								<td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.ReviewFreeUntil.Value)</span></td>
 								<td></td>
 							</tr>
 						}
-					}*@
+					}
+				}
+				<tr>
+					<td style="border-top:1px solid #f1f1f1"></td>
+					<td style="border-top:1px solid #f1f1f1"></td>
+				</tr>
+				@*<tr>
+				<th>Survey Software </th>
+				<td>@(surveyEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
+			</tr>
+			@if (surveyEnabled)
+			{
+				if (Model.PaymentPlan is PaymentPlan_Monthly)
+				{
+					var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+
+					<tr>
+						<td>&nbsp;&nbsp;<span class="price">Free</span></td>
+						<td></td>
+					</tr>
+				}
+			}*@
 
 
 				@{var extras = new List<HtmlString>();
@@ -211,7 +236,7 @@
 					}
 @if (ViewBag.IsRadialAdmin == true) {
 	<div class="btn btn-danger pull-right" onclick="window.location='/invoice/ForceUpdateCard/@ViewBag.OrganizationId'">Force charge '@ViewBag.Organization.Name'</div>
-	
+
 }
 <div class="btn btn-primary pull-left" onclick="window.location='/invoice'">View Invoices</div>
 

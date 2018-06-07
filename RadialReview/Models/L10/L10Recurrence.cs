@@ -253,12 +253,19 @@ namespace RadialReview.Models.L10 {
 			}
 		}
 
-		public class L10Recurrence_Attendee : ILongIdentifiable, IDeletable, IOneToMany {
+		public enum SharePeopleAnalyzer {
+			No=-1,
+			Unset=0,
+			Yes=1
+		}
+
+		public class L10Recurrence_Attendee : ILongIdentifiable, IHistorical, IOneToMany {
 			public virtual long Id { get; set; }
 			public virtual DateTime CreateTime { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual UserOrganizationModel User { get; set; }
 			public virtual L10Recurrence L10Recurrence { get; set; }
+			public virtual SharePeopleAnalyzer SharePeopleAnalyzer { get; set; }
            // public virtual int? Ordering { get; set;  }
 
 			public L10Recurrence_Attendee() {
@@ -268,9 +275,10 @@ namespace RadialReview.Models.L10 {
 				public L10Recurrence_AttendeeMap() {
 					Id(x => x.Id);
 					Map(x => x.CreateTime);
-                    Map(x => x.DeleteTime);
-                    //Map(x => x.Ordering);
-                    References(x => x.L10Recurrence).Column("L10RecurrenceId");
+					Map(x => x.DeleteTime);
+					Map(x => x.SharePeopleAnalyzer);
+					//Map(x => x.Ordering);
+					References(x => x.L10Recurrence).Column("L10RecurrenceId");
 					References(x => x.User).Column("UserId");
 				}
 			}

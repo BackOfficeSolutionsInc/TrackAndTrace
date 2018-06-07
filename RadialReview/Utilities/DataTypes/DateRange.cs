@@ -89,6 +89,10 @@ namespace RadialReview.Utilities.DataTypes {
 			return ands;
 		}
 
+		public static bool AliveAt(this IHistorical historical, DateTime time) {
+			return DateRange.Instant(time).Filter<IHistorical>().Compile()(historical);
+		}
+
 		public static Expression<Func<T, bool>> Filter<T>(this DateRange range, Func<T, DateTime> transform) {
 			if (range == null) {
 				return x => true; /// x => true

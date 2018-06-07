@@ -23,6 +23,8 @@ using NHibernate;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using System.Threading.Tasks;
+using RadialReview.Utilities.RealTime;
+using RadialReview.Models.Angular.Roles;
 
 namespace RadialReview.Accessors {
 	public class UserTemplateAccessor {
@@ -84,9 +86,9 @@ namespace RadialReview.Accessors {
 					}
 					if (loadRoles) {
 						found._Roles = RoleAccessor.GetRolesForAttach_Unsafe(s, new Attach(found.AttachType, found.AttachId));
-							//s.QueryOver<UserTemplate.UT_Role>()
-							//.Where(x => x.DeleteTime == null && x.TemplateId == utId)
-							//.List().ToList();
+						//s.QueryOver<UserTemplate.UT_Role>()
+						//.Where(x => x.DeleteTime == null && x.TemplateId == utId)
+						//.List().ToList();
 					}
 					if (loadMeasurables) {
 						found._Measurables = s.QueryOver<UserTemplate.UT_Measurable>()
@@ -171,7 +173,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void AddRoleToAttach_Unsafe(ISession s, PermissionsUtility p,long organizationId, Attach attach, RoleModel role) {
+		public static void AddRoleToAttach_Unsafe(ISession s, PermissionsUtility p, RealTimeUtility rt, long organizationId, Attach attach, RoleModel role, int? insert = null) {
 
 
 			//var template = s.QueryOver<UserTemplate>().Where(x => x.AttachId == attach.Id && x.AttachType == attach.Type && x.DeleteTime == null).Take(1).SingleOrDefault();
@@ -186,15 +188,47 @@ namespace RadialReview.Accessors {
 			//	CreateTemplate(s, p, org, template);
 			//}
 
+			//Reorder the existing ones...
+			var existing = s.QueryOver<RoleLink>()
+									.Where(x => x.AttachId == attach.Id && x.AttachType == attach.Type && x.OrganizationId == organizationId && x.DeleteTime == null)
+									.List()
+									.OrderBy(x => x.Ordering ?? x.Id)
+									.ToList();
 
-			s.Save(new RoleLink() {
+			for (var i = 0; i < existing.Count; i++) {
+				var e = existing[i];
+				if (i < (insert ?? int.MaxValue)) {
+					e.Ordering = i;
+					s.Update(e);
+					rt.UpdateOrganization(organizationId).Update(new AngularRole(e.RoleId) {
+						Ordering = e.Ordering
+					});
+				} else {
+					e.Ordering = i + 1;
+					s.Update(e);
+					rt.UpdateOrganization(organizationId).Update(new AngularRole(e.RoleId) {
+						Ordering = e.Ordering
+					});
+				}
+			}
+
+			//Add the new one...
+			var link = new RoleLink() {
 				AttachId = attach.Id,
 				AttachType = attach.Type,
 				OrganizationId = organizationId,
-				RoleId = role.Id
-			});
+				RoleId = role.Id,
+				Ordering = insert ?? existing.Count
+			};
 
+			s.Save(link);
 
+			//if (insert == null) {
+			//	link.Ordering = link.Id;
+			//	s.Update(link);
+			//} else {				
+			//
+			//}
 
 			//AddRoleToTemplate(s, p, template.Id, organizationId, role);
 
@@ -258,7 +292,7 @@ namespace RadialReview.Accessors {
 					var p = PermissionsUtility.Create(s, caller);
 
 					await AddRoleToTemplate(s, p, templateId, caller.Organization.Id, role);
-					
+
 					tx.Commit();
 					s.Flush();
 				}
@@ -311,7 +345,7 @@ namespace RadialReview.Accessors {
 						//	Period = period,
 						//	PeriodId = periodId,
 						//});
-						
+
 						//s.Update(user);
 						//s.Flush();
 						//user.UpdateCache(s);
@@ -443,7 +477,7 @@ namespace RadialReview.Accessors {
 					var p = PermissionsUtility.Create(s, caller)
 						.EditTemplate(templateId)
 						.ManagesUserOrganization(userId, false);
-					_AddUserToTemplateUnsafe(s,p, caller.Organization, templateId, userId, forceJobDescription);
+					_AddUserToTemplateUnsafe(s, p, caller.Organization, templateId, userId, forceJobDescription);
 
 					tx.Commit();
 					s.Flush();
@@ -451,7 +485,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 		[Untested("RockAccessor.CreateRock")]
-		public static async Task _AddUserToTemplateUnsafe(ISession s,PermissionsUtility perms, OrganizationModel organization, long templateId, long userId, bool forceJobDescription) {
+		public static async Task _AddUserToTemplateUnsafe(ISession s, PermissionsUtility perms, OrganizationModel organization, long templateId, long userId, bool forceJobDescription) {
 
 			var user = s.Get<UserOrganizationModel>(userId);
 			var template = s.Get<UserTemplate>(templateId);

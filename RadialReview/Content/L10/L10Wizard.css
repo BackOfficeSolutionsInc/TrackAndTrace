@@ -489,24 +489,28 @@ x:-webkit-any-link {
 input[type=checkbox].blend {
   -webkit-appearance: none;
   /* Hides the default checkbox style */
-  height: 47px;
-  width: 47px;
+  height: 47px !important;
+  width: 47px !important;
   /*height: 18px;
     width: 18px;*/
   cursor: pointer;
   position: relative;
   padding: 0px;
-  border: none;
   background-color: transparent;
   border-radius: 36px;
   margin-top: -3px;
   margin-bottom: -10px;
   margin-left: -10px;
-  -moz-transform: scale(0.6);
-  -ms-transform: scale(0.6);
-  -o-transform: scale(0.6);
-  -webkit-transform: scale(0.6);
-  transform: scale(0.6);
+  border: none;
+  -moz-transform: scale(1) !important;
+  -ms-transform: scale(1) !important;
+  -o-transform: scale(1) !important;
+  -webkit-transform: scale(1) !important;
+  transform: scale(1) !important;
+  -moz-transition: transform 0.4s, background-color 0.2s, border-color 0.4s;
+  -o-transition: transform 0.4s, background-color 0.2s, border-color 0.4s;
+  -webkit-transition: transform 0.4s, background-color 0.2s, border-color 0.4s;
+  transition: transform 0.4s, background-color 0.2s, border-color 0.4s;
 }
 input[type=checkbox].blend,
 input[type=checkbox].blend:before,
@@ -1029,6 +1033,9 @@ body,
 }
 .wizard .picture-column {
   padding: 0px !important;
+}
+.wizard .picture-icon-cursor {
+  cursor: pointer;
 }
 .wizard *:focus {
   outline: none;
@@ -2776,4 +2783,19 @@ body,
 }
 #modal .milestone-table-modal .milestone-duedate-cell .milestone-duedate {
   height: 35px;
+
+body.admin-disabled .user-pane .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
+}
+body.admin-disabled .scorecard-list-container .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
+}
+body.admin-disabled .rock-pane .create-row {
+  opacity: .5 !important;
+  pointer-events: none;
+  background-color: gray;
 }

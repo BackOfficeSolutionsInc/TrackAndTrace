@@ -1,29 +1,30 @@
 ﻿/*
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///  obj ={																																	    ///
-///      title:,																															    ///
-///      icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}				    ///
-///      fields: [{																															    ///
-///          name: (optional)																												    ///
-///          text: (optional)																												    ///
-///          type: <text,textarea,checkbox,radio,span,div,header,h1,h2,h3,h4,h5,h6,number,date,datetime,time,file,yesno,label,select>(optional)	///
-///				   (if type=radio or select) options:[{text,value},...]																		    ///
-///          value: (optional)																												    ///
-///          placeholder: (optional)																										    ///
-///          classes: (optional)																											    ///
-///      },...],																															    ///
-///		 contents: jquery object (optional, overrides fields)																				    ///
-///      pushUrl:"",																														    ///
-///      success:function(formData,contentType),																							    ///
-///      complete:function,																													    ///
-///      cancel:function,																													    ///  
-///      reformat: function,                                                                                                                    ///
-///      validation: function(data),                                                                                                            ///
-///      noCancel: bool																														    ///
-///  }																																		    ///
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///  obj ={																																			///
+///	  title:,																																		///
+///	  icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}							///
+///	  fields: [{																																	///
+///		  name: (optional)																															///
+///		  text: (optional)																															///
+///		  type: <text,textarea,checkbox,radio,span,div,header,h1,h2,h3,h4,h5,h6,number,date,datetime,time,file,yesno,label,select,file>(optional)	///
+///				   (if type=radio or select) options:[{text,value},...]																				///
+///		  value: (optional)																															///
+///		  placeholder: (optional)																													///
+///		  classes: (optional)																														///
+///	  },...],																																		///
+///		 contents: jquery object (optional, overrides fields)																						///
+///	  pushUrl:"",																																	///
+///	  success:function(formData,contentType),																										///
+///	  complete:function,																															///
+///	  cancel:function,																																///
+///	  reformat: function,																															///
+///	  validation: function(data),																													///
+///	  noCancel: bool																																///
+///  }																																				///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
-function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel) {
+function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel, contentType) {
+	debugger;
 	$("#modal").modal("hide");
 	$("#modal-icon").attr("class", "");
 	$("#modal #class-container").attr("class", "");
@@ -57,20 +58,23 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 		},
 		//Retrieved Partial Modal
 		success: function (modal) {
-			if (!modal) {
-				$('#modal').modal('hide');
-				$("#modal").removeClass("loading");
-				showAlert("Something went wrong. If the problem persists, please contact us.");
-				return;
+			if (modal && modal.Object) {
+				showModalObject(modal.Object, pushUrl, onSuccess, onCancel);
+			} else {
+				if (!modal) {
+					$('#modal').modal('hide');
+					$("#modal").removeClass("loading");
+					showAlert("Something went wrong. If the problem persists, please contact us.");
+					return;
+				}
+				_bindModal(modal, title, callback, validation, function (formData) {
+					_submitModal(formData, pushUrl, onSuccess, null, false, contentType);
+				});
 			}
-			_bindModal(modal, title, callback, validation, function (formData) {
-				_submitModal(formData, pushUrl, onSuccess, null, false);
-			});
 		}
 	});
 }
 function showModalObject(obj, pushUrl, onSuccess, onCancel) {
-	var runAfter = [];
 	var runAfterAnimation = [];
 	$("#modal").modal("hide");
 	$("#modalCancel").toggleClass("hidden", obj.noCancel || false);
@@ -158,10 +162,6 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	$("#modal").addClass("loading");
 	$('#modal').modal('show');
 
-	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img", "select", "readonly"];
-	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "file", "select", "readonly"];
-	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "div"];
-	var anyFields = ""
 
 	if (typeof (obj.field) !== "undefined") {
 		if (typeof (obj.fields) !== "undefined") {
@@ -186,11 +186,47 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 		}
 	}
 
-	var fieldsTypeIsArray = Array.isArray(obj.fields);//typeof (obj.fields);
 
-	var contentType = null;
+	contentType = null;
 
-	var builder = '<div class="form-horizontal modal-builder">';
+
+	var runAfter = [];
+	if (!obj.contents) {
+		var fields = obj.fields;
+		var result = FormFields(fields, obj);
+		builder = result.html;
+		contentType = result.contentType;
+		runAfter = result.runAfter;
+
+	} else {
+		builder = $(obj.contents);
+	}
+
+	_bindModal(builder, obj.title, undefined, obj.validation, onSuccess, onCancel, reformat, onClose, contentType);
+	setTimeout(function () {
+		//debugger;
+		for (var i = 0; i < runAfter.length; i++) {
+			runAfter[i]();
+		}
+	}, 1);
+	setTimeout(function () {
+		for (var i = 0; i < runAfterAnimation.length; i++) {
+			runAfterAnimation[i]();
+		}
+	}, 250);
+}
+
+function FormFields(fields, options) {
+
+	var runAfter = [];
+	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img", "select", "readonly", "subform"];
+	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "file", "select", "readonly", "subform"];
+	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "div"];
+	var anyFields = ""
+
+	var defaultLabelColumnClass = options.labelColumnClass || "col-sm-2";
+	var defaultValueColumnClass = options.valueColumnClass || "col-sm-10";
+
 	var genInput = function (type, name, eid, placeholder, value, others, classes, tag) {
 		others = others || "";
 		classes = classes || "form-control blend";
@@ -208,190 +244,229 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			if (newVal)
 				value = newVal;
 		}
-
 		return '<' + tag + ' type="' + escapeString(type) + '" class="' + classes + '"' +
-                      ' name="' + escapeString(name) + '" id="' + eid + '" ' +
-                      placeholder + ' value="' + escapeString(value) + '" ' + others + '/>';
+					  ' name="' + escapeString(name) + '" id="' + eid + '" ' +
+					  placeholder + ' value="' + escapeString(value) + '" ' + others + '/>';
 	}
 
-	var defaultLabelColumnClass = obj.labelColumnClass || "col-sm-2";
-	var defaultValueColumnClass = obj.valueColumnClass || "col-sm-10";
-
-
-	if (!obj.contents) {
-		for (var f in obj.fields) {
-			if (arrayHasOwnIndex(obj.fields, f)) {
-				try {
-					var field = obj.fields[f];
-					var name = field.name || f;
-					var label = typeof (field.text) !== "undefined" || !fieldsTypeIsArray;
-					var text = field.text || name;
-					var originalValue = field.value;
-					var value = field.value || "";
-					var placeholder = field.placeholder;
-					var type = (field.type || "text").toLowerCase();
-					var classes = field.classes || "";
-					var onchange = field.onchange;
-					var eid = escapeString(name);
-
-					var labelColumnClass = field.labelColumnClass || defaultLabelColumnClass;
-					var valueColumnClass = field.valueColumnClass || defaultValueColumnClass;
-
-					if (typeof (classes) === "string" && (classes.indexOf('\'') != -1 || classes.indexOf('\"') != -1))
-						throw "Classes cannot contain a quote character.";
-
-
-					if (type == "header")
-						type = "h4";
-
-					if (typeof (placeholder) !== "undefined")
-						placeholder = "placeholder='" + escapeString(placeholder) + "'";
-					else
-						placeholder = "";
-					var input = "";
-					var inputIndex = allowed.indexOf(type);
-					if (inputIndex == -1) {
-						console.warn("Input type not allowed:" + type);
-						continue;
+	var genSelect = function (name, options, eid, classes, selectedValue) {
+		if (options != null && options.length > 0) {
+			var fieldName = name;
+			input = $(genInput("", fieldName, eid, null, null, selected, classes, "select"));
+			for (var oid in options) {
+				if (arrayHasOwnIndex(options, oid)) {
+					var option = options[oid];
+					if (!option.value) {
+						console.warn("option has no value " + fieldName + "," + oid);
 					}
-					if (Object.prototype.toString.call(value) === '[object Date]' && (/*type == "datetime" ||*/ type == "date")) {
-						value = value.toISOString().substring(0, 10);
-					}
-
-					if (type == "file")
-						contentType = 'enctype="multipart/form-data"';
-
-					if (tags.indexOf(type) != -1) {
-						var txt = value || text;
-						input = "<" + type + " name=" + escapeString(name) + '" id="' + eid + '" class="' + classes + '">' + txt + '</' + type + '>';
-					} else if (type == "textarea") {
-						input = '<textarea class="form-control blend verticalOnly ' + classes + '" rows=5 name="' + escapeString(name) + '" id="' + eid + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
-					} else if (type == "date" /*|| type=="datetime"*/) {
-						var guid = generateGuid();
-						var curName = name;
-						var curVal = originalValue;
-						var localize = field.localize;
-						input = '<div class="date-container date-' + guid + ' ' + classes + '" id="' + eid + '"></div>';
-						runAfter.push(function () {
-							var dateGenFunc = generateDatepicker;
-							if (localize == true)
-								dateGenFunc = generateDatepickerLocalize;
-							dateGenFunc('.date-' + guid, curVal, curName, eid);
-						});
-					} else if (type == "yesno") {
-						var selectedYes = (value == true) ? 'checked="checked"' : "";
-						var selectedNo = (value == true) ? "" : 'checked="checked"';
-						input = '<div class="form-group input-yesno ' + classes + '">' +
-									'<label for="true" class="col-xs-4 control-label"> Yes </label>' +
-									'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "true", selectedYes) + '</div>' +
-									'<label for="false" class="col-xs-1 control-label"> No </label>' +
-									'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "false", selectedNo) + '</div>' +
-								'</div>';
-					} else if (type == "img") {
-						input = "<img src='" + field.src + "' class='" + classes + "'/>";
-					} else if (type == "radio") {
-						if (field.options != null && field.options.length > 0) {
-							var fieldName = name;
-							input = "<fieldset id='group_" + fieldName + "'><table>";
-							for (var oid in field.options) {
-								if (arrayHasOwnIndex(field.options, oid)) {
-									var option = field.options[oid];
-									if (!option.value) {
-										console.warn("option has no value " + fieldName + "," + oid);
-									}
-									var radioId = eid + "_" + oid;
-									var selected = option.checked || false;
-									if (selected)
-										selected = "checked";
-									var radio = genInput("radio", fieldName, radioId, null, option.value, selected, option.classes || " ");
-									var optionText = option.text || option.value;
-
-									input += '<tr class="form-group">' +
-												'<td><label for="' + radioId + '" class="pull-right ' + (option.labelColumnClass || "") + ' control-label" style="padding-right:10px;">' + optionText + '</label></td>' +
-												'<td><div class="' + (option.valueColumnClass || "") + '" style="padding-top: 5px;">' + radio + '</div></td>' +
-											 '</tr>';
-								}
-							}
-							input += "</table></fieldset>";
-						} else {
-							console.warn("radio field requires an 'options' array");
-						}
-					} else if (type == "select") {
-						if (field.options != null && field.options.length > 0) {
-							var fieldName = name;
-							input = $(genInput("", fieldName, eid, null, null, selected, classes, "select"));
-							for (var oid in field.options) {
-								if (arrayHasOwnIndex(field.options, oid)) {
-									var option = field.options[oid];
-									if (!option.value) {
-										console.warn("option has no value " + fieldName + "," + oid);
-									}
-									var optionId = eid + "_" + oid;
-									var selected = option.checked || false;
-									if (selected)
-										selected = "selected";
-									var optionText = option.text || option.value;
-									var option = $(genInput("", fieldName, optionId, null, option.value, selected, " ", "option"));
-									option.text(optionText);
-									$(input).append(option);
-								}
-							}
-							//input = $(input).html();
-							input = $(input).wrapAll('<div>').parent().html();
-							//debugger;
-							//input += "</table></fieldset>";
-						} else {
-							console.warn("radio field requires an 'options' array");
-						}
-					}
-					else if (type == "readonly") {
-						tag = "span";
-						input = "<div class='" + classes + "' style='padding-top:7px;'>" + value + "</div>";
-					}
-					else {
-						input = genInput(type, name, eid, placeholder, value, null, classes);
-					}
-
-					if (addLabel.indexOf(type) != -1 && label) {
-						builder += '<div class="form-group"><label for="' + name + '" class="' + labelColumnClass + ' control-label">' + text + '</label><div class="' + valueColumnClass + '">' + input + '</div></div>';
-					} else {
-						builder += input;
-					}
-
-					if (onchange) {
-						if (typeof (onchange) === "function") {
-							var ocf = onchange;
-							var mname = name;
-							runAfter.push(function () {
-								$("[name=" + mname).on("change", ocf);
-							});
-						} else {
-							console.warn("Unhandled onchange type:" + typeof (onchange) + " for " + eid);
-						}
-					}
-
-				} catch (e) {
-					console.error(e);
+					var optionId = eid + "_" + oid;
+					var selected = option.checked || option.value == selectedValue || false;
+					if (selected)
+						selected = "selected";
+					var optionText = option.text || option.value;
+					var option = $(genInput("", fieldName, optionId, null, option.value, selected, " ", "option"));
+					option.text(optionText);
+					$(input).append(option);
 				}
 			}
+			//input = $(input).html();
+			return $(input).wrapAll('<div>').parent().html();
+			//debugger;
+			//input += "</table></fieldset>";
+		} else {
+			console.warn("select field requires an 'options' array");
+			return "";
 		}
-		builder += "</div>";
-	} else {
-		builder = $(obj.contents);
 	}
 
-	_bindModal(builder, obj.title, undefined, obj.validation, onSuccess, onCancel, reformat, onClose, contentType);
-	setTimeout(function () {
-		//debugger;
-		for (var i = 0; i < runAfter.length; i++) {
-			runAfter[i]();
+	var fieldsTypeIsArray = Array.isArray(fields);//typeof (obj.fields);
+	var builder = '<div class="form-horizontal modal-builder">';
+	for (var f in fields) {
+		if (arrayHasOwnIndex(fields, f)) {
+			try {
+				var field = fields[f];
+				var name = field.name || f;
+				var label = typeof (field.text) !== "undefined" || !fieldsTypeIsArray;
+				var text = field.text || name;
+				var originalValue = field.value;
+				var value = field.value || "";
+				var placeholder = field.placeholder;
+				var type = (field.type || "text").toLowerCase();
+				var classes = field.classes || "";
+				var onchange = field.onchange;
+				var eid = escapeString(name);
+
+				var labelColumnClass = field.labelColumnClass || defaultLabelColumnClass;
+				var valueColumnClass = field.valueColumnClass || defaultValueColumnClass;
+
+				if (typeof (classes) === "string" && (classes.indexOf('\'') != -1 || classes.indexOf('\"') != -1))
+					throw "Classes cannot contain a quote character.";
+
+
+				if (type == "header")
+					type = "h4";
+
+				if (typeof (placeholder) !== "undefined")
+					placeholder = "placeholder='" + escapeString(placeholder) + "'";
+				else
+					placeholder = "";
+				var input = "";
+				var inputIndex = allowed.indexOf(type);
+				if (inputIndex == -1) {
+					console.warn("Input type not allowed:" + type);
+					continue;
+				}
+				if (Object.prototype.toString.call(value) === '[object Date]' && (/*type == "datetime" ||*/ type == "date")) {
+					value = value.toISOString().substring(0, 10);
+				}
+
+				if (type == "file")
+					options.contentType = 'enctype="multipart/form-data"';
+
+				if (tags.indexOf(type) != -1) {
+					var txt = value || text;
+					input = "<" + type + " name=" + escapeString(name) + '" id="' + eid + '" class="' + classes + '">' + txt + '</' + type + '>';
+				} else if (type == "textarea") {
+					input = '<textarea class="form-control blend verticalOnly ' + classes + '" rows=5 name="' + escapeString(name) + '" id="' + eid + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
+				} else if (type == "date" /*|| type=="datetime"*/) {
+					var guid = generateGuid();
+					var curName = name;
+					var curVal = originalValue;
+					var localize = field.localize;
+					input = '<div class="date-container date-' + guid + ' ' + classes + '" id="' + eid + '"></div>';
+					runAfter.push(function () {
+						var dateGenFunc = generateDatepicker;
+						if (localize == true)
+							dateGenFunc = generateDatepickerLocalize;
+						dateGenFunc('.date-' + guid, curVal, curName, eid);
+					});
+				} else if (type == "yesno") {
+					var selectedYes = (value == true) ? 'checked="checked"' : "";
+					var selectedNo = (value == true) ? "" : 'checked="checked"';
+					input = '<div class="form-group input-yesno ' + classes + '">' +
+								'<label for="true" class="col-xs-4 control-label"> Yes </label>' +
+								'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "true", selectedYes) + '</div>' +
+								'<label for="false" class="col-xs-1 control-label"> No </label>' +
+								'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "false", selectedNo) + '</div>' +
+							'</div>';
+				} else if (type == "img") {
+					input = "<img src='" + field.src + "' class='" + classes + "'/>";
+				} else if (type == "radio") {
+					if (field.options != null && field.options.length > 0) {
+						var fieldName = name;
+						input = "<fieldset id='group_" + fieldName + "'><table>";
+						for (var oid in field.options) {
+							if (arrayHasOwnIndex(field.options, oid)) {
+								var option = field.options[oid];
+								if (!option.value) {
+									console.warn("option has no value " + fieldName + "," + oid);
+								}
+								var radioId = eid + "_" + oid;
+								var selected = option.checked || false;
+								if (selected)
+									selected = "checked";
+								var radio = genInput("radio", fieldName, radioId, null, option.value, selected, option.classes || " ");
+								var optionText = option.text || option.value;
+								input += '<tr class="form-group">' +
+											'<td><label for="' + radioId + '" class="pull-right ' + (option.labelColumnClass || "") + ' control-label" style="padding-right:10px;">' + optionText + '</label></td>' +
+											'<td><div class="' + (option.valueColumnClass || "") + '" style="padding-top: 5px;">' + radio + '</div></td>' +
+										 '</tr>';
+							}
+						}
+						input += "</table></fieldset>";
+					} else {
+						console.warn("radio field requires an 'options' array");
+					}
+				} else if (type == "select") {
+					input = genSelect(name, field.options, eid, classes, value);
+				} else if (type == "readonly") {
+					tag = "span";
+					input = "<div class='" + classes + "' style='padding-top:7px;'>" + value + "</div>";
+				} else if (type == "subform") {
+					var oldOnChange = onchange;
+					var subforms = field.subforms;
+					var o = options;
+					if (!subforms) {
+						console.warn("Did you forget the subforms property?");
+					}
+					var opts = [];
+					for (var key in subforms) {
+						if (subforms.hasOwnProperty(key)) {
+							var s = subforms[key];
+							opts.push({ text: key, value: key });
+						}
+					};
+					var ii;
+					if (opts.length <= 1) {
+						if (!value && opts.length == 1) {
+							value = opts[0].value;
+						}
+						ii = $(genInput("hidden", name, eid, null, value, null, classes)).wrapAll('<div>').parent();
+						text = "";
+					} else {
+						ii = $(genSelect(name, opts, eid, classes, value)).wrapAll('<div>').parent();
+					}
+					ii.addClass("subform-container");
+					ii.append("<div class='subform-contents' style='padding-top:15px;'></div>");
+					input = ii.wrapAll('<div>').parent().html();
+
+					onchange = function () {
+						var val = $(this).val();
+						var subfields = subforms[val];
+
+						var subform = $(this).closest(".subform-container").find(".subform-contents");
+						var result = FormFields(subfields, o);
+						var contents = result.html;
+						subform.html(contents);
+						var rrunafter = result.runAfter;
+						if (typeof (oldOnChange) === "function")
+							oldOnChange();
+
+						setTimeout(function () {
+							rrunafter.map(function (r) {
+								r();
+							});
+						}, 1);
+					};
+					var iinput = input;
+					var iname = name;
+					runAfter.push(function () {
+						onchange.bind($("[name='" + iname + "']"))();
+					});
+				} else {
+					input = genInput(type, name, eid, placeholder, value, null, classes);
+				}
+
+				if (addLabel.indexOf(type) != -1 && label) {
+					builder += '<div class="form-group"><label for="' + name + '" class="' + labelColumnClass + ' control-label">' + text + '</label><div class="' + valueColumnClass + '">' + input + '</div></div>';
+				} else {
+					builder += input;
+				}
+
+				if (onchange) {
+					if (typeof (onchange) === "function") {
+						var ocf = onchange;
+						var mname = name;
+						runAfter.push(function () {
+							$("[name=" + mname).on("change", ocf);
+						});
+					} else {
+						console.warn("Unhandled onchange type:" + typeof (onchange) + " for " + eid);
+					}
+				}
+
+			} catch (e) {
+				console.error(e);
+			}
 		}
-	}, 1);
-	setTimeout(function () {
-		for (var i = 0; i < runAfterAnimation.length; i++) {
-			runAfterAnimation[i]();
-		}
-	}, 250);
+	}
+	builder += "</div>";
+	return {
+		html: builder,
+		runAfter: runAfter,
+		contentType: contentType,
+	};
+
 }
 
 function _bindModal(html, title, callback, validation, onSuccess, onCancel, reformat, onClose, contentType) {

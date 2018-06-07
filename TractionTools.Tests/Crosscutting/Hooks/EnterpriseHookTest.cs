@@ -18,6 +18,7 @@ namespace TractionTools.Tests.Hooks {
 	[TestClass]
 	public class EnterpriseHookTest : BaseTest {
 		[TestMethod]
+		[TestCategory("Hook")]
 		public async Task AddUserWorks() {
 			var ctx = await Ctx.Build();
 			var now = DateTime.UtcNow;

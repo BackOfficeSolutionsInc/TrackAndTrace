@@ -21,7 +21,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
     <TargetFrameworkProfile />
     <UseGlobalApplicationHostFile />
     <Use64BitIISExpress />
@@ -46,6 +46,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Solver.Foundation, Version=3.0.2.10889, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Runtime" />
@@ -92,6 +93,7 @@
     <Compile Include="Accessors\AttachAccessor.cs" />
     <Compile Include="Accessors\BaseAccessor.cs" />
     <Compile Include="Accessors\CategoryAccessor.cs" />
+    <Compile Include="Accessors\ConsentAccessor.cs" />
     <Compile Include="Accessors\CustomizeAccessor.cs" />
     <Compile Include="Accessors\DashboardAccessor.cs" />
     <Compile Include="Accessors\DatabaseUtility.cs" />
@@ -99,10 +101,12 @@
     <Compile Include="Accessors\DeepAccessor.cs" />
     <Compile Include="Accessors\DeepSubordianteAccessor.cs" />
     <Compile Include="Accessors\Emailer.cs" />
+    <Compile Include="Accessors\EventAccessor.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
     <Compile Include="Accessors\ForModelAccessor.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\HeadlineAccessor.cs" />
+    <Compile Include="Accessors\L10Accessor\L10AccessorPeopleTools.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorVideo.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorHelpers.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorAudit.cs" />
@@ -127,6 +131,7 @@
     <Compile Include="Accessors\PDF\JS\D3.js.cs" />
     <Compile Include="Accessors\PDF\DocumentPlacer.cs" />
     <Compile Include="Accessors\PDF\JS\Tree.js.cs" />
+    <Compile Include="Accessors\PDF\PdfAccessor_VTO.cs" />
     <Compile Include="Accessors\ReportAccessor.cs" />
     <Compile Include="Accessors\SearchAccessor.cs" />
     <Compile Include="Accessors\StatsAccessor.cs" />
@@ -146,7 +151,6 @@
     <Compile Include="Api\V1\Todo.cs" />
     <Compile Include="Api\V1\Users.cs" />
     <Compile Include="App_Start\DateTimeModelBinder.cs" />
-    <Compile Include="App_Start\EventConfig.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />
@@ -160,12 +164,35 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\People\Accessors\PDF\PeopleAnalyzerPdf.cs" />
     <Compile Include="Areas\People\Controllers\ErrorController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
+    <Content Include="Content\Angular\angular-material.css">
+      <DependentUpon>angular-material.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Angular\angular-material.less" />
     <None Include="Content\Chart\metric-graphics.less" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
+    <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Controllers\Upload\Upload_OrgUsersController.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\SetPeopleToolsTrial.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IMilestoneHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IPositionHooks.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IQuarterlyConversationHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IRecurrenceSettings.cs" />
+    <Compile Include="Crosscutting\Hooks\QuarterlyConversation\QuarterlyConversationCreationNotifications.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\Position\RealTime_Positions.cs" />
+    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnaylzerGenerators.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\MissL10PastQuarter.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\MemberwiseTodoCompletion.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Models\EventSubscription.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchAllRecentScoresForRecurrence.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchAllTodosForRecurrence.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\_old\SearchTodoCompletionForUserAndMeeting.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\Formula\CascadeScorecardUpdates.cs" />
     <Compile Include="Crosscutting\Hooks\Payment\ExecutePaymentOnCardUpdate.cs" />
     <Compile Include="Crosscutting\Hooks\Payment\FirstPaymentEmail.cs" />
@@ -186,6 +213,8 @@
     <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchL10Meeting.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchL10RecurrenceIds.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchLeadershipL10RecurrenceIds.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchMeetingAttendees.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchHisoricalRecurrenceAttendees.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchPageTimers.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\CreateFinancialPermItems.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\SwapScorecardOnRegister.cs" />
@@ -215,13 +244,17 @@
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Angular\LocalDateTime.cs" />
     <Compile Include="Models\Angular\Notifications\AngularAppNotification.cs" />
+    <Compile Include="Models\Angular\Organization\AngularOrganizationUnsafe.cs" />
     <Compile Include="Models\Angular\Users\AngularUserRole.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\Charts\MetricGraphic.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
+    <Compile Include="Models\Frontend\EditorModels.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
     <Compile Include="Models\Notifications\NotificationModel.cs" />
+    <Compile Include="Models\UserModels\ConsentModel.cs" />
+    <Compile Include="Models\Payments\PaymentCredit.cs" />
     <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateMeasurableViewModel.cs" />
     <Compile Include="Models\UserModels\UserRole.cs" />
@@ -380,7 +413,7 @@
     <Compile Include="Accessors\OxyplotAccessor.cs" />
     <Compile Include="Accessors\PadAccessor.cs" />
     <Compile Include="Accessors\PaymentAccessor.cs" />
-    <Compile Include="Accessors\PdfAccessor.cs" />
+    <Compile Include="Accessors\PDF\PdfAccessor.cs" />
     <Compile Include="Accessors\PeriodAccessor.cs" />
     <Compile Include="Accessors\PermissionsAccessor.cs" />
     <Compile Include="Accessors\PhoneAccessor.cs" />
@@ -932,6 +965,7 @@
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PaymentSpringUtil.cs" />
+    <Compile Include="Utilities\PdfOptimizer.cs" />
     <Compile Include="Utilities\Pdf\PdfWordWrapper.cs" />
     <Compile Include="Utilities\PermissionItemHelper.cs" />
     <Compile Include="Utilities\Productivity\ChromeExtensionComms.cs" />
@@ -1079,6 +1113,7 @@
     <Content Include="Content\creditcard_icon\bank.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\etherpad\web.css" />
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
@@ -1374,6 +1409,7 @@
     <Content Include="Scripts\Main\beta.js" />
     <Content Include="Scripts\Main\chart.js" />
     <Content Include="Scripts\Main\clickableclass.js" />
+    <Content Include="Scripts\Main\compliance.js" />
     <Content Include="Scripts\Main\datatable.js" />
     <Content Include="Scripts\Main\datepickers.js" />
     <Content Include="Scripts\Main\iefixes.js" />
@@ -1824,8 +1860,14 @@
     <Content Include="Views\ClientSuccess\Close.cshtml" />
     <Content Include="Views\Data\Dashboard.cshtml" />
     <Content Include="Views\Admin\EmployeeCount.cshtml" />
+    <Content Include="Views\Upload\UploadOrg.cshtml" />
     <Content Include="Views\Faq\GenerateTokenInstruction.cshtml" />
     <Content Include="Views\L10\Delete.cshtml" />
+    <Content Include="Views\Events\Index.cshtml" />
+    <Content Include="Views\ClientSuccess\HFCategories.cshtml" />
+    <Content Include="Views\Account\Consent.cshtml" />
+    <Content Include="Views\User\EditUserDetails.cshtml" />
+    <Content Include="Views\Organization\Flags.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -2018,7 +2060,6 @@
     <Content Include="Scripts\table\fixedTabel.js" />
     <Content Include="Scripts\table\grid.js" />
     <Content Include="Scripts\table\sortable_table.js" />
-    <Content Include="Scripts\typings\Charts.js" />
     <Content Include="Views\Review\Details\ChartBuilder2.cshtml" />
     <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
     <Content Include="Views\JobDescription\Edit.cshtml" />
@@ -2055,7 +2096,6 @@
     <Content Include="Scripts\d3\LICENSE" />
     <Content Include="Views\Charts\Histogram.cshtml" />
     <Content Include="Scripts\Charts.js.map" />
-    <Content Include="Scripts\typings\Charts.js.map" />
     <Content Include="Views\L10\BasePage.cshtml" />
     <Content Include="Views\L10\_SetupScript.cshtml" />
     <Content Include="Views\Issues\ScorecardIssueModal.cshtml" />
@@ -2537,14 +2577,14 @@
     <Content Include="Views\TileData\L10Issues.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Areas\CoreProcess\CamundaFiles\" />
     <Folder Include="Areas\People\Engines\Surveys\Abstract\" />
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
+    <Folder Include="Models\Frontend\ViewModels\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
-    <Folder Include="Scripts\Models\" />
-    <Folder Include="Scripts\typings\d3\plugins\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />
@@ -2647,6 +2687,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Scripts\Models\Charts.ts" />
     <Content Include="SoftwareUpdates\20151217.txt" />
   </ItemGroup>
   <ItemGroup>

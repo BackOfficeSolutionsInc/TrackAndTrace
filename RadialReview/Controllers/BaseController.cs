@@ -48,6 +48,8 @@ using System.Text.RegularExpressions;
 using SpreadsheetLight;
 using RadialReview.Hooks;
 using System.Net;
+using RadialReview.Models.Application;
+using RadialReview.Variables;
 
 namespace RadialReview.Controllers {
 	public class UserManagementController : BaseController {
@@ -339,6 +341,12 @@ namespace RadialReview.Controllers {
 			}
 		}
 		#endregion
+
+		protected string ReadBody() {
+			Request.InputStream.Position = 0;
+			var body = new StreamReader(Request.InputStream).ReadToEnd();
+			return body;
+		}
 
 		protected void ManagerAndCanEditOrException(UserOrganizationModel user) {
 			if (!user.IsManagerCanEditOrganization())
@@ -686,6 +694,19 @@ namespace RadialReview.Controllers {
 									throw new PermissionsException("You must be a " + Config.ManagerName() + " to view this resource.");
 								break;
 							case AccessLevel.Radial:
+								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
+									throw new PermissionsException("You do not have access to this resource.");
+								break;
+							case AccessLevel.RadialData:
+								var ids = s.GetSettingOrDefault(Variable.Names.USER_RADIAL_DATA_IDS, () => "").Split(new[] { ',' },StringSplitOptions.RemoveEmptyEntries).Select(x=>long.Parse(x)).ToList();
+								var u3 = GetUser(s);
+								if (u3 != null && ids.Contains(u3.Id)) {
+									if (u3.DeleteTime != null)
+										throw new PermissionsException("You're no longer attached to this organization.");
+									if (u3.Organization.DeleteTime != null)
+										throw new PermissionsException("This organization no longer exists.");
+									break;
+								}
 								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
 									throw new PermissionsException("You do not have access to this resource.");
 								break;

@@ -50,7 +50,7 @@ namespace RadialReview {
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
 
 			HookConfig.RegisterHooks();
-			EventConfig.RegisterEvents();
+			// EventConfig.RegisterEvents();
 
 			// ValueProviderFactories.Factories.Add(new JsonValueProviderFactory());
 

@@ -41,14 +41,14 @@
 						<div class="col-md-3">  Show color on scorecard:</div>
 						<div class="col-md-9">  @Html.CheckBoxFor(x => x.ShowScorecardColors, new { @class = "checkbox" })</div>
 					</div>
-                    <div class="row smallBreak">
-                        <div class="col-md-3">  Reverse my scorecard:</div>
-                        <div class="col-md-9">  @Html.CheckBoxFor(x => x.ReverseScorecard, new { @class = "checkbox" })</div>
-                    </div>
-                    <div class="row smallBreak">
-                        <div class="col-md-3">  Disable Tips:</div>
-                        <div class="col-md-9">  @Html.CheckBoxFor(x => x.DisableTips, new { @class = "checkbox" })</div>
-                    </div>
+					<div class="row smallBreak">
+						<div class="col-md-3">  Reverse my scorecard:</div>
+						<div class="col-md-9">  @Html.CheckBoxFor(x => x.ReverseScorecard, new { @class = "checkbox" })</div>
+					</div>
+					<div class="row smallBreak">
+						<div class="col-md-3">  Disable Tips:</div>
+						<div class="col-md-9">  @Html.CheckBoxFor(x => x.DisableTips, new { @class = "checkbox" })</div>
+					</div>
 					<div class="row">
 						<div class="col-md-offset-2 col-md-10">
 							<div class="row alignCenter">
@@ -86,13 +86,13 @@
 			</div>
 			<div class="panel-body alignCenter">
 				@Html.Partial("~/Views/Upload/Image.cshtml", new RadialReview.Models.ViewModels.ImageUploadViewModel() {
-			   ForType = RadialReview.Models.Enums.UploadType.ProfileImage.ToString(),
-			   ImageUrl = Model.ImageUrl,
-			   UploadUrl = "/upload/image/" + Model.UserId,
-			   DeleteUrl = "/upload/deleteUserImage/" + Model.UserId
-			   /*Width = 200,
-			   Height = 200,*/
-		   })
+					ForType = RadialReview.Models.Enums.UploadType.ProfileImage.ToString(),
+					ImageUrl = Model.ImageUrl,
+					UploadUrl = "/upload/image/" + Model.UserId,
+					DeleteUrl = "/upload/deleteUserImage/" + Model.UserId
+					/*Width = 200,
+					Height = 200,*/
+				})
 			</div>
 		</div>
 	</div>
@@ -100,7 +100,7 @@
 		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Manage Phone Actions</h3>
+					<h3 class="panel-title">Manage Texting Actions</h3>
 
 				</div>
 				<div class="panel-body alignCenter" id="personalTodo">
@@ -112,7 +112,7 @@
 					}
 					<br />
 					<br />
-					<div onclick="window.location = '/phone';" class="btn btn-warning">Manage Other Phone Actions</div>
+					<div onclick="window.location = '/phone';" class="btn btn-warning">Manage Other Texting Actions</div>
 				</div>
 			</div>
 		</div>
@@ -148,12 +148,12 @@
 			}
 		}
 
-		function textingModal(data){
-			if (!data.Error){
-				var message = data.Message.replace(" '"," '<b>").replace("' to ","</b>' to ");//.replace(" to activate.","</b> to activate.");
+		function textingModal(data) {
+			if (!data.Error) {
+				var message = data.Message.replace(" '", " '<b>").replace("' to ", "</b>' to ");//.replace(" to activate.","</b> to activate.");
 
 				showModal({
-					icon:"info",
+					icon: "info",
 					title: message
 				});
 			}

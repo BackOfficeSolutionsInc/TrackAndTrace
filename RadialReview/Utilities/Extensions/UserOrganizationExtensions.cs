@@ -16,15 +16,12 @@ using System.Web;
 using RadialReview.Accessors;
 using RadialReview.Utilities;
 
-namespace RadialReview
-{
-	public enum ImageSize
-	{
+namespace RadialReview {
+	public enum ImageSize {
 		_32, _64, _128, _img, _suffix
 	}
 
-	public static partial class UserOrganizationExtensions
-	{
+	public static partial class UserOrganizationExtensions {
 		/*public static String Name(this UserOrganizationModel self)
         {
             if (self.User == null)
@@ -32,18 +29,15 @@ namespace RadialReview
             return self.User.Name();
         }*/
 
-		public static void PopulateManagers(this UserOrganizationModel self, List<ManagerDuration> allManagers)
-		{
+		public static void PopulateManagers(this UserOrganizationModel self, List<ManagerDuration> allManagers) {
 			self.ManagedBy = allManagers.Where(x => x.SubordinateId == self.Id).ToList();
 		}
 
 
 #pragma warning disable CS0618 // Type or member is obsolete
-		public static void PopulateTeams(this UserOrganizationModel self, List<OrganizationTeamModel> allOrgTeams, List<TeamDurationModel> allTeamDurations)
-		{
+		public static void PopulateTeams(this UserOrganizationModel self, List<OrganizationTeamModel> allOrgTeams, List<TeamDurationModel> allTeamDurations) {
 			var teams = new List<TeamDurationModel>();
-			if (self.IsManager())
-			{
+			if (self.IsManager()) {
 				var managerTeam = allOrgTeams.Where(x => x.Type == TeamType.Managers).SingleOrDefault();
 				teams.Add(new TeamDurationModel() { CreateTime = self.AttachTime, Id = -2, Team = managerTeam, User = self });
 			}
@@ -57,18 +51,15 @@ namespace RadialReview
 
 
 
-		public static void PopulateLevel(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> allSubordinates)
-		{
+		public static void PopulateLevel(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> allSubordinates) {
 			var found = allSubordinates.FirstOrDefault(x => x.Id == sub.Id);
-			if (found != null)
-			{
+			if (found != null) {
 				var level = found.GetLevel();
 				sub.SetLevel(level);
 			}
 		}
 
-		public static bool PopulatePersonallyManaging(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> allSubordinates)
-		{
+		public static bool PopulatePersonallyManaging(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> allSubordinates) {
 			var output = (caller.IsRadialAdmin ||
 						  (caller.Organization.Id == sub.Organization.Id && caller.ManagingOrganization) ||
 						  (allSubordinates.Any(x => x.Id == sub.Id)));
@@ -76,76 +67,63 @@ namespace RadialReview
 			return output;
 		}
 
-		public static void SetPersonallyManaging(this UserOrganizationModel self, Boolean personallyManaging)
-		{
+		public static void SetPersonallyManaging(this UserOrganizationModel self, Boolean personallyManaging) {
 			self.Set("_managing", personallyManaging.ToString());
 		}
 
-		public static bool GetPersonallyManaging(this UserOrganizationModel self)
-		{
+		public static bool GetPersonallyManaging(this UserOrganizationModel self) {
 			var found = self.GetSingle("_managing");
 			return bool.Parse(found);
 		}
 
-		public static bool PopulateDirectlyManaging(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> directSubordinates)
-		{
+		public static bool PopulateDirectlyManaging(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> directSubordinates) {
 			var output = directSubordinates.Any(x => x.Id == sub.Id);
 			sub.SetDirectlyManaging(output);
 			return output;
 		}
 
-		public static void SetDirectlyManaging(this UserOrganizationModel self, Boolean directlyManaging)
-		{
+		public static void SetDirectlyManaging(this UserOrganizationModel self, Boolean directlyManaging) {
 			self.Set("_directlyManaging", directlyManaging.ToString());
 		}
 
-		public static bool GetDirectlyManaging(this UserOrganizationModel self)
-		{
+		public static bool GetDirectlyManaging(this UserOrganizationModel self) {
 			return bool.Parse(self.GetSingle("_directlyManaging"));
 		}
 
 
-		public static void SetEditPosition(this UserOrganizationModel self, Boolean editPosition)
-		{
+		public static void SetEditPosition(this UserOrganizationModel self, Boolean editPosition) {
 			self.Set("_EditPosition", editPosition.ToString());
 		}
 
-		public static bool GetEditPosition(this UserOrganizationModel self)
-		{
+		public static bool GetEditPosition(this UserOrganizationModel self) {
 			return bool.Parse(self.GetSingle("_EditPosition"));
 		}
 
-		public static void SetLevel(this UserOrganizationModel self, long level)
-		{
+		public static void SetLevel(this UserOrganizationModel self, long level) {
 			self.Set("_Level", level.ToString());
 		}
 
-		public static long GetLevel(this UserOrganizationModel self)
-		{
+		public static long GetLevel(this UserOrganizationModel self) {
 			return long.Parse(self.GetSingle("_Level"));
 		}
 
-		public static void Set(this UserOrganizationModel self, String key, String value)
-		{
+		public static void Set(this UserOrganizationModel self, String key, String value) {
 			self.Properties[key] = new List<string>();
 			self.Properties[key].Add(value);
 		}
 
-		public static String GetSingle(this UserOrganizationModel self, String key)
-		{
-			if (self!=null && self.Properties.ContainsKey(key))
+		public static String GetSingle(this UserOrganizationModel self, String key) {
+			if (self != null && self.Properties.ContainsKey(key))
 				return self.Properties[key].NotNull(x => x.FirstOrDefault());
 			return null;
 		}
 
 
-		public static String GetNameAndTitle(this UserOrganizationModel self, int positions = int.MaxValue, long youId = -1)
-		{
+		public static String GetNameAndTitle(this UserOrganizationModel self, int positions = int.MaxValue, long youId = -1) {
 			return self.GetName() + self.GetTitles(positions, youId).Surround(" (", ")");
 		}
 
-		public static String GetEmail(this UserOrganizationModel self)
-		{
+		public static String GetEmail(this UserOrganizationModel self) {
 			if (self.User != null)
 				return self.User.Email;
 			else if (self.TempUser != null)
@@ -154,10 +132,9 @@ namespace RadialReview
 				return self.EmailAtOrganization;
 		}
 
-		public static String GetInitials(this UserOrganizationModel user)
-		{
+		public static String GetInitials(this UserOrganizationModel user) {
 			var cacheVersion = user.Cache.NotNull(x => x.GetInitials());
-			if (cacheVersion!=null)
+			if (cacheVersion != null)
 				return cacheVersion;
 
 			var inits = new List<string>();
@@ -167,12 +144,11 @@ namespace RadialReview
 				inits.Add(user.GetLastName().Substring(0, 1));
 			return string.Join(" ", inits).ToUpperInvariant();
 		}
-		public static int GeUserHashCode(this UserOrganizationModel user)
-		{
+		public static int GeUserHashCode(this UserOrganizationModel user) {
 			var hash = 0;
 			var str = user.GetName();
-			if (str!=null && str.Length != 0){
-				foreach (var chr in str){
+			if (str != null && str.Length != 0) {
+				foreach (var chr in str) {
 					hash = ((hash << 5) - hash) + chr;
 					hash |= 0; // Convert to 32bit integer
 				}
@@ -180,14 +156,11 @@ namespace RadialReview
 			hash = Math.Abs(hash) % 360;
 			return hash;
 		}
-		public static int GetUserHashCode(this UserModel user)
-		{
+		public static int GetUserHashCode(this UserModel user) {
 			var hash = 0;
 			var str = user.Name();
-			if (str!=null && str.Length != 0)
-			{
-				foreach (var chr in str)
-				{
+			if (str != null && str.Length != 0) {
+				foreach (var chr in str) {
 					hash = ((hash << 5) - hash) + chr;
 					hash |= 0; // Convert to 32bit integer
 				}
@@ -195,54 +168,39 @@ namespace RadialReview
 			hash = Math.Abs(hash) % 360;
 			return hash;
 		}
-	
-		public static String ImageUrl(this UserOrganizationModel self, bool awsFaster = false, ImageSize size = ImageSize._64)
-		{
-			/*if (self.User == null || self.User.ImageGuid == null)
-				return "/i/userplaceholder";
-			if (awsFaster){
-				var suffix = "/" + self.User.ImageGuid + ".png";
-				if (size == ImageSize._suffix)
-					return suffix;
-				var s = size.ToString().Substring(1);
-				return ConstantStrings.AmazonS3Location + s + suffix;
-			}
-			return "/i/" + self.User.ImageGuid;*/
+
+		public static String ImageUrl(this UserOrganizationModel self, bool awsFaster = false, ImageSize size = ImageSize._64) {
 			var user = self.NotNull(x => x.User);
 			if (user == null)
-				return self.NotNull(a=>a.Cache.NotNull(x => x.ImageUrl(size))) ?? "/i/userplaceholder";
+				return self.NotNull(a => a.Cache.NotNull(x => x.ImageUrl(size))) ?? "/i/userplaceholder";
 			else
 				return ImageUrl(user, awsFaster, size);
 		}
-		public static String ImageUrl(this UserModel self,bool awsFaster = false, ImageSize size = ImageSize._64)
-		{
+
+		public static String ImageUrl(this UserModel self, bool awsFaster = false, ImageSize size = ImageSize._64) {
 			if (self == null || self.ImageGuid == null)
 				return "/i/userplaceholder";
-			if (awsFaster){
+			if (awsFaster) {
 				var suffix = "/" + self.ImageGuid + ".png";
 				if (size == ImageSize._suffix)
 					return suffix;
 				var s = size.ToString().Substring(1);
 				return ConstantStrings.AmazonS3Location + s + suffix;
 			}
-
 			return "/i/" + self.ImageGuid;
 		}
 
-		public static String ImageUrl(this UserOrganizationModel self, int width, int height)
-		{
+		public static String ImageUrl(this UserOrganizationModel self, int width, int height) {
 			if (self.User == null || self.User.ImageGuid == null)
 				return "/i/userplaceholder?dim=" + width + "x" + height;
 			return "/i/" + self.User.ImageGuid + "?dim=" + width + "x" + height;
 		}
-		public static IList<UserOrganizationModel> GetManagingUsersAndSelf(this UserOrganizationModel self)
-		{
+
+		public static IList<UserOrganizationModel> GetManagingUsersAndSelf(this UserOrganizationModel self) {
 			return self.ManagingUsers.ToListAlive().Select(x => x.Subordinate).Union(self.AsList()).ToList();
 		}
 
-
-		public static Tree GetTree(this UserOrganizationModel self, ISession s,PermissionsUtility perms, List<long> deepClaims, long? youId = null, bool force = false, bool includeRoles = false)
-		{
+		public static Tree GetTree(this UserOrganizationModel self, ISession s, PermissionsUtility perms, List<long> deepClaims, long? youId = null, bool force = false, bool includeRoles = false) {
 			var managing = force || deepClaims.Any(x => x == self.Id);
 			var classes = new List<String>();
 			if (self.Teams != null)
@@ -260,19 +218,17 @@ namespace RadialReview
 
 			var data = new Dictionary<string, object>();
 
-			if (includeRoles)
-			{
+			if (includeRoles) {
 				var roles = RoleAccessor.GetRoles(s, perms, self.Id);
 
 				//var roles = s.QueryOver<RoleModel>().Where(x => x.DeleteTime == null && x.ForUserId == self.Id).List();
-                //foreach (var r in roles) {
-                //    var a = r.Owner.NotNull(x => x.GetName());
-                //}
+				//foreach (var r in roles) {
+				//    var a = r.Owner.NotNull(x => x.GetName());
+				//}
 				data["Roles"] = roles.ToList();
 			}
 
-			return new Tree()
-			{
+			return new Tree() {
 				name = self.GetName(),
 				id = self.Id,
 				subtext = self.GetTitles(),
@@ -280,30 +236,26 @@ namespace RadialReview
 				managing = managing,
 				manager = self.IsManager(),
 				children = self.ManagingUsers.NotNull(x => x.ToListAlive())
-                                .Select(x => x.Subordinate.GetTree(s,perms, deepClaims, youId, force, includeRoles))
-                                .ToList(),
+								.Select(x => x.Subordinate.GetTree(s, perms, deepClaims, youId, force, includeRoles))
+								.ToList(),
 				data = data,
 			};
 		}
 
 
-		public static List<UserOrganizationModel> AllSubordinatesAndSelf(this UserOrganizationModel self)
-		{
+		public static List<UserOrganizationModel> AllSubordinatesAndSelf(this UserOrganizationModel self) {
 			return self.AllSubordinates.Union(new List<UserOrganizationModel> { self }).ToList();
 		}
-		public static Boolean IsManager(this UserOrganizationModel self,bool excludeRadial=false)
-		{
+		public static Boolean IsManager(this UserOrganizationModel self, bool excludeRadial = false) {
 			if (excludeRadial) {
 				return self.ManagerAtOrganization || self.ManagingOrganization;
 			}
 			return self.IsRadialAdmin || self.ManagerAtOrganization || self.ManagingOrganization;
 		}
-		public static Boolean IsManagingOrganization(this UserOrganizationModel self)
-		{
+		public static Boolean IsManagingOrganization(this UserOrganizationModel self) {
 			return self.IsRadialAdmin || self.ManagingOrganization;
 		}
-		public static Boolean IsManagerCanEditOrganization(this UserOrganizationModel self)
-		{
+		public static Boolean IsManagerCanEditOrganization(this UserOrganizationModel self) {
 			return (self.ManagerAtOrganization && self.Organization.ManagersCanEdit) || self.IsRadialAdmin || self.ManagingOrganization;
 		}
 	}

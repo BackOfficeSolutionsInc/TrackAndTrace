@@ -193,6 +193,10 @@ body,
         padding: 0px !important;
     }
 
+    .picture-icon-cursor {
+        cursor: pointer;
+    }
+
     *:focus {
         outline: none;
     }
@@ -872,17 +876,17 @@ body,
                     float: right;
                 }
 
-                @-moz-document url-prefix() {
-                    .glyphicon-triangle-right {
-                        top: -15px;
-                        left: 1px;
-                        font-size: 10px;
-                        color: #a2a2a2;
-                        float: right;
-                    }
-                }
+				@-moz-document url-prefix() {
+					.glyphicon-triangle-right {
+						top: -15px;
+						left: 1px;
+						font-size: 10px;
+						color: #a2a2a2;
+						float: right;
             }
         }
+			}
+		}
         /*.btn-advanced{
             color: #a2a2a2;
         }*/
@@ -1109,3 +1113,24 @@ body,
 #modal .milestone-table-modal .milestone-duedate-cell .milestone-duedate {
     height: 35px;
 }
+
+body.admin-disabled {
+    .user-pane .create-row {
+        opacity: .5 !important;
+        pointer-events: none;
+        background-color: gray;
+    }
+
+    .scorecard-list-container .create-row {
+        opacity: .5 !important;
+        pointer-events: none;
+        background-color: gray;
+    }
+
+    .rock-pane .create-row {
+        opacity: .5 !important;
+        pointer-events: none;
+        background-color: gray;
+    }
+}
+

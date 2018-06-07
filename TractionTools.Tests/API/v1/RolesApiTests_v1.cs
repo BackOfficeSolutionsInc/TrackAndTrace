@@ -39,7 +39,7 @@ namespace TractionTools.Tests.API.v1 {
 			roleController.MockUser(c.E1);
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
+			var createPosition =await _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
 
 			var addRole = await AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.Position, createPosition.Id), "TestRole");
 
@@ -61,7 +61,7 @@ namespace TractionTools.Tests.API.v1 {
 
 			var name = "TestRoleUpdated";
 
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition"); // create wropper for this method with CreatePosition
+			var createPosition =await _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition"); // create wropper for this method with CreatePosition
 			var addRole = await AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.Position, createPosition.Id), "TestRole");
 
 			//Updated
@@ -82,7 +82,7 @@ namespace TractionTools.Tests.API.v1 {
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
 
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
+			var createPosition =await _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
 			var addRole = await AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.Position, createPosition.Id), "TestRole");
 
 			var roleList = PositionAccessor.GetPositionRoles(c.E1, createPosition.Id);

@@ -24,10 +24,10 @@ namespace RadialReview.Accessors.PDF.JS {
 
 
 			public TreeSettings() {
-
-				baseWidth = 225;
+				var w = 240;
+				baseWidth = w;
 				baseHeight = 50;
-				nodeSize = new[] { 225, 50.0 };
+				nodeSize = new[] { w, 50.0 };
 				minWidth = 20;
 				minHeight = 20;
 
@@ -57,16 +57,17 @@ namespace RadialReview.Accessors.PDF.JS {
 		public static CompactTree<N>.tree Update<N>(N root, Func<N, double> heightFunc=null, TreeSettings settings = null) where N : node<N>, new() {
 			var Settings = settings ?? new TreeSettings();
 			var tree = CompactTree<N>.call();
+			//tree.sort((a, b) => {
+			//	if (b != null && a != null) {
+			//		var diff = a.order - b.order;
+			//		if (diff == 0)
+			//			return Math.Sign(a.Id - b.Id);
+			//		return diff;
+			//	}
+			//	return 0;
+			//});
 			tree.compactify(Settings.compact);//added
-			tree.sort((a, b) => {
-				if (b != null && a != null) {
-					var diff = a.order - b.order;
-					if (diff == 0)
-						return Math.Sign(a.Id - b.Id);
-					return diff;
-				}
-				return 0;
-			});
+		
 			tree.nodeSize(Settings.nodeSize);
 			
 			var maxDepth = 0;
@@ -114,6 +115,11 @@ namespace RadialReview.Accessors.PDF.JS {
 			}
 
 			foreach (var d in nodes) {
+				/*This line could be used to set the y for compressed height charts, but it creates overlap with other branches of the tree..*/
+				//try {
+				//	d.y = d.parent.y + Math.Max(d.parent.height, Settings.minHeight) + Settings.vSeparation;
+				//} catch (Exception) {
+				//}
 				d.y = d.depth * Settings.vSeparation + maxHeightRow[d.depth - 1];
 				var shift = 0.0;
 				for (var i = 0; i < rowWidth[d.depth].Count; i++) {

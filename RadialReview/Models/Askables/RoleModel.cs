@@ -51,6 +51,8 @@ namespace RadialReview.Models.Askables {
 		public virtual AttachType AttachType { get; set; }
 		public virtual long OrganizationId { get; set; }
 
+		public virtual long? Ordering { get; set; }
+
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 
@@ -73,6 +75,7 @@ namespace RadialReview.Models.Askables {
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.OrganizationId);
+				Map(x => x.Ordering);
 				Map(x => x.AttachType).CustomType<AttachType>();
 			}
 		}

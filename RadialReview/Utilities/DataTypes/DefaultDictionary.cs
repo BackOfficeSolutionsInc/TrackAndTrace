@@ -31,6 +31,7 @@ namespace RadialReview.Utilities.DataTypes {
 			MergeFunction = mergeFunc;
 			Backing = new Dictionary<K, V>();
 		}
+		
 
 		public V this[K key] {
 			get {

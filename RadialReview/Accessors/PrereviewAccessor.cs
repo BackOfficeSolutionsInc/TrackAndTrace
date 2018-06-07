@@ -209,32 +209,38 @@ namespace RadialReview.Accessors {
 		public List<WhoReviewsWho> GetAllMatchesForReview(UserOrganizationModel caller, long reviewContainerId, List<WhoReviewsWho> defaultModel) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId, false);
-					var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
-
-					var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId && x.DeleteTime == null).List().ToList();
-
-					var all = new List<WhoReviewsWho>();
-
-					foreach (var prereview in prereviews) {
-						if (prereview.Started) {
-							all.AddRange(s.QueryOver<PrereviewMatchModel>().Where(x => x.PrereviewId == prereview.Id && x.DeleteTime == null).List()
-								.Select(x => new WhoReviewsWho(
-									new Reviewer(x.FirstUserId),
-									new Reviewee(x.SecondUserId, x.Second_ACNodeId)
-								)).ToList());
-						} else {
-							if (reviewContainer.EnsureDefault) {
-								var subordinates = UserAccessor.GetDirectSubordinates(s.ToQueryProvider(true), perms, prereview.ManagerId).Select(x => x.Id).Union(prereview.ManagerId.AsList());
-								var managerCustomizeDefault = subordinates.SelectMany(sub => defaultModel.Where(x => x.Reviewer.RGMId == sub)).ToList();
-								all.AddRange(managerCustomizeDefault);
-							}
-						}
-					}
-					return all.Distinct().ToList();
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetAllMatchesForReview(s, perms, reviewContainerId, defaultModel);
 				}
 			}
 		}
+
+		public static List<WhoReviewsWho> GetAllMatchesForReview(ISession s, PermissionsUtility perms, long reviewContainerId, List<WhoReviewsWho> defaultModel) {
+			perms.ViewReviews(reviewContainerId, false);
+			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+
+			var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId && x.DeleteTime == null).List().ToList();
+
+			var all = new List<WhoReviewsWho>();
+
+			foreach (var prereview in prereviews) {
+				if (prereview.Started) {
+					all.AddRange(s.QueryOver<PrereviewMatchModel>().Where(x => x.PrereviewId == prereview.Id && x.DeleteTime == null).List()
+						.Select(x => new WhoReviewsWho(
+							new Reviewer(x.FirstUserId),
+							new Reviewee(x.SecondUserId, x.Second_ACNodeId)
+						)).ToList());
+				} else {
+					if (reviewContainer.EnsureDefault) {
+						var subordinates = UserAccessor.GetDirectSubordinates(s.ToQueryProvider(true), perms, prereview.ManagerId).Select(x => x.Id).Union(prereview.ManagerId.AsList());
+						var managerCustomizeDefault = subordinates.SelectMany(sub => defaultModel.Where(x => x.Reviewer.RGMId == sub)).ToList();
+						all.AddRange(managerCustomizeDefault);
+					}
+				}
+			}
+			return all.Distinct().ToList();
+		}
+
 		public static List<PrereviewModel> GetPrereviewsForUser(UserOrganizationModel caller, long userOrgId, DateTime dueAfter, bool includeReview = false, bool excludeExecuted = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {

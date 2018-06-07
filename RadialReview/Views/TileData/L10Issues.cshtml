@@ -2,6 +2,8 @@
 
 <div class="review smallBreak2 loading tiny l10-issue-tile" style="min-height:30px">
     <div class="l10-issue-heading heading" style="@(ViewBag.HeadingStyle)" data-style="@(ViewBag.HeadingStyle)">
+		<span class="clickable pull-right new hidden-width-1 issuesModal" data-method="CreateIssue" data-showusers="false" data-recurrence="@Model">Create New <span class='icon fontastic-icon-pinboard'></span></span>
+		<span class="clickable pull-right new visible-width-1 issuesModal" data-method="CreateIssue" data-showusers="false" data-recurrence="@Model" style="text-decoration: none;"><span class='icon fontastic-icon-pinboard'></span></span>
         {{(model.L10Issues | filter:{KeyId:@(Model)})[0].Title}}<a href="/l10/details/@(Model)#Issues" class=""> (View all)</a>
         <a href="/todo/list" class="gray"></a>
     </div><div class="tile">@{ Html.RenderPartial("~/Views/Issues/Partial/list.cshtml", new ViewDataDictionary(){

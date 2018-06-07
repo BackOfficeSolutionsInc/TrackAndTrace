@@ -7,6 +7,7 @@ using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
+using RadialReview.Models.UserModels;
 using RadialReview.Properties;
 using RadialReview.Utilities;
 using System;
@@ -81,10 +82,51 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public async Task<String> UploadImage(UserModel user, string filename, Stream inputStream, UploadType type, bool huge = false) {
+
+		public static async Task<ImageModel> UploadProfileImageForUser(UserOrganizationModel caller, long forUserId, string filename, Stream inputStream, bool huge = false) {
+			
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.EditUserDetails(forUserId);
+				}
+			}
+
+			var img = await RawUploadImage(caller.User, filename, inputStream, UploadType.ProfileImage, huge);
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var userOrg = s.Get<UserOrganizationModel>(forUserId);
+
+					if (userOrg.TempUser != null) {
+						userOrg.TempUser.ImageGuid = img.Id.ToString();
+					} else {
+						var user = userOrg.User;
+						user.ImageGuid = img.Id.ToString();
+
+						if (user.UserOrganization != null && user.UserOrganization.Any()) {
+							foreach (var u in user.UserOrganization) {
+								u.UpdateCache(s);
+							}
+						}
+
+						var cache = new Cache();
+						cache.InvalidateForUser(user.Id, CacheKeys.USER);
+						cache.InvalidateForUser(user.Id, CacheKeys.USERORGANIZATION);
+					}
+
+					tx.Commit();
+					s.Flush();
+
+				}
+			}
+			return img;
+		}
+
+		private static async Task<ImageModel> RawUploadImage(UserModel uploader, string filename, Stream inputStream, UploadType type, bool huge = false) {
 			var img = new ImageModel() {
 				OriginalName = Path.GetFileName(filename),
-				UploadedBy = user,
+				UploadedBy = uploader,
 				UploadType = type
 			};
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -106,7 +148,7 @@ namespace RadialReview.Accessors {
 					var sBig = new MemoryStream();
 					var sTiny = new MemoryStream();
 					var sMed = new MemoryStream();
-					var sLarge=new MemoryStream();
+					var sLarge = new MemoryStream();
 					var sHuge = new MemoryStream();
 					inputStream.Seek(0, SeekOrigin.Begin);
 					await inputStream.CopyToAsync(sBig);
@@ -122,14 +164,11 @@ namespace RadialReview.Accessors {
 						await inputStream.CopyToAsync(sHuge);
 						inputStream.Seek(0, SeekOrigin.Begin);
 					}
+					Upload(sBig, path, BIG_INSTRUCTIONS);
+					Upload(sTiny, pathTiny, TINY_INSTRUCTIONS);
+					Upload(sMed, pathMed, MED_INSTRUCTIONS);
+					Upload(sLarge, pathLarge, LARGE_INSTRUCTIONS);
 
-
-
-					Upload(sBig,	path,		BIG_INSTRUCTIONS);
-					Upload(sTiny,	pathTiny,	TINY_INSTRUCTIONS);
-					Upload(sMed,	pathMed,	MED_INSTRUCTIONS);
-					Upload(sLarge,	pathLarge,	LARGE_INSTRUCTIONS);
-				
 					if (huge) {
 						Upload(sHuge, pathHuge, HUGE_INSTRUCTIONS);
 					}
@@ -141,7 +180,16 @@ namespace RadialReview.Accessors {
 					}
 
 					s.Update(img);
+				}
+			}
+			return img;
+		}
 
+		public async Task<String> UploadImage(UserModel user, string filename, Stream inputStream, UploadType type, bool huge = false) {
+			var img = await RawUploadImage(user, filename, inputStream, type, huge);
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					switch (type) {
 						case UploadType.ProfileImage: {
 								user = s.Get<UserModel>(user.Id);
@@ -156,7 +204,6 @@ namespace RadialReview.Accessors {
 								var cache = new Cache();
 								cache.InvalidateForUser(user.Id, CacheKeys.USER);
 								cache.InvalidateForUser(user.Id, CacheKeys.USERORGANIZATION);
-
 							};
 							break;
 						case UploadType.AppImage:
@@ -164,12 +211,10 @@ namespace RadialReview.Accessors {
 						default:
 							throw new PermissionsException();
 					}
-
 					tx.Commit();
 					s.Flush();
 				}
 			}
-
 			return ConstantStrings.AmazonS3Location + img.Url;
 		}
 
@@ -183,7 +228,6 @@ namespace RadialReview.Accessors {
 
 			using (var client = Amazon.AWSClientFactory.CreateAmazonS3Client(AWS.Key, AWS.Secret))
 			{
-                        
 				MemoryStream ms = new MemoryStream();
 				PutObjectRequest request = new PutObjectRequest();
 				request.BucketName="Radial";
@@ -191,7 +235,7 @@ namespace RadialReview.Accessors {
 				request.Key = path;
 				request.InputStream = file.InputStream;
 				PutObjectResponse response = client.PutObject(request);
-			}                   
+			}
 			*/
 		}
 

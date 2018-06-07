@@ -142,8 +142,12 @@ namespace RadialReview.Hooks.Realtime.L10 {
                 if (updates.MessageChanged)
                     updater.AddLowLevelAction(x => x.updateRockName(rock.Id, rock.Name));
 
-                //Update Completion
-                if (updates.StatusChanged) {
+				//Update Due Date
+				if (updates.DueDateChanged)
+					updater.AddLowLevelAction(x => x.updateRockDueDate(rock.Id, rock.DueDate.Value.ToJsMs()));
+
+				//Update Completion
+				if (updates.StatusChanged) {
                     //foreach (var meetingRockId in allMeetingRockIds) {
                     updater.AddLowLevelAction(x => x.updateRockCompletion(rock.Id, rock.Completion.ToString()));
                     //}

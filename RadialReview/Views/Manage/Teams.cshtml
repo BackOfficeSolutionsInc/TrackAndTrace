@@ -1,4 +1,5 @@
 ﻿@using RadialReview.Models.Enums
+
 @model RadialReview.Models.ViewModels.OrganizationTeamsViewModel
 
 @{
@@ -41,7 +42,7 @@
 				@*<th style="width:10px" class="">Questions</th>*@
 			</tr>
 			</thead>
-			@foreach (var p in Model.Teams.Alive().OrderBy(x => (int)x.Team.Type).ThenBy(x => x.Team.Name))
+			@foreach (var p in Model.Teams.OrderBy(x => (int)x.Team.Type).ThenBy(x => x.Team.Name))
 			{
 				<tr class="team @p.Team.Type">
 					<td class="">

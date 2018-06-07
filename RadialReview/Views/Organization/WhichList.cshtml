@@ -1,5 +1,5 @@
 ﻿@using RadialReview.Models.Enums
-@model IEnumerable<RadialReview.Models.OrganizationModel>
+@model IEnumerable<RadialReview.Controllers.OrganizationController.TinyOrgVM>
 
 @{
 	ViewBag.Title = "Which List";
@@ -36,17 +36,17 @@
 					@item.Id
 				</td>
 				<td>
-					<a href="/Organization/Which/@item.Id">@item.GetName()</a>
+					<a href="/Organization/Which/@item.Id">@item.Name</a>
 				</td>
 				<td class="alignCenter">
-					@if (item.PaymentPlan != null)
+					@if (item.PlanId != null)
 					{
 						<a href="/Payment/Plan_Monthly?orgid=@item.Id">Plan</a>
 					}
 				</td>
 				<td class="alignCenter account-@item.AccountType {sorter: 'digit'}">@Html.EnumDropDownList("at-" + item.Id, item.AccountType, new { onchange = "changeAccountType(this," + item.Id + ")" }) <span style="display: none">@((int)(item.AccountType+30)/10)</span></td>
 				<td class="alignCenter deleteButton">
-					<a class="clickable" onclick="confirmDelete('@item.GetName()',@item.Id)">Delete</a>
+					<a class="clickable" onclick="confirmDelete('@item.Name',@item.Id)">Delete</a>
 				</td>
 			</tr>
 		}

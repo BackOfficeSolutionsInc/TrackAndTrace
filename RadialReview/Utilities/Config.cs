@@ -51,6 +51,15 @@ namespace RadialReview.Utilities {
 			Sqlite = 2
 		}
 
+		public static string GetCookieDomains() {
+			if (IsLocal())
+				return null;
+			var res = GetAppSetting("AdditionalCookieDomains", null);
+			if (string.IsNullOrWhiteSpace(res))
+				return null;
+			return res;
+		}
+
 		public static DbType GetDatabaseType() {
 			switch (GetEnv()) {
 				case Env.local_test_sqlite:
@@ -122,6 +131,24 @@ namespace RadialReview.Utilities {
 				public long CoachThatReferred { get; internal set; }
 			}
 
+		}
+
+		public static string GetHangfireConnectionString() {
+			switch (GetEnv()) {
+				case Env.invalid:
+					break;
+				case Env.local_sqlite:
+					break;
+				case Env.local_mysql:
+					break;
+				case Env.local_test_sqlite:
+					break;
+				case Env.production:
+					return System.Configuration.ConfigurationManager.ConnectionStrings["ProductionHangfireConnection"].ConnectionString;					
+				default:
+					break;
+			}
+			return System.Configuration.ConfigurationManager.ConnectionStrings["LocalHangfireConnection"].ConnectionString;
 		}
 
 		[Obsolete("Must remove when ready for production")]
@@ -290,9 +317,9 @@ namespace RadialReview.Utilities {
 				//}
 				switch (GetEnv()) {
 					case Env.local_sqlite:
-						return "https://localhost:44300/";
+						return "https://localhost:44302/";
 					case Env.local_mysql:
-						return "https://localhost:44300/";
+						return "https://localhost:44302/";
 					case Env.production:
 						if (organization == null)
 							return "https://traction.tools/";
@@ -306,7 +333,7 @@ namespace RadialReview.Utilities {
 								throw new ArgumentOutOfRangeException();
 						}
 					case Env.local_test_sqlite:
-						return "https://localhost:44300/";
+						return "https://localhost:44302/";
 					default:
 						throw new ArgumentOutOfRangeException();
 				}

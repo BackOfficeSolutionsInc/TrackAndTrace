@@ -243,8 +243,9 @@ namespace RadialReview.Accessors {
 			var allRGMs = s.QueryOver<ResponsibilityGroupModel>().WhereRestrictionOn(x => x.Id).IsIn(reviewees.Select(x => x.RGMId).ToArray()).List();
 			queryProvider.AddData(allRGMs);
 			var norel = ((long)AboutType.NoRelationship);
+			var inval = ((long)AboutType.Invalid);
 			var allNoRelationshipsLookup = s.QueryOver<AnswerModel>()
-						.Where(x => x.DeleteTime == null && x.AboutTypeNum == norel && x.ForReviewContainerId == reviewContainerId)
+						.Where(x => x.DeleteTime == null && (x.AboutTypeNum == norel || x.AboutTypeNum == inval) && x.ForReviewContainerId == reviewContainerId)
 						.WhereRestrictionOn(x => x.RevieweeUserId).IsIn(reviewees.Select(x => x.RGMId).ToArray())
 						.Select(x => x.ReviewerUserId, x => x.RevieweeUserId)
 						.List<object[]>()
@@ -254,6 +255,13 @@ namespace RadialReview.Accessors {
 						})
 						.GroupBy(x => x.Reviewee)
 						.ToDictionary(x => x.Key, x => x.Select(y=>y.Reviewer).ToList());
+
+
+			//Also grab from the PrereviewData	
+			//try {
+			//	var prereviewMathches = PrereviewAccessor.GetAllMatchesForReview(s, perms, reviewContainerId, new List<WhoReviewsWho>());
+			//} catch (Exception e) {
+			//}
 
 			//queryProvider.AddData(allNoRelationships);
 

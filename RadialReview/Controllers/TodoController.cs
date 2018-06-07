@@ -45,6 +45,7 @@ namespace RadialReview.Controllers {
 			};
 
 			var meetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
+				.Where(x => x.IsAttendee == true)
 				.Select(x => new MeetingVm { name = x.Recurrence.Name, id = x.Recurrence.Id })
 				.OrderBy(x => x.name)
 				.ToList();
@@ -79,6 +80,7 @@ namespace RadialReview.Controllers {
 				var todo = TodoAccessor.GetTodo(GetUser(), id);
 
 				var meetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
+				.Where(t => t.IsAttendee == true)
 			   .Select(x => new MeetingVm { name = x.Recurrence.Name, id = x.Recurrence.Id })
 			   .OrderBy(x => x.name)
 			   .ToList();
@@ -119,7 +121,7 @@ namespace RadialReview.Controllers {
 				model.TodoType = TodoType.Personal;
 			}
 
-			await TodoAccessor.UpdateTodo(GetUser(), model.Id, model.Message, model.DueDate, model.AccountableUserId, completed.ToBooleanJS(), source: model.GetListSource());
+			await TodoAccessor.UpdateTodo(GetUser(), model.Id, model.Message, GetUser().GetTimeSettings().ConvertToServerTime(model.DueDate), model.AccountableUserId, completed.ToBooleanJS(), source: model.GetListSource());
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -133,9 +135,9 @@ namespace RadialReview.Controllers {
 
 			TodoCreation todo;
 			if (model.RecurrenceId == -2) {
-				todo = TodoCreation.CreatePersonalTodo(model.Message ?? "", model.Details, GetUser().Id, model.DueDate/*.AddMinutes(adjust)*/);
+				todo = TodoCreation.CreatePersonalTodo(model.Message ?? "", model.Details, GetUser().Id, GetUser().GetTimeSettings().ConvertToServerTime(model.DueDate)/*.AddMinutes(adjust)*/);
 			} else {
-				todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message ?? "", model.Details, GetUser().Id, model.DueDate/*.AddMinutes(adjust)*/, model.MeetingId);
+				todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message ?? "", model.Details, GetUser().Id, GetUser().GetTimeSettings().ConvertToServerTime(model.DueDate)/*.AddMinutes(adjust)*/, model.MeetingId);
 			}
 			//await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, todoModel);
 			await TodoAccessor.CreateTodo(GetUser(), todo);
@@ -144,7 +146,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult CreateTodo(long recurrence, long meeting = -1, string todo = null, long? modelId = null, string modelType = null) {
+		public PartialViewResult CreateTodo(long recurrence, long meeting = -1, string todo = null, long? modelId = null, string modelType = null,string details=null) {
 			if (meeting != -1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
@@ -157,6 +159,7 @@ namespace RadialReview.Controllers {
 				ForModelType = modelType,
 				Message = todo,
 				ByUserId = GetUser().Id,
+				Details = details,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
 				PossibleUsers = people.Select(x => new AccountableUserVM() {
@@ -176,7 +179,7 @@ namespace RadialReview.Controllers {
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
 			foreach (var a in model.AccountabilityId) {
-				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, a, model.DueDate, model.MeetingId, model.ForModelType ?? "TodoModel", model.ForModelId ?? -1);
+				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, a, GetUser().GetTimeSettings().ConvertToServerTime(model.DueDate), model.MeetingId, model.ForModelType ?? "TodoModel", model.ForModelId ?? -1);
 				await TodoAccessor.CreateTodo(GetUser(), todo);
 			}
 			return Json(ResultObject.SilentSuccess().NoRefresh());
@@ -260,7 +263,7 @@ namespace RadialReview.Controllers {
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
 			foreach (var m in model.AccountabilityId) {
-				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, m, model.DueDate, model.MeetingId, "MeasurableModel", model.MeasurableId);
+				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, m, GetUser().GetTimeSettings().ConvertToServerTime(model.DueDate), model.MeetingId, "MeasurableModel", model.MeasurableId);
 				await TodoAccessor.CreateTodo(GetUser(), todo);
 
 			}
@@ -276,7 +279,7 @@ namespace RadialReview.Controllers {
 				throw new PermissionsException("Rock Id blank");
 			}
 			var r = rr.Value;
-
+			
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
 			var s = RockAccessor.GetRockInMeeting(GetUser(), r, meeting);
@@ -366,7 +369,7 @@ namespace RadialReview.Controllers {
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
 			foreach (var m in model.AccountabilityId) {
-				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, m, model.DueDate, model.MeetingId, "PeopleHeadline", model.HeadlineId);
+				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, m, GetUser().GetTimeSettings().ConvertToServerTime(model.DueDate), model.MeetingId, "PeopleHeadline", model.HeadlineId);
 				await TodoAccessor.CreateTodo(GetUser(), todo);
 			}
 			return Json(ResultObject.SilentSuccess().NoRefresh());
@@ -411,7 +414,7 @@ namespace RadialReview.Controllers {
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
 			foreach (var m in model.AccountabilityId) {
-				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, m, model.DueDate, model.MeetingId, "IssueModel", model.IssueId);
+				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, m, GetUser().GetTimeSettings().ConvertToServerTime(model.DueDate), model.MeetingId, "IssueModel", model.IssueId);
 				await TodoAccessor.CreateTodo(GetUser(), todo);
 			}
 			return Json(ResultObject.SilentSuccess().NoRefresh());
@@ -506,4 +509,4 @@ namespace RadialReview.Controllers {
 
 
 	}
-}
+}

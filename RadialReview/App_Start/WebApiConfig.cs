@@ -16,6 +16,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
+using System.Web.Http.Cors;
 using System.Web.Http.Dispatcher;
 using System.Web.Http.Filters;
 using System.Web.Http.Routing;
@@ -45,6 +46,22 @@ namespace RadialReview {
 			config.InitializeReceiveCustomWebHooks();
 
 
+			//CORS
+			var allowedOrigins = new[] { "traction.tools", "tractiontoolsbeta.com", "tractiontoolsalpha.com" };
+			var allowedProtocal = new[] { "https://", "http://" };
+			var allowedSubdomains = new[] { "", "pqw.", "www." };
+			var combine = new List<string>();
+			foreach (var protocal in allowedProtocal)
+				foreach (var origin in allowedOrigins)
+					foreach (var subdomain in allowedSubdomains)
+						combine.Add(protocal + subdomain + origin);
+
+			var cors = new EnableCorsAttribute(string.Join(",", combine), "*", "*");
+			config.EnableCors(cors);
+			//END CORS
+
+
+
 			if (config == null) {
 				throw new ArgumentNullException(nameof(config));
 			}
@@ -54,16 +71,16 @@ namespace RadialReview {
 			ILogger logger = config.DependencyResolver.GetLogger();
 			SettingsDictionary settings = config.DependencyResolver.GetSettings();
 
-            // We explicitly set the DB initializer to null to avoid that an existing DB is initialized wrongly.
-            //Database.SetInitializer<WebHookStoreContext>(null);
+			// We explicitly set the DB initializer to null to avoid that an existing DB is initialized wrongly.
+			//Database.SetInitializer<WebHookStoreContext>(null);
 
-            IWebHookStore store = new RadialWebHookStore();
-            CustomServices.SetStore(store);
-        }
+			IWebHookStore store = new RadialWebHookStore();
+			CustomServices.SetStore(store);
+		}
 	}
 
 	public class ClientTimestampFilter : ActionFilterAttribute {
-		public override void OnActionExecuting(HttpActionContext actionContext) {			
+		public override void OnActionExecuting(HttpActionContext actionContext) {
 			HttpContext.Current.Items[SyncUtil.NO_SYNC_EXCEPTION] = true;
 			base.OnActionExecuting(actionContext);
 		}

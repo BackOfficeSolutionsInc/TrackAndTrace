@@ -9,6 +9,9 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Utilities;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Http.Controllers;
+using System.Web;
+using RadialReview.Utilities.Synchronize;
 
 namespace RadialReview.Api
 {
@@ -22,6 +25,11 @@ namespace RadialReview.Api
 		
 
 		protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
+		
+		protected override void Initialize(HttpControllerContext controllerContext) {
+			HttpContext.Current.Items[SyncUtil.NO_SYNC_EXCEPTION] = true;
+			base.Initialize(controllerContext);
+		}
 
 		private UserOrganizationModel ForceGetUser(ISession s, string userId)
 		{

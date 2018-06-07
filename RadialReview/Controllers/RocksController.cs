@@ -73,8 +73,9 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public async Task<JsonResult> SetDueDate(long rockId, DateTime duedate) {
-			await L10Accessor.UpdateRock(GetUser(), rockId, null, null, null, null, dueDate: duedate);
+		public async Task<JsonResult> SetDueDate(long rockId, long dueDate) {
+			var dateR = dueDate.ToDateTime();
+			await L10Accessor.UpdateRock(GetUser(), rockId, null, null, null, null, dueDate: dateR);
 			return Json(ResultObject.SilentSuccess());
 		}
 

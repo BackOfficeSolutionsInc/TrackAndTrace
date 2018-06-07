@@ -40,7 +40,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public JsonResult Modal(ResponsibilityViewModel model) {
 			var caller = GetUser();
-			var oa = AboutType.NoRelationship;
+			var oa = AboutType.Invalid;
 			foreach (var onlyAsk in model.OnlyAsk) {
 				oa = oa | onlyAsk;
 			}

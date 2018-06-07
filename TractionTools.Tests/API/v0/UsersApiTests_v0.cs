@@ -38,8 +38,8 @@ namespace TractionTools.Tests.API.v0 {
 			var lastName = "Test2";
 			MockHttpContext();
 			var getResult = await userController.CreateUser(firstName, lastName, "test@test.com", c.Org.Id);
-            CompareModelProperties(/*APIResult.UsersApiTests_v0_TestCreateUsers*/ getResult);
-            Assert.AreNotEqual(0, getResult.Id);
+			CompareModelProperties(/*APIResult.UsersApiTests_v0_TestCreateUsers*/ getResult);
+			Assert.AreNotEqual(0, getResult.Id);
 		}
 
 
@@ -50,8 +50,8 @@ namespace TractionTools.Tests.API.v0 {
 			UsersController userController = new UsersController();
 			userController.MockUser(c.E1);
 			var getUserDetails = userController.GetUser(c.E1.Id);
-            CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetUser*/ getUserDetails);
-            Assert.AreEqual(c.E1.Id, getUserDetails.Id);
+			CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetUser*/ getUserDetails);
+			Assert.AreEqual(c.E1.Id, getUserDetails.Id);
 		}
 
 
@@ -66,8 +66,8 @@ namespace TractionTools.Tests.API.v0 {
 			MockHttpContext();
 			var getResult = await userController.CreateUser(firstName, lastName, "test@test.com", c.Org.Id);
 			await userController.DeleteUsers(getResult.Id);
-            //CompareModelProperties(/*APIResult.UsersApiTests_v0_TestDeleteUsers*/ getDeletedUser);
-            var userModel = new UserAccessor().GetUserOrganization(c.Manager, getResult.Id, false, false);
+			//CompareModelProperties(/*APIResult.UsersApiTests_v0_TestDeleteUsers*/ getDeletedUser);
+			var userModel = UserAccessor.GetUserOrganization(c.Manager, getResult.Id, false, false);
 			Assert.IsNotNull(userModel.DeleteTime);
 		}
 
@@ -80,8 +80,8 @@ namespace TractionTools.Tests.API.v0 {
 			userController.MockUser(c.E1);
 			var createRole = await AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.User, c.E1.Id));
 			var getRoles = userController.GetUserRoles(c.E1.Id);
-            CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetUserRoles*/ getRoles);
-            Assert.AreEqual(1, getRoles.Count());
+			CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetUserRoles*/ getRoles);
+			Assert.AreEqual(1, getRoles.Count());
 		}
 
 
@@ -93,12 +93,12 @@ namespace TractionTools.Tests.API.v0 {
 			userController.MockUser(c.E1);
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
-			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
+			var createPosition = await _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
 			MockHttpContext();
-			posAccessor.AddPositionToUser(c.E1, c.E1.Id, createPosition.Id);
+			await posAccessor.AddPositionToUser(c.E1, c.E1.Id, createPosition.Id);
 			var getPosition = userController.GetUserPositions(c.E1.Id);
-            CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetUserPositions*/ getPosition);
-            Assert.AreEqual(1, getPosition.Count());
+			CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetUserPositions*/ getPosition);
+			Assert.AreEqual(1, getPosition.Count());
 		}
 
 		[TestMethod]
@@ -108,8 +108,8 @@ namespace TractionTools.Tests.API.v0 {
 			UsersController userController = new UsersController();
 			userController.MockUser(c.E1);
 			var getDirectReport = userController.GetDirectReports(c.E1.Id);
-            CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetDirectReports*/ getDirectReport);
-            Assert.AreEqual(2, getDirectReport.Count());
+			CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetDirectReports*/ getDirectReport);
+			Assert.AreEqual(2, getDirectReport.Count());
 		}
 
 		[TestMethod]
@@ -119,8 +119,8 @@ namespace TractionTools.Tests.API.v0 {
 			UsersController userController = new UsersController();
 			userController.MockUser(c.E1);
 			var getSupervisors = userController.GetSupervisors(c.E1.Id);
-            CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetSupervisors*/ getSupervisors);
-            Assert.AreEqual(2, getSupervisors.Count());
+			CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetSupervisors*/ getSupervisors);
+			Assert.AreEqual(2, getSupervisors.Count());
 		}
 
 		[TestMethod]
@@ -130,8 +130,8 @@ namespace TractionTools.Tests.API.v0 {
 			UsersController userController = new UsersController();
 			userController.MockUser(c.E1);
 			var getSeats = userController.GetSeats(c.E1.Id);
-            CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetSeats*/ getSeats);
-            Assert.AreEqual(2, getSeats.Count());
+			CompareModelProperties(/*APIResult.UsersApiTests_v0_TestGetSeats*/ getSeats);
+			Assert.AreEqual(2, getSeats.Count());
 		}
 	}
 }

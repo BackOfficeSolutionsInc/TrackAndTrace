@@ -25,6 +25,7 @@ using RadialReview.Models.L10;
 using NHibernate.Criterion;
 using RadialReview.Models.Accountability;
 using System.Threading;
+using RadialReview.Crosscutting.Flags;
 
 namespace RadialReview.Controllers {
 	public class OrganizationController : BaseController {
@@ -122,8 +123,23 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> Flags(long? id = null) {
+			id = id ?? GetUser().Organization.Id;
+			var flags = await OrganizationAccessor.GetFlags(GetUser(), id.Value);
+			return View(flags);
+		}
+
 
 		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public async Task<JsonResult> SetFlags(long id, bool status, OrganizationFlagType flag) {
+			await OrganizationAccessor.SetFlag(GetUser(), id, flag, status);
+			return Json(ResultObject.SilentSuccess());
+		}
+
+
+		[Access(AccessLevel.RadialData)]
 		public ActionResult Stats(string type = null) {
 			var stats = GenerateStats();
 			type = (type ?? "").ToLower();
@@ -156,7 +172,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Invites() {
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
 
-			var temps = members.Where(x => x.HasJoined == false).Select(x => _UserAccessor.GetUserOrganization(GetUser(), x.UserId, true, false, PermissionType.EditEmployeeDetails).TempUser).Where(x => x != null).ToList();
+			var temps = members.Where(x => x.HasJoined == false).Select(x => UserAccessor.GetUserOrganization(GetUser(), x.UserId, true, false, PermissionType.EditEmployeeDetails).TempUser).Where(x => x != null).ToList();
 
 			return View(temps);
 		}
@@ -166,16 +182,35 @@ namespace RadialReview.Controllers {
 		//	var stats = GenerateStats();
 		//}
 
+		public class TinyOrgVM {
+			public long Id { get; set; }
+			public string Name { get; set; }
+			public AccountType AccountType{ get; set; }
+			public long? PlanId { get; set; }
+		}
+
 		[Access(AccessLevel.Radial)]
 		public ActionResult Which(long? id = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
 					if (id == null) {
-						var list = s.QueryOver<OrganizationModel>().Where(x => x.DeleteTime == null).Fetch(x => x.PaymentPlan).Eager.List().ToList();
-						foreach (var i in list) {
-							var a = i.PaymentPlan.Id;
-						}
+						PaymentPlanModel planAlias = null;
+						LocalizedStringModel nameAlias = null;
+						var list = s.QueryOver<OrganizationModel>()
+							.JoinAlias(x => x.PaymentPlan, () => planAlias)
+							.JoinAlias(x => x.Name, () => nameAlias)
+							.Where(x => x.DeleteTime == null)
+							.Select(x=>nameAlias.Standard,x=>x.Id,x=>x.AccountType,x=>planAlias.Id)
+							.List<object[]>()
+							.Select(x=> new TinyOrgVM() {
+								Name = (string)x[0],
+								Id = (long)x[1],
+								AccountType = (AccountType)x[2],
+								PlanId = (long?)x[3],
+							})
+							.ToList();
+					
 
 						return View("WhichList", list);
 					}
@@ -199,8 +234,11 @@ namespace RadialReview.Controllers {
 
 					foreach (var m in meetings)
 						m._MeetingAttendees = Enumerable.Range(0, attendeeslookup.GetOrDefault(m.Id, 0)).Select(x => (L10Meeting.L10Meeting_Attendee)null).ToList();
-
+					
 					ViewBag.Meetings = meetings;
+
+					ViewBag.Credits = s.QueryOver<PaymentCredit>().Where(x => x.OrgId == id && x.DeleteTime == null).List().ToList();
+
 					return View(org);
 
 				}
@@ -448,7 +486,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		public ActionResult ResendJoin(long id) {
-			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
+			var found = UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
@@ -463,7 +501,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		public ActionResult ResendJoinEmailManual(long id) {
-			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
+			var found = UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
@@ -486,7 +524,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		[HttpPost]
 		public async Task<JsonResult> ResendJoin(long id, TempUserModel model, long TempId, bool resendEmail) {
-			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
+			var found = UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
 
@@ -629,7 +667,7 @@ namespace RadialReview.Controllers {
 					var positionFound = existingPositions.FirstOrDefault(x => x.CustomName == position);
 
 					if (positionFound == null && !String.IsNullOrWhiteSpace(position)) {
-						var newPosition = _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, /*pos.Id,*/ position);
+						var newPosition =await _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, /*pos.Id,*/ position);
 						existingPositions.Add(newPosition);
 						positionFound = newPosition;
 					}

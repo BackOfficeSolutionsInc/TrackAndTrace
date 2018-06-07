@@ -143,15 +143,9 @@ namespace RadialReview.Models {
 	public class OrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable, TimeSettings {
 		[Obsolete("Use the user if possible.")]
 		public virtual TimeData GetTimeSettings() {
-			return new TimeData() {
-				Now = DateTime.UtcNow,
-				Period = Settings.ScorecardPeriod,
-				TimezoneOffset = Settings.GetTimezoneOffset(),
-				WeekStart = Settings.WeekStart,
-				YearStart = Settings.YearStart,
-			};
+			return Settings.GetTimeSettings();
 		}
-		public class OrganizationSettings {
+		public class OrganizationSettings : TimeSettings {
 			public virtual DayOfWeek WeekStart { get; set; }
 			public virtual ScorecardPeriod ScorecardPeriod { get; set; }
 			public virtual BrandingType Branding { get; set; }
@@ -296,6 +290,16 @@ namespace RadialReview.Models {
 			public virtual String GetDateFormat() {
 				return DateFormat ?? "MM-dd-yyyy";
 			}
+
+			public TimeData GetTimeSettings() {
+				return new TimeData() {
+					Now = DateTime.UtcNow,
+					Period = ScorecardPeriod,
+					TimezoneOffset = GetTimezoneOffset(),
+					WeekStart = WeekStart,
+					YearStart = YearStart,
+				};
+			}
 		}
 
 
@@ -359,6 +363,7 @@ namespace RadialReview.Models {
 
 		[Display(Name = "managerCanAddQuestions", ResourceType = typeof(DisplayNameStrings))]
 		public virtual Boolean ManagersCanEdit { get; set; }
+		[Obsolete("Do not use, use PermItem (EditDeleteUserDataForOrganization) instead.")]
 		public virtual Boolean ManagersCanRemoveUsers { get; set; }
 		public virtual bool StrictHierarchy { get; set; }
 
