@@ -74,7 +74,7 @@
     "RestSharp": "105.2.3",
     "SpreadsheetLight": "3.4.9",
     "Swashbuckle": "5.6.0",
-    "System.Data.SQLite": "1.0.105.2",
+    "System.Data.SQLite": "1.0.108",
     "System.Data.SQLite.Core": "1.0.105.2",
     "TimeZoneNames": "2.1.0",
     "TrelloNet": "0.6.2",

@@ -31,6 +31,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.SessionState;
+using TractionTools.Tests.Startup;
 using TractionTools.Tests.Utilities;
 
 namespace TractionTools.Tests.TestUtils {
@@ -429,6 +430,7 @@ namespace TractionTools.Tests.TestUtils {
 
 		[TestInitialize]
 		public void BaseTestInitialize() {
+			SetupAssemblyInitializer.ReconfigureSqlite();
 			HooksRegistry.Deregister();
 
 		}
