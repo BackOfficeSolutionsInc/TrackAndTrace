@@ -379,13 +379,21 @@ namespace RadialReview.Accessors {
 				added = true;
 			}
 
+			s.Update(issue);
 			if (added != null) {
-				s.Update(issue);				
+				var others = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                      .Where(x => x.DeleteTime == null && x.Issue.Id == issue.Issue.Id)
+                      .List().ToList();
+
+				//Not sure what I was thinking here...
+				foreach (var o in others) {
+					if (o.Id != issue.Id) {
+						o.MarkedForClose = complete;
+						s.Update(o);
+					}
+				}
 			}
 		}
-
-
-
 
 		public static IssueModel GetIssue(UserOrganizationModel caller, long issueId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
