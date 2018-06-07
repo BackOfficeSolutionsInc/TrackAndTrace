@@ -164,7 +164,7 @@ namespace TractionTools.Tests.Permissions {
 
 			c.AssertAll(p => p.RemoveUser(c.Employee.Id), c.Manager);
 			c.AssertAll(p => p.RemoveUser(c.Middle.Id), c.Manager);
-			c.AssertAll(p => p.RemoveUser(c.E6.Id), c.Manager, c.E2, c.Middle);
+			c.AssertAll(p => p.RemoveUser(c.E6.Id), c.Manager/*, c.E2, c.Middle*/);
 			c.AssertAll(p => p.RemoveUser(c.E7.Id), c.Manager);
 			c.AssertAll(p => p.RemoveUser(c.Manager.Id), c.Manager);
 		}

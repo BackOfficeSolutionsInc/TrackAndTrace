@@ -16,6 +16,7 @@ namespace RadialReview.Models.Application {
 			public static string USER_RADIAL_DATA_IDS = "USER_RADIAL_DATA_IDS";
 
 			public static string DELINQUENT_MESSAGE_MEETING = "DELINQUENT_MESSAGE_MEETING";
+			public static string UPDATE_CARD_SUBJECT = "UPDATE_CARD_SUBJECT";
 		}
 
 		public virtual string K { get; set; }
