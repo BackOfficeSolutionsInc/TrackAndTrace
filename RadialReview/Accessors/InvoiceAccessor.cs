@@ -112,7 +112,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static object GetInvoice(UserOrganizationModel caller, long invoiceId) {
+		public static InvoiceModel GetInvoice(UserOrganizationModel caller, long invoiceId) {
 			InvoiceModel invoice = null;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
