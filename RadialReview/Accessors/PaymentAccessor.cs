@@ -38,6 +38,42 @@ using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
     public class PaymentAccessor : BaseAccessor {
+
+		/// <summary>
+		/// Returns true if delinquent by certain number of days
+		/// </summary>
+		/// <param name="caller"></param>
+		/// <param name="orgId"></param>
+		/// <param name="daysOverdue"></param>
+		/// <returns></returns>
+		public static bool ShowDelinquent(UserOrganizationModel caller,long orgId,int daysOverdue) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					try {
+						perms.EditCompanyPayment(orgId);
+						var cards = s.QueryOver<PaymentSpringsToken>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null && x.Active==true).List().ToList();
+						if (!cards.Any()) {
+							var org = s.Get<OrganizationModel>(orgId);
+
+							if (org == null)
+								throw new NullReferenceException("Organization does not exist");
+							if (org.DeleteTime != null)
+								throw new FallthroughException("Organization was deleted.");
+							var plan = org.PaymentPlan;
+							if (plan.FreeUntil.AddDays(daysOverdue) < DateTime.UtcNow) {
+								return true;
+							}
+						}
+						return false;
+					} catch (Exception e) {
+						return false;
+					}
+				}
+			}
+		}
+
+
         public PaymentPlanModel BasicPaymentPlan() {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -353,106 +389,109 @@ namespace RadialReview.Accessors {
                 AllPeopleList = s.QueryOver<UserOrganizationModel>(() => uo)
                                     .Left.JoinAlias(() => uo.User, () => u)                 ///Existed any time during this range.
 									.Where(() => uo.Organization.Id == orgId && uo.CreateTime <= rangeEnd && (uo.DeleteTime == null || uo.DeleteTime > rangeStart) && !uo.IsRadialAdmin)
-                                    .Select(x => x.Id, x => u.IsRadialAdmin, x => x.IsClient, x => x.User.Id, x => x.EvalOnly)
-                                    .List<object[]>()
-                                    .Select(x => new UQ {
-                                        UserOrgId = (long)x[0],
-                                        IsRadialAdmin = (bool?)x[1],
-                                        IsClient = (bool)x[2],
-                                        UserId = (string)x[3],
-                                        IsRegistered = x[3] != null,
-                                        EvalOnly = (bool?)x[4] ?? false
-                                    })
-                                    .Where(x => x.IsRadialAdmin == null || (bool)x.IsRadialAdmin == false)
-                                    .ToList();
-                if (Plan.NoChargeForClients) {
-                    AllPeopleList = AllPeopleList.Where(x => x.IsClient == false).ToList();
-                }
-                if (Plan.NoChargeForUnregisteredUsers) {
-                    AllPeopleList = AllPeopleList.Where(x => x.IsRegistered).ToList();
-                }
-            }
-        }
+									.Select(x => x.Id, x => u.IsRadialAdmin, x => x.IsClient, x => x.User.Id, x => x.EvalOnly)
+									.List<object[]>()
+									.Select(x => new UQ {
+										UserOrgId = (long)x[0],
+										IsRadialAdmin = (bool?)x[1],
+										IsClient = (bool)x[2],
+										UserId = (string)x[3],
+										IsRegistered = x[3] != null,
+										EvalOnly = (bool?)x[4] ?? false
+									})
+									.Where(x => x.IsRadialAdmin == null || (bool)x.IsRadialAdmin == false)
+									.ToList();
+				if (Plan.NoChargeForClients) {
+					AllPeopleList = AllPeopleList.Where(x => x.IsClient == false).ToList();
+				}
+				if (Plan.NoChargeForUnregisteredUsers) {
+					AllPeopleList = AllPeopleList.Where(x => x.IsRegistered).ToList();
+				}
+			}
+		}
 
-        public static List<Itemized> CalculateCharge(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime) {
-            var itemized = new List<Itemized>();
+		public static List<Itemized> CalculateCharge(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime) {
+			var itemized = new List<Itemized>();
 
-            if (NHibernateUtil.GetClass(paymentPlan) == typeof(PaymentPlan_Monthly)) {
-                var plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(paymentPlan);
-                var rangeStart = executeTime.Subtract(plan.SchedulerPeriod());// TimespanExtensions.OneMonth());
-                var rangeEnd = executeTime;
-                var durationMult = plan.DurationMultiplier();
-                var durationDesc = plan.MultiplierDesc();
-                ///HEAVY LIFTING
-                var calc = new UserCalculator(s, org.Id, plan, new DateRange(rangeStart, rangeEnd));
+			if (NHibernateUtil.GetClass(paymentPlan) == typeof(PaymentPlan_Monthly)) {
+				var plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(paymentPlan);
+				var rangeStart = executeTime.Subtract(plan.SchedulerPeriod());// TimespanExtensions.OneMonth());
+				var rangeEnd = executeTime;
+				var durationMult = plan.DurationMultiplier();
+				var durationDesc = plan.MultiplierDesc();
+				///HEAVY LIFTING
+				var calc = new UserCalculator(s, org.Id, plan, new DateRange(rangeStart, rangeEnd));
 
-                //s.Auditer().GetRevisionNumberForDate(<OrganizationModel>(org.Id,);
+				//s.Auditer().GetRevisionNumberForDate(<OrganizationModel>(org.Id,);
 
-                var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(s, org.Id, rangeStart, rangeEnd).ToList();
-                var reviewEnabled = /*org.Settings.EnableReview;//*/allRevisions.Any(x => x.Object.Settings.EnableReview);
-                var l10Enabled = /*org.Settings.EnableL10; //*/allRevisions.Any(x => x.Object.Settings.EnableL10);
+				var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(s, org.Id, rangeStart, rangeEnd).ToList();
+				var qcEnabled = /*org.Settings.EnableReview;//*/allRevisions.Any(x => x.Object.Settings.EnableReview || x.Object.Settings.EnablePeople);
+				var l10Enabled = /*org.Settings.EnableL10; //*/allRevisions.Any(x => x.Object.Settings.EnableL10);
 
-                //In case clocks are off.
-                var executionCalculationDate = executeTime.AddDays(1).Date;
+				//In case clocks are off.
+				var executionCalculationDate = executeTime.AddDays(1).Date;
 
 
-                if (plan.BaselinePrice > 0) {
-                    var reviewItem = new Itemized() {
-                        Name = "Traction® Tools" + durationDesc,
-                        Price = plan.BaselinePrice * durationMult,
-                        Quantity = 1,
-                    };
-                    itemized.Add(reviewItem);
-                }
+				if (plan.BaselinePrice > 0) {
+					var reviewItem = new Itemized() {
+						Name = "Traction® Tools" + durationDesc,
+						Price = plan.BaselinePrice * durationMult,
+						Quantity = 1,
+					};
+					itemized.Add(reviewItem);
+				}
 
-                if (reviewEnabled) {
-                    var reviewItem = new Itemized() {
-                        Name = "Quarterly Conversation" + durationDesc,
-                        Price = plan.ReviewPricePerPerson * durationMult,
-                        Quantity = calc.NumberQCUsersToChargeFor//allPeopleList.Where(x => !x.IsClient).Count()
-                    };
-                    if (reviewItem.Quantity != 0) {
-                        itemized.Add(reviewItem);
-                        if (!(plan.ReviewFreeUntil == null || !(plan.ReviewFreeUntil.Value.Date > executionCalculationDate))) {
-                            //Discount it since it is free
-                            itemized.Add(reviewItem.Discount());
-                        }
-                    }
-                }
-                if (l10Enabled) {
-                    var l10Item = new Itemized() {
-                        Name = "L10 Meeting Software" + durationDesc,
-                        Price = plan.L10PricePerPerson * durationMult,
-                        Quantity = calc.NumberL10UsersToChargeFor,
-                    };
-                    if (l10Item.Quantity != 0) {
-                        itemized.Add(l10Item);
+			
+				if (l10Enabled) {
+					var l10Item = new Itemized() {
+						Name = "Level 10 Meeting Software" + durationDesc,
+						Price = plan.L10PricePerPerson * durationMult,
+						Quantity = calc.NumberL10UsersToChargeFor,
+					};
+					if (l10Item.Quantity != 0) {
+						itemized.Add(l10Item);
 
-                        if (!(plan.L10FreeUntil == null || !(plan.L10FreeUntil.Value.Date > executionCalculationDate))) {
-                            //Discount it since it is free
-                            itemized.Add(l10Item.Discount());
-                        }
-                    }
-                }
-                if ((plan.FreeUntil.Date > executionCalculationDate)) {
-                    //Discount it since it is free
-                    var total = itemized.Sum(x => x.Total());
-                    itemized.Add(new Itemized() {
-                        Name = "Discount",
-                        Price = -1 * total,
-                        Quantity = 1,
-                    });
-                }
+						if (!(plan.L10FreeUntil == null || !(plan.L10FreeUntil.Value.Date > executionCalculationDate))) {
+							//Discount it since it is free
+							itemized.Add(l10Item.Discount());
+						}
+					}
+				}
 
-                var discountLookup = new Dictionary<AccountType, string>() {
+				if (qcEnabled) {
+					var reviewItem = new Itemized() {
+						Name = "People Tools™" + durationDesc,
+						Price = plan.ReviewPricePerPerson * durationMult,
+						Quantity = calc.NumberQCUsersToChargeFor//allPeopleList.Where(x => !x.IsClient).Count()
+					};
+					if (reviewItem.Quantity != 0) {
+						itemized.Add(reviewItem);
+						if (!(plan.ReviewFreeUntil == null || !(plan.ReviewFreeUntil.Value.Date > executionCalculationDate))) {
+							//Discount it since it is free
+							itemized.Add(reviewItem.Discount());
+						}
+					}
+				}
+
+				if ((plan.FreeUntil.Date > executionCalculationDate)) {
+					//Discount it since it is free
+					var total = itemized.Sum(x => x.Total());
+					itemized.Add(new Itemized() {
+						Name = "Discount",
+						Price = -1 * total,
+						Quantity = 1,
+					});
+				}
+
+				var discountLookup = new Dictionary<AccountType, string>() {
                     //{AccountType.Cancelled,"Inactive Account" },
                     {AccountType.Implementer,"Discount (Implementer)" },
 					{AccountType.Dormant,"Inactive Account" },
 					{AccountType.SwanServices, "Demo Account (Swan Services)" },
 					{AccountType.Other, "Discount (Special Account)" },
 					{AccountType.UserGroup, "Discount (User Group)" },
-					{AccountType.Coach, "Discount (Coach)" }
-
+					{AccountType.Coach, "Discount (Coach)" },
+					{AccountType.FreeForever, "Discount (Free)" },
 				};
 
 				if (org != null && discountLookup.ContainsKey(org.AccountType) && itemized.Sum(x => x.Total()) != 0) {

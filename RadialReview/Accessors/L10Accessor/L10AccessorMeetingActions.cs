@@ -348,7 +348,7 @@ namespace RadialReview.Accessors {
 						try {
 							var perms = PermissionsUtility.Create(s, caller);
 							_GetCurrentL10Meeting(s, perms, recurrenceId, false);
-							throw new MeetingException("Meeting has already started.", MeetingExceptionType.AlreadyStarted);
+							throw new MeetingException(recurrenceId,"Meeting has already started.", MeetingExceptionType.AlreadyStarted);
 						} catch (MeetingException e) {
 							if (e.MeetingExceptionType != MeetingExceptionType.Unstarted)
 								throw;

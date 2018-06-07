@@ -98,7 +98,13 @@ namespace RadialReview.Utilities.Extensions {
 			var low = revisionIds.Min();
 			var high = revisionIds.Max();
 
-			var revisionModels = self.CreateQuery().ForHistoryOf<T, DefaultRevisionEntity>(true).Add(AuditEntity.Id().Eq(id)).Add(AuditEntity.RevisionNumber().Ge(low)).Add(AuditEntity.RevisionNumber().Le(high)).Results();
+			var revisionModels = self.CreateQuery()
+				.ForHistoryOf<T, DefaultRevisionEntity>(true)
+				.Add(AuditEntity.Id().Eq(id))
+				.Add(AuditEntity.RevisionNumber().Ge(low))
+				.Add(AuditEntity.RevisionNumber().Le(high))
+				
+				.Results();
 
 			return revisionModels.Select(x => new Revision<T>() {
 				Date = x.RevisionEntity.RevisionDate,

@@ -601,11 +601,28 @@ body.resizing .notes-tile,
             margin-top: -1px;
         }
 
+        .icon-column-text {
+            margin-top: -22px;
+            margin-left: 18px;
+        }
+
         .icon-column {
-            display: table-cell;
-            padding-right: 2px;
+            /*display: table-cell;*/
+            padding-right: 6px;
             vertical-align: top;
             padding-top: 6px;
+        }
+
+        .icon-column-1 {
+            padding-top: 5px !important;
+            /*width: 45px;*/
+        }
+
+        .icon-column-1-text {
+            margin-top: -20px;
+            /*float: left;*/
+            margin-left: 2px;
+            /*width: 45px;*/
         }
 
         .icon-column:before {
@@ -620,7 +637,7 @@ body.resizing .notes-tile,
             -moz-osx-font-smoothing: grayscale;
             display: inline-block;
             position: relative;
-            top: -1px;
+            top: 5px;
             font-size: 18px;
             height: 14px;
             width: 14px;
@@ -634,11 +651,19 @@ body.resizing .notes-tile,
             width: 16px;
             height: 16px;
             position: relative;
-            left: 12px;
+            left: 14px;
             border-radius: 14px;
             float: left;
             position: absolute;
-            /* margin-top: -2px; */
+            margin-top: 6px;
+        }
+
+        .icon-column-1:before {
+            top: 1px !important;
+        }
+
+        .icon-column-1:after {
+            margin-top: 2px !important;
         }
 
         tr .icon-column:before {
@@ -708,14 +733,6 @@ body.resizing .notes-tile,
             vertical-align: top;
             padding-top: 3px;
         }
-        /*.table-header,
-		.picture-column,
-		.createtime-column,
-		.due-column,
-		.company-rock-column,
-		.delete-column {
-			display: none;
-		}*/
 
         .createtime-column,
         .due-column,
@@ -726,7 +743,7 @@ body.resizing .notes-tile,
         .company-rock-column {
             max-width: none;
         }
-
+      
         .status-column {
             padding: 2px !important;
         }
@@ -1026,8 +1043,6 @@ body.resizing .notes-tile,
     }
 
     .issues-list-container {
-
-
         table {
             .dataTableTiny();
 
@@ -1062,8 +1077,6 @@ body.resizing .notes-tile,
             margin-left: -27px;
             margin-right: -25px;
         }
-
-
 
         .priority-column {
             width: 38px;
@@ -1331,13 +1344,10 @@ body.resizing .notes-tile,
             &:hover {
                 color: @traction-orange;
             }
-
-
             &:hover:before {
                 color: @traction-orange;
             }
         }
-
         ul {
             /*padding-left: 6px;
 			font-size: 9px;*/
@@ -1676,186 +1686,186 @@ body.resizing .notes-tile,
 
 
 
-@media(max-width:768px) {
+    @media(max-width:768px) {
 
-	.add-tile {
-		display: none;
-	}
+        .add-tile {
+            display: none;
+        }
 
-	.add-pages {
-		left: 0px !important;
-	}
+        .add-pages {
+            left: 0px !important;
+        }
 
-	#grid {
-		width: 100%;
-		padding: 10px;
-	}
+        #grid {
+            width: 100%;
+            padding: 10px;
+        }
 
-	li.grid-tile {
-		position: relative !important;
-		left: 0px !important;
-		width: 100% !important;
-		top: 0px !important;
-		/*height: 200px !important;*/
-	}
+        li.grid-tile {
+            position: relative !important;
+            left: 0px !important;
+            width: 100% !important;
+            top: 0px !important;
+            /*height: 200px !important;*/
+        }
 
-	.settings-container {
-		display: none;
-	}
+        .settings-container {
+            display: none;
+        }
 
-	.body-full-width .jumbotron {
-		height: 14px;
-	}
+        .body-full-width .jumbotron {
+            height: 14px;
+        }
 
-	.body-full-width .jumbotron h1 {
-		font-size: 18px;
-		margin-top: -2px;
-	}
+        .body-full-width .jumbotron h1 {
+            font-size: 18px;
+            margin-top: -2px;
+        }
 
-	.add-pages button,
-	.l10-pages button,
-	.add-tile button {
-		padding: 3px;
-		font-size: 11px;
-	}
+        .add-pages button,
+        .l10-pages button,
+        .add-tile button {
+            padding: 3px;
+            font-size: 11px;
+        }
 
-	.scorecard-list-container .goal-column {
-		display: none;
-	}
+        .scorecard-list-container .goal-column {
+            display: none;
+        }
 
-	#ScorecardTable {
-		margin-bottom: 0px;
-	}
+        #ScorecardTable {
+            margin-bottom: 0px;
+        }
 
-	.grid-tile {
-		height: initial !important;
-		width: initial !important;
-	}
+        .grid-tile {
+            height: initial !important;
+            width: initial !important;
+        }
 
-	.grid > li {
-		padding: 0px 0 10px 0;
+        .grid > li {
+            padding: 0px 0 10px 0;
 
-		.inner {
-			position: relative !important;
-		}
+            .inner {
+                position: relative !important;
+            }
 
-		.content {
-			position: relative !important;
-		}
+            .content {
+                position: relative !important;
+            }
 
-		.heading {
-			cursor: default !important;
-		}
-	}
+            .heading {
+                cursor: default !important;
+            }
+        }
 
 
 
-	.grid .content .tile {
-		position: relative !important;
-		top: initial !important;
-		bottom: initial !important;
-		left: initial !important;
-		right: initial !important;
-		overflow: initial !important;
-	}
+        .grid .content .tile {
+            position: relative !important;
+            top: initial !important;
+            bottom: initial !important;
+            left: initial !important;
+            right: initial !important;
+            overflow: initial !important;
+        }
 
-	.rock-list-container {
-		height: initial !important;
-	}
+        .rock-list-container {
+            height: initial !important;
+        }
 
-	.userprofile {
-		display: none;
-	}
+        .userprofile {
+            display: none;
+        }
 
-	.grid-container {
-		top: 20px !important;
-		left: 10px !important;
-		right: 10px !important;
-		bottom: 10px !important;
-	}
+        .grid-container {
+            top: 20px !important;
+            left: 10px !important;
+            right: 10px !important;
+            bottom: 10px !important;
+        }
 
-	#grid {
-		padding-top: 0;
-	}
-}
+        #grid {
+            padding-top: 0;
+        }
+    }
 
-.add-pages {
-	.dropdown-menu {
-		a {
-			position: relative;
-		}
+    .add-pages {
+        .dropdown-menu {
+            a {
+                position: relative;
+            }
 
-		.dashtitle {
-			position: relative;
-			left: 0px;
-			top: 0px;
-			bottom: 6px;
-			right: 20px;
-			display: block;
-		}
+            .dashtitle {
+                position: relative;
+                left: 0px;
+                top: 0px;
+                bottom: 6px;
+                right: 20px;
+                display: block;
+            }
 
-		.glyphicon {
-			opacity: 0;
-			position: absolute;
-			right: 2px;
-			top: 5px;
-		}
+            .glyphicon {
+                opacity: 0;
+                position: absolute;
+                right: 2px;
+                top: 5px;
+            }
 
-		a:hover .glyphicon {
-			opacity: .8;
-		}
-	}
-}
+            a:hover .glyphicon {
+                opacity: .8;
+            }
+        }
+    }
 
-.dashboard .minimal-editing {
-	.l10-scorecard-tile {
-		.button-column,
-		.admin-column {
-			display: none;
-		}
+    .dashboard .minimal-editing {
+        .l10-scorecard-tile {
+            .button-column,
+            .admin-column {
+                display: none;
+            }
 
-		.direction, .measurable-column input, .goal-column input {
-			pointer-events: none;
-		}
-	}
+            .direction, .measurable-column input, .goal-column input {
+                pointer-events: none;
+            }
+        }
 
-	.scorecard-list-container {
-		.measurable-column {
-			input {
-				pointer-events: none;
-			}
-		}
-	}
-}
+        .scorecard-list-container {
+            .measurable-column {
+                input {
+                    pointer-events: none;
+                }
+            }
+        }
+    }
 
-.dashboard {
-	.grid-tile .inner *:not(.keep-background):not(.background-color):not(.heading):not(.date.current) {
-		/*background-color: transparent !important;
+    .dashboard {
+        .grid-tile .inner *:not(.keep-background):not(.background-color):not(.heading):not(.date.current) {
+            /*background-color: transparent !important;
 		color: #656565;
 			Removed for safari
 
 		*/
-	}
+        }
 
-	.resize-control {
-		display: none;
-	}
+        .resize-control {
+            display: none;
+        }
 
-	.grid-tile .inner,
-	.grid-tile .background-color {
-		background-color: #f9f9f9 !important; // hsl(125,32%,85%) !important;
-	}
+        .grid-tile .inner,
+        .grid-tile .background-color {
+            background-color: #f9f9f9 !important; // hsl(125,32%,85%) !important;
+        }
 
-	.grid-tile .heading {
-		background-color: rgba(0,0,0,.1) !important;
-		//border-bottom: 0px !important;
-		border-bottom: 1px solid #dedede !important;
-	}
+        .grid-tile .heading {
+            background-color: rgba(0,0,0,.1) !important;
+            //border-bottom: 0px !important;
+            border-bottom: 1px solid #dedede !important;
+        }
 
-	.software-updates {
-		background: none;
-	}
-	/*::-webkit-input-placeholder { /* WebKit, Blink, Edge *
+        .software-updates {
+            background: none;
+        }
+        /*::-webkit-input-placeholder { /* WebKit, Blink, Edge *
         color: #909;
     }
 
@@ -1872,79 +1882,74 @@ body.resizing .notes-tile,
     :-ms-input-placeholder { /* Internet Explorer 10-11 *
         color: #909;
     }*/
-	.gray {
-		color: rgba(51, 51, 51, 0.5);
-	}
-}
+        .gray {
+            color: rgba(51, 51, 51, 0.5);
+        }
+    }
 
-#modal input[type=checkbox] {
-	outline: none !important;
-	border: none;
-	/*height: 47px;
+    #modal input[type=checkbox] {
+        outline: none !important;
+        border: none;
+        /*height: 47px;
 	width: 47px;*/
-	margin-top: -8px;
-	bottom: auto;
-}
+        margin-top: -8px;
+        bottom: auto;
+    }
+    /* Track */
+    .tiny:hover *::-webkit-scrollbar-track {
+        /*background-color: rgba(0,0,0,.05);*/
+    }
 
-/* Track */
-.tiny:hover *::-webkit-scrollbar-track {
-	/*background-color: rgba(0,0,0,.05);*/
-}
+    .tiny *::-webkit-scrollbar-track {
+        background-color: rgba(0,0,0,.0);
+        border: 6px solid transparent;
+        -moz-background-clip: padding-box;
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
+        -webkit-border-radius: 2px;
+        border-radius: 2px;
+    }
+    /* Handle */
+    .tiny *::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 9px;
+        border-radius: 9px;
+        background: rgba(0,0,0,.07);
+        border: 3px solid transparent;
+        background-clip: padding-box;
+        margin: 2px;
+        -webkit-transition: background .2s ease-in-out;
+    }
 
-.tiny *::-webkit-scrollbar-track {
-	background-color: rgba(0,0,0,.0);
-	border: 6px solid transparent;
-	-moz-background-clip: padding-box;
-	-webkit-background-clip: padding-box;
-	background-clip: padding-box;
-	-webkit-border-radius: 2px;
-	border-radius: 2px;
-}
-
-/* Handle */
-.tiny *::-webkit-scrollbar-thumb {
-	-webkit-border-radius: 9px;
-	border-radius: 9px;
-	background: rgba(0,0,0,.07);
-	border: 3px solid transparent;
-	background-clip: padding-box;
-	margin: 2px;
-	-webkit-transition: background .2s ease-in-out;
-}
-
-.tiny *:hover::-webkit-scrollbar-thumb {
-	background: rgba(0,0,0,.2);
-	-webkit-border-radius: 9px;
-	border-radius: 9px;
-	border: 3px solid transparent;
-	background-clip: padding-box;
-	margin: 2px;
-}
-
-/*.todo-list-container, .l10-todo-list-container {
+    .tiny *:hover::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,.2);
+        -webkit-border-radius: 9px;
+        border-radius: 9px;
+        border: 3px solid transparent;
+        background-clip: padding-box;
+        margin: 2px;
+    }
+    /*.todo-list-container, .l10-todo-list-container {
     background-color: hsl(237,32%,85%)!important;
 }
 
 .l10-issue-tile, .issues-list-container, .l10-issues-list-container {
     background-color: hsl(150,32%,85%)!important;
 }*/
+    l10-stats-tile {
 
+        .chart-legend {
+            bottom: 22px;
+        }
+    }
 
-l10-stats-tile {
+    .width_1 l10-stats-tile {
+        .chart-legend {
+            bottom: 42px;
 
-	.chart-legend {
-		bottom: 22px;
-	}
-}
-
-.width_1 l10-stats-tile {
-	.chart-legend {
-		bottom: 42px;
-
-		.item .icon {
-			width: 11px;
-			min-height: 10px !important;
-			height: 11px;
-		}
-	}
-}
+            .item .icon {
+                width: 11px;
+                min-height: 10px !important;
+                height: 11px;
+            }
+        }
+    }

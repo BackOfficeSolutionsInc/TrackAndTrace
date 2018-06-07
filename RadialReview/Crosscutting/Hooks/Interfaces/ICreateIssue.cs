@@ -18,6 +18,7 @@ namespace RadialReview.Utilities.Hooks {
 		public int? oldPriority { get; set; }
 		public int? oldRank { get; set; }
 		public bool AwaitingSolveChanged { get; set; }
+		public bool CompartmentChanged { get; set; }
 	}
 
 	public interface IIssueHook : IHook {

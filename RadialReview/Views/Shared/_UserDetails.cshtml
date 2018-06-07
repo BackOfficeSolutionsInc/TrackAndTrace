@@ -32,7 +32,14 @@
 					<a class="btn btn-link alignCenter" href="/people/quarterlyconversation/surveys/@Model.User.Id">View Quarterly Conversations</a>
 				</div>
 			}
-		</div>
+
+			@if (Model.CanEditUserDetails) {
+				<div class="alignCenter smallBreak2">
+					<a href="#" onclick="editUserDetails(@Model.User.Id)">Edit User</a>
+				</div>
+			}
+
+				</div>
 		<div class="col-sm-9">
 			<div class="panel panel-default">
 				@if (edit) {<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Job Description", "/JobDescription/Modal/" + Model.User.Id, "/JobDescription/Modal?refresh=true&silent=true")">Edit</a>}<div class="panel-heading"><h3 class="panel-title">Job Description</h3></div>
@@ -226,6 +233,9 @@
 <script>
 
 	
+	function editUserDetails(id){
+		showModal("Edit User","@Url.Action("EditUserDetails", "User")/"+id,"@Url.Action("EditUserDetails", "User")/"+id,null,null,null,null,"enctype=\"multipart/form-data\"");
+	}
 	
 	function removeRock(id) {
 		$.ajax("/api/v1/rocks/" + id, {

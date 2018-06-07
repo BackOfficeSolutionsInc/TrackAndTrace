@@ -143,7 +143,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult CreateTodo(long recurrence, long meeting = -1, string todo = null, long? modelId = null, string modelType = null) {
+		public PartialViewResult CreateTodo(long recurrence, long meeting = -1, string todo = null, long? modelId = null, string modelType = null,string details=null) {
 			if (meeting != -1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
@@ -156,6 +156,7 @@ namespace RadialReview.Controllers {
 				ForModelType = modelType,
 				Message = todo,
 				ByUserId = GetUser().Id,
+				Details = details,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
 				PossibleUsers = people.Select(x => new AccountableUserVM() {

@@ -18,7 +18,7 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()){
 					var perms = PermissionsUtility.Create(s, caller);
-					perms.CanView(PermItem.ResourceType.InvoiceForOrganization, orgid, @this => @this.ManagingOrganization(orgid));
+					perms.Or(x=>x.CanView(PermItem.ResourceType.InvoiceForOrganization, orgid, @this => @this.ManagingOrganization(orgid)),x=>x.CanEdit(PermItem.ResourceType.UpdatePaymentForOrganization, orgid));
 					var invoices = s.QueryOver<InvoiceModel>().Where(x => x.DeleteTime == null && x.Organization.Id == orgid).List().ToList();
 
 					foreach (var i in invoices) {
@@ -112,12 +112,16 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static object GetInvoice(UserOrganizationModel caller, long invoiceId) {
+		public static InvoiceModel GetInvoice(UserOrganizationModel caller, long invoiceId) {
 			InvoiceModel invoice = null;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					invoice = s.Get<InvoiceModel>(invoiceId);
-					var perms = PermissionsUtility.Create(s, caller).CanView(PermItem.ResourceType.InvoiceForOrganization, invoice.Organization.Id, @this => @this.ManagingOrganization(invoice.Organization.Id));
+					var perms = PermissionsUtility.Create(s, caller)
+						.Or(
+							x=>x.CanView(PermItem.ResourceType.InvoiceForOrganization, invoice.Organization.Id, @this => @this.ManagingOrganization(invoice.Organization.Id)),
+							x=>x.CanEdit(PermItem.ResourceType.UpdatePaymentForOrganization, invoice.Organization.Id)
+						);
 					foreach (var item in invoice.InvoiceItems) {
 						var a = item.Name;
 						var b = item.Description;

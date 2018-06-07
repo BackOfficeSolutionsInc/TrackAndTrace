@@ -51,7 +51,7 @@ namespace RadialReview.Models.UserModels {
 			Map(x => x.LastSent);
 			Map(x => x.OrganizationId);
 			Map(x => x.UserOrganizationId);
-
+			
 			Map(x => x.LastSentByUserId);
 			Map(x => x.EmailStatusUnseen);
 			Map(x => x.EmailStatus).Nullable().CustomType<WebHookEventType>();

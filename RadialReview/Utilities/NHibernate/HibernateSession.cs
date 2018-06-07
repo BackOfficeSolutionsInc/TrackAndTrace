@@ -142,7 +142,7 @@ namespace RadialReview.Utilities {
 				GetDatabaseSessionFactory(environmentOverride);
 
 				return new TestClearDispose() {
-					OldEnv = old.Value,
+					OldEnv = old,
 					OnDispose = onDispose,
 				};
 			}
@@ -353,8 +353,8 @@ namespace RadialReview.Utilities {
 			return null;
 		}
 
-		public static async Task RunAfterSuccessfulDisposeOrNow(Func<ISession, ITransaction, Task> method) {
-			var s = GetExistingSingleRequestSession();
+		public static async Task RunAfterSuccessfulDisposeOrNow(ISession waitUntilFinished,Func<ISession, ITransaction, Task> method) {
+			var s = (waitUntilFinished as SingleRequestSession) ?? GetExistingSingleRequestSession();
 			if (s is SingleRequestSession) {
 				s.RunAfterDispose(new SingleRequestSession.OnDisposedModel(method, true));
 			} else {
@@ -583,7 +583,10 @@ namespace RadialReview.Utilities {
 				case Config.DbType.MySql:
 					return ((DateTime)s.CreateSQLQuery("select now();").List()[0]);
 				case Config.DbType.Sqlite:
-					return DateTime.ParseExact((string)s.CreateSQLQuery("select CURRENT_TIMESTAMP;").List()[0], "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-us"));
+					var db = s.CreateSQLQuery("select CURRENT_TIMESTAMP;").List()[0];
+					if (db is DateTime)
+						return (DateTime)db ;
+					return DateTime.ParseExact((string)db, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-us"));
 				default:
 					throw new NotImplementedException("Db type unknown");
 			}

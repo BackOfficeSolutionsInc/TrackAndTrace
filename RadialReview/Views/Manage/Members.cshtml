@@ -7,8 +7,7 @@
 	ViewBag.Title = "Members";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	ViewBag.Page = "Members";
-
-
+	
 	var lookup = new Dictionary<WebHookEventType, Tuple<string, string, int>>(){
 		{WebHookEventType.Click,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
 		{WebHookEventType.Deferral,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
@@ -20,12 +19,11 @@
 		{WebHookEventType.Soft_bounce,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
 		{WebHookEventType.Spam,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
 		{WebHookEventType.Unsub,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
-	};
+};
 
 	var invalidCount = Model.Users.Count(x => x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail"));
 	var resendCount = Model.Users.Count(x => !x.Verified && !(x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail")));
 	var unsentCount = Model.Users.Count(x => !x.EmailSent);
-
 
 }
 
@@ -39,13 +37,6 @@
 	@Html.Partial("Partial/manageheader")
 }
 
-@*@section hints{
-		@Html.AlertBoxDismissable(@"From this page you can add employees to your organization.
-				Employees are assigned questions that evaluate how they are doing in the organization.
-				These can be questions unique to the individual or shared with their teams, positions, or the company as a whole.
-				During the review process, peers, teammates, supervisors and direct reports answer questions of the employee to gauge how well they are fulfilling their responsibilities.
-				To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
-	}*@
 
 @if (invalidCount > 0) {
 	@Html.AlertBoxDismissable(@"Invitations could not be delivered to " + invalidCount + " user".Pluralize(invalidCount) + ". Email addresses were incorrect. Click <span class='nohover strokeOrange invalidEmail glyphicon glyphicon-envelope'></span> to try another address.", "alert-danger", "Warning:")
@@ -56,81 +47,37 @@
 
 }
 
-@*@if (resendCount > 0)
-	{
-		@Html.AlertBoxDismissable(@"One or more email employees have not joined. ( <span class='strokeOrange resendEmail glyphicon glyphicon-envelope' style='padding-left:1px;'></span> ) ", "alert-info", "Info:")
-	}*@
-
 @using (Html.BeginStyles()) {
 	<style>
 		.alert .btn:hover {
 			background-color: white;
 			border-color: #CCCCCC;
 		}
-
-		tr.managing {
-		}
-
-		tr.notManaging {
-			background-color: #F1F1F1;
-		}
-
-		.viewEdit {
-			opacity: .1;
-		}
-
-		span:hover .viewEdit {
-			opacity: 1;
-		}
-
+		tr.managing {}
+		tr.notManaging {background-color: #F1F1F1;}
+		.viewEdit {opacity: .1;}
+		span:hover .viewEdit {opacity: 1;}
 		.filter-table .quick {
 			margin-left: 0.5em;
 			font-size: 0.8em;
 			text-decoration: none;
 		}
-
-		.fitler-table .quick:hover {
-			text-decoration: underline;
-		}
-
+		.fitler-table .quick:hover {text-decoration: underline;}
 		td.alt {
 			background-color: #ffc;
 			background-color: rgba(255, 255, 0, 0.2);
 		}
-		
-		.userType[data-type='Standard']:before {
-			content: "s";
-		}
-
-		.userType[data-type='EmailBlackList']:before {
-			content: "b";
-		}
-
-		.userType[data-type='PlaceholderOnly']:before {
-			content: "p";
-		}
-
-		.userType[data-type='LeadershipTeamMember']:before {
-			content: "l";
-		}
-
-		.userType[data-type='AccountContact']:before {
-			content: "c";
-		}
-
+		.userType[data-type='Standard']:before {content: "s";}
+		.userType[data-type='EmailBlackList']:before {content: "b";}
+		.userType[data-type='PlaceholderOnly']:before {content: "p";}
+		.userType[data-type='LeadershipTeamMember']:before {content: "l";}
+		.userType[data-type='AccountContact']:before {content: "c";}
 		.userType[data-enabled='true']:before {
 			text-transform: lowercase;
 			color: #333;
 		}
-
-		.userType[data-enabled='false']:before {
-			color: lightgray;
-		}
-
-		.userroles {
-			text-align: right;
-		}
-
+		.userType[data-enabled='false']:before {color: lightgray;}
+		.userroles {text-align: right;}
 		@@media screen and (max-width: 400px) {
 			.filter-resize-tiny {
 				display: none;
@@ -138,13 +85,11 @@
 		}
 	</style>
 	@Styles.Render("~/Content/ManageCSS")
-
 }
 
 @using (Html.BeginScripts()) {
 	@Scripts.Render("~/bundles/Manage")
 	<script>
-
 		function deleteUser(id) {
 			showModal({
 				title: "Are you sure?",
@@ -225,7 +170,6 @@
 				}
 			}
 
-
 			var pid = id;
 			showModal({
 				title: "Edit Permissions",
@@ -235,7 +179,6 @@
 				labelColumnClass: "col-sm-6",
 				valueColumnClass: "col-sm-6",
 				complete: function (d,form) {
-					//showJsonAlert(d);
 					var override = false;
 					if(typeof(d.Object.ManagingOrganization)!=="undefined"){
 						$("#permissions_" + pid).attr("data-isadmin",d.Object.ManagingOrganization?"True":"False");
@@ -255,6 +198,10 @@
 			});
 		}
 
+		function editUserDetails(id){
+			showModal("Edit User","@Url.Action("EditUserDetails", "User")/"+id,"@Url.Action("EditUserDetails", "User")/"+id,null,null,null,null,"enctype=\"multipart/form-data\"");
+		}
+
 		function ResendEmails() {
 			$("#send").prop("disabled", true);
 			$.ajax({
@@ -267,7 +214,6 @@
 		}
 
 		function setUserType(self){
-
 			var userId = $(self).closest(".record-row").data("id");
 			var type = $(self).data("type");
 			var enabled =$(self).data("enabled");
@@ -278,7 +224,6 @@
 					$(self).data("enabled",data);
 				}
 			});
-
 		}
 
 		function checkAddUser(a,b){
@@ -320,12 +265,8 @@
 				sortStable: true,
 			});
 		});
-
-
-
 	</script>
 }
-
 
 <div class="panel panel-primary">
 	<div class="panel-heading">
@@ -359,17 +300,16 @@
 											</a>
 										</li>
 									}
-
 								</ul>
 							</div>
 							@if (ViewBag.ShowAddClient == true) {
-							<div class="btn-group">
-								<button type="button" class="btn btn-default plus dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @*onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")"*@>Add<span class="caret"></span></button>
-								<ul class="dropdown-menu dropdown-menu-right">
-									<li><a href="#" onclick="@Html.ShowModal("Add user", "/User/AddModal", "/nexus/AddManagedUserToOrganization", preSubmitCheck: "checkAddUser")"><span class="glyphicon glyphicon-user gray"></span> Add Member</a></li>
-									<li><a href="#" onclick="@Html.ShowModal("Add client", "/User/AddModal?isClient=true", "/nexus/AddManagedUserToOrganization")"><span class="glyphicon glyphicon-globe gray"></span> Add Client</a></li>
-								</ul>
-							</div>
+								<div class="btn-group">
+									<button type="button" class="btn btn-default plus dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Add<span class="caret"></span></button>
+									<ul class="dropdown-menu dropdown-menu-right">
+										<li><a href="#" onclick="@Html.ShowModal("Add user", "/User/AddModal", "/nexus/AddManagedUserToOrganization", preSubmitCheck: "checkAddUser")"><span class="glyphicon glyphicon-user gray"></span> Add Member</a></li>
+										<li><a href="#" onclick="@Html.ShowModal("Add client", "/User/AddModal?isClient=true", "/nexus/AddManagedUserToOrganization")"><span class="glyphicon glyphicon-globe gray"></span> Add Client</a></li>
+									</ul>
+								</div>
 							} else {
 								<button type="button" class="btn btn-default plus" aria-haspopup="true" aria-expanded="false"
 										onclick="@Html.ShowModal("Add user", "/User/AddModal", "/nexus/AddManagedUserToOrganization", preSubmitCheck: "checkAddUser")">
@@ -386,8 +326,6 @@
 		<table class="table table-condensed table-hover tablesorter tablefilter">
 			<thead>
 				<tr>
-
-
 					<th class="hidden"></th>
 					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
 					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
@@ -400,8 +338,8 @@
 					<th style="min-width:10px" class="NalignCenter">Positions</th>
 					<th style="min-width:40px" class="NalignCenter">Teams</th>
 					<th style="min-width:10px" class="NalignCenter">@RadialReview.Utilities.Config.ManagerName()s</th>
-					@if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization || Model.Users.Any(x => x.ForceCanDelete)) {
-						<th style="width:10px" class="alignCenter"></th>
+					@if (Model.CanRemoveUsers || Model.CanEditUserDetails || Model.ManagingOrganization || Model.Users.Any(x => x.ForceCanDelete)) {
+						<th style="min-width:41px" class="alignCenter"></th>
 					}
 					@if (ViewBag.IsRadialAdmin ?? false) {
 						<th style="min-width: 77px;"></th>
@@ -409,8 +347,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				@foreach (var p in Model.Users.OrderByDescending(x => x.Managing)/*.ThenBy(x=>-1*(x.Admin.ToInt()+x.Manager.ToInt()))*/.ThenBy(x => x.Name)) {
-
+				@foreach (var p in Model.Users.OrderByDescending(x => x.Managing).ThenBy(x => x.Name)) {
 					<tr class="@(p.Managing?"managing":"grayRow") row_@(p.Id) record-row" data-id="@p.Id">
 						<td class="hidden">@(p.Managing ? 1 : 0)</td>
 						<td class="alignCenter noselect  noPadLeft">
@@ -455,7 +392,6 @@
 							<span data-permicon="@(!p.IsClient)" id="permissions_@p.Id" data-evalonly="@p.EvalOnly" data-isclient="@p.IsClient" data-ismanager="@p.Manager" data-isadmin="@p.Admin" data-isplaceholder="@(isplaceholder)" @(new HtmlString(attrs))></span>
 						</td>
 						<td class="alignCenter noselect noPadLeft" data-isplaceholder="@(isplaceholder)">
-
 							@if (p.Verified || (!p.Managing && !Model.ManagingOrganization)) {
 								if (p.Verified) {
 									<span title="Joined." class="glyphicon glyphicon-ok-sign strokeGray gray" data-sort="6"></span>
@@ -484,9 +420,7 @@
 							<a href="~/Manage/UserDetails/@p.Id">@p.NumMeasurables</a>
 						</td>
 						<td class="noOverflow nameField" style="max-width: 160px;" title="@p.Name">
-							<a href="~/Manage/UserDetails/@p.Id">
-								@p.Name
-							</a>
+							<a href="~/Manage/UserDetails/@p.Id">@p.Name</a>
 						</td>
 						<td class="noOverflow emailField" style="max-width: 150px;" title="@p.Email">
 							<a href="~/Manage/UserDetails/@p.Id" class="">@p.Email</a>
@@ -517,34 +451,16 @@
 								<span class="gray" title="Clients have no @RadialReview.Utilities.Config.ManagerName()s">N/A</span>
 							}
 						</td>
-
-						@*<td class="NalignCenter noOverflow">
-								<span>
-									@*Html.ViewOrEdit(p.Managing)*
-									<span title="">@(p.NumRoles)</span>
-								</span>
-							</td>
+						@if (Model.CanRemoveUsers || Model.ManagingOrganization || p.ForceCanDelete || Model.CanEditUserDetails) {
 							<td>
-								<a href="@Url.Action("Edit", "Responsibilities", new { id = p.Id })" class="fullWidth">
-									<span>
-										*Html.ViewOrEdit(p.Managing)*
-										<span title="Individual questions:@(p.NumIndividualResponsibilities), Other questions:@(p.NumTotalResponsibilities - p.NumIndividualResponsibilities)">@(p.NumTotalResponsibilities)</span>
-									</span>
-
-								</a>
-							</td>*@
-						@if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization || p.ForceCanDelete) {
-							<td>
-								@if (p.Managing || Model.ManagingOrganization || p.ForceCanDelete) {
-									<span data-sort="1"
-										  onclick="deleteUser(@p.Id)"
-										  @*onclick="@(Html.ShowModal("Remove " + p.Name + " from the organization?", "/User/Remove/" + p.Id, "/User/Remove", onCompleteFunction: "function(){$('.row_" + p.Id + "').remove();UnstoreJsonAlert();}"))"*@
-										  class="glyphicon glyphicon-trash clickable">
-									</span>
+								@if (Model.CanEditUserDetails) {
+									<span onclick="editUserDetails(@p.Id)" class="glyphicon glyphicon-edit clickable gray"></span>
+								}
+								@if (p.Managing || Model.CanRemoveUsers || p.ForceCanDelete) {
+									<span data-sort="1" onclick="deleteUser(@p.Id)" class="glyphicon glyphicon-trash clickable gray"></span>
 								}
 							</td>
 						}
-
 						@if (ViewBag.IsRadialAdmin ?? false) {
 							var score = 0;
 							<td class="userroles">
@@ -556,17 +472,11 @@
 								}
 								<span class="hidden">@(-score)</span>
 								<a href="/account/setasuser?id=@p.Email" style="color:lightcoral" title="Set As User...">(sa)</a>
-								@*@( ? new HtmlString("<span data-type='AccountContact' onlick='setRoleType(this,false)'>C</span>") : new HtmlString("<span data-type='AccountContact' onlick='setRoleType(this,true)'>c</span>"))
-									@(p.Roles.Any(x => x.RoleType == UserRoleType.LeadershipTeamMember) ? new HtmlString("<span data-type='LeadershipTeamMember' onlick='setRoleType(this,false)'>L</span>") : new HtmlString("<span data-type='LeadershipTeamMember' onlick='setRoleType(this,true)'>l</span>"))
-									@(p.Roles.Any(x => x.RoleType == UserRoleType.AccountabilityChartOnly) ? new HtmlString("<span data-type='AccountabilityChartOnly' onlick='setRoleType(this,false)'>A</span>") : new HtmlString("<span data-type='AccountabilityChartOnly' onlick='setRoleType(this,true)'>a</span>"))
-									@*<span class="gray clickable" onclick="">e</span>*@
 							</td>
 						}
 					</tr>
-								}
+			}
 			</tbody>
-
 		</table>
-
 	</div>
 </div>

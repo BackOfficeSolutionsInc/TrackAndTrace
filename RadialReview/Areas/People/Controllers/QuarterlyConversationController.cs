@@ -23,6 +23,7 @@ using RadialReview.Models.Application;
 using RadialReview.Properties;
 using RadialReview.Utilities.DataTypes;
 using System.Threading;
+using Hangfire;
 
 namespace RadialReview.Areas.People.Controllers {
 	public class QuarterlyConversationController : BaseController {
@@ -90,10 +91,10 @@ namespace RadialReview.Areas.People.Controllers {
 				//}
 				//byAbouts = byAbouts.Distinct().ToList();
 				var quarterRange = new DateRange(qtrStart, qtrStart.AddDays(90));
-
-
-				var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), name, filtered, quarterRange, dueDate, email);
-				return RedirectToAction("Questions",new { id = id });
+				var callerId = GetUser().Id;
+				BackgroundJob.Enqueue(() =>QuarterlyConversationAccessor.GenerateQuarterlyConversation(callerId, name, filtered, quarterRange, dueDate, email));
+				
+				return RedirectToAction("Index");// "Questions",new { id = id });
 			}
 
 			return View(new IssueViewModel() {
@@ -109,6 +110,7 @@ namespace RadialReview.Areas.People.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Questions(long id) {
+			ViewBag.Overdue = SurveyAccessor.IsLocked(GetUser(),id);
 			return View(id);
 		}
 
@@ -124,7 +126,7 @@ namespace RadialReview.Areas.People.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Surveys(long id) {
 			var userId = id;
-			var user = _UserAccessor.GetUserOrganization(GetUser(), id, true, true);
+			var user = UserAccessor.GetUserOrganization(GetUser(), id, true, true);
 			ViewBag.AboutName = user.GetNameAndTitle();
 
 
@@ -178,6 +180,8 @@ namespace RadialReview.Areas.People.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult PrintAll(long surveyContainerId, bool print = true) {
+
+			
 
 			var doc = SurveyPdfAccessor.CreateDoc(GetUser(), "All Quarterly Conversations");
 

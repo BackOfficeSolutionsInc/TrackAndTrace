@@ -132,11 +132,16 @@ namespace RadialReview.Accessors {
 		public static MetricGraphic GetOrganizationMemberBurndown(ISession s, PermissionsUtility perms, long orgId) {
 			perms.ViewOrganization(orgId);
 
+			var userroleids = UserAccessor.GetUserRolesAtOrganization(s, perms, orgId).Where(x => x.RoleType == Models.UserModels.UserRoleType.PlaceholderOnly)
+				.Select(x => x.UserId).ToList();			
+
+			UserModel userAlias = null;
 			var data = s.QueryOver<UserOrganizationModel>()
-				.Where(x => x.Organization.Id == orgId)
-				.Select(x => x.AttachTime, x => x.DeleteTime, x => x.DeleteTime, x => x.CreateTime)
-				.List<object[]>()
-				.ToList();
+							.Left.JoinAlias(x => x.User, () => userAlias)
+							.Where(x => x.Organization.Id == orgId)
+							.Select(x => x.AttachTime, x => x.DeleteTime, x => x.DeleteTime, x => x.CreateTime, x => userAlias.CreateTime, x => x.Id)
+							.List<object[]>().Where(x => !userroleids.Contains((long)x[5]))
+							.ToList();
 
 			var ac = s.QueryOver<AccountabilityNode>()
 				.Where(x => x.OrganizationId == orgId)
@@ -146,7 +151,7 @@ namespace RadialReview.Accessors {
 				.SelectNoException(x => new EventTimes(x[0], x[1], x[2]))
 				.ToList();
 
-			var attach = data.Select(x => new EventTimes(x[0], x[1], x[2])).ToList();
+			var attach = data.Where(x => x[4] != null).Select(x => new EventTimes(x[4], x[1], x[2])).ToList();
 			var create = data.Select(x => new EventTimes(x[3], x[1], x[2])).ToList();
 
 			var b1 = GenerateBurndown("Employees", attach, "Registered");
