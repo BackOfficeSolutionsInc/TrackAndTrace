@@ -1286,3 +1286,14 @@ body.beta .beta-only .feedback-smile {
 body.beta .heading-margin-smiley {
   margin-right: 10px;
 }
+body:not(.body-full-width) .feedback-smile {
+  right: 350px !important;
+}
+body:not(.body-full-width) .beta-only.beta-label {
+  color: gray;
+  font-size: 10px;
+  position: fixed;
+  left: 406px !important;
+  top: 30px;
+  font-style: oblique;
+}
