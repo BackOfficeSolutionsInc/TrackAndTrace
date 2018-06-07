@@ -133,6 +133,24 @@ namespace RadialReview.Utilities {
 
 		}
 
+		public static string GetHangfireConnectionString() {
+			switch (GetEnv()) {
+				case Env.invalid:
+					break;
+				case Env.local_sqlite:
+					break;
+				case Env.local_mysql:
+					break;
+				case Env.local_test_sqlite:
+					break;
+				case Env.production:
+					return System.Configuration.ConfigurationManager.ConnectionStrings["ProductionHangfireConnection"].ConnectionString;					
+				default:
+					break;
+			}
+			return System.Configuration.ConfigurationManager.ConnectionStrings["LocalHangfireConnection"].ConnectionString;
+		}
+
 		[Obsolete("Must remove when ready for production")]
 		public static void ThrowNotImplementedOnProduction() {
 			if (!IsLocal())

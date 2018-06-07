@@ -19,6 +19,8 @@ using MathNet.Numerics.Distributions;
 using RadialReview.Utilities;
 using WebGrease.Css.Extensions;
 using RadialReview.Models.UserModels;
+using RadialReview.Areas.People.Accessors;
+using RadialReview.Areas.People.Models.Survey;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -35,11 +37,21 @@ namespace RadialReview.Controllers {
 				Recurrence = recurrence,
 				EnableTranscript = recurrence.EnableTranscription,
 			};
+
+
+
 			if (model != null && model.Recurrence != null) {
 				model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.MemberPictures = model.Recurrence._DefaultAttendees.Select(x => new ProfilePictureVM { Initials = x.User.GetInitials(), Name = x.User.GetName(), UserId = x.User.Id, Url = x.User.ImageUrl(true, ImageSize._32) }).ToList();
 				model.HeadlineType = recurrence.HeadlineType;
+
+				try {
+					var me = model.Recurrence.NotNull(x => x._DefaultAttendees.FirstOrDefault(y => y.User.Id == GetUser().Id));
+					model.SharingPeopleAnalyzer = me.SharePeopleAnalyzer == L10Recurrence.SharePeopleAnalyzer.Yes;
+				} catch (Exception) {
+				}
+
 			}
 			//Dont need the meeting
 			switch (page) {
@@ -59,6 +71,8 @@ namespace RadialReview.Controllers {
 			//Do need the meeting
 			try {
 				model.Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
+
+				
 
 				long pageId;
 
@@ -151,6 +165,18 @@ namespace RadialReview.Controllers {
 		[HttpGet]
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult StartMeeting(L10MeetingVM model, bool start) {
+			try {
+				var me = model.Recurrence.NotNull(x => x._DefaultAttendees.FirstOrDefault(y => y.User.Id == GetUser().Id));
+
+				if (me.SharePeopleAnalyzer == L10Recurrence.SharePeopleAnalyzer.Unset && GetUser().Organization.Settings.EnablePeople) {
+					var issued = SurveyAccessor.GetSurveyContainersIssuedBy(GetUser(), GetUser(), SurveyType.QuarterlyConversation);
+					if (issued.Any()) {
+						ViewBag.AskToSharePeopleAnalyzer = true;
+					}
+				}
+			} catch (Exception e) {
+			}
+
 			return PartialView("StartMeeting", model);
 		}
 
