@@ -21,6 +21,8 @@
 
     var onempty = ViewBag.OnEmpty ?? "No to-dos fit your search criteria.";
 
+    var showMeeting = ViewBag.ShowMeeting != false;
+
 
     var attrLookup = new Dictionary<string, string>(){
 {"todotype-column",""},
@@ -88,7 +90,7 @@
                                     </td>
                                     <td class="todo-text message-column" style="width:100%" ng-click="@(detailsCode)" md-cell>
                                         @if (usePopup) {
-                                            <div ng-if="todo.TodoType!='Milestone'" class="todoModal" data-method="EditModal" data-title="Edit to-do" data-Id="{{todo.Id}}">{{todo.Name}}</div>
+                                            <div ng-if="todo.TodoType!='Milestone'" class="todoModal" data-method="EditModal" data-showMeeting="@(showMeeting)" data-title="Edit to-do" data-Id="{{todo.Id}}">{{todo.Name}}</div>
                                             <div ng-if="todo.TodoType=='Milestone'" class="milestoneModal" data-method="EditModal" data-title="Edit milestone" data-Id="{{-todo.Id}}">{{todo.Name}}</div>
                                         } else {
                                             <input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 400}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />

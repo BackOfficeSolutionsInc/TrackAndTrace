@@ -38,7 +38,7 @@
 				new ViewDataDictionary() { { "name", "DueDate" }, { "localize", true } })
 		</div>
 	</div>
-	@if (ViewBag.Originating != null) {
+	@if (ViewBag.Originating != null && ViewBag.ShowMeeting == true) {
 		@*<div class="row">*@
 		<div class="col-sm-5">
 			<div class="form-group">
