@@ -74,7 +74,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult EditModal(long id) {
+		public ActionResult EditModal(long id, bool showMeeting = true) {
 
 			if (id > 0) {
 				var todo = TodoAccessor.GetTodo(GetUser(), id);
@@ -86,6 +86,7 @@ namespace RadialReview.Controllers {
 			   .ToList();
 
 				ViewBag.Originating = "";
+				ViewBag.ShowMeeting = showMeeting;
 
 				meetings.Add(new MeetingVm() {
 					name = "Individual To-do List",

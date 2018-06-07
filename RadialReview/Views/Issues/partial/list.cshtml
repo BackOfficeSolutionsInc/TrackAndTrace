@@ -11,7 +11,7 @@
     var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
 
     var guid = Guid.NewGuid().ToString().Replace("-", "");
-    var detailsCode = showDetails ? "issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key+'"+ guid + "'" : "";
+    var detailsCode = showDetails ? "issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key+'" + guid + "'" : "";
 
     var allowEditOwner = ViewBag.AllowEditOwner == null || ((bool)ViewBag.AllowEditOwner) == true;
 
@@ -25,15 +25,15 @@
     var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 
     var attrLookup = new Dictionary<string, string>(){
-        {"checkbox-column",""},
-        {"priority-column",""},
-        {"owner-column",""},
-        {"issue-column",""},
-        {"createtime-column",""},
-        {"complete-column",""},
-        {"vto-column",""},
-        {"delete-column",""}
-    };
+{"checkbox-column",""},
+{"priority-column",""},
+{"owner-column",""},
+{"issue-column",""},
+{"createtime-column",""},
+{"complete-column",""},
+{"vto-column",""},
+{"delete-column",""}
+};
     attrLookup[ViewBag.SortBy ?? "createtime-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
 
 }
@@ -44,15 +44,12 @@
             <div class="col-md-12 priority-{{@(selector).Prioritization}}">
                 <md-table-container class="repeater-container">
                     <table md-table @*ts-wrapper*@ width="100%" class="component "
-						   
-							@if(!usePopup) { 
-								@:click-anywhere-but-here="model.Selected = -1"
-							}
-
+                           @if (!usePopup) { @: click-anywhere-but-here="model.Selected = -1"
+                           }
                            ng-show="((@(selector)).Issues @(filter)).length">
                         <thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
                             <tr md-row>
-                               @* <th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" md-order-by="Complete">&nbsp;</th>*@
+                                @* <th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" md-order-by="Complete">&nbsp;</th>*@
                                 <th md-column @(attrLookup["priority-column"]) class="priority-column" md-order-by="Priority">Priority</th>
                                 <th md-column @(attrLookup["owner-column"]) class="owner-column" md-order-by="Owner.Name">&nbsp;</th>
                                 <th md-column @(attrLookup["issue-column"]) class="issue-column message-column" md-order-by="Name" style="padding-left: 4px;">Issue</th>
@@ -69,9 +66,9 @@
                                 data-issue="{{::issue.Id}}"
                                 md-row>
                                 @*<td md-cell class="checkbox-column">
-                                    <md-checkbox aria-label="Complete" ng-model="issue.Complete" class="md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)"></md-checkbox>
+                                        <md-checkbox aria-label="Complete" ng-model="issue.Complete" class="md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)"></md-checkbox>
 
-                                </td>*@
+                                    </td>*@
                                 <td md-cell class="priority-column" style="vertical-align: top;padding-top: 5px;">
                                     <priority ng-model="issue.Priority" ng-change="functions.sendUpdate(issue)"></priority>
                                 </td>
@@ -91,14 +88,14 @@
                                     </span>
                                 </td>
                                 <td md-cell class="issue-column message-column" style="width:100%;padding-left:2px" ng-click="@(detailsCode)">
-									@if (usePopup) {
-									<div class="issuesModal" data-method="EditModal" data-title="Edit issue" data-Id="{{::issue.Id}}">{{issue.Name}}</div>
-									} else {
-										<input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 400}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
-										<div class="iframe-container" ng-if="model.Selected==issue.Key+'@guid'">
-											<iframe class="details-row keep-background" style="background-color: white" width="100%" ng-src="{{::trustAsResourceUrl(issue.DetailsUrl_Src)}}" ng-data-src="{{::issue.DetailsUrl}}"></iframe>
-										</div>
-									}
+                                    @if (usePopup) {
+                                        <div class="issuesModal" data-method="EditModal" data-title="Edit issue" data-Id="{{::issue.Id}}">{{issue.Name}}</div>
+                                    } else {
+                                        <input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 400}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
+                                        <div class="iframe-container" ng-if="model.Selected==issue.Key+'@guid'">
+                                            <iframe class="details-row keep-background" style="background-color: white" width="100%" ng-src="{{::trustAsResourceUrl(issue.DetailsUrl_Src)}}" ng-data-src="{{::issue.DetailsUrl}}"></iframe>
+                                        </div>
+                                    }
                                     <table class="sub-issue-column">
                                         <tr ng-repeat="sub in issue.Children" class="gray">
                                             <td style="width:20px;"></td>
@@ -113,14 +110,15 @@
                                 </td>
                                 <td md-cell class="delete-column">
                                     <span class="delete-row-archive delete-row" ng-if="issue.CloseTime==null" title="Archive" ng-click="functions.removeRow($event,issue)"></span>
-									<span class="delete-row-unarchive delete-row" ng-if="issue.CloseTime!=null" title="Unarchive" ng-click="functions.unarchiveRow($event,issue)"></span>
+                                    <span class="delete-row-unarchive delete-row" ng-if="issue.CloseTime!=null" title="Unarchive" ng-click="functions.unarchiveRow($event,issue)"></span>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </md-table-container>
                 <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
-                <div class="create-row" ng-click="functions.addRow($event,'AngularIssue')" data-toggle="tooltip" data-placement="left" title="New Issue"></div>
+                @*<div class="create-row" ng-click="functions.addRow($event,'AngularIssue')" data-toggle="tooltip" data-placement="left" title="New Issue"></div>*@
+                <div class="create-row issuesModal" data-method="CreateIssue" data-recurrence="{{@(recurrenceId)}}" data-toggle="tooltip" data-placement="left" title="New Issue"></div>
                 <div class="component gray empty-search" style="padding: 30px 15px;clear: both;display:inline-block;" ng-show="((@(selector)).Issues @(filter)).length==0">
                     No issues fit your search criteria.
                 </div>

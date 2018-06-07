@@ -2762,6 +2762,28 @@ body,
   width: 47px;
   height: 47px;
 }
+#modal iframe {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background-color: white !important;
+  resize: vertical;
+}
+#modal .milestone-table-modal tr {
+  height: 40px !important;
+}
+#modal tbody {
+  position: initial;
+}
+#modal input[type="checkbox"] {
+  outline: none !important;
+  border: none;
+  height: 47px;
+  width: 47px;
+  margin-top: -8px;
+  bottom: auto;
+}
+#modal .milestone-table-modal .milestone-duedate-cell .milestone-duedate {
+  height: 35px;
+
 body.admin-disabled .user-pane .create-row {
   opacity: .5 !important;
   pointer-events: none;
