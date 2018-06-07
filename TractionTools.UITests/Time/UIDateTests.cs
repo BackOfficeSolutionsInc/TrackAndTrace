@@ -122,6 +122,7 @@ namespace TractionTools.UITests.FAQ {
 				}
 				d.Navigate().Refresh();
 				{
+					d.Wait(3000);
 					var foundDueDate = (long)d.ExecuteScript("return +angular.element($(\"md-datepicker\")[0]).scope().todo.DueDate");
 					//Database doesnt save at the sub-second level
 					Assert.IsTrue(Math.Abs(expectedAngularTime - foundDueDate) <= 1000);

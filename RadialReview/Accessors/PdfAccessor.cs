@@ -85,6 +85,9 @@ namespace RadialReview.Accessors {
 		public void AddDoc(Document doc) {
 			docs.Add(doc);
 		}
+		public void AddDoc(PdfDocumentRenderer doc) {
+			docs.Add(doc);
+		}
 
 		public DocumentMerger() {
 			docs = new List<object>();
@@ -189,6 +192,26 @@ namespace RadialReview.Accessors {
 						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
 						pages += 1;
 					}
+				}
+				if (doc is PdfDocumentRenderer) {
+					var mdoc = (PdfDocumentRenderer)doc;
+					PdfDocument newPdfDoc;
+
+					using (var stream = new MemoryStream()) {
+						mdoc.Save(stream, false);
+						newPdfDoc = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+					}
+
+					foreach (var p in newPdfDoc.Pages) {
+						var page = document.AddPage(p);
+						page.Width = p.Width;
+						page.Height = p.Height;
+						page.Orientation = p.Orientation;
+						XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
+						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
+						pages += 1;
+					}
+
 				}
 			}
 
@@ -2038,7 +2061,7 @@ namespace RadialReview.Accessors {
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
 
-			var section = AddTitledPage(doc, "HeadLines", Orientation.Landscape, addPageNumber: addPageNumber);
+			var section = AddTitledPage(doc, "Headlines", Orientation.Landscape, addPageNumber: addPageNumber);
 			Table table;
 			double mult;
 			Row row;

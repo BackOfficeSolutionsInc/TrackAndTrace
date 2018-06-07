@@ -1,57 +1,55 @@
 ﻿@model RadialReview.Models.ViewModels.ImageUploadViewModel
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
 
-@using (var s = Html.BeginScripts()) {
-	<script>
-		function imageUploadComplete(data) {
-			showJsonAlert(data, true);
-			$("#uploaded").html("<img class='img-rounded' src='" + data.URL + "' data-src='holder.js/180%x180' />");
+}
+<script>
+	function imageUploadComplete(data) {
+		showJsonAlert(data, true);
+		$("#uploaded").html("<img class='img-rounded' src='" + data.URL + "' data-src='holder.js/180%x180' />");
+	}
+	function _deleteImage() {
+		var shouldDelete = @((Model.DeleteUrl!=null).ToJavascript());
+		if (shouldDelete){
+			$.ajax({
+				url: "@(Model.DeleteUrl)",
+				success:function(d){
+					$("#uploaded img").attr("src","https://s3.amazonaws.com/Radial/placeholder/orgPlaceholder.png");
+				}
+			});
 		}
+	}
+	function uploadImage() {
+		console.warn("Using FormData will not work on IE9");
+		var oOutput = document.getElementById("output"),
+			oData = new FormData(document.forms.namedItem("fileinfo"));
 
-
-		function _deleteImage() {
-			var shouldDelete = @((Model.DeleteUrl!=null).ToJavascript());
-			if (shouldDelete){
-				$.ajax({
-					url: "@(Model.DeleteUrl)",
-					success:function(d){
-						$("#uploaded img").attr("src","https://s3.amazonaws.com/Radial/placeholder/orgPlaceholder.png");
-					}
-				});
+		var oReq = new XMLHttpRequest();
+		oReq.open("POST", "@Model.UploadUrl", true);
+		oReq.onload = function (oEvent) {
+			if (oReq.status == 200) {
+				oOutput.innerHTML = "Uploaded!";
+			} else {
+				oOutput.innerHTML = "Error " + oReq.status + " occurred uploading your file.<br \/>";
 			}
-		}
+		};
 
+		oReq.onload = function () {
+			var result=JSON.parse(this.response).Object;
+			if(result!=null)
+			{
+				$("#uploadedImg").attr("src", result);
+			} else {
+				$('.new_Btn').addClass("progress-danger");
+				$('.new_Btn').removeClass("progress-bar-success");
+			}
+			$('.new_Btn').removeClass("progress-striped");
+		};
 
-		function uploadImage() {
-			console.warn("Using FormData will not work on IE9");
-			var oOutput = document.getElementById("output"),
-				oData = new FormData(document.forms.namedItem("fileinfo"));
-
-			var oReq = new XMLHttpRequest();
-			oReq.open("POST", "@Model.UploadUrl", true);
-			oReq.onload = function (oEvent) {
-				if (oReq.status == 200) {
-					oOutput.innerHTML = "Uploaded!";
-				} else {
-					oOutput.innerHTML = "Error " + oReq.status + " occurred uploading your file.<br \/>";
-				}
-			};
-
-			oReq.onload = function () {
-				var result=JSON.parse(this.response).Object;
-				if(result!=null)
-				{
-					$("#uploadedImg").attr("src", result);
-				} else {
-					$('.new_Btn').addClass("progress-danger");
-					$('.new_Btn').removeClass("progress-bar-success");
-				}
-				$('.new_Btn').removeClass("progress-striped");
-			};
-
-			oReq.send(oData);
-			var resp = oReq.response;
-		}
-
+		oReq.send(oData);
+		var resp = oReq.response;
+	}
+	function a@(guid)() {
 		$('#html_btn').change(function () {
 			if ($('#html_btn').val()) {
 				uploadImage();
@@ -64,8 +62,16 @@
 		$('.new_Btn').bind("click", function () {
 			$('#html_btn').click();
 		});
-	</script>
-}
+	}
+	function defer@(guid)() {
+		if (window.jQuery)
+			a@(guid)();
+		else
+			setTimeout(function () { defer@(guid)() }, 50);
+	}
+	defer@(guid)();
+
+</script>
 
 <div id="uploaded">
 	<div style="margin-left:auto;margin-right:auto;">
@@ -73,9 +79,9 @@
 			<span class="gray glyphicon glyphicon-trash deleteUploadedImage " title="Delete Image" onclick="_deleteImage()"></span>
 			<img id="uploadedImg" class="thumbnail"
 				 @if (Model.Width != 0) { @: width="@Model.Width"
-				 				 		 			 		 		 }
+				 				 				 				 		 			 		 		 }
 				 @if (Model.Height != 0) { @: height="@Model.Height"
-				 				 		 			 		 		 } src="@Model.GetUrl()" />
+				 				 				 				 		 			 		 		 } src="@Model.GetUrl()" />
 		</span>
 	</div>
 </div>
@@ -88,9 +94,9 @@
 			right: 25px;
 			top: 12px;
 			float: right;
-			opacity:0;
+			opacity: 0;
 			cursor: pointer;
-			width:0px;
+			width: 0px;
 		}
 
 		#uploaded:hover .deleteUploadedImage {

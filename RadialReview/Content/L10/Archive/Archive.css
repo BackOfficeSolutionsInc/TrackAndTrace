@@ -617,6 +617,29 @@ html {
 .meeting-archive .notes-list-container .delete-btn:hover:before {
   color: #EF7622;
 }
+.meeting-archive .scorecard-list-container .edit-formula {
+  float: right;
+  right: 14px;
+  position: relative;
+  background-color: white;
+  width: 16px;
+  height: 16px;
+  margin-top: 7px;
+  border-radius: 11px;
+  border: 1px solid lightgray;
+  margin-right: -16px;
+  outline: none;
+}
+.meeting-archive .scorecard-list-container .edit-formula:after {
+  content: "f";
+  color: lightgray;
+  position: absolute;
+  margin-top: 1px;
+  font-size: 80%;
+  text-align: center;
+  /* color: white; */
+  padding-left: 5px;
+}
 .meeting-archive .scorecard-list-container table {
   font-family: 'Roboto', san-sarif;
 }
@@ -730,7 +753,7 @@ html {
 }
 .meeting-archive .scorecard-list-container table tr span.delete-row:after {
   position: relative;
-  top: 5px;
+  /*top: 5px;*/
 }
 .meeting-archive .scorecard-list-container table tr.IsDivider td {
   height: 3px !important;
@@ -746,6 +769,7 @@ html {
   padding-left: 0px !important;
   padding-right: 0px;
   font-size: 12px;
+  padding-top: 0px;
 }
 .meeting-archive .scorecard-list-container table score input {
   height: 31px !important;

@@ -119,6 +119,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 			window.ScoreChangeCellTimeout = window.ScoreChangeCellTimeout || null;
 			window.ScoreChangeTimeout = window.ScoreChangeTimeout || null;
 
+
 			$element.bind("keydown", function (event) {
 				var found;
 				var goingLeft = false;
@@ -185,8 +186,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 					//Tab
 					if (event.which == 9 /*|| event.which == 13*/) {
 						window.ScorecardMode = "scan";
-					}
-
+					} 
 				}
 
 				var input = this;

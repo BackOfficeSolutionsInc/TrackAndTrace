@@ -3,8 +3,24 @@
 <div class="centered error" style="width:400px;">
 	<div class="component">
 		<div class="title">An error occurred:</div>
-		<div>
+		<div class="smallBreak2">
 			@Model.Message
 		</div>
+		<a href="#" style="color: #ef7622;" class="clickable gray" onclick="forceConclude()">Force the meeting to conclude</a>
+
 	</div>
 </div>
+
+<script>
+	function forceConclude() {
+		showAlert("Concluding...");
+		$.ajax({
+			url: "/L10/ForceConclude/@Model.RecurrenceId",
+			method:"post",
+			success: function () {
+				window.location.reload();
+			}
+		});
+	}
+
+</script>

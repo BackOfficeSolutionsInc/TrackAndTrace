@@ -414,6 +414,9 @@ namespace RadialReview.Accessors {
 				PermissionsAccessor.CreatePermItems(s, perms.GetCaller(), PermItem.ResourceType.UpdatePaymentForOrganization, output.organization.Id,
 					PermTiny.Admins()
 				);
+				PermissionsAccessor.CreatePermItems(s, perms.GetCaller(), PermItem.ResourceType.EditDeleteUserDataForOrganization, output.organization.Id,
+					PermTiny.Admins()
+				);
 
 				#endregion
 
@@ -830,27 +833,26 @@ namespace RadialReview.Accessors {
 		}
 
 		public static void Edit(UserOrganizationModel caller, long organizationId, string organizationName = null,
-																			bool? managersHaveAdmin = null,
-																			bool? strictHierarchy = null,
-																			bool? managersCanEditPositions = null,
-																			bool? sendEmailImmediately = null,
-																			bool? managersCanRemoveUsers = null,
-																			bool? managersCanEditSelf = null,
-																			bool? employeesCanEditSelf = null,
-																			bool? managersCanCreateSurvey = null,
-																			bool? employeesCanCreateSurvey = null,
-																			string rockName = null,
-																			bool? onlySeeRockAndScorecardBelowYou = null,
-																			string timeZoneId = null,
-																			DayOfWeek? weekStart = null,
-																			ScorecardPeriod? scorecardPeriod = null,
-																			Month? startOfYearMonth = null,
-																			DateOffset? startOfYearOffset = null,
-																			string dateFormat = null,
-																			NumberFormat? numberFormat = null,
-																			bool? limitFiveState = null,
-																			int? defaultTodoSendTime = null,
-																			bool? allowAddClient = null
+				bool? managersHaveAdmin = null,
+				bool? strictHierarchy = null,
+				bool? managersCanEditPositions = null,
+				bool? sendEmailImmediately = null,
+				bool? managersCanEditSelf = null,
+				bool? employeesCanEditSelf = null,
+				bool? managersCanCreateSurvey = null,
+				bool? employeesCanCreateSurvey = null,
+				string rockName = null,
+				bool? onlySeeRockAndScorecardBelowYou = null,
+				string timeZoneId = null,
+				DayOfWeek? weekStart = null,
+				ScorecardPeriod? scorecardPeriod = null,
+				Month? startOfYearMonth = null,
+				DateOffset? startOfYearOffset = null,
+				string dateFormat = null,
+				NumberFormat? numberFormat = null,
+				bool? limitFiveState = null,
+				int? defaultTodoSendTime = null,
+				bool? allowAddClient = null
 			) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -891,8 +893,8 @@ namespace RadialReview.Accessors {
 					if (sendEmailImmediately != null)
 						org.SendEmailImmediately = sendEmailImmediately.Value;
 
-					if (managersCanRemoveUsers != null)
-						org.ManagersCanRemoveUsers = managersCanRemoveUsers.Value;
+					//if (managersCanRemoveUsers != null)
+					//	org.ManagersCanRemoveUsers = managersCanRemoveUsers.Value;
 
 
 					if (managersCanEditSelf != null)
@@ -1485,5 +1487,20 @@ namespace RadialReview.Accessors {
 				await HooksRegistry.Each<IOrganizationFlagHook>((ses, x) => x.RemoveFlag(ses, orgId, type));
 			}
 		}
+
+		public static async Task<List<OrganizationFlagType>> GetFlags(UserOrganizationModel caller, long orgId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					return await GetFlags(s, perms, orgId);
+				}
+			}
+		}
+
+		public static async Task<List<OrganizationFlagType>> GetFlags(ISession s, PermissionsUtility perms, long orgId) {
+			perms.Or(x => x.ViewOrganization(orgId), x => x.RadialAdmin(true));
+			return s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Select(x=>x.FlagType).List<OrganizationFlagType>().ToList();
+		}
+
 	}
 }

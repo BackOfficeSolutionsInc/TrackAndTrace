@@ -158,7 +158,7 @@ namespace TractionTools.Tests.Permissions {
 
 			DbCommit(s => {
 				var org = s.Get<OrganizationModel>(c.Org.Id);
-				org.ManagersCanRemoveUsers = true;
+				//org.ManagersCanRemoveUsers = true;
 				s.Update(org);
 			});
 

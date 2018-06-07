@@ -89,6 +89,26 @@
 				}
 			}
 			]};
+
+
+		var messageHub = $.connection.messageHub;
+
+
+		messageHub.client.addQC = function(message,row){
+			table.addRow(row);
+			showAlert(message,"success");
+		};
+		messageHub.client.showAlert = function(mObj){
+			showAlert(mObj);
+		};
+
+
+		$.connection.hub.start(Constants.StartHubSettings).done(function(){
+			messageHub.server.joinUser($.connection.hub.id).done(function () {
+				console.log("connected to messageHub")
+			});
+		});
+
 	</script>
 
 	if (ViewBag.CanCreate == true) {
@@ -97,27 +117,51 @@
 			dtOptions.clickAdd= function(){window.location = "/people/quarterlyconversation/issue";};
 			dtOptions.cells.push({
 				name: "",
-				classes:"nowrap alignRight",
+				hideIfEmpty:true,
+				classes:function(x){
+					//if (x.IssuedBy.Id != UserId)
+					//	return "hidden";
+					return"nowrap alignRight";
+				},
 				contents:function(x){
-					return "<a href='#' class='remind-btn reminder-"+x.Id+"' onclick='sendReminder("+x.Id+")' title='Send Reminder'><span class='gray clickable glyphicon glyphicon-envelope'></span></a>";
+					if (x.IssuedBy.Id == UserId)
+						return "<a href='#' class='remind-btn reminder-"+x.Id+"' onclick='sendReminder("+x.Id+")' title='Send Reminder'><span class='gray clickable glyphicon glyphicon-envelope'></span></a>";
+					else
+						return null;
 				}
 			},{
 				remove:true,
-				classes:"nowrap alignRight",
+				hideIfEmpty:true,
+				classes:function(x){
+					//if (x.IssuedBy.Id != UserId)
+					//	return "hidden";
+					return"nowrap alignRight";
+				},
 				contents:function(x){
-					return "<span class='gray clickable glyphicon glyphicon-trash' title='Delete'></span>";
+					if (x.IssuedBy.Id == UserId)
+						return "<span class='gray clickable glyphicon glyphicon-trash' title='Delete'></span>";
+					else
+						return null;
 				}
 			},{
 				name: "",
-				classes:"nowrap alignRight",
+				hideIfEmpty:true,
+				classes:function(x){
+					//if (x.IssuedBy.Id != UserId)
+					//	return "hidden";
+					return"nowrap alignRight";
+				},
 				contents:function(x){
-					return "<a href='/People/QuarterlyConversation/PrintAll?surveyContainerId="+x.Id+"' title='Print all'><span class='gray clickable glyphicon glyphicon-print'></span></a>";
+					if (x.IssuedBy.Id == UserId)
+						return "<a target='_blank' href='/People/QuarterlyConversation/PrintAll?surveyContainerId="+x.Id+"' title='Print all'><span class='gray clickable glyphicon glyphicon-print'></span></a>";
+					else
+						return null;
 				}
 			});
 		</script>
 	}
 
 	<script>
-		DataTable(dtOptions);
+		table = DataTable(dtOptions);
 	</script>
 }

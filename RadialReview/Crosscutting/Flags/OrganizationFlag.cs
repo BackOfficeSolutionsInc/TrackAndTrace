@@ -12,6 +12,7 @@ namespace RadialReview.Crosscutting.Flags {
 		Delinquent = 60,
 		ExtendedTrial = 99,
 		Close = 100,
+		TGroup = 1001,
 	}
 
 	public class OrganizationFlag : IHistorical, ILongIdentifiable {

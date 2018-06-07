@@ -84,7 +84,7 @@
 			//];
 
 			var autoCompleteItems = @Html.ArrayToString(Model.VisibleMeasurables.Where(x=>x.Title !=null).Select(x => new {
-								   label = x.Title +"<span class='offset'></span>",
+								   label = x.Title + "<span class='offset'>▾</span>",
 								   attrs = new { id = x.Id, offset = 0 }
 							   }));
 

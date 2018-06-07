@@ -353,8 +353,8 @@ namespace RadialReview.Utilities {
 			return null;
 		}
 
-		public static async Task RunAfterSuccessfulDisposeOrNow(Func<ISession, ITransaction, Task> method) {
-			var s = GetExistingSingleRequestSession();
+		public static async Task RunAfterSuccessfulDisposeOrNow(ISession waitUntilFinished,Func<ISession, ITransaction, Task> method) {
+			var s = (waitUntilFinished as SingleRequestSession) ?? GetExistingSingleRequestSession();
 			if (s is SingleRequestSession) {
 				s.RunAfterDispose(new SingleRequestSession.OnDisposedModel(method, true));
 			} else {

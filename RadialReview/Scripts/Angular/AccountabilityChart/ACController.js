@@ -1163,6 +1163,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 		}
 
 		$scope.functions.fixName = function (id, nameVar, item, self) {
+			console.log("fixName");
 			if (!self.focused) {
 				if (item == null) {
 					$scope.$eval(nameVar + "=null");
@@ -1259,7 +1260,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 				return "{{(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null)?'Invalid: Position does not exist.':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
 			})
 			.attr("md-selected-item-change", function (d) {
-				return "functions.fixName(" + d.Id + ",'model.data.search.searchPos[" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
+				return "functions.fixName(" + d.Id + ",'model.data.search.searchPos[" + d.Id + "]',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
 			}).attr("md-no-cache", "true");
 
 		//Is this even used? vvv
@@ -1534,7 +1535,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			//	return null;
 			//})
 			//.attr("md-blur", function (d) {
-		//	return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"model.data.search.searchPos[" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
+		//	return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"model.data.search.searchPos[" + d.Id + "]\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
 			//})
 			//.attr("md-selected-item", function (d) {
 			//	return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";

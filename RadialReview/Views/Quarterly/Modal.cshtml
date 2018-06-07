@@ -50,8 +50,16 @@
 			<input type="checkbox" class="checkbox  pull-right" id="headlines" name="headlines" checked />
 		</div>
 		<label for="headlines" class="col-sm-9 control-label alignLeft">Include Headlines</label>
-
 	</div>
+	@if (ViewBag.IncludePeople==true) {
+	<div class="form-group">
+		<div class="col-sm-1 ">
+			<input type="checkbox" class="checkbox  pull-right" id="pa" name="pa" checked />
+		</div>
+		<label for="headlines" class="col-sm-9 control-label alignLeft">Include People Analyzer</label>
+	</div>
+	}
+
     <hr />
     <div class="form-group">
         <div class="col-sm-1 ">
