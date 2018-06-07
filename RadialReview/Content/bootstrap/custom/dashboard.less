@@ -733,15 +733,17 @@ body.resizing .notes-tile,
             vertical-align: top;
             padding-top: 3px;
         }
-        .table-header,
-		.picture-column,
-		.createtime-column,
-		.due-column,
-		.company-rock-column,
-		.delete-column {
-			display: none;
-		}
 
+        .createtime-column,
+        .due-column,
+        .delete-column {
+            display: none;
+        }
+
+        .company-rock-column {
+            max-width: none;
+        }
+      
         .status-column {
             padding: 2px !important;
         }
@@ -1041,8 +1043,6 @@ body.resizing .notes-tile,
     }
 
     .issues-list-container {
-
-
         table {
             .dataTableTiny();
 
@@ -1077,8 +1077,6 @@ body.resizing .notes-tile,
             margin-left: -27px;
             margin-right: -25px;
         }
-
-
 
         .priority-column {
             width: 38px;
@@ -1346,13 +1344,10 @@ body.resizing .notes-tile,
             &:hover {
                 color: @traction-orange;
             }
-
-
             &:hover:before {
                 color: @traction-orange;
             }
         }
-
         ul {
             /*padding-left: 6px;
 			font-size: 9px;*/
