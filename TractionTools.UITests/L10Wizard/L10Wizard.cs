@@ -209,7 +209,7 @@ namespace TractionTools.UITests.L10Wizard {
 				page.Find(".create-row").Click();
 
 
-				d.Find("[placeholder='Rock Name']", 20);
+				d.Find("[placeholder='Rock Name']", 20).SendKeys("name");
 				d.Find("#modalForm").Submit();
 
 				var rows = d.WaitUntil(20, x => {
@@ -225,9 +225,17 @@ namespace TractionTools.UITests.L10Wizard {
 				var row = rows[0];
 				d.TestScreenshot("Rocks-BeforeAdd");
 
+
+				row.Find(".message-column .rock-name",d, 10).Click();
 				var measurableName = "Rock-Name";
-				row.Find(".message-column input").SendKeys(measurableName);
-				var box = row.Find(".checkbox-column md-checkbox");
+				d.Find("#modalOk",10);
+				d.Find("#Rock_Name", 20).SendKeys(measurableName);
+				//row.Find(".message-column input").SendKeys(measurableName);
+				d.Find("#modalForm").Submit();
+
+
+
+				var box = row.Find(".checkbox-column md-checkbox",d,10);
 
 				Assert.AreEqual("false", box.Attr("aria-checked"));
 
@@ -237,7 +245,7 @@ namespace TractionTools.UITests.L10Wizard {
 
 				d.TestScreenshot("Rocks-AfterAdd");
 
-				row.Find(".picture").Click();
+				row.Find(".picture",d,10).Click();
 				d.WaitForVisible(/*"#l10-wizard-rocks */".editable-wrap");
 				d.TestScreenshot("Rocks-Picture");
 
@@ -277,24 +285,32 @@ namespace TractionTools.UITests.L10Wizard {
 
 				page.Find(".create-row").Click();
 
-				var rows = d.WaitUntil(x => {
-					var f = x.Finds(".todo-pane tbody tr[md-row]");
-					if (f.Count == 0)
-						return null;
-					return f;
-				});
+				var message = d.Find("#Message",10);
+				//var rows = d.WaitUntil(x => {
+				//	var f = x.Finds(".todo-pane tbody tr[md-row]");
+				//	if (f.Count == 0)
+				//		return null;
+				//	return f;
+				//});
 
-				d.WaitForNotVisible("#l10-wizard-todos .empty-search");
+				//d.WaitForNotVisible("#l10-wizard-todos .empty-search");
 
-				Assert.AreEqual(1, rows.Count); //extra one for repeat container
+				//Assert.AreEqual(1, rows.Count); //extra one for repeat container
 
-				var row = rows[0];
+				//var row = rows[0];
 				d.TestScreenshot("BeforeAdd");
 
 				var measurableName = "Todo-Name";
-				row.Find(".message-column input").SendKeys(measurableName);
+				//row.Find(".message-column input").SendKeys(measurableName);
+				message.SendKeys(measurableName);
+
+				d.Find("#modalOk").Click();
+				d.Wait(1000);
+				var rows = d.Finds(".todo-pane tbody tr[md-row]");
+				Assert.AreEqual(1, rows.Count);
 
 				d.TestScreenshot("AfterAdd");
+				var row = rows[0];
 
 				row.Find(".picture").Click();
 				Assert.IsTrue(d.WaitUntil(x => x.Find(".editable-wrap").Displayed));
@@ -331,25 +347,29 @@ namespace TractionTools.UITests.L10Wizard {
 				Assert.IsTrue(d.Find(".upload-issues").Displayed);
 
 				page.Find(".create-row").Click();
+				var message = d.Find("#Message",10);
+				//var rows = d.WaitUntil(x => {
+				//	var f = x.Finds(".issues-pane tbody tr[md-row]");
+				//	if (f.Count == 0)
+				//		return null;
+				//	return f;
+				//});
+				//d.WaitForNotVisible("#l10-wizard-issues .empty-search");
 
-				var rows = d.WaitUntil(x => {
-					var f = x.Finds(".issues-pane tbody tr[md-row]");
-					if (f.Count == 0)
-						return null;
-					return f;
-				});
-				d.WaitForNotVisible("#l10-wizard-issues .empty-search");
+				//Assert.AreEqual(1, rows.Count);//extra one for ".vs-repeat-before-content"
 
-				Assert.AreEqual(1, rows.Count);//extra one for ".vs-repeat-before-content"
-
-				var row = rows[0];
+				//var row = rows[0];
 				d.TestScreenshot("BeforeAdd");
 
 				var measurableName = "Issue-Name";
-				row.Find(".message-column input").SendKeys(measurableName);
+				//row.Find(".message-column input").SendKeys(measurableName);
+				message.SendKeys(measurableName);
 
+				d.Find("#modalOk").Click();
+				var rows = d.Finds(".issues-pane tbody tr[md-row]");
+				Assert.AreEqual(1, rows.Count);
+				var row = rows[0];
 				d.TestScreenshot("AfterAdd");
-
 				row.Find(".picture").Click();
 				d.WaitForVisible(/*"#l10-wizard-issues */".editable-wrap");
 				d.TestScreenshot("Picture");

@@ -368,6 +368,11 @@ namespace TractionTools.UITests.Selenium {
 					ctx.FindElement(By.Id("loginForm")).FindElement(By.TagName("form")).Submit();
 					//driver.WaitForAlert();
 					currentDriverUser[ctx] = mockUser;
+					try {
+						ctx.FindElement(By.ClassName("consent-btn"), TimeSpan.FromSeconds(3)).Click();
+					} catch (Exception) {
+						int a = 0;
+					}
 				} else {
 					ctx.Navigate().GoToUrl(GetAbsoluteUrl(url));
 				}
