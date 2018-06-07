@@ -414,6 +414,9 @@ namespace RadialReview.Accessors {
 				PermissionsAccessor.CreatePermItems(s, perms.GetCaller(), PermItem.ResourceType.UpdatePaymentForOrganization, output.organization.Id,
 					PermTiny.Admins()
 				);
+				PermissionsAccessor.CreatePermItems(s, perms.GetCaller(), PermItem.ResourceType.EditDeleteUserDataForOrganization, output.organization.Id,
+					PermTiny.Admins()
+				);
 
 				#endregion
 
@@ -830,27 +833,26 @@ namespace RadialReview.Accessors {
 		}
 
 		public static void Edit(UserOrganizationModel caller, long organizationId, string organizationName = null,
-																			bool? managersHaveAdmin = null,
-																			bool? strictHierarchy = null,
-																			bool? managersCanEditPositions = null,
-																			bool? sendEmailImmediately = null,
-																			bool? managersCanRemoveUsers = null,
-																			bool? managersCanEditSelf = null,
-																			bool? employeesCanEditSelf = null,
-																			bool? managersCanCreateSurvey = null,
-																			bool? employeesCanCreateSurvey = null,
-																			string rockName = null,
-																			bool? onlySeeRockAndScorecardBelowYou = null,
-																			string timeZoneId = null,
-																			DayOfWeek? weekStart = null,
-																			ScorecardPeriod? scorecardPeriod = null,
-																			Month? startOfYearMonth = null,
-																			DateOffset? startOfYearOffset = null,
-																			string dateFormat = null,
-																			NumberFormat? numberFormat = null,
-																			bool? limitFiveState = null,
-																			int? defaultTodoSendTime = null,
-																			bool? allowAddClient = null
+				bool? managersHaveAdmin = null,
+				bool? strictHierarchy = null,
+				bool? managersCanEditPositions = null,
+				bool? sendEmailImmediately = null,
+				bool? managersCanEditSelf = null,
+				bool? employeesCanEditSelf = null,
+				bool? managersCanCreateSurvey = null,
+				bool? employeesCanCreateSurvey = null,
+				string rockName = null,
+				bool? onlySeeRockAndScorecardBelowYou = null,
+				string timeZoneId = null,
+				DayOfWeek? weekStart = null,
+				ScorecardPeriod? scorecardPeriod = null,
+				Month? startOfYearMonth = null,
+				DateOffset? startOfYearOffset = null,
+				string dateFormat = null,
+				NumberFormat? numberFormat = null,
+				bool? limitFiveState = null,
+				int? defaultTodoSendTime = null,
+				bool? allowAddClient = null
 			) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -891,8 +893,8 @@ namespace RadialReview.Accessors {
 					if (sendEmailImmediately != null)
 						org.SendEmailImmediately = sendEmailImmediately.Value;
 
-					if (managersCanRemoveUsers != null)
-						org.ManagersCanRemoveUsers = managersCanRemoveUsers.Value;
+					//if (managersCanRemoveUsers != null)
+					//	org.ManagersCanRemoveUsers = managersCanRemoveUsers.Value;
 
 
 					if (managersCanEditSelf != null)

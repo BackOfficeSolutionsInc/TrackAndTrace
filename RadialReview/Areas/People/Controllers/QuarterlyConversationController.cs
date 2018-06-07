@@ -126,7 +126,7 @@ namespace RadialReview.Areas.People.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Surveys(long id) {
 			var userId = id;
-			var user = _UserAccessor.GetUserOrganization(GetUser(), id, true, true);
+			var user = UserAccessor.GetUserOrganization(GetUser(), id, true, true);
 			ViewBag.AboutName = user.GetNameAndTitle();
 
 

@@ -123,8 +123,6 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-
-
 		[Access(AccessLevel.Radial)]
 		public async Task<ActionResult> Flags(long? id = null) {
 			id = id ?? GetUser().Organization.Id;
@@ -141,7 +139,7 @@ namespace RadialReview.Controllers {
 		}
 
 
-		[Access(AccessLevel.Radial)]
+		[Access(AccessLevel.RadialData)]
 		public ActionResult Stats(string type = null) {
 			var stats = GenerateStats();
 			type = (type ?? "").ToLower();
@@ -174,7 +172,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Invites() {
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
 
-			var temps = members.Where(x => x.HasJoined == false).Select(x => _UserAccessor.GetUserOrganization(GetUser(), x.UserId, true, false, PermissionType.EditEmployeeDetails).TempUser).Where(x => x != null).ToList();
+			var temps = members.Where(x => x.HasJoined == false).Select(x => UserAccessor.GetUserOrganization(GetUser(), x.UserId, true, false, PermissionType.EditEmployeeDetails).TempUser).Where(x => x != null).ToList();
 
 			return View(temps);
 		}
@@ -488,7 +486,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		public ActionResult ResendJoin(long id) {
-			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
+			var found = UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
@@ -503,7 +501,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		public ActionResult ResendJoinEmailManual(long id) {
-			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
+			var found = UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
@@ -526,7 +524,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		[HttpPost]
 		public async Task<JsonResult> ResendJoin(long id, TempUserModel model, long TempId, bool resendEmail) {
-			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
+			var found = UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
 

@@ -116,13 +116,25 @@
 				</div>
 				<div class="row">
 					<div class="col-xs-5  ttt">
-						<label class="control-label">Upgrade users:</label>
+						<label class="control-label">Add/Upgrade users:</label>
 					</div>
 					<div class="col-xs-3">
 						<div class="pull-left">
 							@{
 								Html.RenderAction("Dropdown", "Permissions", new { id = Model.Id, type = PermItem.ResourceType.UpgradeUsersForOrganization, buttonClass = "btn-xs" });
-							}<abbr class="info" title="Who can upgrade users."></abbr>
+							}<abbr class="info" title="Who can add users, change users to paying, upgrade an existing users' products"></abbr>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-5  ttt">
+						<label class="control-label">Edit/Delete users:</label>
+					</div>
+					<div class="col-xs-3">
+						<div class="pull-left">
+							@{
+								Html.RenderAction("Dropdown", "Permissions", new { id = Model.Id, type = PermItem.ResourceType.EditDeleteUserDataForOrganization, buttonClass = "btn-xs" });
+							}<abbr class="info" title="Who can edit users' names, emails"></abbr>
 						</div>
 					</div>
 				</div>
@@ -136,7 +148,7 @@
 
 				<div class="row">
 					<div class="col-xs-5  ttt">
-						<label class="control-label">Managers have admin ability:</label>
+						<label class="control-label">Managers are admins:</label>
 					</div>
 					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanEdit, new { @class = "checkbox cb-managers-edit", onclick = "managersEdit()" })

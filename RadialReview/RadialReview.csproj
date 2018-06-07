@@ -1859,6 +1859,7 @@
     <Content Include="Views\L10\Delete.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
     <Content Include="Views\ClientSuccess\HFCategories.cshtml" />
+    <Content Include="Views\User\EditUserDetails.cshtml" />
     <Content Include="Views\Organization\Flags.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
