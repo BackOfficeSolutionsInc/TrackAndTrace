@@ -70,11 +70,11 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
-		public async Task<ActionResult> PrintVTO(long id) {
+		public async Task<ActionResult> PrintVTO(long id,string fill=null,string border=null,string image=null, string filltext = null, string lighttext = null, string lightborder = null, string textColor = null) {
 			var vto = VtoAccessor.GetAngularVTO(GetUser(), id);
 			var doc = PdfAccessor.CreateDoc(GetUser(), vto.Name + " Vision/Traction Organizer");
 
-			var settings = new VtoPdfSettings();
+			var settings = new VtoPdfSettings(image, fill,lighttext, lightborder, filltext,textColor,border);
 			await PdfAccessor.AddVTO(doc, vto, GetUser().GetOrganizationSettings().GetDateFormat(), settings);
 			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
 

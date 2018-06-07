@@ -1,5 +1,5 @@
 ﻿@model long
-<div class="form-horizontal">
+<div class="form-horizontal printout-modal">
 
     <input type="hidden" id="meetingId" value="@Model" />
 
@@ -68,7 +68,11 @@
         <label for="quarterly" class="col-sm-9 control-label alignLeft">Quarterly Printout</label>
     </div>
 </div>
-
+<style>
+	.printout-modal .control-label {
+		padding-top: 0px;
+	}
+</style>
 <script>
     var guid = "@(Guid.NewGuid().ToString())";
     var doneLoadingAC = false;

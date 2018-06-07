@@ -17,6 +17,19 @@ namespace RadialReview.Accessors {
 
 
 	public partial class PdfAccessor {
+
+		public static Color? Hex2Color(string hex) {
+			try {
+				if (hex == null)
+					return null;
+				System.Drawing.Color col = System.Drawing.ColorTranslator.FromHtml(hex);
+				return Color.FromRgb(col.R, col.G, col.B);
+			} catch (Exception e) {
+				return null;
+			}
+		}
+
+
 		public static bool DEBUGGER = false;
 
 		public class VtoPdfSettings {
@@ -57,6 +70,19 @@ namespace RadialReview.Accessors {
 
 				//ImageUrl = "https://s3.amazonaws.com/Radial/base/Vto/EOS_Wheel.png";
 				_Download = GenerateDefaultImage();
+			}
+
+
+			public VtoPdfSettings(string imageUrl,string fillColor,string lightTextColor,string lightBorderColor,string fillTextColor,string textColor,string borderColor):this() {
+				if (imageUrl!=null)
+					ImageUrl = imageUrl;
+				FillColor = Hex2Color(fillColor) ?? FillColor;
+				LightTextColor = Hex2Color(lightTextColor) ?? LightTextColor;
+				LightBorderColor = Hex2Color(lightBorderColor) ?? LightBorderColor;
+				FillTextColor = Hex2Color(fillTextColor) ?? FillTextColor;
+				TextColor = Hex2Color(textColor) ?? TextColor;
+				BorderColor = Hex2Color(borderColor) ?? BorderColor;
+
 			}
 
 			public static ImageDownload GenerateDefaultImage() {
@@ -255,8 +281,10 @@ namespace RadialReview.Accessors {
 		}
 
 		public static async Task AddVTO(Document doc, AngularVTO vto, string dateformat, VtoPdfSettings settings) {
-			if (vto.IncludeVision)
-				await AddVtoVision_Intermediate(doc, vto, dateformat, settings);
+			if (vto.IncludeVision) {
+				//await AddVtoVision_Intermediate(doc, vto, dateformat, settings);
+				await AddVtoVision(doc, vto, dateformat, settings);
+			}
 			await AddVtoTraction(doc, vto, dateformat, settings);
 		}
 
@@ -748,7 +776,7 @@ namespace RadialReview.Accessors {
 			row.VerticalAlignment = VerticalAlignment.Center;
 		}
 
-		[Obsolete("Only for private or test use")]
+		[Obsolete("Only for private or test use",false)]
 		public static async Task AddVtoVision_Intermediate(Document doc, AngularVTO vto, string dateformat, VtoPdfSettings settings) {
 			//var TableGray = new Color(100, 100, 100, 100);
 			//var TableBlack = new Color(0, 0, 0);
@@ -1085,7 +1113,7 @@ namespace RadialReview.Accessors {
 			#endregion
 		}
 
-		public static void AddVtoVision(Document doc, AngularVTO vto, string dateFormat, VtoPdfSettings settings) {
+		public static async Task AddVtoVision(Document doc, AngularVTO vto, string dateFormat, VtoPdfSettings settings) {
 			settings = settings ?? new VtoPdfSettings();
 			var visionLayoutGenerator = new VtoVisionDocumentGenerator(vto, settings);
 

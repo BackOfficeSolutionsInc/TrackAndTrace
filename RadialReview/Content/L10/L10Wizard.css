@@ -2759,8 +2759,10 @@ body,
   display: none;
 }
 #modal input[type=checkbox].blend {
-  width: 47px;
-  height: 47px;
+  /*width: 47px;
+    height: 47px;*/
+  height: 20px;
+  width: 20px;
 }
 #modal iframe {
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -2776,14 +2778,16 @@ body,
 #modal input[type="checkbox"] {
   outline: none !important;
   border: none;
-  height: 47px;
-  width: 47px;
+  /*height: 47px;
+    width: 47px;*/
+  height: 20px;
+  width: 20px;
   margin-top: -8px;
   bottom: auto;
 }
 #modal .milestone-table-modal .milestone-duedate-cell .milestone-duedate {
   height: 35px;
-
+}
 body.admin-disabled .user-pane .create-row {
   opacity: .5 !important;
   pointer-events: none;
