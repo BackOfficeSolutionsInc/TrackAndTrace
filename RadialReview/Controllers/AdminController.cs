@@ -627,8 +627,11 @@ namespace RadialReview.Controllers {
 			public bool IsManager { get; set; }
 			public DateTime? OrgDeleteTime { get; set; }
 			public DateTime? TrialExpire { get; internal set; }
-			//public bool Blacklist { get; set; }
-		}
+            public bool EvalEnabled { get; internal set; }
+            public bool PeopleEnabled { get; internal set; }
+            public bool L10Enabled { get; internal set; }
+            //public bool Blacklist { get; set; }
+        }
 		[Access(AccessLevel.Radial)]
 		public ActionResult AllUsers(long id) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -718,7 +721,11 @@ namespace RadialReview.Controllers {
 
 					var allUsersF = s.QueryOver<UserLookup>().Where(x => x.HasJoined).Future();
 
-					var allOrgsF = s.QueryOver<OrganizationModel>().JoinAlias(x => x.PaymentPlan, () => paymentPlanAlias).Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType, x => paymentPlanAlias.FreeUntil).Future<object[]>();
+					var allOrgsF = s.QueryOver<OrganizationModel>()
+                                        .JoinAlias(x => x.PaymentPlan, () => paymentPlanAlias)
+                                        .Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType, x => paymentPlanAlias.FreeUntil,
+                                                x=>x.Settings.EnableL10,x=>x.Settings.EnablePeople,x=>x.Settings.EnableReview)
+                                        .Future<object[]>();
 					var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
 
 
@@ -795,8 +802,10 @@ namespace RadialReview.Controllers {
 						CreateTime = (DateTime)x[3],
 						AccountType = (AccountType)x[4],
 						TrialExpire = (DateTime?)x[5],
-
-					}).ToDictionary(x => x.Id, x => x);
+                        EnabledL10 = (bool)x[6],
+                        EnablePeople = (bool)x[7],
+                        EnableEval = (bool)x[8]
+                    }).ToDictionary(x => x.Id, x => x);
 
 
 					var items = allUsers.Select(x => {
@@ -817,10 +826,14 @@ namespace RadialReview.Controllers {
 							LastLogin = x.LastLogin,
 							IsAdmin = x.IsAdmin,
 							IsManager = x.IsManager,
-							TrialExpire = org.NotNull(y => y.TrialExpire)
+							TrialExpire = org.NotNull(y => y.TrialExpire),
+                            EvalEnabled = org.NotNull(y => y.EnableEval),
+                            PeopleEnabled = org.NotNull(y => y.EnablePeople),
+                            L10Enabled = org.NotNull(y => y.EnabledL10),
 
-							//Deleted = x.DeleteTime!=null  || org.DeleteTime !=null || org.AccountType == AccountType.Cancelled
-						};
+
+                            //Deleted = x.DeleteTime!=null  || org.DeleteTime !=null || org.AccountType == AccountType.Cancelled
+                        };
 					}).Where(x => x != null).ToList();
 
 					var charts = chartsF.Select(x => new { RootId = x }).ToList();
@@ -922,12 +935,16 @@ namespace RadialReview.Controllers {
 						csv.Add("" + o.UserId, "PaymentType", "" + paymentTypeLookupByCompany[o.OrgId]);
 						csv.Add("" + o.UserId, "PaymentExpire", "" + paymentExpireLookupByCompany[o.OrgId]);
 						csv.Add("" + o.UserId, "TrialExpire", (hasPaymentLookupByCompany[o.OrgId] ? "" : ("" + o.TrialExpire.NotNull(z => z.Value.ToShortDateString()))));
-						csv.Add("" + o.UserId, "LastMeetingTime", "" + lastMeetingsDateByCompany[o.OrgId]);
+                        csv.Add("" + o.UserId, "LastMeetingTime", "" + lastMeetingsDateByCompany[o.OrgId]);
+
+                        csv.Add("" + o.UserId, "EvalEnabled", "" + o.EvalEnabled);
+                        csv.Add("" + o.UserId, "PeopleEnabled", "" + o.PeopleEnabled);
+                        csv.Add("" + o.UserId, "L10Enabled", "" + o.L10Enabled);
 
 
-					}
+                    }
 
-					/*First Name        
+                    /*First Name        
 Last Name        
 Status        
 TT Active Account        
@@ -938,7 +955,7 @@ Flag For Disabled / Blacklisted from TT
 Flag For Disabled / Blacklisted from CS        
 3 Successful Meetings while in Trial (over 30 min)*/
 
-					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
+                    return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
 
 
 				}
