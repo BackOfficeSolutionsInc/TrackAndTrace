@@ -2585,6 +2585,7 @@
     <Folder Include="logs\" />
     <Folder Include="Models\Frontend\ViewModels\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
+    <Folder Include="Scripts\Models\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />
@@ -2687,7 +2688,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Scripts\Models\Charts.ts" />
     <Content Include="SoftwareUpdates\20151217.txt" />
   </ItemGroup>
   <ItemGroup>
