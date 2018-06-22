@@ -52,9 +52,14 @@ namespace RadialReview.Accessors {
 					var perms = PermissionsUtility.Create(s, caller);
 					try {
 						perms.EditCompanyPayment(orgId);
-						var cards = s.QueryOver<PaymentSpringsToken>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null && x.Active==true).List().ToList();
-						if (!cards.Any()) {
+						var cards = s.QueryOver<PaymentSpringsToken>()
+                            .Where(x => x.OrganizationId == orgId && x.DeleteTime == null && x.Active==true)
+                            .List().ToList();
+
+                        if (!cards.Any()) {
 							var org = s.Get<OrganizationModel>(orgId);
+                            if (org.AccountType != AccountType.Demo)
+                                return false;
 
 							if (org == null)
 								throw new NullReferenceException("Organization does not exist");
