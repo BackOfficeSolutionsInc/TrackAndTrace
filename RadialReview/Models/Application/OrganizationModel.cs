@@ -367,7 +367,8 @@ namespace RadialReview.Models {
 		public virtual Boolean ManagersCanRemoveUsers { get; set; }
 		public virtual bool StrictHierarchy { get; set; }
 
-		protected virtual OrganizationSettings _Settings { get; set; }
+        [Obsolete("Use Settings instead.")]
+		public virtual OrganizationSettings _Settings { get; set; }
 		public virtual OrganizationSettings Settings {
 			get {
 				if (_Settings == null)

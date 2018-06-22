@@ -40,6 +40,7 @@ using RadialReview.Crosscutting.Flags;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Angular.Organization;
 using RadialReview.Models.Payments;
+using static RadialReview.Models.OrganizationModel;
 
 namespace RadialReview.Controllers {
 
@@ -718,13 +719,15 @@ namespace RadialReview.Controllers {
 				using (var tx = s.BeginTransaction()) {
 					UserOrganizationModel userAlias = null;
 					PaymentPlanModel paymentPlanAlias = null;
+                    OrganizationSettings settingsAlias = null;
 
 					var allUsersF = s.QueryOver<UserLookup>().Where(x => x.HasJoined).Future();
 
 					var allOrgsF = s.QueryOver<OrganizationModel>()
                                         .JoinAlias(x => x.PaymentPlan, () => paymentPlanAlias)
+                                        //.JoinAlias(x => x._Settings, () => settingsAlias)
                                         .Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType, x => paymentPlanAlias.FreeUntil,
-                                                x=>x.Settings.EnableL10,x=>x.Settings.EnablePeople,x=>x.Settings.EnableReview)
+                                                x => x._Settings.EnableL10,x => x._Settings.EnablePeople,x => x._Settings.EnableReview)
                                         .Future<object[]>();
 					var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
 
@@ -802,9 +805,9 @@ namespace RadialReview.Controllers {
 						CreateTime = (DateTime)x[3],
 						AccountType = (AccountType)x[4],
 						TrialExpire = (DateTime?)x[5],
-                        EnabledL10 = (bool)x[6],
-                        EnablePeople = (bool)x[7],
-                        EnableEval = (bool)x[8]
+                        EnabledL10 = ((bool?)x[6]??false),
+                        EnablePeople = ((bool?)x[7] ?? false),
+                        EnableEval = ((bool?)x[8] ?? false)
                     }).ToDictionary(x => x.Id, x => x);
 
 
