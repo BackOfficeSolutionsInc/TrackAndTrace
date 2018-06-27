@@ -55,8 +55,33 @@ namespace RadialReview.Areas.People.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Issue() {
+		public ActionResult Archive() {
+			var containers = SurveyAccessor.GetArchivedSurveyContainersBy(GetUser(), GetUser(), SurveyType.QuarterlyConversation).OrderByDescending(x => x.IssueDate);
+			return View(containers.ToList());
+		}
 
+
+		[HttpGet]
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult EditModal(long id) {
+			var m = SurveyAccessor.GetSurveyContainer(GetUser(),id);
+			return PartialView(m);
+		}
+
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Edit(long id, DateTime? duedate=null,string name=null) {
+			//WRONG... this should be done on the client... but im in a hurry
+			duedate = duedate.NotNull(x => GetUser().GetTimeSettings().ConvertFromServerTime(x.Value).AddDays(1).AddSeconds(-1));
+
+			var update = SurveyAccessor.UpdateSurveyContainer(GetUser(), id, name, duedate);
+			return Json(ResultObject.SilentSuccess(update));
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Issue() {
 			var vm = new IssueViewModel() {
 				AvailableUsers = Possible(),
 				DueDate = GetUser().GetTimeSettings().ConvertFromServerTime(DateTime.UtcNow.AddDays(7)),
@@ -183,8 +208,6 @@ namespace RadialReview.Areas.People.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult PrintAll(long surveyContainerId, bool print = true) {
 
-			
-
 			var doc = SurveyPdfAccessor.CreateDoc(GetUser(), "All Quarterly Conversations");
 
 			var allAbout = QuarterlyConversationAccessor.GetPeopleAnalyzer(GetUser(), GetUser().Id).Responses
@@ -222,6 +245,11 @@ namespace RadialReview.Areas.People.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Remove(long id) {
 			SurveyAccessor.RemoveSurveyContainer(GetUser(), id);// QuarterlyConversationAccessor
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Undelete(long id) {
+			SurveyAccessor.UndeleteSurveyContainer(GetUser(), id);// QuarterlyConversationAccessor
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 

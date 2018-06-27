@@ -1,0 +1,61 @@
+﻿@model List<RadialReview.Areas.People.Angular.Survey.AngularSurveyContainer>
+@{
+	ViewBag.Title = "Archive";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Archive</h2>
+
+<div id="table"></div>
+
+
+@using (Html.BeginScripts()) {
+	<script>
+	
+		var table = DataTable({
+			content:"#table",
+			data : @Html.ArrayToString(Model),
+			clickRemove:"/People/QuarterlyConversation/Undelete/{0}",
+			clickRemoveTitle: "Are you sure you want to unarchive?",
+			cells:[{
+				name: "Name",
+				classes:"fullWidth",
+				contents:function(x){ return x.Name; }
+			},{
+				name: "Issued By",
+				classes:"nowrap alignRight",
+				contents:function(x){
+					return x.IssuedBy.Name;//.toDateString();
+				}
+			},{
+			name: "Issued",
+				classes:"nowrap alignRight",
+				contents:function(x){
+					return getFormattedDate(x.IssueDate);//.toDateString();
+				}
+			},{
+				name: "Due",
+				classes:"nowrap alignCenter",
+				contents:function(x){
+					return getFormattedDate(x.DueDate,null,"--");//.toDateString();
+				}
+			},{
+				remove:true,
+				name: "Unarchive",
+				classes:"nowrap alignCenter",
+				contents:function(x){
+					return "<a href='#' onclick='undelete("+x.Id+")'>Undelete</a>";
+				}
+			}]
+		});
+		/*
+		function undelete(id){
+			$.ajax({
+				url:"/People/QuarterlyConversation/Undelete"+id,
+				success:function(data){
+
+				}
+			})
+		}*/
+	</script>
+}

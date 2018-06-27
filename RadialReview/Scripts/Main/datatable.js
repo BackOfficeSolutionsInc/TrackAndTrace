@@ -437,7 +437,7 @@ var DataTable = function (settings) {
 		cell.attr("class", resolve(cellSelectorClasses, row, settings));
 
 		//Is edit button?
-		if (resolve(cellSelector.edit, settings) == true) {
+		if (resolve(cellSelector.edit, row) == true) {
 			cell.on("click", function () { resolve(settings.clickEdit, row, settings); });
 			if (!contents)
 				contents = settings.table.editText;
@@ -445,7 +445,7 @@ var DataTable = function (settings) {
 		}
 
 		//Is remove button?
-		if (resolve(cellSelector.remove, settings) == true) {
+		if (resolve(cellSelector.remove, row) == true) {
 			cell.on("click", function () { resolve(settings.clickRemove, row, settings); });
 			if (!contents)
 				contents = settings.table.removeText;

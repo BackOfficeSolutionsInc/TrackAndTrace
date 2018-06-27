@@ -54,7 +54,56 @@ namespace RadialReview.Areas.People.Accessors {
 				.SingleOrDefault(x => x.GetAbout().ToKey() == about.ToKey());
 		}
 
+		public static IEnumerable<AngularSurveyContainer> GetArchivedSurveyContainersBy(UserOrganizationModel caller, IForModel byModel, SurveyType type) {
+			return GetSurveyContainerBy(caller, byModel, type, true);
+		}
+
+		public static AngularSurveyContainer GetSurveyContainer(UserOrganizationModel caller, long surveyContainerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.CanView(ResourceType.SurveyContainer, surveyContainerId);
+					return new AngularSurveyContainer(s.Get<SurveyContainer>(surveyContainerId),false,null);
+				}
+			}
+		}
+
 #pragma warning restore CS0618 // Type or member is obsolete
+
+		public static AngularSurveyContainer UpdateSurveyContainer(UserOrganizationModel caller, long surveyContainerId, string name = null, DateTime? dueDate = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.CanAdmin(ResourceType.SurveyContainer, surveyContainerId);
+					var sc = s.Get<SurveyContainer>(surveyContainerId);
+					var surveysQ = s.QueryOver<Survey>().Where(x => x.SurveyContainerId == surveyContainerId).List().ToList();
+					if (dueDate != null) {
+						sc.DueDate = dueDate.Value;
+						foreach (var survey in surveysQ) {
+							survey.DueDate = dueDate.Value;
+							s.Update(survey);
+						}
+						s.Update(sc);
+					}
+					if (name != null) {
+						sc.Name = name;
+						foreach (var survey in surveysQ) {
+							survey.Name = name;
+							s.Update(survey);
+						}
+						s.Update(sc);
+					}
+					tx.Commit();
+					s.Flush();
+					AngularUser issuedBy = null;
+					if (sc.CreatedBy.Is<UserOrganizationModel>()) {
+						issuedBy = AngularUser.CreateUser(s.Get<UserOrganizationModel>(sc.CreatedBy.ModelId));
+					}
+
+					return new AngularSurveyContainer(sc, sc.DueDate < DateTime.UtcNow, issuedBy);
+				}
+			}
+		}
 
 		public static ISurveyAboutContainer GetSurveyContainerAbout(UserOrganizationModel caller, IForModel about, long surveyContainerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -95,6 +144,20 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 		}
 
+		public static void UndeleteSurveyContainer(UserOrganizationModel caller, long surveyContainerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.CanAdmin(ResourceType.SurveyContainer, surveyContainerId);
+					var sc = s.Get<SurveyContainer>(surveyContainerId);
+					sc.DeleteTime = null;
+					s.Update(sc);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
 		public static AngularSurveyContainer GetAngularSurveyContainerBy(UserOrganizationModel caller, IForModel by, long surveyContainerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -115,7 +178,7 @@ namespace RadialReview.Areas.People.Accessors {
 					var surveys = output.Surveys ?? new List<AngularSurvey>();
 
 					var i = 0;
-					
+
 					foreach (var o in surveys.OrderBy(x => x.Name)) {
 						o.Ordering = i;
 						i += 1;
@@ -218,6 +281,10 @@ namespace RadialReview.Areas.People.Accessors {
 		}
 
 		public static IEnumerable<AngularSurveyContainer> GetSurveyContainersBy(UserOrganizationModel caller, IForModel byModel, SurveyType type) {
+			return GetSurveyContainerBy(caller, byModel, type, false);
+		}
+
+		private static IEnumerable<AngularSurveyContainer> GetSurveyContainerBy(UserOrganizationModel caller, IForModel byModel, SurveyType type, bool archivedOnly) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -225,16 +292,21 @@ namespace RadialReview.Areas.People.Accessors {
 
 					//var sunIds =s.QueryOver<SurveyUserNode>().Where(x => x.DeleteTime==null && x.UserOrganizationId == byUserId).Select(x=>x.Id).List<long>().ToList();
 
-					var containerIds = s.QueryOver<Survey>().Where(x => x.DeleteTime == null && x.SurveyType == type)
+					var containerIds = s.QueryOver<Survey>()
+						.Where(x => x.DeleteTime == null && x.SurveyType == type)
 						.Where(x => x.By.ModelId == byModel.ModelId && x.By.ModelType == byModel.ModelType)
-						//.Where(x=>x.By.ModelType == ForModel.GetModelType<SurveyUserNode>())
-						//.WhereRestrictionOn(x => x.By.ModelId).IsIn(sunIds)
-
 						.Select(x => Projections.Group<Survey>(y => y.SurveyContainerId))
 						.Select(x => x.SurveyContainerId)
 						.List<long>().ToArray();
 
-					var containers = s.QueryOver<SurveyContainer>().Where(x => x.DeleteTime == null && x.SurveyType == type)
+					var containersQ = s.QueryOver<SurveyContainer>();
+					if (archivedOnly) {
+						containersQ = containersQ.Where(x => x.DeleteTime != null);
+					} else {
+						containersQ = containersQ.Where(x => x.DeleteTime == null);
+					}
+					var containers = containersQ
+						.Where(x => x.SurveyType == type)
 						.WhereRestrictionOn(x => x.Id).IsIn(containerIds)
 						.List();
 
@@ -247,8 +319,6 @@ namespace RadialReview.Areas.People.Accessors {
 					var creatorLookup = TinyUserAccessor.GetUsers_Unsafe(s, issuedBy, false).ToDefaultDictionary(x => x.ToKey(), x => AngularUser.CreateUser(x), null);
 
 					return containers.Select(x => new AngularSurveyContainer(x, x.DueDate < DateTime.UtcNow, creatorLookup[x.CreatedBy.ToKey()]));
-
-					//perms.ViewSurveyContainer(surveyContainerId);
 				}
 			}
 		}

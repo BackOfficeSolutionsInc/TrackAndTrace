@@ -171,6 +171,8 @@
       <DependentUpon>angular-material.less</DependentUpon>
     </Content>
     <Content Include="Content\Angular\angular-material.less" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Archive.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\EditModal.cshtml" />
     <None Include="Content\Chart\metric-graphics.less" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
