@@ -629,9 +629,7 @@ namespace RadialReview.Accessors {
 #pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.UnArchiveRock(s, rock, false));
 		}
-
-
-
+		
 		public static void UndeleteRock(UserOrganizationModel caller, long rockId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -641,6 +639,26 @@ namespace RadialReview.Accessors {
 					s.Update(rock);
 					tx.Commit();
 					s.Flush();
+				}
+			}
+		}
+
+
+		public static async Task<List<RockAndMilestones>> AllVisibleRocksAndMilestonesAtOrganization(UserOrganizationModel caller,long orgId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var rocks = GetAllVisibleRocksAtOrganization(s, perms, orgId, true);
+					var rockIds = rocks.Select(x => x.Id).Distinct().ToList();
+
+					var milestones = s.QueryOver<Milestone>().Where(x => x.DeleteTime == null)
+						.WhereRestrictionOn(x => x.RockId).IsIn(rockIds)
+						.List().GroupBy(x=>x.RockId).ToDefaultDictionary(x=>x.Key,x=>x.ToList(),x=> new List<Milestone>());
+
+					return rocks.Select(x => new RockAndMilestones() {
+						Rock = x,
+						Milestones = milestones[x.Id]
+					}).ToList();
 				}
 			}
 		}

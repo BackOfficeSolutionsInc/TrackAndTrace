@@ -54,8 +54,8 @@ namespace RadialReview.Areas.People.Accessors {
 		public static IEnumerable<ByAboutSurveyUserNode> AvailableByAboutsFiltered(UserOrganizationModel caller, IEnumerable<SurveyUserNode> abouts, bool includeSelf, bool supervisorLMA) {
 			var allAvailable = AvailableByAboutsForMe(caller, includeSelf, supervisorLMA);
 			return allAvailable
-						.Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.About.ToViewModelKey()))
-						.Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.By.ToViewModelKey()));
+						.Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.About.ToViewModelKey()));
+						//.Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.By.ToViewModelKey()));
 		}
 
 		private static SurveyUserNode SunGetter(Dictionary<string, SurveyUserNode> existingItems, AccountabilityNode toAdd) {
@@ -377,9 +377,7 @@ namespace RadialReview.Areas.People.Accessors {
 			TransformValueAnswer["sometimes"] = "+/–";
 			TransformValueAnswer["not-often"] = "–";
 		}
-
-
-
+		
 		public static List<long> GetUsersWhosePeopleAnalyzersICanSee(ISession s, PermissionsUtility perms, long myUserId, long? recurrenceId = null) {
 			perms.Self(myUserId);
 			var callerMeetings = L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, myUserId, onlyPersonallyAttending: true)

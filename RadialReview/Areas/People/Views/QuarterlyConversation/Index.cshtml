@@ -95,8 +95,10 @@
 
 
 		messageHub.client.addQC = function(message,row){
-			table.addRow(row);
-			showAlert(message,"success");
+			//table.addRow(row);
+			StoreJsonAlert({Message:message});
+			location.reload();
+			//showAlert(message,"success");
 		};
 		messageHub.client.showAlert = function(mObj){
 			showAlert(mObj);
@@ -130,7 +132,7 @@
 						return null;
 				}
 			},{
-				remove:true,
+				remove: function(x){return (x.IssuedBy.Id == UserId)},
 				hideIfEmpty:true,
 				classes:function(x){
 					//if (x.IssuedBy.Id != UserId)

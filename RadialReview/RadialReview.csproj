@@ -245,6 +245,7 @@
     <Compile Include="Models\Angular\LocalDateTime.cs" />
     <Compile Include="Models\Angular\Notifications\AngularAppNotification.cs" />
     <Compile Include="Models\Angular\Organization\AngularOrganizationUnsafe.cs" />
+    <Compile Include="Models\Angular\Rocks\AngularRockAndMilestones.cs" />
     <Compile Include="Models\Angular\Users\AngularUserRole.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\Charts\MetricGraphic.cs" />
@@ -1868,6 +1869,7 @@
     <Content Include="Views\Account\Consent.cshtml" />
     <Content Include="Views\User\EditUserDetails.cshtml" />
     <Content Include="Views\Organization\Flags.cshtml" />
+    <Content Include="Views\Rocks\All.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

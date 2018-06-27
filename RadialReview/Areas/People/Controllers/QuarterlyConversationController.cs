@@ -93,7 +93,9 @@ namespace RadialReview.Areas.People.Controllers {
 				var quarterRange = new DateRange(qtrStart, qtrStart.AddDays(90));
 				var callerId = GetUser().Id;
 				BackgroundJob.Enqueue(() =>QuarterlyConversationAccessor.GenerateQuarterlyConversation(callerId, name, filtered, quarterRange, dueDate, email));
-				
+
+				TempData["InfoAlert"] = new HtmlString("Generating Quarterly Conversation.<br/>This might take a couple of minutes.");
+
 				return RedirectToAction("Index");// "Questions",new { id = id });
 			}
 

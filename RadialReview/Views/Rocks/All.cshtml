@@ -1,0 +1,74 @@
+﻿@model List<RadialReview.Models.Angular.Rocks.AngularRockAndMilestones>
+@{
+	ViewBag.Title = "All";
+}
+
+<h2>All Rocks</h2>
+
+<div id="table"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+
+		var rockStatusConverter = function(status){
+			if (status == 0) return "<span class='rockstatus rockstatus-"+status+"'>Off Track</span>";
+			if (status == 1) return "<span class='rockstatus rockstatus-"+status+"'>On Track</span>";
+			if (status == 2) return "<span class='rockstatus rockstatus-"+status+"'>Done</span>";
+			return "";
+		}
+
+		var processMilestone = function(ms){
+			return "<div><span>"+ms.Status+"</span><span>"+ms.Name+"</span><span>"+ms.DueDate+"</span></div>";
+
+		}
+
+		var table = DataTable({
+			content:"#table",
+			data : @Html.ArrayToString(Model),
+			cells:[
+				{name:"Owner",contents:function(x){return x.Rock.Owner.Name;}},
+				{name:"Rock",contents:function(x){return x.Rock.Name;}},
+				{name:"Status",contents:function(x){return rockStatusConverter(x.Rock.Completion);}},
+				{name:"Milestones",contents:function(x){
+					try{
+						var builder = "";
+						for(var i =0;i<x.Milestones.length;i++){
+							var ms = x.Milestones[i];
+							builder+=processMilestone(ms);//.Name+"<br/>";
+						}
+						return builder;
+					}catch(e){
+						return null;
+					}
+				}},
+			]
+		});
+
+	</script>
+}
+
+<style>
+	tr td{
+		border-bottom:1px solid #eee;
+	}
+	.rockstatus {
+		padding: 2px;
+		border-radius: 2px;
+		min-width: 70px;
+		display: inline-block;
+		text-align: center;
+		color: white;
+	}
+
+	.rockstatus-0 {
+		background-color: rgb( 217, 83, 79);
+	}
+
+	.rockstatus-1 {
+		background-color: rgb( 31, 104, 236);
+	}
+
+	.rockstatus-2 {
+		background-color: rgb( 68, 157, 68);
+	}
+</style>

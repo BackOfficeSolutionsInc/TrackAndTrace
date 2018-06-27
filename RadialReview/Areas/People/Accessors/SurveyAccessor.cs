@@ -112,9 +112,11 @@ namespace RadialReview.Areas.People.Accessors {
 					var engine = new SurveyReconstructionEngine(surveyContainerId, container.OrgId, new DatabaseAggregator(s, by), new SurveyReconstructionEventsNoOp());
 					var output = new AngularSurveyContainer();
 					engine.Traverse(new TraverseBuildAngular(output));
+					var surveys = output.Surveys ?? new List<AngularSurvey>();
 
 					var i = 0;
-					foreach (var o in output.Surveys.OrderBy(x => x.Name)) {
+					
+					foreach (var o in surveys.OrderBy(x => x.Name)) {
 						o.Ordering = i;
 						i += 1;
 						if ((o.Name ?? "").Contains(by.ToPrettyString()))

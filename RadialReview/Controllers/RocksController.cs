@@ -193,6 +193,17 @@ namespace RadialReview.Controllers {
 			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
 		}
 
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> All() {
+			var rocksAndMilestones = (await RockAccessor.AllVisibleRocksAndMilestonesAtOrganization(GetUser(), GetUser().Organization.Id))
+								.Select(x => new AngularRockAndMilestones(x.Rock, x.Milestones))
+								.ToList();
+			return View(rocksAndMilestones);
+		}
+
+
+
 		public class RockTable {
 			public List<RockModel> Rocks { get; set; }
 			public List<long> Editables { get; set; }
