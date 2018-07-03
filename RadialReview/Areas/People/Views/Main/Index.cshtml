@@ -1,7 +1,8 @@
 ﻿
 @{
-	ViewBag.Title = "People Tools™";
-	Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "People Tools™";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.FullWidth = true;
 }
 
 @section top{
@@ -51,7 +52,14 @@
 
 
 <style>
-	.people-tools .flex-container {
+
+    .body-full-width .body-content {
+        padding: 59px;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 150px;
+    }
+        .people-tools .flex-container {
 		text-align: center;
 	}
 

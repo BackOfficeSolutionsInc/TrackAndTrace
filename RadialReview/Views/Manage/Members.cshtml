@@ -4,26 +4,27 @@
 @model RadialReview.Models.ViewModels.OrgMembersViewModel
 
 @{
-	ViewBag.Title = "Members";
-	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.Page = "Members";
-	
-	var lookup = new Dictionary<WebHookEventType, Tuple<string, string, int>>(){
-		{WebHookEventType.Click,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
-		{WebHookEventType.Deferral,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
-		{WebHookEventType.Hard_bounce,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
-		{WebHookEventType.Inbound,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
-		{WebHookEventType.Open,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
-		{WebHookEventType.Reject,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
-		{WebHookEventType.Send,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
-		{WebHookEventType.Soft_bounce,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
-		{WebHookEventType.Spam,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
-		{WebHookEventType.Unsub,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
+    ViewBag.Title = "Members";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "Members";
+    ViewBag.FullWidth = true;
+
+    var lookup = new Dictionary<WebHookEventType, Tuple<string, string, int>>(){
+        {WebHookEventType.Click,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+        {WebHookEventType.Deferral,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+        {WebHookEventType.Hard_bounce,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
+        {WebHookEventType.Inbound,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+        {WebHookEventType.Open,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+        {WebHookEventType.Reject,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
+        {WebHookEventType.Send,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+        {WebHookEventType.Soft_bounce,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+        {WebHookEventType.Spam,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
+        {WebHookEventType.Unsub,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
 };
 
-	var invalidCount = Model.Users.Count(x => x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail"));
-	var resendCount = Model.Users.Count(x => !x.Verified && !(x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail")));
-	var unsentCount = Model.Users.Count(x => !x.EmailSent);
+    var invalidCount = Model.Users.Count(x => x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail"));
+    var resendCount = Model.Users.Count(x => !x.Verified && !(x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail")));
+    var unsentCount = Model.Users.Count(x => !x.EmailSent);
 
 }
 
@@ -76,6 +77,15 @@
 			text-transform: lowercase;
 			color: #333;
 		}
+
+        .body-full-width .body-content {
+            padding: 84px;
+            padding-left: 15px;
+            padding-right: 15px;
+            padding-bottom: 150px;
+            width: 1170px !important;
+        }
+
 		.userType[data-enabled='false']:before {color: lightgray;}
 		.userroles {text-align: right;}
 		@@media screen and (max-width: 400px) {
