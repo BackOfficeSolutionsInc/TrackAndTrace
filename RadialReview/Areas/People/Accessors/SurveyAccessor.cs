@@ -87,10 +87,10 @@ namespace RadialReview.Areas.People.Accessors {
 					}
 					if (name != null) {
 						sc.Name = name;
-						foreach (var survey in surveysQ) {
-							survey.Name = name;
-							s.Update(survey);
-						}
+						//foreach (var survey in surveysQ) {
+						//	survey.DueDate = dueDate.;
+						//	s.Update(survey);
+						//}
 						s.Update(sc);
 					}
 					tx.Commit();
