@@ -70,7 +70,9 @@ namespace RadialReview
 				app.UseHangfireDashboard();
 			}
 
-			app.UseHangfireServer();
+			app.UseHangfireServer(new BackgroundJobServerOptions() {
+				WorkerCount=2
+			});
 
 			// Uncomment the following lines to enable logging in with third party login providers
 			//app.UseMicrosoftAccountAuthentication(
