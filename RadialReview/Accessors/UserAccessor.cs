@@ -40,6 +40,7 @@ using RadialReview.Utiliities;
 namespace RadialReview.Accessors {
 
 	public class UserAccessor : BaseAccessor {
+
 		public String GetUserIdByUsername(ISession s, String username) {
 			return (string)CacheLookup.GetOrAddDefault("username_" + username, x => {
 #pragma warning disable CS0618 // Type or member is obsolete

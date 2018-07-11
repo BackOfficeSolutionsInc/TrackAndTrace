@@ -16,6 +16,9 @@ using RadialReview.Utilities;
 using RadialReview.Areas.CoreProcess.Models;
 using Hangfire;
 using Hangfire.MySql;
+using Hangfire.Dashboard;
+using RadialReview.Models;
+using RadialReview.Accessors;
 
 namespace RadialReview
 {
@@ -66,12 +69,14 @@ namespace RadialReview
 
 
 			GlobalConfiguration.Configuration.UseStorage(new MySqlStorage(Config.GetHangfireConnectionString(), new MySqlStorageOptions()));
-			if (Config.IsLocal()) {
-				app.UseHangfireDashboard();
-			}
+			//if (Config.IsLocal()) {
+			app.UseHangfireDashboard("/hangfire", new DashboardOptions {
+				Authorization = new[] { new HangfireAuth() }
+			});
+			//}
 
 			app.UseHangfireServer(new BackgroundJobServerOptions() {
-				WorkerCount=2
+				WorkerCount=1,				
 			});
 
 			// Uncomment the following lines to enable logging in with third party login providers
@@ -131,26 +136,43 @@ namespace RadialReview
 			//);
 		}
 
-        //private Task OnAuthenticationFailed(AuthenticationFailedNotification<OpenIdConnectMessage,OpenIdConnectAuthenticationOptions> notification) {
-        //	notification.HandleResponse();
-        //	string redirect = "/Home/Error?message=" + notification.Exception.Message;
-        //	if (notification.ProtocolMessage != null && !string.IsNullOrEmpty(notification.ProtocolMessage.ErrorDescription)) {
-        //		redirect += "&debug=" + notification.ProtocolMessage.ErrorDescription;
-        //	}
-        //	notification.Response.Redirect(redirect);
-        //	return Task.FromResult(0);
-        //}
+		//private Task OnAuthenticationFailed(AuthenticationFailedNotification<OpenIdConnectMessage,OpenIdConnectAuthenticationOptions> notification) {
+		//	notification.HandleResponse();
+		//	string redirect = "/Home/Error?message=" + notification.Exception.Message;
+		//	if (notification.ProtocolMessage != null && !string.IsNullOrEmpty(notification.ProtocolMessage.ErrorDescription)) {
+		//		redirect += "&debug=" + notification.ProtocolMessage.ErrorDescription;
+		//	}
+		//	notification.Response.Redirect(redirect);
+		//	return Task.FromResult(0);
+		//}
 
-        //private Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedNotification notification) {
-        //	notification.HandleResponse();
-        //	notification.Response.Redirect("/Home/Error?message=See Auth Code Below&debug=" + notification.Code);
-        //	return Task.FromResult(0);
-        //}
-
-
+		//private Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedNotification notification) {
+		//	notification.HandleResponse();
+		//	notification.Response.Redirect("/Home/Error?message=See Auth Code Below&debug=" + notification.Code);
+		//	return Task.FromResult(0);
+		//}
 
 
-        public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
+		public class HangfireAuth : IDashboardAuthorizationFilter {
+			public bool Authorize(DashboardContext context) {
+				// In case you need an OWIN context, use the next line, `OwinContext` class
+				// is the part of the `Microsoft.Owin` package.
+				var owinContext = new OwinContext(context.GetOwinEnvironment());
+
+				// Allow all authenticated users to see the Dashboard (potentially dangerous).
+				try {
+					var user = new UserAccessor().GetUserById(owinContext.Authentication.User.Identity.GetUserId());
+					if (user != null) {
+						return user.IsRadialAdmin;
+					}
+				} catch (Exception e) {
+					int a = 0;
+				}
+				return false;				
+			}
+		}
+
+		public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
         {
             private readonly string _publicClientId;
 
