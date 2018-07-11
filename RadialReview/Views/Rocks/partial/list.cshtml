@@ -40,7 +40,9 @@
 							<th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Rock</th>
 							<th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column alignCenter" md-order-by="CreateTime">Create Time</th>
 							<th md-column md-numeric @(attrLookup["due-column"]) class="due-column alignCenter" md-order-by="DueDate">Due Date</th>
-                            <th md-column @(attrLookup["company-rock-column"]) class="company-rock-column checkbox-column" md-order-by="VtoRock">V/TO</th>
+                            <th md-column @(attrLookup["company-rock-column"]) class="company-rock-column checkbox-column" md-order-by="VtoRock">
+                                <span class="vto-heading-hidden">V/TO</span> 
+                            </th>
 							<th md-column @(attrLookup["delete-column"]) class="delete-column"></th>
 						</tr>
 					</thead>
@@ -76,7 +78,9 @@
                                 <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{::rock.Id}}" type="text" value="{{rock.DueDate | date:dateFormat}}" n ng-model-options="{debounce: 400}" />
                             </td>
                             <td md-cell class="company-rock-column checkbox-column" style="min-width: 15px;">
-                                <md-checkbox aria-label="Show on V/TO" ng-model="rock.VtoRock" class="md-align-top-left" ng-change="functions.sendUpdate(rock)" title="Show on V/TO"></md-checkbox>
+                                <span class="vto-text-hidden">{{rock.VtoRock?'V/TO':''}}</span>
+                                
+                                    <md-checkbox aria-label="Show on V/TO" ng-model="rock.VtoRock" class="md-align-top-left vto-hidden" ng-change="functions.sendUpdate(rock)" title="Show on V/TO"></md-checkbox>
                             </td>
                             <td md-cell class="delete-column" style="min-width: 15px;">
                                 <span ng-if="rock.Archived==false" class="delete-row-archive delete-row" ng-click="functions.removeRow($event,rock)" title="Archive Rock"></span>
