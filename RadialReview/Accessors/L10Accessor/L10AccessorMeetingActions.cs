@@ -69,6 +69,8 @@ using Twilio.Types;
 using Twilio.Rest.Api.V2010.Account;
 using RadialReview.Accessors;
 using RadialReview.Models.UserModels;
+using Hangfire;
+
 namespace RadialReview.Accessors {
 	public partial class L10Accessor : BaseAccessor {
 
@@ -348,7 +350,7 @@ namespace RadialReview.Accessors {
 						try {
 							var perms = PermissionsUtility.Create(s, caller);
 							_GetCurrentL10Meeting(s, perms, recurrenceId, false);
-							throw new MeetingException(recurrenceId,"Meeting has already started.", MeetingExceptionType.AlreadyStarted);
+							throw new MeetingException(recurrenceId, "Meeting has already started.", MeetingExceptionType.AlreadyStarted);
 						} catch (MeetingException e) {
 							if (e.MeetingExceptionType != MeetingExceptionType.Unstarted)
 								throw;
@@ -442,288 +444,458 @@ namespace RadialReview.Accessors {
 			return meeting;
 		}
 		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, decimal?>> ratingValues, ConcludeSendEmail sendEmail, bool closeTodos, bool closeHeadlines, string connectionId) {
-			var unsent = new List<Mail>();
 			L10Recurrence recurrence = null;
 			L10Meeting meeting = null;
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var now = DateTime.UtcNow;
-					//Make sure we're unstarted
-					var perms = PermissionsUtility.Create(s, caller);
-					meeting = _GetCurrentL10Meeting(s, perms, recurrenceId, false);
-					perms.ViewL10Meeting(meeting.Id);
 
-					var todoRatio = new Ratio();
-					var todos = GetTodosForRecurrence(s, perms, recurrenceId, meeting.Id);
+			try {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						var now = DateTime.UtcNow;
+						//Make sure we're unstarted
+						var perms = PermissionsUtility.Create(s, caller);
+						meeting = _GetCurrentL10Meeting(s, perms, recurrenceId, false);
+						perms.ViewL10Meeting(meeting.Id);
 
-					foreach (var todo in todos) {
-						if (todo.CreateTime < meeting.StartTime) {
-							if (todo.CompleteTime != null) {
-								todo.CompleteDuringMeetingId = meeting.Id;
-								if (closeTodos) {
-									todo.CloseTime = now;
-								}
-								s.Update(todo);
-							}
-							todoRatio.Add(todo.CompleteTime != null ? 1 : 0, 1);
-						}
-					}
+						var todoRatio = new Ratio();
+						var todos = GetTodosForRecurrence(s, perms, recurrenceId, meeting.Id);
 
-					var headlines = GetHeadlinesForMeeting(s, perms, recurrenceId);
-					if (closeHeadlines) {
-						foreach (var headline in headlines) {
-							if (headline.CloseTime == null) {
-								headline.CloseDuringMeetingId = meeting.Id;
-								headline.CloseTime = now;
-							}
-							s.Update(headline);
-						}
-					}
-
-
-					//Conclude the forum
-					recurrence = s.Get<L10Recurrence>(recurrenceId);
-					var externalForumNumbers = s.QueryOver<ExternalUserPhone>()
-											.Where(x => x.DeleteTime > now && x.ForModel.ModelId == recurrenceId && x.ForModel.ModelType == ForModel.GetModelType<L10Recurrence>())
-											.List().ToList();
-					if (externalForumNumbers.Any()) {
-						try {
-							var twilioData = Config.Twilio();
-							TwilioClient.Init(twilioData.Sid, twilioData.AuthToken);
-
-							var allMessages = new List<Task<MessageResource>>();
-							foreach (var number in externalForumNumbers) {
-								try {
-									if (twilioData.ShouldSendText) {
-
-										var to = new PhoneNumber(number.UserNumber);
-										var from = new PhoneNumber(number.SystemNumber);
-
-										var url = Config.BaseUrl(null, "/su?id=" + number.LookupGuid);
-										var message = MessageResource.CreateAsync(to, from: from,
-											body: "Thanks for participating in the " + recurrence.Name + "!\nWant a demo of Traction Tools? Click here\n" + url
-										);
-										allMessages.Add(message);
+						foreach (var todo in todos) {
+							if (todo.CreateTime < meeting.StartTime) {
+								if (todo.CompleteTime != null) {
+									todo.CompleteDuringMeetingId = meeting.Id;
+									if (closeTodos) {
+										todo.CloseTime = now;
 									}
-								} catch (Exception e) {
-									log.Error("Particular Forum text was not sent", e);
+									s.Update(todo);
 								}
-
-								number.DeleteTime = now;
-								s.Update(number);
+								todoRatio.Add(todo.CompleteTime != null ? 1 : 0, 1);
 							}
-							await Task.WhenAll(allMessages);
-
-						} catch (Exception e) {
-							log.Error("Forum texts were not sent", e);
 						}
-					}
 
-					//CONNECTIONS AUTOMATICALLY CLOSE with the DeleteTime var
-					//var connectionsToClose = s.QueryOver<L10Recurrence.L10Recurrence_Connection>().Where(x => x.DeleteTime <= DateTime.UtcNow.Add(MeetingHub.PingTimeout).AddMinutes(5) && x.RecurrenceId == recurrenceId).List().ToList();
-					//foreach (var c in connectionsToClose) {
-					//	c.DeleteTime = now.AddMinutes(5);
-					//}
-
-
-					var issuesToClose = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-											.Where(x => x.DeleteTime == null && x.MarkedForClose && x.Recurrence.Id == recurrenceId && x.CloseTime == null)
-											.List().ToList();
-
-					foreach (var i in issuesToClose) {
-						i.CloseTime = now;
-						s.Update(i);
-					}
-
-					meeting.CompleteTime = now;
-					meeting.TodoCompletion = todoRatio;
-
-
-					s.Update(meeting);
-
-					var ids = ratingValues.Select(x => x.Item1).ToArray();
-
-					//Set rating for attendees
-					var attendees = s.QueryOver<L10Meeting.L10Meeting_Attendee>()
-						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
-						.List().ToList();
-					var raters = attendees.Where(x => ids.Any(y => y == x.User.Id));
-					var raterCount = 0m;
-					var raterValue = 0m;
-
-					foreach (var a in raters) {
-						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
-						s.Update(a);
-
-						if (a.Rating != null) {
-							raterCount += 1;
-							raterValue += a.Rating.Value;
+						var headlines = GetHeadlinesForMeeting(s, perms, recurrenceId);
+						if (closeHeadlines) {
+							CloseHeadlines_Unsafe(meeting.Id, s, now, headlines);
 						}
-					}
-
-					meeting.AverageMeetingRating = new Ratio(raterValue, raterCount);
-					s.Update(meeting);
 
 
-					//End all logs 
-					var logs = s.QueryOver<L10Meeting.L10Meeting_Log>()
-						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.EndTime == null)
-						.List().ToList();
-					foreach (var l in logs) {
-						l.EndTime = now;
-						s.Update(l);
-					}
+						//Conclude the forum
+						recurrence = s.Get<L10Recurrence>(recurrenceId);
+						await SendConclusionTextMessages_Unsafe(recurrenceId, recurrence, s, now);
 
-					//Close all sub issues
-					IssueModel issueAlias = null;
-					var issue_recurParents = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-						.Where(x => x.DeleteTime == null && x.CloseTime >= meeting.StartTime && x.CloseTime <= meeting.CompleteTime && x.Recurrence.Id == recurrenceId)
-						//.Select(x => x.Id)
-						.List().ToList();
-					_RecursiveCloseIssues(s, issue_recurParents.Select(x => x.Id).ToList(), now);
+						CloseIssuesOnConclusion_Unsafe(recurrenceId, meeting, s, now);
 
-					recurrence.MeetingInProgress = null;
-					recurrence.SelectedVideoProvider = null;
+						meeting.TodoCompletion = todoRatio;
+						meeting.CompleteTime = now;
+						meeting.SendConcludeEmailTo = sendEmail;
+						s.Update(meeting);
 
-					s.Update(recurrence);
+						var attendees = GetMeetingAttendees_Unsafe(meeting.Id, s);
+						var raters = SetConclusionRatings_Unsafe(ratingValues, meeting, s, attendees);
 
-					//send emails
-					if (sendEmail != ConcludeSendEmail.None) {
-						try {
+						CloseLogsOnConclusion_Unsafe(meeting, s, now);
 
-							var todoList = s.QueryOver<TodoModel>().Where(x =>
-								x.DeleteTime == null &&
-								x.ForRecurrenceId == recurrenceId &&
-								x.CompleteTime == null
-								).List().ToList();
-
-							//All awaitables 
-							//headline.CloseDuringMeetingId = meeting.Id;
-
-							var issuesForTable = issue_recurParents.Where(x => !x.AwaitingSolve);
-
-							var pads = issuesForTable.Select(x => x.Issue.PadId).ToList();
-							pads.AddRange(todoList.Select(x => x.PadId));
-							pads.AddRange(headlines.Select(x => x.HeadlinePadId));
-							var padTexts = await PadAccessor.GetHtmls(pads);
-
-							/////
-							var headlineTable = await HeadlineAccessor.BuildHeadlineTable(headlines.ToList(), "Headlines", recurrenceId, true, padTexts);
-
-							var issueTable = await IssuesAccessor.BuildIssuesSolvedTable(issuesForTable.ToList(), "Issues Solved", recurrenceId, true, padTexts);
-							var todosTable = new DefaultDictionary<long, string>(x => "");
-							var hasTodos = new DefaultDictionary<long, bool>(x => false);
-
-							var allUserIds = todoList.Select(x => x.AccountableUserId).ToList();
-							allUserIds.AddRange(attendees.Select(x => x.User.Id));
-							allUserIds = allUserIds.Distinct().ToList();
-							var allUsers = s.QueryOver<UserOrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(allUserIds).List().ToList();
-
-							var auLu = new DefaultDictionary<long, UserOrganizationModel>(x => null);
-							foreach (var u in allUsers) {
-								auLu[u.Id] = u;
-							}
-
-							foreach (var personTodos in todoList.GroupBy(x => x.AccountableUserId)) {
-								var user = auLu[personTodos.First().AccountableUserId];
-								//var email = user.GetEmail();
-
-								if (personTodos.Any())
-									hasTodos[personTodos.First().AccountableUserId] = true;
-
-								var tzOffset = personTodos.First().AccountableUser.GetTimezoneOffset();
-								var timeFormat = personTodos.First().AccountableUser.GetTimeSettings().DateFormat;
-
-								var todoTable = await TodoAccessor.BuildTodoTable(personTodos.ToList(),tzOffset,timeFormat, "Outstanding To-dos", true, padLookup: padTexts);
+						//Close all sub issues
+						IssueModel issueAlias = null;
+						var issue_recurParents = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+							.Where(x => x.DeleteTime == null && x.CloseTime >= meeting.StartTime && x.CloseTime <= meeting.CompleteTime && x.Recurrence.Id == recurrenceId)
+							.List().ToList();
+						_RecursiveCloseIssues(s, issue_recurParents.Select(x => x.Id).ToList(), now);
 
 
-								var output = new StringBuilder();
+						recurrence.MeetingInProgress = null;
+						recurrence.SelectedVideoProvider = null;
+						s.Update(recurrence);
 
-								output.Append(todoTable.ToString());
-								output.Append("<br/>");
-								todosTable[user.Id] = output.ToString();
-							}
+						var sendEmailTo = new List<L10Meeting.L10Meeting_Attendee>();
 
-
-							IEnumerable<L10Meeting.L10Meeting_Attendee> sendEmailTo = new List<L10Meeting.L10Meeting_Attendee>();
-
+						//send emails
+						if (sendEmail != ConcludeSendEmail.None) {
 							switch (sendEmail) {
 								case ConcludeSendEmail.AllAttendees:
 									sendEmailTo = attendees;
 									break;
 								case ConcludeSendEmail.AllRaters:
-									sendEmailTo = raters;
+									sendEmailTo = raters.ToList();
 									break;
 								default:
 									break;
 							}
+						}
 
-							foreach (var userAttendee in sendEmailTo) {
-								var output = new StringBuilder();
-								var user = auLu[userAttendee.User.Id];
-								var email = user.GetEmail();
-								var toSend = false;
+						ConclusionItems.Save_Unsafe(recurrenceId, meeting.Id, s, todos, headlines, issue_recurParents, sendEmailTo);
 
-								if (hasTodos[userAttendee.User.Id]) {
-									toSend = true;
-								}
+						await Trigger(x => x.Create(s, EventType.ConcludeMeeting, caller, recurrence, message: recurrence.Name + "(" + DateTime.UtcNow.Date.ToShortDateString() + ")"));
 
-								output.Append(todosTable[user.Id]);
-								if (issuesForTable.Any()) {
-									output.Append(issueTable.ToString());
-									toSend = true;
-								}
+						Audit.L10Log(s, caller, recurrenceId, "ConcludeMeeting", ForModel.Create(meeting));
+						tx.Commit();
+						s.Flush();
+					}
+				}
+				if (meeting != null) {
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting), connectionId).concludeMeeting();
+				}
+
+				BackgroundJob.Enqueue(() => SendConclusionEmail_Unsafe(meeting.Id));
+
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.ConcludeMeeting(ses, recurrence, meeting));
+						tx.Commit();
+						s.Flush();
+					}
+				}
+			} catch (Exception e) {
+				int a = 0;
+			}
+		}
 
 
-								if (headlines.Any()) {
-									output.Append(headlineTable.ToString());
-									output.Append("<br/>");
-									toSend = true;
-								}
+
+		public class ConclusionItems {
+			public List<IssueModel.IssueModel_Recurrence> ClosedIssues { get; set; }
+			public List<TodoModel> OutstandingTodos { get; set; }
+			public List<PeopleHeadline> MeetingHeadlines { get; set; }
+			public List<L10Meeting.L10Meeting_Attendee> SendEmailsTo { get; set; }
+			public long MeetingId { get; private set; }
+
+			public static void Save_Unsafe(long recurrenceId, long meetingId, ISession s, List<TodoModel> todos, List<PeopleHeadline> headlines, List<IssueModel.IssueModel_Recurrence> issue_recurParents, List<L10Meeting.L10Meeting_Attendee> sendEmailTo) {
+				//Emails
+				foreach (var emailed in sendEmailTo)
+					s.Save(new L10Meeting.L10Meeting_ConclusionData(recurrenceId, meetingId, ForModel.Create(emailed), L10Meeting.ConclusionDataType.SendEmailSummaryTo));
+
+				//Closed Issues
+				foreach (var issue in issue_recurParents)
+					s.Save(new L10Meeting.L10Meeting_ConclusionData(recurrenceId, meetingId, ForModel.Create(issue), L10Meeting.ConclusionDataType.CompletedIssue));
+
+				//All todos
+				foreach (var todo in todos)
+					s.Save(new L10Meeting.L10Meeting_ConclusionData(recurrenceId, meetingId, ForModel.Create(todo), L10Meeting.ConclusionDataType.OutstandingTodo));
+
+				//All headlines
+				foreach (var headline in headlines)
+					s.Save(new L10Meeting.L10Meeting_ConclusionData(recurrenceId, meetingId, ForModel.Create(headline), L10Meeting.ConclusionDataType.MeetingHeadline));
+
+			}
+
+			public static ConclusionItems Get_Unsafe(ISession s, long meetingId) {
+				var meetingItems = s.QueryOver<L10Meeting.L10Meeting_ConclusionData>().Where(x => x.DeleteTime == null && x.L10MeetingId == meetingId).List().ToList();
+
+				var issueIds = meetingItems.Where(x => x.Type == L10Meeting.ConclusionDataType.CompletedIssue).Select(x => x.ForModel.ModelId).ToArray();
+				var headlineIds = meetingItems.Where(x => x.Type == L10Meeting.ConclusionDataType.MeetingHeadline).Select(x => x.ForModel.ModelId).ToArray();
+				var todoIds = meetingItems.Where(x => x.Type == L10Meeting.ConclusionDataType.OutstandingTodo).Select(x => x.ForModel.ModelId).ToArray();
+				var attendeeIds = meetingItems.Where(x => x.Type == L10Meeting.ConclusionDataType.SendEmailSummaryTo).Select(x => x.ForModel.ModelId).ToArray();
+
+				var issueQ = s.QueryOver<IssueModel.IssueModel_Recurrence>().WhereRestrictionOn(x => x.Id).IsIn(issueIds).Future();
+				var headlineQ = s.QueryOver<PeopleHeadline>().WhereRestrictionOn(x => x.Id).IsIn(headlineIds).Future();
+				var todoQ = s.QueryOver<TodoModel>().WhereRestrictionOn(x => x.Id).IsIn(todoIds).Future();
+				var attendeeQ = s.QueryOver<L10Meeting.L10Meeting_Attendee>().WhereRestrictionOn(x => x.Id).IsIn(attendeeIds).Future();
+
+				return new ConclusionItems() {
+					MeetingId = meetingId,
+					ClosedIssues = issueQ.ToList(),
+					MeetingHeadlines = headlineQ.ToList(),
+					OutstandingTodos = todoQ.ToList(),
+					SendEmailsTo = attendeeQ.ToList()
+				};
+			}
+		}
 
 
-								var mail = Mail.To(EmailTypes.L10Summary, email)
-									.Subject(EmailStrings.MeetingSummary_Subject, recurrence.Name)
-									.Body(EmailStrings.MeetingSummary_Body, user.GetName(), output.ToString(), Config.ProductName(meeting.Organization));
-								if (toSend) {
-									unsent.Add(mail);
-								}
+		private static void CloseHeadlines_Unsafe(long meetingId, ISession s, DateTime now, List<PeopleHeadline> headlines) {
+			foreach (var headline in headlines) {
+				if (headline.CloseTime == null) {
+					headline.CloseDuringMeetingId = meetingId;
+					headline.CloseTime = now;
+				}
+				s.Update(headline);
+			}
+		}
+
+		#region Unsafe conclusion methods
+		private static void CloseLogsOnConclusion_Unsafe(L10Meeting meeting, ISession s, DateTime now) {
+			//End all logs 
+			var logs = s.QueryOver<L10Meeting.L10Meeting_Log>()
+				.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.EndTime == null)
+				.List().ToList();
+			foreach (var l in logs) {
+				l.EndTime = now;
+				s.Update(l);
+			}
+		}
+
+		private static IEnumerable<L10Meeting.L10Meeting_Attendee> SetConclusionRatings_Unsafe(List<Tuple<long, decimal?>> ratingValues, L10Meeting meeting, ISession s, List<L10Meeting.L10Meeting_Attendee> attendees) {
+			var ids = ratingValues.Select(x => x.Item1).ToArray();
+
+			//Set rating for attendees
+			var raters = attendees.Where(x => ids.Any(y => y == x.User.Id));
+			var raterCount = 0m;
+			var raterValue = 0m;
+
+			foreach (var a in raters) {
+				a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
+				s.Update(a);
+
+				if (a.Rating != null) {
+					raterCount += 1;
+					raterValue += a.Rating.Value;
+				}
+			}
+
+			meeting.AverageMeetingRating = new Ratio(raterValue, raterCount);
+			s.Update(meeting);
+			return raters;
+		}
+
+		private static List<L10Meeting.L10Meeting_Attendee> GetMeetingAttendees_Unsafe(long meetingId, ISession s) {
+			return s.QueryOver<L10Meeting.L10Meeting_Attendee>()
+							.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meetingId)
+							.List().ToList();
+		}
+
+		private static void CloseIssuesOnConclusion_Unsafe(long recurrenceId, L10Meeting meeting, ISession s, DateTime now) {
+			var issuesToClose = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+									.Where(x => x.DeleteTime == null && x.MarkedForClose && x.Recurrence.Id == recurrenceId && x.CloseTime == null)
+									.List().ToList();
+			foreach (var i in issuesToClose) {
+				i.CloseTime = now;
+				s.Update(i);
+			}
+		}
+
+		private static async Task SendConclusionTextMessages_Unsafe(long recurrenceId, L10Recurrence recurrence, ISession s, DateTime now) {
+			var externalForumNumbers = s.QueryOver<ExternalUserPhone>()
+														.Where(x => x.DeleteTime > now && x.ForModel.ModelId == recurrenceId && x.ForModel.ModelType == ForModel.GetModelType<L10Recurrence>())
+														.List().ToList();
+			if (externalForumNumbers.Any()) {
+				try {
+					var twilioData = Config.Twilio();
+					TwilioClient.Init(twilioData.Sid, twilioData.AuthToken);
+
+					var allMessages = new List<Task<MessageResource>>();
+					foreach (var number in externalForumNumbers) {
+						try {
+							if (twilioData.ShouldSendText) {
+
+								var to = new PhoneNumber(number.UserNumber);
+								var from = new PhoneNumber(number.SystemNumber);
+
+								var url = Config.BaseUrl(null, "/su?id=" + number.LookupGuid);
+								var message = MessageResource.CreateAsync(to, from: from,
+									body: "Thanks for participating in the " + recurrence.Name + "!\nWant a demo of Traction Tools? Click here\n" + url
+								);
+								allMessages.Add(message);
+							}
+						} catch (Exception e) {
+							log.Error("Particular Forum text was not sent", e);
+						}
+
+						number.DeleteTime = now;
+						s.Update(number);
+					}
+					await Task.WhenAll(allMessages);
+
+				} catch (Exception e) {
+					log.Error("Forum texts were not sent", e);
+				}
+			}
+		}
+		
+		public static string BuildConcludeStatsTable(int tzOffset, Ratio todoCompletion, Ratio meetingRating, DateTime? start, DateTime? end, int issuesSolved) {
+			var table = new StringBuilder();
+			try {
+				var meetingRatingStr = !meetingRating.IsValid() ? "N/A" : "" + (Math.Round(meetingRating.GetValue(0) * 10) / 10m);
+
+				var startTime = "...";
+				var endTime = "...";
+				var duration = "unconcluded";
+
+				var ellapse = "";
+				var unit = "";
+
+				if (start != null)
+					startTime = TimeData.ConvertFromServerTime(start.Value, tzOffset).ToString("HH:mm");
+				if (end != null)
+					endTime   = TimeData.ConvertFromServerTime(end.Value, tzOffset).ToString("HH:mm");
+				
+				if (end != null && start != null) {
+					var durationMins = (end.Value - start.Value).TotalMinutes;
+					var durationSecs = (end.Value - start.Value).TotalSeconds;
+
+					if (durationMins < 0) {
+						duration = "";
+						ellapse = "1";
+						unit = "Minute";
+					} else if (durationMins > 1) {
+						duration = (int)durationMins + " minute".Pluralize(durationMins);
+						ellapse = ""+(int)Math.Max(1,durationMins);
+						unit = "Minute".Pluralize(durationMins);
+					} else {
+						ellapse = "" + (int)Math.Max(1, durationSecs);
+						duration = (int)(durationSecs) + " second".Pluralize(durationSecs);
+						unit = "Second".Pluralize(durationSecs);
+					}
+				}
+
+				table.Append(@"<table width=""100%""><tr><td valign=""middle"" align=""center"">");
+				table.Append(@"<table width=""500px""  border=""0"" cellpadding=""0"" cellspacing=""10"" style=""font-family:Areal, Helvetica, sans-serif"">");
+				table.Append(@"	<tr>");
+				table.Append(@"		<td width=""250px"" height=""100px"" valign=""middle"" align=""center"" style=""background-color:#f8f8f8"">");
+				table.Append(@"			<table cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""font-size:24px;font-weight:bold;color:333333;padding: 5px 0px 0px 0px;"">").Append(issuesSolved).Append("</td></tr></table>");
+				table.Append(@"			<table cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""color:gray;font-size:12px;padding: 5px 0px 0px 0px;"">Issues solved</td></tr></table>");
+				table.Append(@"		</td>");
+				table.Append(@"		<td width=""250px"" height=""100px"" valign=""middle"" align=""center""  style=""background-color:#f8f8f8"">");
+				table.Append(@"			<table cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""font-size:24px;font-weight:bold;color:333333;padding: 5px 0px 0px 0px;"">").Append(todoCompletion.ToPercentage("N/A")).Append("</td></tr></table>");
+				table.Append(@"			<table cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""color:gray;font-size:12px;padding: 5px 0px 0px 0px;"">To-do completion</td></tr></table>");
+				table.Append(@"		</td>");
+				table.Append(@"	</tr>");
+				table.Append(@"	<tr>");
+				table.Append(@"		<td width=""250px""  height=""100px"" valign=""middle"" align=""center""  style=""background-color:#f8f8f8"">");
+				table.Append(@"			<table cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""font-size:24px;font-weight:bold;color:333333;padding: 5px 0px 0px 0px;"">").Append(meetingRatingStr).Append("</td></tr></table>");
+				table.Append(@"			<table cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""color:gray;font-size:12px;padding: 5px 0px 0px 0px;"">Average Rating</td></tr></table>");
+				table.Append(@"		</td>");
+				table.Append(@"		<td width=""250px""  height=""100px"" valign=""middle"" align=""center""  style=""background-color:#f8f8f8"">");
+				table.Append(@"			<table cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""font-size:24px;font-weight:bold;color:333333;padding: 5px 0px 0px 0px;"">").Append(ellapse).Append("</td></tr></table>");
+				table.Append(@"			<table cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""color:gray;font-size:12px;padding: 5px 0px 0px 0px;"">").Append(unit).Append("</td></tr></table>");
+				//table.Append(@"		<table cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""font-size:24px;font-weight:bold;color:333333;padding: 5px 0px 0px 0px;"">").Append(startTime).Append(" - ").Append(endTime).Append("</td></tr></table>");
+				//table.Append(@"		<table cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""color:gray;font-size:12px;padding: 5px 0px 0px 0px;"">").Append(duration).Append("</td></tr></table>");
+				table.Append(@"		</td>");
+				table.Append(@"	</tr>");
+				table.Append(@"</table>");
+				table.Append(@"</td></tr></table>");
+
+			} catch (Exception e) {
+				log.Error(e);
+			}
+
+			return table.ToString();
+		}
+
+		[Queue("conclusionemail")]/*Queues must be lowecase alphanumeric. You must add queues to BackgroundJobServerOptions in Startup.auth.cs*/
+		[AutomaticRetry(Attempts = 0,OnAttemptsExceeded =AttemptsExceededAction.Fail)]
+		public static async Task SendConclusionEmail_Unsafe(long meetingId) {
+
+			var unsent = new List<Mail>();
+			long recurrenceId = 0;
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					try {
+						var meeting = s.Get<L10Meeting>(meetingId);
+						recurrenceId = meeting.L10RecurrenceId;
+
+						var recurrence = s.Get<L10Recurrence>(recurrenceId);
+						var attendees = GetMeetingAttendees_Unsafe(meetingId, s);
+
+						var conclusionItems = ConclusionItems.Get_Unsafe(s, meetingId);
+						var headlines = conclusionItems.MeetingHeadlines;
+						var todoList = conclusionItems.OutstandingTodos;//s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.ForRecurrenceId == recurrenceId && x.CompleteTime == null).List().ToList();
+						var issuesForTable = conclusionItems.ClosedIssues.Where(x => !x.AwaitingSolve);
+						var sendEmailTo = conclusionItems.SendEmailsTo;
+												
+						//All awaitables 
+						//headline.CloseDuringMeetingId = meeting.Id;
+
+
+						var pads = issuesForTable.Select(x => x.Issue.PadId).ToList();
+						pads.AddRange(todoList.Select(x => x.PadId));
+						pads.AddRange(headlines.Select(x => x.HeadlinePadId));
+						var padTexts = await PadAccessor.GetHtmls(pads);
+
+						/////
+						var headlineTable = await HeadlineAccessor.BuildHeadlineTable(headlines.ToList(), "Headlines", recurrenceId, true, padTexts);
+
+						var issueTable = await IssuesAccessor.BuildIssuesSolvedTable(issuesForTable.ToList(), "Issues Solved", recurrenceId, true, padTexts);
+						var todosTable = new DefaultDictionary<long, string>(x => "");
+						var hasTodos = new DefaultDictionary<long, bool>(x => false);
+
+						var allUserIds = todoList.Select(x => x.AccountableUserId).ToList();
+						allUserIds.AddRange(attendees.Select(x => x.User.Id));
+						allUserIds = allUserIds.Distinct().ToList();
+						var allUsers = s.QueryOver<UserOrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(allUserIds).List().ToList();
+
+						var auLu = new DefaultDictionary<long, UserOrganizationModel>(x => null);
+						foreach (var u in allUsers) {
+							auLu[u.Id] = u;
+						}
+
+						foreach (var personTodos in todoList.GroupBy(x => x.AccountableUserId)) {
+							var user = auLu[personTodos.First().AccountableUserId];
+							//var email = user.GetEmail();
+
+							if (personTodos.Any())
+								hasTodos[personTodos.First().AccountableUserId] = true;
+
+							var tzOffset = personTodos.First().AccountableUser.GetTimezoneOffset();
+							var timeFormat = personTodos.First().AccountableUser.GetTimeSettings().DateFormat;
+
+							var todoTable = await TodoAccessor.BuildTodoTable(personTodos.ToList(), tzOffset, timeFormat, "Outstanding To-dos", true, padLookup: padTexts);
+
+
+							var output = new StringBuilder();
+
+							output.Append(todoTable.ToString());
+							output.Append("<br/>");
+							todosTable[user.Id] = output.ToString();
+						}
+
+						foreach (var userAttendee in sendEmailTo) {
+							var output = new StringBuilder();
+							var user = auLu[userAttendee.User.Id];
+							var email = user.GetEmail();
+							var toSend = false;
+
+							var concludeStats = BuildConcludeStatsTable(user.GetTimezoneOffset(), meeting.TodoCompletion, meeting.AverageMeetingRating, meeting.StartTime, meeting.CompleteTime, conclusionItems.ClosedIssues.Count);
+
+							output.Append(concludeStats);
+							output.Append("<br/>");
+
+							if (hasTodos[userAttendee.User.Id]) {
+								toSend = true;
 							}
 
-						} catch (Exception e) {
-							log.Error("Emailer issue(1):" + recurrence.Id, e);
+							output.Append(todosTable[user.Id]);
+							if (issuesForTable.Any()) {
+								output.Append(issueTable.ToString());
+								toSend = true;
+							}
+
+
+							if (headlines.Any()) {
+								output.Append(headlineTable.ToString());
+								output.Append("<br/>");
+								toSend = true;
+							}
+
+
+							var mail = Mail.To(EmailTypes.L10Summary, email)
+								.Subject(EmailStrings.MeetingSummary_Subject, recurrence.Name)
+								.Body(EmailStrings.MeetingSummary_Body, user.GetName(), output.ToString(), Config.ProductName(recurrence.Organization));
+							if (toSend) {
+								unsent.Add(mail);
+							}
 						}
+
+					} catch (Exception e) {
+						log.Error("Emailer issue(1):" + recurrenceId, e);
 					}
 
-					await Trigger(x => x.Create(s, EventType.ConcludeMeeting, caller, recurrence, message: recurrence.Name + "(" + DateTime.UtcNow.Date.ToShortDateString() + ")"));
-
-					Audit.L10Log(s, caller, recurrenceId, "ConcludeMeeting", ForModel.Create(meeting));
 					tx.Commit();
 					s.Flush();
 				}
 			}
-			if (meeting != null) {
-				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-				hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting), connectionId).concludeMeeting();
-			}
 
 			try {
-				if (sendEmail != ConcludeSendEmail.None && unsent != null) {
+				if (unsent.Any()) {
 					await Emailer.SendEmails(unsent);
 				}
 			} catch (Exception e) {
 				log.Error("Emailer issue(2):" + recurrenceId, e);
 			}
 
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.ConcludeMeeting(ses, recurrence, meeting));
-					tx.Commit();
-					s.Flush();
-				}
-			}
 		}
 
+		#endregion
 
 		public async static Task UpdateRating(UserOrganizationModel caller, List<System.Tuple<long, decimal?>> ratingValues, long meetingId, string connectionId) {
 
@@ -783,7 +955,7 @@ namespace RadialReview.Accessors {
 					//var perms = PermissionsUtility.
 					if (recurrenceId == -3) {
 						var recurs = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null)
-							.WhereRestrictionOn(x=>x.User.Id).IsIn(caller.UserIds)
+							.WhereRestrictionOn(x => x.User.Id).IsIn(caller.UserIds)
 							.Select(x => x.L10Recurrence.Id)
 							.List<long>().ToList();
 						//Hey.. this doesnt grab all visible meetings.. it should be adjusted when we know that GetVisibleL10Meetings_Tiny is optimized

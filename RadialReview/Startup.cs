@@ -13,7 +13,7 @@ namespace RadialReview
 
             ConfigureAuth(app);
 	        
-			var redis = Config.Redis("Radial-SignalR");
+			var redis = Config.RedisSignalR("Radial-SignalR");
             //var redisConfig = new RedisScaleoutConfiguration(redis.Server, redis.Port, redis.Password, redis.ChannelName) {
             //    QueueBehavior =  QueuingBehavior.
             //};

@@ -677,7 +677,7 @@ namespace RadialReview.Utilities {
 			public string ChannelName { get; set; }
 		}
 
-		public static RedisConfig Redis(string channel) {
+		public static RedisConfig RedisSignalR(string channel) {
 			string server;
 			switch (GetEnv()) {
 				case Env.local_mysql:
@@ -702,15 +702,34 @@ namespace RadialReview.Utilities {
 				Password = GetAppSetting("RedisSignalR_Password", null),
 				Port = GetAppSetting("RedisSignalR_Port", "6379").ToInt()
 			};
-			/*
-            switch (GetEnv())
-            {
-                case Env.local_mysql: return GetAppSetting("RedisSignalR-server",null);
-                case Env.local_sqlite: return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
-                case Env.production: return @"C:\inetpub\logs\LogFiles\W3SVC1\";
-                default: throw new ArgumentOutOfRangeException();
-            }*/
 		}
+
+		//public static RedisConfig RedisHangfire(string channel) {
+		//	string server;
+		//	switch (GetEnv()) {
+		//		case Env.local_mysql:
+		//			server = "127.0.0.1";
+		//			break;
+		//		case Env.local_sqlite:
+		//			server = "127.0.0.1";
+		//			break;
+		//		case Env.production:
+		//			server = GetAppSetting("RedisSignalR_Server", null);
+		//			break;
+		//		case Env.local_test_sqlite:
+		//			server = "127.0.0.1";
+		//			break;
+		//		default:
+		//			throw new ArgumentOutOfRangeException();
+		//	}
+
+		//	return new RedisConfig() {
+		//		Server = server,
+		//		ChannelName = channel,
+		//		Password = GetAppSetting("RedisSignalR_Password", null),
+		//		Port = GetAppSetting("RedisSignalR_Port", "6379").ToInt()
+		//	};
+		//}
 
 		public class TwilioData {
 			public string Sid { get; set; }

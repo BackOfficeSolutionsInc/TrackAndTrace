@@ -13,6 +13,7 @@ using System.Linq;
 using MigraDoc.DocumentObjectModel.Tables;
 using static RadialReview.Accessors.PdfAccessor;
 using System.Threading.Tasks;
+using RadialReview.Models.Angular.Rocks;
 
 namespace TractionTools.Tests.PDF {
 	[TestClass]
@@ -414,7 +415,7 @@ namespace TractionTools.Tests.PDF {
 
 		[TestMethod]
 		[TestCategory("PDF")]
-		public void TestSectionOptimzer_Vto() {
+		public void TestSectionOptimzer_Vto_Vision() {
 
 			var vto = new AngularVTO();
 			var j = 0;
@@ -473,8 +474,22 @@ namespace TractionTools.Tests.PDF {
 					ll.Add(new AngularVtoString() { Data = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", });
 				}
 
+
+
+
+
 				vto.ThreeYearPicture.LooksLike = ll.Take(pd.pic);
 				vto.Name = "Awesome VTO";
+
+				var issuesList = new List<AngularVtoString>();
+				for (var i = 0; i < 10; i++) {
+					issuesList.Add(new AngularVtoString() { Data = "It looks like a big company with lots of employees and benefits for the workers", });
+					issuesList.Add(new AngularVtoString() { Data = "There are lots of people", });
+					issuesList.Add(new AngularVtoString() { Data = "and customers", });
+					issuesList.Add(new AngularVtoString() { Data = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", });
+				}
+
+				vto.Issues = issuesList.Take(pd.pic); 
 
 				//PdfAccessor.AddVtoVision_Intermediate(doc, vto, null);
 
@@ -501,7 +516,97 @@ namespace TractionTools.Tests.PDF {
 				foreach (var s in settings) {
 					var doc = new Document();
 					PdfAccessor.AddVtoVision(doc, vto, null, s);
+					PdfAccessor.AddVtoTraction(doc, vto, null, s);
 					Save(doc, "TestSectionOptimzer_Vto_" + j + "+TYP"+pd.pic+"+Strat"+pd.strat+(pd.colors?"_colors":"")+".pdf");
+					j++;
+				}
+			}
+
+		}
+		[TestMethod]
+		[TestCategory("PDF")]
+		public void TestSectionOptimzer_Vto_Traction() {
+
+			var vto = new AngularVTO();
+			var j = 0;
+
+			var pageDir = new[] {
+				new { cv = 4,   pic = 40, strat = 3, colors= true  , rocks =40 , goals=40 , includeLong = false},
+				new { cv = 4,	pic = 40, strat = 3, colors= false , rocks =40 , goals=10 , includeLong = true},
+				new { cv = 16,	pic = 40, strat = 3, colors= false , rocks =10 , goals=40 , includeLong = true},
+				new { cv = 4,	pic = 10, strat = 2, colors= false , rocks =10 , goals=10 , includeLong = true},
+				new { cv = 4,	pic = 10, strat = 2, colors= false , rocks =40 , goals=10 , includeLong = true},
+				new { cv = 4,   pic = 10, strat = 3, colors= true  , rocks =10 , goals=40 , includeLong = true},
+			};
+			foreach (var pd in pageDir) {
+				
+				vto.Name = "Awesome VTO";
+
+				var issuesList = new List<AngularVtoString>();
+				for (var i = 0; i < 10; i++) {
+					if (pd.includeLong)
+						issuesList.Add(new AngularVtoString() { Data = "It looks like a big company with lots of employees and benefits for the workers", });
+					issuesList.Add(new AngularVtoString() { Data = "There are lots of people", });
+					issuesList.Add(new AngularVtoString() { Data = "and customers", });
+					if (pd.includeLong)
+						issuesList.Add(new AngularVtoString() { Data = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", });
+				}
+
+				var rockList = new List<AngularVtoRock>();
+				for (var i = 0; i < 10; i++) {
+					if (pd.includeLong)
+						rockList.Add(new AngularVtoRock() {Rock = new AngularRock() { Name = "It looks like a big company with lots of employees and benefits for the workers", } });
+					rockList.Add(new AngularVtoRock() { Rock = new AngularRock() { Name = "There are lots of people", } });
+					rockList.Add(new AngularVtoRock() { Rock = new AngularRock() { Name = "and customers", } });
+					if (pd.includeLong)
+						rockList.Add(new AngularVtoRock() { Rock = new AngularRock() { Name = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", } });
+				}
+
+
+				var goalsList = new List<AngularVtoString>();
+				for (var i = 0; i < 10; i++) {
+					if (pd.includeLong)
+						goalsList.Add(new AngularVtoString() { Data = "It looks like a big company with lots of employees and benefits for the workers", });
+					goalsList.Add(new AngularVtoString() { Data = "There are lots of people", });
+					goalsList.Add(new AngularVtoString() { Data = "and customers", });
+					if (pd.includeLong)
+						goalsList.Add(new AngularVtoString() { Data = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", });
+				}
+
+				vto.Issues = issuesList.Take(pd.pic);
+				vto.QuarterlyRocks = new AngularQuarterlyRocks() {
+					Rocks = rockList.Take(pd.rocks)
+				};
+				vto.OneYearPlan = new AngularOneYearPlan() {
+					GoalsForYear = goalsList.Take(pd.goals)
+				};
+
+				//PdfAccessor.AddVtoVision_Intermediate(doc, vto, null);
+
+				VtoPdfSettings[] settings = new VtoPdfSettings[] { null };
+
+				if (pd.colors) {
+					settings = new[] {
+						null,
+						new VtoPdfSettings() {
+							FillColor = Color.FromArgb(100, 239, 118, 34),
+							BorderColor = Color.FromArgb(255, 239, 118, 34),
+							ImageUrl = "https://s3.amazonaws.com/Radial/base/Logos/TRACTION-TOOLS_Signature.png"
+						}, new VtoPdfSettings() {
+							FillTextColor = Colors.Red,
+							FillColor = Color.FromArgb(255, 118, 239, 34),
+							ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/All.png"
+						}, new VtoPdfSettings() {
+							FillColor = Color.FromArgb(255, 34, 118, 239),
+							ImageUrl = "https://cataas.com/cat?height=150&width=100"
+						}
+					};
+				}
+
+				foreach (var s in settings) {
+					var doc = new Document();
+					PdfAccessor.AddVtoTraction(doc, vto, null, s);
+					Save(doc, "TestSectionOptimzer_Vto_Traction_" + j + "+TYP" + pd.pic + "+Strat" + pd.strat + (pd.colors ? "_colors" : "") + ".pdf");
 					j++;
 				}
 			}

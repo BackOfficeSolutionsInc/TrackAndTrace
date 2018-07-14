@@ -75,13 +75,17 @@ namespace RadialReview.Utilities {
                 }
 
 
-                //Copy data
-                for (var j = 0; j < csv.Columns.Count; j++) {
-                    SetCell(sl, csv.Columns[j], 0, j + 1);
+				//Copy data
+				var columns = csv.GetColumnsCopy();
+				var rows = csv.GetRowsCopy();
+
+
+				for (var j = 0; j < columns.Count; j++) {
+                    SetCell(sl, columns[j], 0, j + 1);
                 }
-                for (var i = 0; i < csv.Rows.Count; i++) {
-                    SetCell(sl, csv.Rows[i], i + 1, 0);
-                    for (var j = 0; j < csv.Columns.Count; j++) {
+                for (var i = 0; i < rows.Count; i++) {
+                    SetCell(sl, rows[i], i + 1, 0);
+                    for (var j = 0; j < columns.Count; j++) {
                         var cell = csv.Get(i, j);
                         SetCell(sl, cell, i+1, j+1);
                     }

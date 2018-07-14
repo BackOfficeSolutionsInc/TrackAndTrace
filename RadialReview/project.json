@@ -16,6 +16,7 @@
     "Google.Apis.Urlshortener.v1": "1.28.0.138",
     "Hangfire": "1.6.19",
     "Hangfire.MySqlStorage": "1.0.6",
+    "Hangfire.Pro.Redis": "2.2.1",
     "Iesi.Collections": "4.0.2",
     "ImageResizer": "4.1.9",
     "jQuery": "3.1.1",

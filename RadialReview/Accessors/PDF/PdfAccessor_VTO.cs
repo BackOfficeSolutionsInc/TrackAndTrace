@@ -1384,22 +1384,28 @@ namespace RadialReview.Accessors {
 		//	}
 		//}
 
-		private static async Task AddVtoTraction(Document doc, AngularVTO vto, string dateformat, VtoPdfSettings settings) {
-			Unit baseHeight = Unit.FromInch(5.1);//5.15
+		public static async Task AddVtoTraction(Document doc, AngularVTO vto, string dateformat, VtoPdfSettings settings) {
+			settings =  settings ?? new VtoPdfSettings();
+			Unit baseHeight = Unit.FromInch(5.0);//5.15
 			var vt = await AddPage_VtoTraction(doc, vto, settings, baseHeight);
 			Cell oneYear = vt.oneYear, quarterlyRocks = vt.quarterlyRocks, issuesList = vt.issuesList;
 			Table issueTable = vt.issueTable, rockTable = vt.rockTable, goalTable = vt.goalTable;
+			
 
+			#region One Year Plan
 			Unit fs = 10;
 			var goalObjects = new List<DocumentObject>();
 			var goalsSplits = new List<Page>();
 			var goalRows = new List<Row>();
 			var goalParagraphs = new List<Paragraph>();
 			{
-				var goals = vto.OneYearPlan.GoalsForYear.Select(x => x.Data).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+				var oneYearPlan = vto.OneYearPlan ?? new AngularOneYearPlan();
+				oneYearPlan.GoalsForYear = oneYearPlan.GoalsForYear ?? new List<AngularVtoString>();
+
+				var goals = oneYearPlan.GoalsForYear.Select(x => x.Data).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
 
 				//ResizeToFit(oneYear, Unit.FromInch(3.47), Unit.FromInch(5.15), (cell, fs) => {
-				goalObjects.AddRange(AddVtoSectionHeader(vto.OneYearPlan, fs, dateformat));
+				goalObjects.AddRange(AddVtoSectionHeader(oneYearPlan, fs, dateformat));
 				var gfy = new Paragraph();
 
 				gfy.Format.Font.Size = fs;
@@ -1420,11 +1426,12 @@ namespace RadialReview.Accessors {
 				//	return p;
 				//});
 
+				var minRowHeight = Unit.FromInch(0.2444 * fs.Point / 10);
 
 				for (var i = 0; i < goals.Count; i++) {
 					var r = new Row();
 					//rockTable.AddRow();
-					r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
+					r.Height = minRowHeight;
 					r.HeightRule = RowHeightRule.AtLeast;
 					var p = r.Cells[0].AddParagraph("" + (i + 1) + ".");
 					p.Format.SpaceBefore = Unit.FromPoint(2);
@@ -1440,22 +1447,26 @@ namespace RadialReview.Accessors {
 				}
 
 				var headerSize = GetSize(goalObjects, Unit.FromInch(3.47));
-				Unit pg1Height = baseHeight - headerSize.Height + Unit.FromInch(0.51);
-				goalsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, goalParagraphs);
+				Unit pg1Height = baseHeight - headerSize.Height;//+ Unit.FromInch(0.51);
+				goalsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, goalParagraphs, elementAtLeast : minRowHeight);
 
 
 				goalObjects.Add(goalTable);
 			}
-
+			#endregion
+			#region Rocks
 			var rockObjects = new List<DocumentObject>();
 			var rockSplits = new List<Page>();
 			var rockRows = new List<Row>();
 			var rockParagraphs = new List<Paragraph>();
 			{
-				var rocks = vto.QuarterlyRocks.Rocks.Where(x => !String.IsNullOrWhiteSpace(x.Rock.Name)).ToList();
+				var vtoQuarterlyRocks = vto.QuarterlyRocks ?? new AngularQuarterlyRocks();
+				vtoQuarterlyRocks.Rocks = vtoQuarterlyRocks.Rocks ?? new List<AngularVtoRock>();
+
+				var rocks = vtoQuarterlyRocks.Rocks.Where(x => !String.IsNullOrWhiteSpace(x.Rock.Name)).ToList();
 				quarterlyRocks.Format.LeftIndent = Unit.FromInch(.095);
 				//ResizeToFit(quarterlyRocks, Unit.FromInch(3.47), Unit.FromInch(5.15), (cell, fs) => {
-				rockObjects.AddRange(AddVtoSectionHeader(vto.QuarterlyRocks, fs, dateformat));
+				rockObjects.AddRange(AddVtoSectionHeader(vtoQuarterlyRocks, fs, dateformat));
 				var gfy = new Paragraph();
 
 				gfy.Format.Font.Size = fs;
@@ -1474,10 +1485,11 @@ namespace RadialReview.Accessors {
 				//});
 
 
+				var minRowHeight = Unit.FromInch(0.2444 * fs.Point / 10);
 
 				for (var i = 0; i < rocks.Count; i++) {
 					var r = new Row();
-					r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
+					r.Height = minRowHeight;
 					r.HeightRule = RowHeightRule.AtLeast;
 					var p = r.Cells[0].AddParagraph("" + (i + 1) + ".");
 					p.Format.SpaceBefore = Unit.FromPoint(2);
@@ -1502,16 +1514,20 @@ namespace RadialReview.Accessors {
 				var headerSize = GetSize(rockObjects, Unit.FromInch(3.47));
 				//Unit pg1Height = Unit.FromInch(baseHeight - Unit.FromPoint(headerSize.Height*.166).Inch);
 				Unit pg1Height = baseHeight - headerSize.Height;
-				rockSplits = SplitHeights(Unit.FromInch(2.6), new[] { pg1Height, (baseHeight) }, rockParagraphs);
+				rockSplits = SplitHeights(Unit.FromInch(2.6), new[] { pg1Height, (baseHeight) }, rockParagraphs, elementAtLeast: minRowHeight);
 				rockObjects.Add(rockTable);
 
 			}
+			#endregion
+			#region Issues
 			var issuesObjects = new List<DocumentObject>();
 			var issueSplits = new List<Page>();
 			var issueRows = new List<Row>();
 			var issueParagraph = new List<Paragraph>();
 			{
-				var issues = vto.Issues.Select(x => x.Data).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+				var vtoIssues = vto.Issues ?? new List<AngularVtoString>();
+
+				var issues = vtoIssues.Select(x => x.Data).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
 
 				//issuesList.Elements.AddParagraph(" ").SpaceBefore = Unit.FromInch(0.095);
 				//ResizeToFit(issuesList, Unit.FromInch(3.47), Unit.FromInch(5.15), (cell, fs) => {
@@ -1534,18 +1550,19 @@ namespace RadialReview.Accessors {
 					rspace.Borders.Right.Visible = false;
 					rspace.Borders.Top.Visible = false;
 
+					var minRowHeight = Unit.FromInch(0.2444 * fs.Point / 10);
 					for (var i = 0; i < issues.Count; i++) {
 						var r = new Row();
-						r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
+						r.Height = minRowHeight;
 						r.HeightRule = RowHeightRule.AtLeast;
 						var p = r.Cells[0].AddParagraph("" + (i + 1) + ".");
-						p.Format.SpaceBefore = Unit.FromPoint(2);
+						//p.Format.SpaceBefore = Unit.FromPoint(2);
 						p.Format.Font.Size = fs;
 						p.Format.Font.Name = "Arial Narrow";
 						p.Format.Alignment = ParagraphAlignment.Right;
 						p = r.Cells[1].AddParagraph(issues[i] ?? "");
 						issueParagraph.Add(p);
-						p.Format.SpaceBefore = Unit.FromPoint(2);
+						//p.Format.SpaceBefore = Unit.FromPoint(2);
 						p.Format.Font.Size = fs;
 						p.Format.Font.Name = "Arial Narrow";
 						issueRows.Add(r);
@@ -1553,12 +1570,15 @@ namespace RadialReview.Accessors {
 
 					//var rowHeights = GetRowHeights(issueRows, Unit.FromInch(3));
 					var extraHeight = 0.51;
+					//Unit issueHeight1 = baseHeight - Unit.FromInch(0.095 * 3);
+					Unit issueHeight = baseHeight - Unit.FromInch(0.095 * 2);
 
-					issueSplits = SplitHeights(Unit.FromInch(3), new[] { (baseHeight), (baseHeight) }, issueParagraph, null /*x => x.Cells[1]*/, extraHeight);
+					issueSplits = SplitHeights(Unit.FromInch(3.0), new[] { (issueHeight), (issueHeight) }, issueParagraph, null /*x => x.Cells[1]*/, extraHeight, elementAtLeast: minRowHeight);
 					issuesObjects.Add(issueTable);
 				}
 
 			}
+			#endregion
 
 			AppendAll(oneYear, goalObjects);
 			AppendAll(quarterlyRocks, rockObjects);
@@ -1623,6 +1643,10 @@ namespace RadialReview.Accessors {
 
 			var section = await AddVtoPage(doc, vto._TractionPageName ?? vto.Name ?? "", "TRACTION", settings);
 
+
+			var oneYearPlan = vto.OneYearPlan ?? new AngularOneYearPlan();
+			var quarterlyRocks = vto.QuarterlyRocks ?? new AngularQuarterlyRocks();
+
 			var table = section.AddTable();
 			table.AddColumn(Unit.FromInch(3.47));
 			table.AddColumn(Unit.FromInch(3.47));
@@ -1630,9 +1654,10 @@ namespace RadialReview.Accessors {
 			table.Borders.Color = TableBlack;
 
 			var tractionHeader = table.AddRow();
+			tractionHeader.KeepWith = 1;
 			tractionHeader.Shading.Color = TableGray;
 			tractionHeader.Height = Unit.FromInch(0.55);
-			var paragraph = tractionHeader.Cells[0].AddParagraph(vto.OneYearPlan.OneYearPlanTitle ?? "1-YEAR PLAN");
+			var paragraph = tractionHeader.Cells[0].AddParagraph(oneYearPlan.OneYearPlanTitle ?? "1-YEAR PLAN");
 			paragraph.Format.Font.Name = "Arial Narrow";
 			paragraph.Format.Font.Size = 14;
 			paragraph.Format.Font.Bold = true;
@@ -1642,7 +1667,7 @@ namespace RadialReview.Accessors {
 			//tractionHeader.Cells[0].Format.Shading.Color = TableGray;
 
 
-			paragraph = tractionHeader.Cells[1].AddParagraph(vto.QuarterlyRocks.RocksTitle ?? "ROCKS");
+			paragraph = tractionHeader.Cells[1].AddParagraph(quarterlyRocks.RocksTitle ?? "ROCKS");
 			paragraph.Format.Font.Name = "Arial Narrow";
 			paragraph.Format.Font.Size = 14;
 			paragraph.Format.Font.Bold = true;
@@ -1661,6 +1686,7 @@ namespace RadialReview.Accessors {
 			var tractionData = table.AddRow();
 
 			tractionData.Height = height;
+			
 			o.oneYear = tractionData.Cells[0];
 			o.quarterlyRocks = tractionData.Cells[1];
 			o.issuesList = tractionData.Cells[2];

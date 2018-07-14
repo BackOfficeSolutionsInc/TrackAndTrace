@@ -2330,7 +2330,7 @@ namespace RadialReview.Accessors {
 			futureDate.Format.Font.Name = "Arial Narrow";
 			futureDate.Format.Font.Size = fontSize;
 			futureDate.AddFormattedText("Future Date: ", TextFormat.Bold);
-			if (section.FutureDate.HasValue)
+			if (section!=null && section.FutureDate.HasValue)
 				futureDate.AddFormattedText(section.FutureDate.Value.ToString(dateformat), TextFormat.NotBold);
 
 
@@ -2340,7 +2340,7 @@ namespace RadialReview.Accessors {
 			revenue.AddFormattedText("Revenue: ", TextFormat.Bold);
 			revenue.Format.Font.Name = "Arial Narrow";
 			revenue.Format.Font.Size = fontSize;
-			if (section.Revenue != null) {
+			if (section != null && section.Revenue != null) {
 				//revenue.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Revenue.Value), TextFormat.NotBold);
 				revenue.AddFormattedText(section.Revenue, TextFormat.NotBold);
 			}
@@ -2351,7 +2351,7 @@ namespace RadialReview.Accessors {
 			profit.AddFormattedText("Profit: ", TextFormat.Bold);
 			profit.Format.Font.Name = "Arial Narrow";
 			profit.Format.Font.Size = fontSize;
-			if (section.Profit != null) {
+			if (section != null && section.Profit != null) {
 				//profit.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Profit.Value), TextFormat.NotBold);
 				profit.AddFormattedText(section.Profit, TextFormat.NotBold);
 			}
@@ -2363,7 +2363,7 @@ namespace RadialReview.Accessors {
 			measurables.Format.Font.Size = fontSize;
 			o.Add(measurables);
 			measurables.AddFormattedText("Measurables: ", TextFormat.Bold);
-			if (section.Measurables != null)
+			if (section != null && section.Measurables != null)
 				measurables.AddFormattedText(section.Measurables, TextFormat.NotBold);
 
 			return o;
@@ -2430,10 +2430,10 @@ namespace RadialReview.Accessors {
 						family = fontName;
 					var size = GetSize(ctx, e, family, fontSize, maxWidth);
 					s.Width = Math.Max(s.Width, size.Width);
-					s.Height += size.Height;
+					s.Height +=  size.Height;
 				}
 				s.Width += (para.Format.LeftIndent + para.Format.RightIndent);//(para.Format.LeftIndent.Inch + para.Format.RightIndent.Inch) * 6.0225;
-				s.Height += (para.Format.SpaceBefore + para.Format.SpaceAfter);// (para.Format.SpaceBefore.Inch + para.Format.SpaceAfter.Inch) * 6.0225;
+				s.Height += (para.Format.SpaceBefore + para.Format.SpaceAfter)+2;// (para.Format.SpaceBefore.Inch + para.Format.SpaceAfter.Inch) * 6.0225;
 			} else if (o is Table) {
 				var table = (Table)o;
 				var family = table.Format.Font.Name;
@@ -2567,14 +2567,14 @@ namespace RadialReview.Accessors {
 			return family;
 		}
 
-		public static List<ItemHeight> GetHeights<T>(Unit width, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null, Unit? extraHeight = null) where T : DocumentObject {
+		public static List<ItemHeight> GetHeights<T>(Unit width, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null, Unit? extraHeight = null, Unit? elementAtLeast = null) where T : DocumentObject {
 			var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, Unit.FromInch(1000)), XGraphicsUnit.Inch, XPageDirection.Downwards);
 			return paragraphs.Select(xx => {
 				DocumentObject x = (selector == null) ? xx : selector(xx);
 				var f = GetFontFamily(x);
 				var s = GetFontSize(x);
 				var size = GetSize(ctx, x, f, s, width);
-				Unit totalHeight = size.Height + (extraHeight ?? new Unit(0.0));
+				Unit totalHeight = Math.Max(size.Height + (extraHeight ?? new Unit(0.0)), elementAtLeast ?? Unit.FromPoint(0));
 				return new ItemHeight() { Item = x, Height = totalHeight };
 			}).ToList();
 		}
@@ -2601,12 +2601,12 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static List<Page> SplitHeights<T>(Unit width, Unit[] heights, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null, Unit? extraHeight = null, Func<FurtherAdjustments, ItemHeight> stillTooBig = null) where T : DocumentObject {
+		public static List<Page> SplitHeights<T>(Unit width, Unit[] heights, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null, Unit? extraHeight = null, Func<FurtherAdjustments, ItemHeight> stillTooBig = null, Unit? elementAtLeast = null) where T : DocumentObject {
 			Unit cumulative = 0;
 			var splits = new List<Page>();
 			var curHeight = heights[0];
 			var page = 0;
-			var heightObj = GetHeights(width, paragraphs, selector, extraHeight);
+			var heightObj = GetHeights(width, paragraphs, selector, extraHeight, elementAtLeast);
 
 			var curSplit = new List<ItemHeight>();
 			for (var i = 0; i < heightObj.Count(); i++) {

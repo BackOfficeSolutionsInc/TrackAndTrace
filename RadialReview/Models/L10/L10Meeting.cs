@@ -12,6 +12,8 @@ using RadialReview.Models.Scorecard;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.VideoConference;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
+using Newtonsoft.Json;
+using RadialReview.Models.L10.VM;
 
 namespace RadialReview.Models.L10 {
 	public class L10Meeting : ILongIdentifiable, IDeletable {
@@ -53,6 +55,7 @@ namespace RadialReview.Models.L10 {
 
 		public virtual bool Preview { get; set; }
 		public virtual Ratio AverageMeetingRating { get; set; }
+		public virtual ConcludeSendEmail SendConcludeEmailTo { get; set; }
 
 		public L10Meeting() {
 			_MeetingAttendees = new List<L10Meeting_Attendee>();
@@ -72,6 +75,7 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.DeleteTime);
 				Map(x => x.StartTime);
 				Map(x => x.CompleteTime);
+				Map(x => x.SendConcludeEmailTo).CustomType<ConcludeSendEmail>();
 				Map(x => x.OrganizationId).Column("OrganizationId");
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();
 				Map(x => x.L10RecurrenceId).Column("L10RecurrenceId");
@@ -270,6 +274,82 @@ namespace RadialReview.Models.L10 {
 
 				}
 			}
+		}
+
+		public enum ConclusionDataType {
+			CompletedIssue,
+			/// <summary>
+			/// Todo visible during meeting
+			/// </summary>
+			OutstandingTodo,
+			MeetingHeadline,
+			SendEmailSummaryTo,
+
+			/* Use L10Meeting for these*/
+			//AvgMeetingRating,
+			//Duration,
+			//StartTime,
+			//EndTime,
+			//TodoCompletionPercentage,
+		}
+
+		public class L10Meeting_ConclusionData : IHistorical {
+			public virtual long Id { get; set; }
+
+			public virtual long L10RecurrenceId { get; set; }
+			public virtual long L10MeetingId { get; set; }
+			public virtual ForModel ForModel { get; set; }
+			public virtual ConclusionDataType Type { get; set; }
+			public virtual DateTime CreateTime { get; set; }
+			public virtual DateTime? DeleteTime { get; set; }
+			[Obsolete("Use get and set methods")]
+			public virtual string Value { get; set; }
+
+			public virtual void SetValue<T>(T value) {
+				Value = JsonConvert.SerializeObject(value);
+			}
+			public virtual T GetValue<T>() {
+				return JsonConvert.DeserializeObject<T>(Value);
+			}
+
+
+			[Obsolete("use other")]
+			public L10Meeting_ConclusionData() {
+				CreateTime = DateTime.UtcNow;
+			}
+
+			public L10Meeting_ConclusionData(long l10RecurrenceId, long l10MeetingId, ForModel forModel, ConclusionDataType type) {
+				L10RecurrenceId = l10RecurrenceId;
+				L10MeetingId = l10MeetingId;
+				ForModel = forModel;
+				Type = type;
+			}
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			public static L10Meeting_ConclusionData Create<T>(long l10RecurrenceId, long l10MeetingId, ConclusionDataType type, T value) {
+				var res = new L10Meeting_ConclusionData() {
+					L10RecurrenceId = l10RecurrenceId,
+					L10MeetingId = l10MeetingId,
+					Type = type,
+				};
+				res.SetValue(value);
+				return res;
+			}
+#pragma warning restore CS0618 // Type or member is obsolete
+
+			public class Map : ClassMap<L10Meeting_ConclusionData> {
+				public Map() {
+					Id(x => x.Id);
+					Map(x => x.L10RecurrenceId);
+					Map(x => x.L10MeetingId);
+					Component(x => x.ForModel).ColumnPrefix("ForModel_");
+					Map(x => x.Type).CustomType<ConclusionDataType>();
+					Map(x => x.CreateTime);
+					Map(x => x.DeleteTime);
+					Map(x => x.Value);
+				}
+			}
+
 		}
 
 		public class L10Meeting_Attendee : IDeletable, ILongIdentifiable {
