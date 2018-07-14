@@ -70,7 +70,7 @@ namespace RadialReview.Models {
 		protected virtual TimeData _timeData { get; set; }
 		public virtual bool _IsRadialAdmin { get; set; }
 
-		public virtual TimeData GetTimeSettings() {
+		public virtual ITimeData GetTimeSettings() {
 			if (_timeData == null) {
 				var orgSettings = GetOrganizationSettings();
 				_timeData = new TimeData() {
@@ -78,7 +78,8 @@ namespace RadialReview.Models {
 					Period = orgSettings.ScorecardPeriod,
 					TimezoneOffset = _ClientOffset ?? orgSettings.GetTimezoneOffset(),
 					WeekStart = orgSettings.WeekStart,
-					YearStart = orgSettings.YearStart
+					YearStart = orgSettings.YearStart,
+					DateFormat = orgSettings.GetDateFormat()
 				};
 			}
 			return _timeData;

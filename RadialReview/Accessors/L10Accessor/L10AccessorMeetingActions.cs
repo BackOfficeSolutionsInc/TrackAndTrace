@@ -631,7 +631,10 @@ namespace RadialReview.Accessors {
 								if (personTodos.Any())
 									hasTodos[personTodos.First().AccountableUserId] = true;
 
-								var todoTable = await TodoAccessor.BuildTodoTable(personTodos.ToList(), "Outstanding To-dos", true, padLookup: padTexts);
+								var tzOffset = personTodos.First().AccountableUser.GetTimezoneOffset();
+								var timeFormat = personTodos.First().AccountableUser.GetTimeSettings().DateFormat;
+
+								var todoTable = await TodoAccessor.BuildTodoTable(personTodos.ToList(),tzOffset,timeFormat, "Outstanding To-dos", true, padLookup: padTexts);
 
 
 								var output = new StringBuilder();

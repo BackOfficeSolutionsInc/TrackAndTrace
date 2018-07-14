@@ -503,7 +503,9 @@ namespace RadialReview.Accessors {
 		public static string _SharedSecretTodoPrefix(long userId) {
 			return "402F5DE7-DB3C-40D3-B634-42EF5E7D9118+" + userId;
 		}
-		public static async Task<StringBuilder> BuildTodoTable(List<TodoModel> todos, string title = null, bool showDetails = false, Dictionary<string, HtmlString> padLookup = null) {
+
+
+		public static async Task<StringBuilder> BuildTodoTable(IEnumerable<ITodoTiny> todos, int timezoneOffset, string dateFormat,  string title = null, bool showDetails = false, Dictionary<string, HtmlString> padLookup = null) {
 			title = title.NotNull(x => x.Trim()) ?? "To-do";
 			var table = new StringBuilder();
 			try {
@@ -512,19 +514,18 @@ namespace RadialReview.Accessors {
 				table.Append(@"<tr><th colspan=""3"" align=""left"" style=""font-size:16px;border-bottom: 1px solid #D9DADB;"">" + title + @"</th><th align=""right"" style=""font-size:16px;border-bottom: 1px solid #D9DADB;width: 80px;"">Due Date</th></tr>");
 				var i = 1;
 				if (todos.Any()) {
-					var org = todos.FirstOrDefault().NotNull(x => x.Organization);
-					var now = todos.FirstOrDefault().NotNull(x => x.Organization.ConvertFromUTC(DateTime.UtcNow).Date);
-					var format = org.NotNull(x => x.Settings.NotNull(y => y.GetDateFormat())) ?? "MM-dd-yyyy";
+					//var org = todos.FirstOrDefault().NotNull(x => x.Organization);
+					//var ts = timesettings.GetTimeSettings();
+					var now = TimeData.ConvertFromServerTime(DateTime.UtcNow, timezoneOffset).Date;
+					var format = dateFormat;// for .NotNull(x => x.Settings.NotNull(y => y.GetDateFormat())) ?? "MM-dd-yyyy";
 					foreach (var todo in todos.OrderBy(x => x.DueDate.Date).ThenBy(x => x.Message)) {
 						var color = todo.DueDate.Date <= now ? "color:#F22659;" : "color: #34AD00;";
-						var completionIcon = Config.BaseUrl(org) + @"Image/TodoCompletion?id=" + HttpUtility.UrlEncode(Crypto.EncryptStringAES("" + todo.Id, _SharedSecretTodoPrefix(todo.AccountableUserId))) + "&userId=" + todo.AccountableUserId;
+						var completionIcon = Config.BaseUrl(null) + @"Image/TodoCompletion?id=" + HttpUtility.UrlEncode(Crypto.EncryptStringAES("" + todo.Id, _SharedSecretTodoPrefix(todo.AccountableUserId))) + "&userId=" + todo.AccountableUserId;
 						var duedate = todo.DueDate;
-						if (org != null) {
-							duedate = org.ConvertFromUTC(todo.DueDate);
-						}
+						duedate = TimeData.ConvertFromServerTime(DateTime.UtcNow, timezoneOffset);
 
-						table.Append(@"<tr><td width=""16px"" valign=""top"" style=""padding: 3px 0 0 0;""><img src='").Append(completionIcon).Append("' width='15' height='15'/>").Append(@"</td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">")
-							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List?todo=" + todo.Id + @""">")
+						table.Append(@"<tr><td width=""16px"" valign=""top"" style=""padding: 3px 0 0 0;""><img src='").Append(completionIcon).Append("' width='15' height='15'/>").Append(@"</td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(null) + @"Todo/List"">")
+							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(null) + @"Todo/List?todo=" + todo.Id + @""">")
 							.Append(todo.Message).Append(@"</a></b></td><td  align=""right"" valign=""top"" style=""" + color + @""">")
 							.Append(duedate.ToString(format)).Append("</td></tr>");
 
@@ -540,7 +541,7 @@ namespace RadialReview.Accessors {
 							//var details = await PadAccessor.GetHtml(todo.PadId);
 
 							if (!String.IsNullOrWhiteSpace(details.ToHtmlString())) {
-								table.Append(@"<tr><td colspan=""2""></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">").Append(details.ToHtmlString()).Append("</a></i></td><td></td></tr>");
+								table.Append(@"<tr><td colspan=""2""></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + Config.BaseUrl(null) + @"Todo/List"">").Append(details.ToHtmlString()).Append("</a></i></td><td></td></tr>");
 							}
 						}
 

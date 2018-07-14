@@ -79,7 +79,7 @@ namespace RadialReview.Accessors {
 			public List<ScoreModel> Scores { get; set; }
 			public List<MeasurableModel> Measurables { get; set; }
 			public List<L10Recurrence.L10Recurrence_Measurable> MeasurablesAndDividers { get; set; }
-			public TimeData TimeSettings { get; set; }
+			public ITimeData TimeSettings { get; set; }
 
 			public ScorecardData() { }
 			public static ScorecardData FromScores(List<ScoreModel> scores) {

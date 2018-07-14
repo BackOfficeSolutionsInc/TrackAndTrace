@@ -12,6 +12,7 @@ namespace RadialReview.Models.Application {
 	public class Variable {
 
 		public static class Names {
+			//Do not change these strings!! They are DB constants
 			public static string LAST_CAMUNDA_UPDATE_TIME = "LAST_CAMUNDA_UPDATE_TIME";
 			public static string USER_RADIAL_DATA_IDS = "USER_RADIAL_DATA_IDS";
 			public static string CONSENT_MESSAGE = "CONSENT_MESSAGE";
@@ -19,6 +20,7 @@ namespace RadialReview.Models.Application {
 			public static string TOS_URL = "TOS_URL";
 			public static string DELINQUENT_MESSAGE_MEETING = "DELINQUENT_MESSAGE_MEETING";
 			public static string UPDATE_CARD_SUBJECT = "UPDATE_CARD_SUBJECT";
+			public static string TODO_DIVISOR = "TODO_DIVISOR";
 		}
 
 		public virtual string K { get; set; }

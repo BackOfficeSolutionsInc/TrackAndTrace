@@ -31,6 +31,7 @@ using RadialReview.Utilities.Hooks;
 using System.Configuration;
 using RadialReview.Crosscutting.EventAnalyzers;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
+using RadialReview.Crosscutting.ScheduledJobs;
 
 namespace RadialReview.Controllers {
 
@@ -186,7 +187,7 @@ namespace RadialReview.Controllers {
 						if (!Config.IsLocal())
 							throw new PermissionsException("Task not started");
 
-					await TodoEmailHelpers._ConstructTodoEmails(currentTime, unsent, s, nowUtc, divisor, remainder);
+					await TodoEmailsScheduler.TodoEmailHelpers._ConstructTodoEmails(currentTime, unsent, s, nowUtc, divisor, remainder);
 
 					tx.Commit();
 					s.Flush();
@@ -220,112 +221,7 @@ namespace RadialReview.Controllers {
 			});
 		}
 
-		public class TodoEmailHelpers {
-			/// <summary>
-			/// remainder < divisor
-			/// </summary>
-			/// <param name="currentTime"></param>
-			/// <param name="unsent"></param>
-			/// <param name="s"></param>
-			/// <param name="nowUtc"></param>
-			/// <param name="divisor"></param>
-			/// <param name="remainder"></param>
-			/// <returns></returns>
-			public static async Task _ConstructTodoEmails(int currentTime, List<Mail> unsent, ISession s, DateTime nowUtc, int divisor, int remainder) {
-				var tomorrow = nowUtc.Date.AddDays(2).AddTicks(-1);
-				var rangeLow = nowUtc.Date.AddDays(-1);
-				var rangeHigh = nowUtc.Date.AddDays(4).AddTicks(-1);
-				var nextWeek = nowUtc.Date.AddDays(7);
-				if (nowUtc.DayOfWeek == DayOfWeek.Friday)
-					rangeHigh = rangeHigh.AddDays(1);
-
-				List<TodoModel> todos = _QueryTodoModulo(s, divisor, remainder, rangeLow, rangeHigh, nextWeek);
-
-				var dictionary = new Dictionary<string, List<TodoModel>>();
-				foreach (var t in todos.GroupBy(x => x.AccountableUser.NotNull(y => y.User.NotNull(z => z.Email)))) {
-					if (t.Key != null) {
-						dictionary.GetOrAddDefault(t.Key, x => new List<TodoModel>()).AddRange(t);
-					}
-				}
-
-				foreach (var userTodos in dictionary) {
-					await _ConstructTodoEmail(currentTime, unsent, nowUtc, userTodos.Value);
-				}
-			}
-
-			public static List<TodoModel> _QueryTodoModulo(ISession s, long divisor, long remainder, DateTime rangeLow, DateTime rangeHigh, DateTime nextWeek) {
-				return s.QueryOver<TodoModel>()
-								.Where(x => ((rangeLow <= x.DueDate && x.DueDate <= rangeHigh) || (x.CompleteTime == null && x.DueDate <= nextWeek)) && x.DeleteTime == null)
-								.Where(Restrictions.Eq(Projections.SqlFunction("mod", NHibernateUtil.Int64, Projections.Property<TodoModel>(x => x.AccountableUserId), Projections.Constant(divisor)), remainder))
-								.List().ToList();
-			}
-
-			public static async Task _ConstructTodoEmail(int currentTime, List<Mail> unsent, DateTime nowUtc, List<TodoModel> userTodos) {
-				string subject = null;
-				var nowLocal = userTodos.First().Organization.ConvertFromUTC(nowUtc).Date;
-
-				var overDue = userTodos.Count(x => x.DueDate.Date <= nowLocal.Date.AddDays(-1) && x.CompleteTime == null);
-				if (overDue == 1)
-					subject = "You have an overdue to-do";
-				else if (overDue > 1)
-					subject = "You have " + overDue + " overdue to-dos";
-				else {
-					var dueToday = userTodos.Count(x => x.DueDate.Date == nowLocal.Date && x.CompleteTime == null);
-
-					if (dueToday == 1)
-						subject = "You have a to-do due today";
-					else if (dueToday > 1)
-						subject = "You have " + dueToday + " to-dos due today";
-					else {
-						var dueTomorrow = userTodos.Count(x => x.DueDate.Date == nowLocal.AddDays(1).Date && x.CompleteTime == null);
-						if (dueTomorrow == 1)
-							subject = "You have a to-do due tomorrow";
-						else if (dueTomorrow > 1)
-							subject = "You have " + dueTomorrow + " to-dos due tomorrow";
-						else {
-							var dueSoon = userTodos.Count(x => x.DueDate.Date > nowLocal.AddDays(1).Date && x.CompleteTime == null);
-							if (dueSoon == 1)
-								subject = "You have a to-do due soon";
-							else if (dueSoon > 1)
-								subject = "You have " + dueSoon + " to-dos due soon";
-						}
-					}
-				}
-
-				var shouldSend = userTodos.Count(x => x.DueDate.Date >= nowLocal.Date.AddDays(-1) && x.CompleteTime == null);
-
-				if (subject != null && shouldSend > 0) {
-
-					try {
-						var user = userTodos.First().AccountableUser;
-
-						if ((user.User.NotNull(x => x.SendTodoTime)) == currentTime) {
-							var email = user.GetEmail();
-
-							var builder = new StringBuilder();
-							foreach (var t in userTodos.Where(x => x.CompleteTime == null || x.DueDate.Date > nowUtc.Date).GroupBy(x => x.ForRecurrenceId)) {
-								var table = await TodoAccessor.BuildTodoTable(t.ToList(), t.First().ForRecurrence.NotNull(x => x.Name + " To-do"));
-								builder.Append(table);
-								builder.Append("<br/>");
-							}
-
-							var mail = Mail.To(EmailTypes.DailyTodo, email)
-								.Subject(EmailStrings.TodoReminder_Subject, subject)
-								.Body(EmailStrings.TodoReminder_Body,
-									user.GetName(),
-									builder.ToString(),
-									Config.ProductName(user.Organization),
-									Config.BaseUrl(user.Organization) + "Todo/List"
-								);
-
-							unsent.Add(mail);
-						}
-					} catch (Exception) {
-
-					}
-				}
-			}
-		}
+	
 
 
 		/// <summary>
