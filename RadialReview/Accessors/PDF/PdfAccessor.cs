@@ -241,8 +241,8 @@ namespace RadialReview.Accessors {
 		public static Document CreateDoc(UserOrganizationModel caller, string docTitle) {
 			var document = new Document();
 
-			document.Info.Title = docTitle;
-			document.Info.Author = caller.GetName();
+			document.Info.Title = docTitle ?? "Traction Tools printout";
+			document.Info.Author = caller.NotNull(x=>x.GetName()) ?? "Traction® Tools";
 			document.Info.Comment = "Created with Traction® Tools";
 
 

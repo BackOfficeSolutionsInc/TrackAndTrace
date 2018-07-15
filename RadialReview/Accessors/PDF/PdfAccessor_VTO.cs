@@ -30,7 +30,8 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static bool DEBUGGER = false;
+		public static bool DEBUGGER = false && Config.IsLocal();
+		
 
 		public class VtoPdfSettings {
 
@@ -73,8 +74,8 @@ namespace RadialReview.Accessors {
 			}
 
 
-			public VtoPdfSettings(string imageUrl,string fillColor,string lightTextColor,string lightBorderColor,string fillTextColor,string textColor,string borderColor):this() {
-				if (imageUrl!=null)
+			public VtoPdfSettings(string imageUrl, string fillColor, string lightTextColor, string lightBorderColor, string fillTextColor, string textColor, string borderColor) : this() {
+				if (imageUrl != null)
 					ImageUrl = imageUrl;
 				FillColor = Hex2Color(fillColor) ?? FillColor;
 				LightTextColor = Hex2Color(lightTextColor) ?? LightTextColor;
@@ -432,23 +433,34 @@ namespace RadialReview.Accessors {
 			contentsTable.AddColumn(VtoVisionDocumentGenerator.LEFT_CONTENT_WIDTH - VtoVisionDocumentGenerator.CELL_PADDING);
 			var contentCell = contentsTable.AddRow().Cells[0];
 			row.Cells[1].Elements.Add(contentsTable);
-			AddPadding(vars, contentCell);
+			AddPadding(vars,false, contentCell);
 
 			return contentCell;
 		}
 
-		private static void AddPadding(RangedVariables vars, Cell contentCell, bool top = true, bool bottom = true) {
+		private static void AddPadding(ResizeContext ctx,bool left) {
+			AddPadding(ctx.Variables, left, ctx.Container, false, false);
+		}
+
+		private static void AddPadding(RangedVariables vars,bool left, Cell contentCell, bool top = true, bool bottom = true) {
 			contentCell.Format.Font.Size = vars.Get("FontSize");
 
 			contentCell.Borders.Left.Width = VtoVisionDocumentGenerator.CELL_PADDING;
 			contentCell.Borders.DistanceFromRight = VtoVisionDocumentGenerator.CELL_PADDING;
 			contentCell.Borders.Right.Width = VtoVisionDocumentGenerator.CELL_PADDING;
 
+
 			if (top)
 				contentCell.Borders.Top.Width = vars.Get("Spacer");// "Spacer");
 			if (bottom)
 				contentCell.Borders.Bottom.Width = vars.Get("Spacer");
 			contentCell.Borders.Color = Colors.Transparent;
+
+			if (left) {
+				contentCell.Borders.Left.Width =  VtoVisionDocumentGenerator.LEFT_TITLE_WIDTH;
+				contentCell.Borders.DistanceFromLeft = VtoVisionDocumentGenerator.CELL_PADDING + VtoVisionDocumentGenerator.LEFT_TITLE_WIDTH;
+				contentCell.Borders.Left.Color = Colors.Gray;
+			}
 
 			if (PdfAccessor.DEBUGGER) {
 				contentCell.Borders.Color = Colors.Blue;
@@ -514,6 +526,11 @@ namespace RadialReview.Accessors {
 		}
 		#endregion
 
+		private class ParagraphHint : Hint {
+			public ParagraphHint(string viewBox, IEnumerable<IElement> elements) : base(viewBox, elements) {
+			}
+		}
+
 		private class MarketingStrategyHint : Hint {
 
 			public class MSHintGroups {
@@ -556,7 +573,7 @@ namespace RadialReview.Accessors {
 			public VtoPdfSettings Settings { get; set; }
 
 			public override void DrawElement(Container elementContents, Cell viewBoxContainer) {
-				
+
 				var G = Groups.Groups[viewBoxContainer];
 
 				if (G.OuterContainer == null) {
@@ -617,6 +634,159 @@ namespace RadialReview.Accessors {
 					var paddOnlyOnce = i == 0;
 
 
+					
+					var fs = 7;
+					//Strategy title & Target market
+					var targetMarketHints = new PageSplitter(strat.TargetMarket, 350).GenerateStaticHints(viewBoxName, ctx => {
+						var c = ctx.Container;
+						var v = ctx.Variables;
+
+						AddPadding(v,true, c, true, false);
+
+						var paragraphs = new List<Paragraph>();
+
+						//Add strategy title
+						if (!isOnly && !string.IsNullOrWhiteSpace(strat.Title)) {
+							var stratP = ctx.AddParagraph();
+							if (spaceBefore) {
+								stratP.Format.SpaceBefore = fs * 1.5;
+							}
+							stratP.Format.SpaceAfter = fs * 1;
+							stratP.AddFormattedText(strat.Title ?? "", TextFormat.Bold | TextFormat.Underline);
+							stratP.Format.Font.Name = "Arial Narrow";
+						}
+
+						//Target Market List
+						var theList = ctx.AddParagraph();
+						theList.Format.SpaceAfter = 0;
+
+						theList.Format.Font.Name = "Arial Narrow";
+						theList.AddFormattedText("Target Market/\"The List\": \n", TextFormat.Bold);
+					},(ctx,str)=> {
+						AddPadding(ctx,true);
+						var theList = ctx.AddParagraph();
+						theList.Format.Font.Name = "Arial Narrow";
+						theList.AddText(str ?? "");
+					},widthOverride: VtoVisionDocumentGenerator.LEFT_CONTENT_WIDTH);
+					foreach (var h in targetMarketHints)
+						yield return h;
+
+
+					//Three Uniques
+					yield return new Hint(viewBoxName, new ResizableElement((ctx) => {
+						var c = ctx.Container;
+						var v = ctx.Variables;
+						AddPadding(ctx, true);
+						var paragraphs = new List<Paragraph>();
+						var uniques = strat.NotNull(x => x.Uniques.ToList()) ?? new List<AngularVtoString>();
+						if (uniques.Any(x => !string.IsNullOrWhiteSpace(x.Data))) {
+							var uniquePara = new Paragraph();
+							uniquePara.Format.SpaceBefore = fs * 1.25;
+							var uniquesTitle = "Uniques: ";
+							if (uniques.Count == 3)
+								uniquesTitle = "Three " + uniquesTitle;
+							uniquePara.AddFormattedText(uniquesTitle, TextFormat.Bold);
+							uniquePara.Format.Font.Name = "Arial Narrow";
+							paragraphs.Add(uniquePara);
+							paragraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+						}
+						paragraphs.ForEach(p => c.Add(p));
+					}, widthOverride: VtoVisionDocumentGenerator.LEFT_CONTENT_WIDTH));
+
+
+					//Proven Process
+					var ppHints = new PageSplitter(strat.ProvenProcess, 350).GenerateStaticHints(viewBoxName, ctx => {
+						AddPadding(ctx, true);
+						var provenProcess = ctx.AddParagraph();
+						if (!isOnly && string.IsNullOrEmpty(strat.Guarantee)) {
+							provenProcess.Format.SpaceBefore = fs * 1.25;
+						}
+						provenProcess.Format.Font.Name = "Arial Narrow";
+						provenProcess.AddFormattedText("Proven Process: ", TextFormat.Bold);
+						provenProcess.Format.SpaceAfter = 0;
+					}, (ctx, str) => {
+						AddPadding(ctx, true);
+						var p = ctx.AddParagraph();
+						p.Format.LineSpacing = fs;
+						ctx.Container.Contents.VerticalAlignment = VerticalAlignment.Top;
+						p.Format.SpaceBefore = 0;
+						p.Format.Font.Name = "Arial Narrow";
+						p.AddText(str ?? "");
+					}, widthOverride: VtoVisionDocumentGenerator.LEFT_CONTENT_WIDTH);
+					foreach (var h in ppHints)
+						yield return h;
+
+					//Guarentees
+					var guarenteeHints = new PageSplitter(strat.Guarantee, 350).GenerateStaticHints(viewBoxName, ctx => {
+						AddPadding(ctx, true);
+						var guarantee = ctx.AddParagraph();
+						guarantee.Format.SpaceBefore = fs * 1.25;
+						if (!isOnly) {
+							guarantee.Format.SpaceAfter = fs * 1.25;
+						}
+						guarantee.AddFormattedText("Guarantee: ", TextFormat.Bold);
+						guarantee.Format.Font.Name = "Arial Narrow";
+						guarantee.Format.SpaceAfter = 0;
+					}, (ctx,str) => {
+						AddPadding(ctx, true);
+						var guarantee = ctx.AddParagraph();
+						guarantee.Format.Font.Name = "Arial Narrow";
+						guarantee.AddText(str ?? "");
+					}, widthOverride: VtoVisionDocumentGenerator.LEFT_CONTENT_WIDTH);
+
+					foreach (var h in guarenteeHints)
+						yield return h;
+
+					
+					//yield return new Hint(viewBoxName, new ResizableElement((ctx) => {
+					//	var c = ctx.Container;
+					//	var v = ctx.Variables;
+					//	AddPadding(v, c, false, true);
+					//}));
+
+					////Guarantee
+					//foreach (var g in guarenteeTextSplits) {
+					//	yield return new Hint(viewBoxName, new StaticElement((ctx) => {
+					//		var c = ctx.Container;
+					//		var v = ctx.Variables;
+					//		var paragraphs = new List<Paragraph>();
+					//		if (!string.IsNullOrEmpty(g)) {
+					//			var guarantee = new Paragraph();
+					//			guarantee.Format.SpaceBefore = fs * 1.25;
+
+					//			if (!isOnly) {
+					//				guarantee.Format.SpaceAfter = fs * 1.25;
+					//			}
+
+					//			guarantee.AddFormattedText("Guarantee: ", TextFormat.Bold);
+					//			guarantee.Format.Font.Name = "Arial Narrow";
+					//			guarantee.AddText(g ?? "");
+					//			paragraphs.Add(guarantee);
+					//		}
+					//		paragraphs.ForEach(p => c.Add(p));
+
+					//	}));
+					//}
+
+
+				}
+			}
+		}
+		
+
+		private static IEnumerable<IHint> GenerateMarketingStrategyHints_Old(string viewBoxName, string title, AngularVTO vto, VtoPdfSettings setting) {
+			if (vto.NotNull(x => x.Strategies) != null) {
+				var stratCount = vto.Strategies.Count();
+				var spaceBefore = true;
+				var group = new MarketingStrategyHint.MSHintGroups(title);
+				for (var i = 0; i < stratCount; i++) {
+					var strat = vto.Strategies.ElementAt(i);
+					//var isFirst = i == 0;
+					//var isLast = i == stratCount - 1;
+					var isOnly = stratCount == 1;
+					var paddOnlyOnce = i == 0;
+
+
 					yield return new MarketingStrategyHint(viewBoxName, group, setting, new ResizableElement((ctx) => {
 						var c = ctx.Container;
 						var v = ctx.Variables;
@@ -631,9 +801,12 @@ namespace RadialReview.Accessors {
 
 						//var a = ((MarketingStrategyHint)ctx.Hint).Groups.Groups[ctx.Container];
 						//if (paddOnlyOnce)
-						AddPadding(v, c, isFirst, isLast);
+						AddPadding(v,false, c, isFirst, isLast);
 						AppendMarketStrategy(c, strat, setting, isFirst, isLast, isOnly, ref spaceBefore);
 					}, widthOverride: VtoVisionDocumentGenerator.LEFT_CONTENT_WIDTH));
+
+
+
 				}
 			}
 		}
@@ -776,7 +949,7 @@ namespace RadialReview.Accessors {
 			row.VerticalAlignment = VerticalAlignment.Center;
 		}
 
-		[Obsolete("Only for private or test use",false)]
+		[Obsolete("Only for private or test use", false)]
 		public static async Task AddVtoVision_Intermediate(Document doc, AngularVTO vto, string dateformat, VtoPdfSettings settings) {
 			//var TableGray = new Color(100, 100, 100, 100);
 			//var TableBlack = new Color(0, 0, 0);
@@ -1385,12 +1558,12 @@ namespace RadialReview.Accessors {
 		//}
 
 		public static async Task AddVtoTraction(Document doc, AngularVTO vto, string dateformat, VtoPdfSettings settings) {
-			settings =  settings ?? new VtoPdfSettings();
+			settings = settings ?? new VtoPdfSettings();
 			Unit baseHeight = Unit.FromInch(5.0);//5.15
 			var vt = await AddPage_VtoTraction(doc, vto, settings, baseHeight);
 			Cell oneYear = vt.oneYear, quarterlyRocks = vt.quarterlyRocks, issuesList = vt.issuesList;
 			Table issueTable = vt.issueTable, rockTable = vt.rockTable, goalTable = vt.goalTable;
-			
+
 
 			#region One Year Plan
 			Unit fs = 10;
@@ -1448,7 +1621,7 @@ namespace RadialReview.Accessors {
 
 				var headerSize = GetSize(goalObjects, Unit.FromInch(3.47));
 				Unit pg1Height = baseHeight - headerSize.Height;//+ Unit.FromInch(0.51);
-				goalsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, goalParagraphs, elementAtLeast : minRowHeight);
+				goalsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, goalParagraphs, elementAtLeast: minRowHeight);
 
 
 				goalObjects.Add(goalTable);
@@ -1686,7 +1859,7 @@ namespace RadialReview.Accessors {
 			var tractionData = table.AddRow();
 
 			tractionData.Height = height;
-			
+
 			o.oneYear = tractionData.Cells[0];
 			o.quarterlyRocks = tractionData.Cells[1];
 			o.issuesList = tractionData.Cells[2];
