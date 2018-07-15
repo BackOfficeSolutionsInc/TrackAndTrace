@@ -169,8 +169,12 @@ namespace RadialReview.Crosscutting.Schedulers {
 				var performer = new BackgroundJobPerformer();
 				var backgroundJob = new BackgroundJob(jobName, job, DateTime.UtcNow);
 				var performContext = new PerformContext(new MockStorageConnection(), backgroundJob, new JobCancellationToken(false));
-				var result = performer.Perform(performContext);
-				return (T)result;
+				try {
+					var result = performer.Perform(performContext);
+					return (T)result;
+				} catch (JobPerformanceException e) {
+					throw e.InnerException;
+				}
 			}
 
 			public class MockStorageConnection : IStorageConnection {

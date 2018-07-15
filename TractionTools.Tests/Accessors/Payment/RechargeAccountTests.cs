@@ -108,11 +108,11 @@ namespace TractionTools.Tests.Accessors.Payment {
 				Assert.IsTrue(taskResult.running);
 				var jobId = taskResult.job_id;
 
-				var d =mock.Perform<HangfireChargeResult>(jobId);
-
-				Assert.AreEqual(true, d.HasError);
-				Assert.AreEqual(true, d.WasPaymentException);
-				Assert.AreEqual(""+PaymentExceptionType.MissingToken, d.Message);
+				var e= Throws<PaymentException>(() => {
+					mock.Perform<HangfireChargeResult>(jobId);
+				});
+				
+				Assert.AreEqual(PaymentExceptionType.MissingToken, e.Type);
 
 				DbQuery(s => {
 					var errors = s.QueryOver<InvoiceModel>().Where(x => x.Organization.Id == org.Id).List().ToList();

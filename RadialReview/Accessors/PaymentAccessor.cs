@@ -922,7 +922,8 @@ namespace RadialReview.Accessors {
 				} catch (PaymentException capturedPaymentException) {
 					await RecordCapturedPaymentException(capturedPaymentException, unverified_taskId);
 					//Saved exception.. stop execution
-					return new HangfireChargeResult(null, false, false, true, true, "" + capturedPaymentException.Type);
+					throw;
+					//return new HangfireChargeResult(null, false, false, true, true, "" + capturedPaymentException.Type);
 				} catch (FallthroughException e) {
 					log.Error("FallthroughCaptured", e);
 					//It's a fallthrough, stop execution
@@ -930,7 +931,8 @@ namespace RadialReview.Accessors {
 				} catch (Exception capturedException) {
 					await RecordUnknownPaymentException(capturedException, organizationId, unverified_taskId);
 					//Email send.. stop execution.
-					return new HangfireChargeResult(null, false, false, true, false, capturedException.NotNull(x => x.Message) ?? "-no message-");
+					throw;
+					//return new HangfireChargeResult(null, false, false, true, false, capturedException.NotNull(x => x.Message) ?? "-no message-");
 				}
 			}
 

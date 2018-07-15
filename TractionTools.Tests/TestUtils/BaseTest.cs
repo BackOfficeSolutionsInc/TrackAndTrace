@@ -250,16 +250,19 @@ namespace TractionTools.Tests.TestUtils {
 				throw new AssertFailedException(String.Format("An exception of type {0} was expected, but not thrown", typeof(T)));
 		}
 
-		public static void Throws<T>(Action func) where T : Exception {
+		public static T Throws<T>(Action func) where T : Exception {
 			var exceptionThrown = false;
+			T exception = null;
 			try {
 				func.Invoke();
-			} catch (T) {
+			} catch (T e) {
+				exception = e;
 				exceptionThrown = true;
 			}
 
 			if (!exceptionThrown)
 				throw new AssertFailedException(String.Format("An exception of type {0} was expected, but not thrown", typeof(T)));
+			return exception;
 
 		}
 
