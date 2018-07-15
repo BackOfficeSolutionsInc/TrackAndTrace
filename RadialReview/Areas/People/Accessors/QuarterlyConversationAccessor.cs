@@ -11,6 +11,7 @@ using RadialReview.Areas.People.Engines.Surveys.Strategies.Transformers;
 using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Crosscutting.Hooks.Interfaces;
 using RadialReview.Exceptions;
+using RadialReview.Hangfire;
 using RadialReview.Hooks;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
@@ -200,7 +201,7 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 		}
 
-		[Queue("generateqc")]/*Queues must be lowecase alphanumeric. You must add queues to BackgroundJobServerOptions in Startup.auth.cs*/
+		[Queue(HangfireQueues.Immediate.GENERATE_QC)]/*Queues must be lowecase alphanumeric. You must add queues to BackgroundJobServerOptions in Startup.auth.cs*/
 		public static async Task<long> GenerateQuarterlyConversation(long callerId, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool sendEmails) {
 			UserOrganizationModel caller;
 			using (var s = HibernateSession.GetCurrentSession()) {

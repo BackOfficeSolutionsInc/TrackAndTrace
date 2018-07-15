@@ -636,7 +636,7 @@ namespace RadialReview.Accessors {
 					var customFeatureDevHoursTotal = devInteractions.Select(x => x.Duration).Sum() / 60m;
 
 #pragma warning disable CS0618 // Type or member is obsolete
-					var MRR = PaymentAccessor.CalculateTotalCharge(s, PaymentAccessor.GetPayingOrganizations(s));
+					var MRR = PaymentAccessor.Unsafe.CalculateTotalCharge(s, PaymentAccessor.Unsafe.GetPayingOrganizations(s));
 #pragma warning restore CS0618 // Type or member is obsolete
 
 

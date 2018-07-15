@@ -70,6 +70,8 @@ using Twilio.Rest.Api.V2010.Account;
 using RadialReview.Accessors;
 using RadialReview.Models.UserModels;
 using Hangfire;
+using RadialReview.Hangfire;
+using RadialReview.Crosscutting.Schedulers;
 
 namespace RadialReview.Accessors {
 	public partial class L10Accessor : BaseAccessor {
@@ -536,7 +538,7 @@ namespace RadialReview.Accessors {
 					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting), connectionId).concludeMeeting();
 				}
 
-				BackgroundJob.Enqueue(() => SendConclusionEmail_Unsafe(meeting.Id));
+				Scheduler.Enqueue(() => SendConclusionEmail_Unsafe(meeting.Id, null));
 
 				using (var s = HibernateSession.GetCurrentSession()) {
 					using (var tx = s.BeginTransaction()) {
@@ -733,7 +735,7 @@ namespace RadialReview.Accessors {
 					} else {
 						ellapse = "" + (int)Math.Max(1, durationSecs);
 						duration = (int)(durationSecs) + " second".Pluralize(durationSecs);
-						unit = "Second".Pluralize(durationSecs);
+						unit = "Second".Pluralize(durationSecs); 
 					}
 				}
 
@@ -771,9 +773,9 @@ namespace RadialReview.Accessors {
 			return table.ToString();
 		}
 
-		[Queue("conclusionemail")]/*Queues must be lowecase alphanumeric. You must add queues to BackgroundJobServerOptions in Startup.auth.cs*/
+		[Queue(HangfireQueues.Immediate.CONCLUSION_EMAIL)]/*Queues must be lowecase alphanumeric. You must add queues to BackgroundJobServerOptions in Startup.auth.cs*/
 		[AutomaticRetry(Attempts = 0,OnAttemptsExceeded =AttemptsExceededAction.Fail)]
-		public static async Task SendConclusionEmail_Unsafe(long meetingId) {
+		public static async Task SendConclusionEmail_Unsafe(long meetingId,long? onlySendToUser) {
 
 			var unsent = new List<Mail>();
 			long recurrenceId = 0;
@@ -792,7 +794,12 @@ namespace RadialReview.Accessors {
 						var todoList = conclusionItems.OutstandingTodos;//s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.ForRecurrenceId == recurrenceId && x.CompleteTime == null).List().ToList();
 						var issuesForTable = conclusionItems.ClosedIssues.Where(x => !x.AwaitingSolve);
 						var sendEmailTo = conclusionItems.SendEmailsTo;
-												
+
+
+						if (onlySendToUser != null) {
+							sendEmailTo = sendEmailTo.Where(x => x.UserId == onlySendToUser.Value).ToList();
+						}
+
 						//All awaitables 
 						//headline.CloseDuringMeetingId = meeting.Id;
 
@@ -848,6 +855,8 @@ namespace RadialReview.Accessors {
 							var concludeStats = BuildConcludeStatsTable(user.GetTimezoneOffset(), meeting.TodoCompletion, meeting.AverageMeetingRating, meeting.StartTime, meeting.CompleteTime, conclusionItems.ClosedIssues.Count);
 
 							output.Append(concludeStats);
+							toSend = true;//Always send, we have stats now.
+
 							output.Append("<br/>");
 
 							if (hasTodos[userAttendee.User.Id]) {

@@ -15,11 +15,15 @@ using RadialReview.Controllers;
 using System.Threading;
 using TractionTools.Tests.Reflections;
 using RadialReview.Models;
+using RadialReview.Crosscutting.Schedulers;
+using static RadialReview.Controllers.SchedulerController;
+using static RadialReview.Accessors.PaymentAccessor;
 
 namespace TractionTools.Tests.Accessors.Payment {
 	[TestClass]
 	public class RechargeAccountTests : BaseTest {
 		[TestMethod]
+		[TestCategory("Charge")]
 		public async Task EnsureOneCharge() {
 
 			//HooksRegistry.RegisterHookForTests();
@@ -27,7 +31,7 @@ namespace TractionTools.Tests.Accessors.Payment {
 			var hook = new ExecutePaymentCardUpdate();
 			var o = await OrgUtil.CreateOrganization();
 
-			var token = (await PaymentAccessor.SetCard(o.Manager, o.Id, await PaymentAccessor.GenerateFakeCard())).GetToken();
+			var token = (await PaymentAccessor.SetCard(o.Manager, o.Id, await PaymentAccessor.Test.GenerateFakeCard())).GetToken();
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -82,50 +86,54 @@ namespace TractionTools.Tests.Accessors.Payment {
 
 
 		[TestMethod]
+		[TestCategory("Charge")]
 		public async Task RechargeIntegration() {
+			using (var mock = Scheduler.Mock()) {
+				HooksRegistry.RegisterHookForTests(new ExecutePaymentCardUpdate());
 
-			HooksRegistry.RegisterHookForTests(new ExecutePaymentCardUpdate());
+				var org = await OrgUtil.CreateOrganization();
+				DbCommit(s => {
+					var pp = org.Organization.PaymentPlan;
+					pp.FreeUntil = DateTime.UtcNow.AddDays(-1);
+					s.Update(pp);
+					pp.Task.Started = DateTime.UtcNow;
+					s.Update(pp.Task);
+				});
 
-			var org = await OrgUtil.CreateOrganization();
-			DbCommit(s => {
-				var pp = org.Organization.PaymentPlan;
-				pp.FreeUntil = DateTime.UtcNow.AddDays(-1);
-				s.Update(pp);
-				pp.Task.Started = DateTime.UtcNow;
-				s.Update(pp.Task);
-			});
+				var sc = new SchedulerController();
+				MockHttpContext(sc, false);
 
-			var sc = new SchedulerController();
-			MockHttpContext(sc, false);
+				var result = await sc.ChargeAccount(new CancellationToken(), org.Id, org.Organization.PaymentPlan.Task.Id);
+				var taskResult = (ChargeAccountResult)result.Data;
+				Assert.IsTrue(taskResult.running);
+				var jobId = taskResult.job_id;
 
-			var result = await sc.ChargeAccount(new CancellationToken(), org.Id, org.Organization.PaymentPlan.Task.Id);
-			var d = result.Data.ToDynamic();
+				var d =mock.Perform<HangfireChargeResult>(jobId);
 
-			Assert.AreEqual(false, d.charged);
-			Assert.AreEqual(true, d.payment_exception);
-			Assert.AreEqual(PaymentExceptionType.MissingToken, d.error);
+				Assert.AreEqual(true, d.HasError);
+				Assert.AreEqual(true, d.WasPaymentException);
+				Assert.AreEqual(""+PaymentExceptionType.MissingToken, d.Message);
 
-			DbQuery(s => {
-				var errors = s.QueryOver<InvoiceModel>().Where(x => x.Organization.Id == org.Id).List().ToList();
-				Assert.AreEqual(1, errors.Count);
-				Assert.IsNull(errors[0].PaidTime);
-			});
+				DbQuery(s => {
+					var errors = s.QueryOver<InvoiceModel>().Where(x => x.Organization.Id == org.Id).List().ToList();
+					Assert.AreEqual(1, errors.Count);
+					Assert.IsNull(errors[0].PaidTime);
+				});
 
-			//set the card, it should go through now...
-			await PaymentAccessor.SetCard(org.Manager, org.Id, await PaymentAccessor.GenerateFakeCard());
-			DbQuery(s => {
-				//    var errors = s.QueryOver<PaymentFailRecord>().Where(x => x.OrgId == org.Id).List().ToList();
-				//    Assert.AreEqual(1, errors.Count);
-				//    Assert.IsNotNull(errors[0].Resolved);
+				//set the card, it should go through now...
+				await PaymentAccessor.SetCard(org.Manager, org.Id, await PaymentAccessor.Test.GenerateFakeCard());
+				DbQuery(s => {
+					//    var errors = s.QueryOver<PaymentFailRecord>().Where(x => x.OrgId == org.Id).List().ToList();
+					//    Assert.AreEqual(1, errors.Count);
+					//    Assert.IsNotNull(errors[0].Resolved);
 
-				var invoices = s.QueryOver<InvoiceModel>().Where(x => x.Organization.Id == org.Id).List().ToList();
+					var invoices = s.QueryOver<InvoiceModel>().Where(x => x.Organization.Id == org.Id).List().ToList();
 
-				Assert.AreEqual(1, invoices.Count);
-				Assert.IsNotNull(invoices[0].PaidTime);
-				Assert.IsTrue(invoices[0].AmountDue > 100);
-
-			});
-
+					Assert.AreEqual(1, invoices.Count);
+					Assert.IsNotNull(invoices[0].PaidTime);
+					Assert.IsTrue(invoices[0].AmountDue > 100);
+				});
+			}
 		}
 	}
 }

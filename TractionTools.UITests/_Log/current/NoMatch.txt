@@ -8,6 +8,7 @@ Chrome~Visual_CreateNoSupervisor~_~Complete.png
 Chrome~Visual_CreateNoSupervisor~_~CreateNoSupervisor_Dropdown.png
 Chrome~Visual_CreateSupervisor_2~_~Complete.png
 Chrome~Visual_CreateSupervisor_2~_~CreateSupervisor_DropdownEmployee.png
+Chrome~Visual_CreateSupervisor_3~_~Complete.png
 Chrome~Visual_CreateSupervisor~_~Complete.png
 Chrome~Visual_CreateSupervisor~_~CreateSupervisor_CreatingReview.png
 Chrome~Visual_CreateSupervisor~_~CreateSupervisor_Dropdown1.png
@@ -27,14 +28,7 @@ Chrome~Visual_L10_Meeting_Scorecard~_l10_meeting_{id}~TodoModal.png
 Chrome~Visual_L10_Meeting_Scorecard~_l10_meeting_{id}~TodoPage.png
 Chrome~Visual_L10_Meeting_Scorecard~_l10_meeting_{id}~TodoPageSelectedChecked.png
 Chrome~Visual_L10_Meeting_Scorecard~_l10_meeting_{id}~VideoBar.png
-Chrome~Visual_L10_Meeting_Segue~_l10_meeting_{id}~IssueModal.png
-Chrome~Visual_L10_Meeting_Segue~_l10_meeting_{id}~IssuePage.png
-Chrome~Visual_L10_Meeting_Segue~_l10_meeting_{id}~NewNote.png
 Chrome~Visual_L10_Meeting_Segue~_l10_meeting_{id}~notes.png
-Chrome~Visual_L10_Meeting_Segue~_l10_meeting_{id}~TodoModal.png
-Chrome~Visual_L10_Meeting_Segue~_l10_meeting_{id}~TodoPage.png
-Chrome~Visual_L10_Meeting_Segue~_l10_meeting_{id}~TodoPageSelectedChecked.png
-Chrome~Visual_L10_Meeting_Segue~_l10_meeting_{id}~VideoBar.png
 Chrome~Visual_L10_Wizard_Attendees~_l10_wizard_{id}~Basics-Select.png
 Chrome~Visual_L10_Wizard_Attendees~_l10_wizard_{id}~Blank.png
 Chrome~Visual_L10_Wizard_Attendees~_l10_wizard_{id}~Complete.png
@@ -58,5 +52,6 @@ Chrome~Visual_L10_Wizard_Todo~_l10_wizard_{id}~BeforeAdd.png
 Chrome~Visual_L10_Wizard_Todo~_l10_wizard_{id}~Blank.png
 Chrome~Visual_L10_Wizard_Todo~_l10_wizard_{id}~Complete.png
 Chrome~Visual_L10_Wizard_Todo~_l10_wizard_{id}~Picture.png
+Chrome~Visual_SetMilestoneDate~_~Complete.png
 Chrome~Visual_SetRockFutureDate~_L10~Complete.png
 Chrome~Visual_SetTodoDate~_~Complete.png

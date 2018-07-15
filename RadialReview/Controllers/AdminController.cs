@@ -43,6 +43,7 @@ using RadialReview.Models.Payments;
 using static RadialReview.Models.OrganizationModel;
 using static RadialReview.Accessors.AdminAccessor;
 using Hangfire;
+using RadialReview.Crosscutting.Schedulers;
 
 namespace RadialReview.Controllers {
 
@@ -711,7 +712,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.RadialData)]
 		public ActionResult GenerateAllEmails() {
 			var now = DateTime.UtcNow;
-			BackgroundJob.Enqueue(() => AdminAccessor.GenerateAllUserData_Admin_Unsafe(now));
+			Scheduler.Enqueue(() => AdminAccessor.GenerateAllUserData_Admin_Unsafe(now));
 			return Content("Generating: "+ now.ToString());
 		}
 
@@ -1557,7 +1558,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Radial)]
 		public async Task<JsonResult> TestChargeOrg(long id, decimal amt) {
 #pragma warning disable CS0618 // Type or member is obsolete
-			return Json(await PaymentAccessor.ChargeOrganizationAmount(id, amt, true), JsonRequestBehavior.AllowGet);
+			return Json(await PaymentAccessor.Unsafe.ChargeOrganizationAmount(id, amt, true), JsonRequestBehavior.AllowGet);
 #pragma warning restore CS0618 // Type or member is obsolete
 		}
 

@@ -20,6 +20,7 @@ using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.ViewModels;
 using RadialReview.Exceptions;
 using Hangfire;
+using RadialReview.Crosscutting.Schedulers;
 
 namespace RadialReview.Controllers
 {
@@ -243,7 +244,7 @@ namespace RadialReview.Controllers
 
 		[Access(AccessLevel.Radial)]
 		public JsonResult Hangfire(int seconds = 10) {
-			BackgroundJob.Enqueue(() => Task.Delay(seconds*1000));
+			Scheduler.Enqueue(() => Task.Delay(seconds*1000));
 			return Json(new { status = "Started" }, JsonRequestBehavior.AllowGet);
 		}
 

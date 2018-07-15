@@ -24,6 +24,7 @@ using RadialReview.Properties;
 using RadialReview.Utilities.DataTypes;
 using System.Threading;
 using Hangfire;
+using RadialReview.Crosscutting.Schedulers;
 
 namespace RadialReview.Areas.People.Controllers {
 	public class QuarterlyConversationController : BaseController {
@@ -117,7 +118,7 @@ namespace RadialReview.Areas.People.Controllers {
 				//byAbouts = byAbouts.Distinct().ToList();
 				var quarterRange = new DateRange(qtrStart, qtrStart.AddDays(90));
 				var callerId = GetUser().Id;
-				BackgroundJob.Enqueue(() =>QuarterlyConversationAccessor.GenerateQuarterlyConversation(callerId, name, filtered, quarterRange, dueDate, email));
+				Scheduler.Enqueue(() =>QuarterlyConversationAccessor.GenerateQuarterlyConversation(callerId, name, filtered, quarterRange, dueDate, email));
 
 				TempData["InfoAlert"] = new HtmlString("Generating Quarterly Conversation.<br/>This might take a couple of minutes.");
 

@@ -19,6 +19,7 @@ using Hangfire.MySql;
 using Hangfire.Dashboard;
 using RadialReview.Models;
 using RadialReview.Accessors;
+using RadialReview.Hangfire;
 
 namespace RadialReview {
 	public partial class Startup {
@@ -70,9 +71,10 @@ namespace RadialReview {
 				Authorization = new[] { new HangfireAuth() }
 			});
 
+			GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
 			app.UseHangfireServer(new BackgroundJobServerOptions() {
 				//WorkerCount = 1,
-				Queues = new[] { "critical", "conclusionemail", "generateqc" ,"default", "admin" }
+				Queues = HangfireQueues.OrderedQueues
 			});
 
 			// Uncomment the following lines to enable logging in with third party login providers

@@ -187,6 +187,12 @@
     <Compile Include="Crosscutting\Hooks\Interfaces\IRecurrenceSettings.cs" />
     <Compile Include="Crosscutting\Hooks\QuarterlyConversation\QuarterlyConversationCreationNotifications.cs" />
     <Compile Include="Crosscutting\Hooks\Realtime\Position\RealTime_Positions.cs" />
+    <Compile Include="Crosscutting\Schedulers\Scheduler.cs" />
+    <Compile Include="Crosscutting\Schedulers\HangfireConstants1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HangfireConstants.tt</DependentUpon>
+    </Compile>
     <Compile Include="Crosscutting\Schedulers\TodoEmailsScheduler.cs" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
@@ -998,7 +1004,6 @@
     <Compile Include="Utilities\Extensions\PaginationExtensions.cs" />
     <Compile Include="Utilities\Extensions\StreamExtension.cs" />
     <Compile Include="Utilities\Pop3Utility.cs" />
-    <Compile Include="Utilities\Schedule.cs" />
     <Compile Include="Utilities\ServerUtility.cs" />
     <Compile Include="Utilities\Chart\ChartUtility.cs" />
     <Compile Include="Utilities\CsvUtility.cs" />
@@ -1259,6 +1264,10 @@
     </Content>
     <Content Include="Content\VTO\VTO.css">
       <DependentUpon>VTO.less</DependentUpon>
+    </Content>
+    <Content Include="Crosscutting\Schedulers\HangfireConstants.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>HangfireConstants1.cs</LastGenOutput>
     </Content>
     <Content Include="Data\nickname.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

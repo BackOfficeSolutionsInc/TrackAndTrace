@@ -23,22 +23,6 @@ using RadialReview.Models.Scorecard;
 namespace RadialReview.Crosscutting.ScheduledJobs {
 	public class TodoEmailsScheduler{
 
-
-		//[AutomaticRetry(Attempts = 0)]
-		//public async Task SendEmail(int currentTime) {
-		//	var divisor = VariableAccessor.Get(Variable.Names.TODO_DIVISOR, ()=>43);
-		//	for (var i = 0; i < divisor; i++) {
-		//		//Que up all the emailers
-		//		BackgroundJob.Enqueue(() => SendEmail(currentTime, divisor, i));
-		//	}
-		//}
-
-		//[AutomaticRetry(Attempts = 0)]
-		//public async Task SendEmail(int currentTime, int divisor, int remainder) {
-		//	_ConstructTodoEmails(currentTime,
-		//}
-
-
 		public class TodoEmailHelpers {
 			/// <summary>
 			/// remainder < divisor

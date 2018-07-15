@@ -18,7 +18,7 @@ using TractionTools.Tests.Utilities;
 using static RadialReview.Crosscutting.ScheduledJobs.TodoEmailsScheduler;
 using static TractionTools.Tests.Permissions.BasePermissionsTest;
 
-namespace TractionTools.Tests.Scheduler {
+namespace TractionTools.Tests.SchedulerTests {
     [TestClass]
     public class SendTodoEmailTests : BaseTest {
 

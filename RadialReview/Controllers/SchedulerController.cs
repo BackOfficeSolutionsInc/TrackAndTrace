@@ -1,35 +1,21 @@
-﻿using System.EnterpriseServices;
-using System.Text;
-using log4net.Repository.Hierarchy;
-using RadialReview.Accessors;
+﻿using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Payments;
 using RadialReview.Models.Periods;
 using RadialReview.Models.Tasks;
-using RadialReview.Models.Todo;
-using RadialReview.Properties;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.Json;
-using RadialReview.Models.Components;
 using NHibernate;
-using NHibernate.Cfg;
-using RadialReview.Models.Synchronize;
-using NHibernate.Criterion;
-using System.Linq.Expressions;
-using NHibernate.Impl;
 using System.Threading;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
-using System.Configuration;
-using RadialReview.Crosscutting.EventAnalyzers;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Crosscutting.ScheduledJobs;
 
@@ -70,104 +56,60 @@ namespace RadialReview.Controllers {
 			return Content("reached " + DateTime.UtcNow.ToJsMs());
 		}
 
+
+		public class ChargeAccountResult {
+			public ChargeAccountResult(bool isRunning, bool? wasPayment_exception, string errorType, string statusMessage) {
+				running = isRunning;
+				error = errorType;
+				message = statusMessage;
+				payment_exception = wasPayment_exception;
+			}
+
+			public string job_id { get; set; }
+			public bool running { get; private set; }
+			public string error { get; private set; }
+			public string message { get; private set; }
+			public bool? payment_exception { get; private set; }
+		}
+
 		/// <summary>
-		/// Do not change controller. 
+		/// Do not change controller name. 
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="taskId"></param>
 		/// <returns></returns>
 		[Access(AccessLevel.Any)]
 		[AsyncTimeout(20 * 60 * 1000)]
-		public async Task<JsonResult> ChargeAccount(CancellationToken ct, long id, long taskId/*,long? executeTime=null*/) {
-			PaymentException capturedPaymentException = null;
-			Exception capturedException = null;
-			//DateTime? time = null;
-			//if (executeTime != null)
-			//	time = executeTime.Value.ToDateTime();
-			//decimal amt = 0;
+		public async Task<JsonResult> ChargeAccount(CancellationToken ct, long id, long taskId) {
+			var organizationId = id;
 			try {
-				var result = await PaymentAccessor.ChargeOrganization(id, taskId, false);
-				//amt = result.amount_settled;
-			} catch (PaymentException e) {
-				capturedPaymentException = e;
-			} catch (FallthroughException e) {
-				log.Error("FallthroughException", e);
-				Response.StatusCode = 501;
-				var type = PaymentExceptionType.Fallthrough;
-				if (capturedPaymentException != null)
-					type = capturedPaymentException.Type;
-				return Json(new {
-					charged = false,
-					payment_exception = true,
-					error = type,
-					message = e.NotNull(x => x.Message) ?? "Exception was null"
+
+				var jobId = await PaymentAccessor.EnqueueChargeOrganizationFromTask(organizationId, taskId, false);
+				log.Info("ChargingOrganizationEnqueued(" + organizationId + ")");
+				return Json(new ChargeAccountResult(true, null, null, null) {
+					job_id = jobId,
 				}, JsonRequestBehavior.AllowGet);
-			} catch (Exception e) {
-				capturedException = e;
-			}
-
-			if (capturedPaymentException != null) {
-
-				try {
-					using (var s = HibernateSession.GetCurrentSession()) {
-						using (var tx = s.BeginTransaction()) {
-							s.Save(PaymentErrorLog.Create(capturedPaymentException, taskId));
-							tx.Commit();
-							s.Flush();
-						}
-					}
-				} catch (Exception e) {
-					log.Error("FatalPaymentException", e);
-				}
-				log.Error("PaymentException", capturedPaymentException);
-				try {
-					var orgName = capturedPaymentException.OrganizationName + "(" + capturedPaymentException.OrganizationId + ")";
-					var trace = capturedPaymentException.StackTrace.NotNull(x => x.Replace("\n", "</br>"));
-					var email = Mail.To(EmailTypes.PaymentException, ProductStrings.PaymentExceptionEmail)
-						.Subject(EmailStrings.PaymentException_Subject, orgName)
-						.Body(EmailStrings.PaymentException_Body, capturedPaymentException.Message, "<b>" + capturedPaymentException.Type + "</b> for '" + orgName + "'  ($" + capturedPaymentException.ChargeAmount + ") at " + capturedPaymentException.OccurredAt + " [TaskId=" + taskId + "]", trace);
-
-					await Emailer.SendEmail(email, true);
-				} catch (Exception e) {
-					log.Error("FatalPaymentException1", e);
-				}
+			} catch (PaymentException paymentException) {
 				Response.StatusCode = 501;
-				return Json(new {
-					charged = false,
-					payment_exception = true,
-					error = capturedPaymentException.Type
-				}, JsonRequestBehavior.AllowGet);
-			}
-			if (capturedException != null) {
-				log.Error("Exception during Payment", capturedException);
-				try {
-					var trace = capturedException.StackTrace.NotNull(x => x.Replace("\n", "</br>"));
-					var email = Mail.To(EmailTypes.PaymentException, ProductStrings.ErrorEmail)
-						.Subject(EmailStrings.PaymentException_Subject, "{Non-payment exception}")
-						.Body(EmailStrings.PaymentException_Body, capturedException.NotNull(x => x.Message), "{Non-payment}", trace, "[Id=" + id + "] --  [TaskId=" + taskId + "]");
-
-					await Emailer.SendEmail(email, true);
-				} catch (Exception e) {
-					log.Error("FatalPaymentException2", e);
-				}
+				await PaymentAccessor.Unsafe.RecordCapturedPaymentException(paymentException, taskId);
+				return Json(new ChargeAccountResult(false, true, "" + paymentException.Type, null), JsonRequestBehavior.AllowGet);
+			} catch (FallthroughException fallthroughException) {
+				log.Error("FallthroughCaptured", fallthroughException);
+				return Json(new ChargeAccountResult(false, true, "" + PaymentExceptionType.Fallthrough, fallthroughException.NotNull(x => x.Message) ?? "no-details"), JsonRequestBehavior.AllowGet);
+			} catch (Exception unknownException) {
 				Response.StatusCode = 500;
-				return Json(new {
-					charged = false,
-					payment_exception = false,
-					error = capturedException.NotNull(x => x.Message)
-				}, JsonRequestBehavior.AllowGet);
-			}
-			return Json(new {
-				charged = true,
-				//amount = amt
-			}, JsonRequestBehavior.AllowGet);
+				await PaymentAccessor.Unsafe.RecordUnknownPaymentException(unknownException, organizationId, taskId);
+				return Json(new ChargeAccountResult(false, false, unknownException.NotNull(x => x.Message) ?? "no-details", null), JsonRequestBehavior.AllowGet);
+			}		
 		}
+
+
 
 		[Access(AccessLevel.Any)]
 		[AsyncTimeout(60 * 60 * 1000)]
-		public async Task<ActionResult> EmailTodos(int currentTime, CancellationToken ct, int divisor = 13, int remainder = 0, int sent = 0, string error = null, double duration = 0) {
+		public async Task<ActionResult> EmailTodos(int currentTime, CancellationToken ct, int divisor = 13, int remainder = 0, int sent = 0, string error = null, double duration = 0, bool mockEmails = false) {
 			if (remainder >= divisor) {
-				return Content("Sent:" + sent + "<br/>Duration:" + duration + "s");
+				return Content("Sent:" + sent + "<br/>Duration:" + duration + "s" + (mockEmails ? "<br/>mocked" : ""));
 			}
 			var start = DateTime.UtcNow;
 
@@ -179,12 +121,12 @@ namespace RadialReview.Controllers {
 				using (var tx = s.BeginTransaction()) {
 
 					var nowUtc = DateTime.UtcNow;
-					if (nowUtc.DayOfWeek == DayOfWeek.Saturday || nowUtc.DayOfWeek == DayOfWeek.Sunday)
+					if (!mockEmails && (nowUtc.DayOfWeek == DayOfWeek.Saturday || nowUtc.DayOfWeek == DayOfWeek.Sunday))
 						return Content("No fire on weekend.");
 
 					var started = s.QueryOver<ScheduledTask>().Where(x => x.TaskName == ApplicationAccessor.DAILY_EMAIL_TODO_TASK && x.Started != null).List().ToList();
 					if (!started.Any())
-						if (!Config.IsLocal())
+						if (!mockEmails && !Config.IsLocal())
 							throw new PermissionsException("Task not started");
 
 					await TodoEmailsScheduler.TodoEmailHelpers._ConstructTodoEmails(currentTime, unsent, s, nowUtc, divisor, remainder);
@@ -195,8 +137,10 @@ namespace RadialReview.Controllers {
 			}
 			try {
 				log.Info("EmailTodos sending " + unsent.Count + " emails.");
-				if (Config.IsLocal()) {
+				if (!mockEmails && Config.IsLocal()) {
 					await Task.Delay(6000);// 100 * unsent.Count);
+				} else if (mockEmails) {
+					await Task.Delay(300 * unsent.Count);
 				} else {
 					await Emailer.SendEmails(unsent);
 				}
@@ -210,18 +154,19 @@ namespace RadialReview.Controllers {
 			duration += (DateTime.UtcNow - start).TotalSeconds;
 
 			//Give some other requests a chance to go.
-			await Task.Delay(1500);
+			//await Task.Delay(1500);
 
 			return RedirectToAction("EmailTodos", new {
 				currentTime = currentTime,
 				divisor = divisor,
 				remainder = remainder + 1,
 				sent = sent,
-				duration = duration
+				duration = duration,
+				mockEmails = mockEmails
 			});
 		}
 
-	
+
 
 
 		/// <summary>

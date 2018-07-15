@@ -254,7 +254,7 @@ namespace RadialReview.Accessors {
 			if (path.StartsWith("/Scheduler/ChargeAccount/")) {
 				//var sc = new SchedulerController();
 				//var re = await sc.ChargeAccount(pathParts.Last().ToLong(), task.Id/*,executeTime:now.ToJavascriptMilliseconds()*/);
-				return await PaymentAccessor.ChargeOrganization(pathParts.Last().ToLong(), task.Id, true, executeTime:now);
+				return await PaymentAccessor.EnqueueChargeOrganizationFromTask(pathParts.Last().ToLong(), task.Id, true, executeTime:now);
 
 			} else {
 				throw new Exception("Unhandled URL: " + url);
