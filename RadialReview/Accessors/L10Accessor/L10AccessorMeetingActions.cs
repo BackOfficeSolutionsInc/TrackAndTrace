@@ -729,13 +729,13 @@ namespace RadialReview.Accessors {
 						ellapse = "1";
 						unit = "Minute";
 					} else if (durationMins > 1) {
-						duration = (int)durationMins + " minute".Pluralize(durationMins);
+						duration = (int)durationMins + " minute".Pluralize((int)durationMins);
 						ellapse = ""+(int)Math.Max(1,durationMins);
-						unit = "Minute".Pluralize(durationMins);
+						unit = "Minute".Pluralize((int)durationMins);
 					} else {
 						ellapse = "" + (int)Math.Max(1, durationSecs);
-						duration = (int)(durationSecs) + " second".Pluralize(durationSecs);
-						unit = "Second".Pluralize(durationSecs); 
+						duration = (int)(durationSecs) + " second".Pluralize((int)durationSecs);
+						unit = "Second".Pluralize((int)durationSecs); 
 					}
 				}
 
