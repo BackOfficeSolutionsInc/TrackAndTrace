@@ -100,9 +100,9 @@ namespace RadialReview.Properties {
         ///&lt;/p&gt;&lt;p&gt;
         ///&lt;b&gt;What&apos;s next?&lt;/b&gt;
         ///&lt;/p&gt;&lt;p&gt;
-        ///Schedule a quick &lt;a href=&quot;&quot;https://www.mytractiontools.com/schedule/optimize/&quot;&quot;&gt;&lt;b&gt;15-20 minute Optimizer Call&lt;/b&gt;&lt;/a&gt; to ensure that you are taking advantage of all of the features that Traction Tools has to offer. 
+        ///Schedule a quick &lt;a href=&quot;https://www.mytractiontools.com/schedule/optimize/&quot;&gt;&lt;b&gt;15-20 minute Optimizer Call&lt;/b&gt;&lt;/a&gt; to ensure that you are taking advantage of all of the features that Traction Tools has to offer. 
         ///&lt;/p&gt;&lt;p&gt;
-        ///&lt;b&gt;Get Assistance When you Need it&lt;/b [rest of string was truncated]&quot;;.
+        ///&lt;b&gt;Get Assistance When you Need it&lt;/b&gt;        /// [rest of string was truncated]&quot;;.
         /// </summary>
         public static string FirstCharge_Body {
             get {
