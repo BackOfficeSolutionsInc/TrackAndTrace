@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using RadialReview.Crosscutting.Flags;
+using RadialReview.Hangfire;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Enums;
@@ -65,7 +66,7 @@ namespace RadialReview.Accessors {
 		}
 
 		[Obsolete("Not safe and expensive")]		
-		[Queue("admin")]/*Queues must be lowecase alphanumeric. You must add queues to BackgroundJobServerOptions in Startup.auth.cs*/
+		[Queue(HangfireQueues.Immediate.ADMIN)]/*Queues must be lowecase alphanumeric. You must add queues to BackgroundJobServerOptions in Startup.auth.cs*/
 		[AutomaticRetry(Attempts = 0, OnAttemptsExceeded = AttemptsExceededAction.Fail)]
 		public static Csv GenerateAllUserData_Admin_Unsafe(DateTime now) {
 			using (var s = HibernateSession.GetCurrentSession()) {
