@@ -14,6 +14,7 @@ using System.Web;
 using static RadialReview.Utilities.ViewBoxOptimzer;
 using MigraDoc.DocumentObjectModel.Internals;
 using System.Threading.Tasks;
+using static RadialReview.Utilities.LayoutOptimizer;
 
 namespace RadialReview.Utilities {
 
@@ -167,7 +168,7 @@ namespace RadialReview.Utilities {
 		public Paragraph AddParagraph() {
 			return Container.AddParagraph();
 		}
-		
+
 		//public IElement This { get; set; }
 	}
 
@@ -429,10 +430,12 @@ namespace RadialReview.Utilities {
 	public interface IHint {
 		string ForViewBox();
 		IEnumerable<IElement> GetElements();
-		void Draw(Container viewBoxContainer, INamedViewBox viewBox, RangedVariables pageVariables);
+		void Draw(Container viewBoxContainer, INamedViewBox viewBox, RangedVariables pageVariables, int page);
+		void SetHasError();
 	}
 
 	public class Hint : IHint {
+		public bool HasError { get; set; }
 		public string ViewBoxName { get; set; }
 		public IEnumerable<IElement> Elements { get; set; }
 		public Hint(string viewBox, IEnumerable<IElement> elements) {
@@ -451,16 +454,20 @@ namespace RadialReview.Utilities {
 		public string ForViewBox() { return ViewBoxName; }
 		public IEnumerable<IElement> GetElements() { return Elements.ToList(); }
 
-		public virtual void DrawElement(Container contents, Cell viewBoxContainer) {
+		public virtual void DrawElement(Container contents, Cell viewBoxContainer, int page) {
 			viewBoxContainer.Elements.Add(contents);
 		}
 
-		public virtual void Draw(Container viewBoxContainer, INamedViewBox viewBox, RangedVariables pageVariables) {
+		public virtual void Draw(Container viewBoxContainer, INamedViewBox viewBox, RangedVariables pageVariables, int page) {
 			foreach (var element in GetElements()) {
 				element.AddToDocument(new Action<Container>(x => {
-					DrawElement(x, viewBoxContainer);
+					DrawElement(x, viewBoxContainer,page);
 				}), viewBox.GetWidth(), pageVariables);
 			}
+		}
+
+		public void SetHasError() {
+			HasError = true;
 		}
 	}
 
@@ -503,7 +510,7 @@ namespace RadialReview.Utilities {
 			return GenerateHints(viewName, Splits, before, contents, after);
 		}
 
-		public IEnumerable<Hint> GenerateStaticHints(string viewName, Action<ResizeContext> before, Action<ResizeContext, string> contents, Action<ResizeContext> after = null, PageSetup pageSetup = null, Unit? widthOverride=null) {
+		public IEnumerable<Hint> GenerateStaticHints(string viewName, Action<ResizeContext> before, Action<ResizeContext, string> contents, Action<ResizeContext> after = null, PageSetup pageSetup = null, Unit? widthOverride = null) {
 			if (contents == null)
 				throw new ArgumentNullException(nameof(contents));
 
@@ -516,7 +523,7 @@ namespace RadialReview.Utilities {
 			if (splits != null && splits.Any()) {
 				var i = 0;
 				var last = splits.Count() - 1;
-				
+
 				foreach (var s in splits) {
 					var elements = new List<IElement>();
 					//first
@@ -575,7 +582,7 @@ namespace RadialReview.Utilities {
 			foreach (var s in splits) {
 				if (s.Length + prevStr.Length <= maxCharacters) {
 					if (!string.IsNullOrWhiteSpace(prevStr))
-						prevStr = prevStr + splitOn[0].JoinStr ;
+						prevStr = prevStr + splitOn[0].JoinStr;
 					grouping.Add(prevStr + s);
 					prevStr = "";
 				} else {
@@ -583,7 +590,7 @@ namespace RadialReview.Utilities {
 					if (s.Length < maxCharacters) {
 						//see if we can merge it later
 						prevStr = s;
-					}else {
+					} else {
 						//By itself it's too long...
 						if (splitOn.Length > 1) {
 							grouping.AddRange(SplitAndGroup(s, lowerSplitting, maxCharacters));
@@ -591,7 +598,7 @@ namespace RadialReview.Utilities {
 							grouping.Add(s);
 						}
 						prevStr = "";
-					} 
+					}
 				}
 			}
 			if (!string.IsNullOrWhiteSpace(prevStr)) {
@@ -665,7 +672,7 @@ namespace RadialReview.Utilities {
 
 
 		public static void Draw(Document doc, LayoutOptimizerResults results) {
-
+			int pageNum = 0;
 			foreach (var page in results.Pages) {
 				var docPage = doc.AddSection();
 				var docLayout = page.Layout;
@@ -695,7 +702,7 @@ namespace RadialReview.Utilities {
 					//};
 
 					//Draw elements on content container
-					pageHint.Draw(viewBoxContents, viewBox, pageVariables);
+					pageHint.Draw(viewBoxContents, viewBox, pageVariables, pageNum);
 				}
 
 				//Add content containers to the page
@@ -709,6 +716,7 @@ namespace RadialReview.Utilities {
 				}
 
 				page.Layout.Draw(docPage, page.RequiredViewBoxes, instructions);
+				pageNum++;
 			}
 		}
 
@@ -777,6 +785,7 @@ namespace RadialReview.Utilities {
 			var maxIterations = 8; //Maximum of 8 pages...
 
 			var previousIterationBoxes = new List<string>();
+			bool firstTry = true;
 
 			//Each page...
 			while (true) {
@@ -786,7 +795,8 @@ namespace RadialReview.Utilities {
 				var pageLayout = layoutGenerator.GetPageLayout(pageNumber);
 				var pageViewBoxes = pageLayout.GetViewBoxes(remainingViewBoxes);
 
-				bool anySuccess = false;
+				var latestFitResults = new Dictionary<string, ViewBoxOptimzerResults>();
+
 				//Each section of the page
 				foreach (var viewBox in pageViewBoxes) {
 					var viewBoxName = viewBox.GetName();
@@ -802,6 +812,7 @@ namespace RadialReview.Utilities {
 							var hintElements = pageHints.SelectMany(x => x.GetElements());
 							var varClone = vars.CloneReset();
 							var results = ViewBoxOptimzer.Optimize(h, w, hintElements, varClone);
+							latestFitResults[viewBoxName] = results;
 
 							//Doesnt fit..
 							var failure = false;
@@ -818,7 +829,6 @@ namespace RadialReview.Utilities {
 								remainingHintsByViewBox[viewBoxName] = remainingHintsByViewBox[viewBoxName].Skip(i).ToList();
 								currentPage.AddHints(pageHints);
 								currentPage.AddViewBoxResults(viewBoxName, results);
-								anySuccess = true;
 								break;
 							}
 
@@ -839,25 +849,34 @@ namespace RadialReview.Utilities {
 				remainingViewBoxes = remainingHintsByViewBox.Where(x => x.Value.Any()).Select(x => x.Key).ToList();
 
 				//Max iterations reached, or deadlocked?
-				if (!anySuccess) {
-					var diff = SetUtility.AddRemove(previousIterationBoxes, unfitViewBoxes);
-					if (iteration > 0 && maxIterations < iteration || (unfitViewBoxes.Any() && diff.AreSame())) {
-						if ((unfitViewBoxes.Any() && diff.AreSame())) {
-							anyFailures = true;
-							if (!currentPage.HintsOnPage.Any()) {
-								pageResults.RemoveAt(pageResults.Count() - 1);
+				//	if (!firstTry) {
+				var diff = SetUtility.AddRemove(previousIterationBoxes, unfitViewBoxes);
+				if (iteration > 0 && maxIterations < iteration || (unfitViewBoxes.Any() && diff.AreSame())) {
+					if ((unfitViewBoxes.Any() && diff.AreSame())) {
+						anyFailures = true;
+						//if (!currentPage.HintsOnPage.Any()) {
+						//	pageResults.RemoveAt(pageResults.Count() - 1);
+						//	currentPage = pageResults.LastOrDefault();
+						//}
+						Console.WriteLine("Optimize failed:" + string.Join(",", unfitViewBoxes));
+						if (currentPage != null && unfitViewBoxes.Any()) {
+							AppendError(currentPage, unfitViewBoxes.First(), "---Error sizing contents---");
+							try {
+								foreach (var v in remainingViewBoxes) {
+									currentPage.AddHints(remainingHintsByViewBox[v]);
+									remainingHintsByViewBox[v].ForEach(hint=>hint.SetHasError());									
+								}
+							} catch (Exception e) {
 							}
-							Console.WriteLine("Optimize failed:" + string.Join(",", unfitViewBoxes));
-							if (unfitViewBoxes.Any()) {
-								AppendError(currentPage, unfitViewBoxes.First(), "---Error sizing contents---");
-							}
-							break;
 						}
+						break;
 					}
-					previousIterationBoxes = unfitViewBoxes.Select(x => x).ToList();
-				} else {
-					previousIterationBoxes = new List<string>();
 				}
+				previousIterationBoxes = unfitViewBoxes.Select(x => x).ToList();
+				//} else {
+				//	previousIterationBoxes = new List<string>();
+				//}
+				//firstTry = false;
 
 				iteration += 1;
 
@@ -884,6 +903,7 @@ namespace RadialReview.Utilities {
 				var errorParagraph = new Paragraph();
 				errorParagraph.AddText(message ?? "error");
 				errorParagraph.Format.Font.Color = Colors.DarkRed;
+				errorParagraph.Format.Font.Size = 6;
 				errorParagraph.Format.Font.Italic = true;
 				page.AddHints(new[] { new Hint(viewBox, new StaticElement(x => x.Container.Add(errorParagraph))) });
 			} catch (Exception e) {
