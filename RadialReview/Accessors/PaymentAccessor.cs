@@ -793,7 +793,7 @@ namespace RadialReview.Accessors {
 
 				if (token == null) {
 					await EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "MissingToken", arg1: amount));
-					throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.MissingToken);
+					throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.MissingToken,"Token missing for "+ org2.GetName()+" ("+organizationId+")");
 				}
 				PaymentResult pr = null;
 				try {
@@ -896,7 +896,9 @@ namespace RadialReview.Accessors {
 			[Obsolete("Must call with Enqueue. Cannot be run again through ScheduledTask (task is marked complete), cannot be called inside a session. Calling a second time will charge a second time.")]
 			[Queue(HangfireQueues.Immediate.CHARGE_ACCOUNT_VIA_HANGFIRE)]
 			[AutomaticRetry(Attempts = 0)]
-			public async Task<HangfireChargeResult> ChargeViaHangfire(long organizationId, long unverified_taskId, bool forceUseTest, bool sendReceipt, DateTime executeTime) {
+			public async Task<HangfireChargeResult> ChargeViaHangfire(
+				long organizationId, long unverified_taskId, bool forceUseTest, bool sendReceipt, DateTime executeTime
+			) {
 				PaymentResult result = null;
 				ChargeResult chargeResult = null;
 				try {
