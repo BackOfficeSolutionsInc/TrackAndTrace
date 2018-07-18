@@ -155,7 +155,7 @@ namespace RadialReview.Controllers {
 
 			ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssueRecurrence(id));
 			return PartialView(new IssueVM() {
-				Priority = issueRecurrence.Priority,
+				Priority = issueRecurrence.Priority, 
 				Message = issueRecurrence.Issue.Message,
 				OwnerId = issueRecurrence.Owner.Id,
 				IssueId = issueRecurrence.Issue.Id,
@@ -180,7 +180,7 @@ namespace RadialReview.Controllers {
 		public async Task<JsonResult> CopyModal(CopyIssueVM model) {
 			//ValidateValues(model, x => x.ParentIssue_RecurrenceId, x => x.IssueId);
 			var issue = IssuesAccessor.CopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
-			model.PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), issue.Recurrence.Id);
+			//model.PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), issue.Recurrence.Id);
 
 			await IssuesAccessor.EditIssue(GetUser(), model.ParentIssue_RecurrenceId, awaitingSolve: true);
 			return Json(ResultObject.SilentSuccess().NoRefresh());
