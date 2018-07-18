@@ -237,7 +237,7 @@ namespace RadialReview.Controllers {
 					
 					ViewBag.Meetings = meetings;
 
-					ViewBag.Credits = s.QueryOver<PaymentCredit>().Where(x => x.OrgId == id && x.DeleteTime == null).List().ToList();
+					ViewBag.Credits = PaymentAccessor.GetCredits(s, perms, id.Value);// s.QueryOver<PaymentCredit>().Where(x => x.OrgId == id && x.DeleteTime == null).List().ToList();
 
 					return View(org);
 

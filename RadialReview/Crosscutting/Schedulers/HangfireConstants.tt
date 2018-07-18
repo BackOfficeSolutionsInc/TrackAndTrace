@@ -55,7 +55,7 @@ namespace RadialReview.Hangfire
 			public const string BUILD_TIME = "<#=DateTime.UtcNow#>"; 
 			public const string CONCLUSION_EMAIL = "conclusionemail_<#=DateTime.UtcNow.Ticks/1000000#>";  
 			public const string GENERATE_QC = "generateqc_<#=DateTime.UtcNow.Ticks/1000000#>";  
-			public const string ADMIN = "admin_<#=DateTime.UtcNow.Ticks/1000000#>";   
+			public const string ALPHA = "alpha_<#=DateTime.UtcNow.Ticks/1000000#>";   
 			public const string CRITICAL = "critical_<#=DateTime.UtcNow.Ticks/1000000#>"; 
 			public const string CHARGE_ACCOUNT_VIA_HANGFIRE = "chargeaccount_<#=DateTime.UtcNow.Ticks/1000000#>";   
 
@@ -68,7 +68,7 @@ namespace RadialReview.Hangfire
 					HangfireQueues.Immediate.GENERATE_QC,
 					HangfireQueues.Immediate.CHARGE_ACCOUNT_VIA_HANGFIRE,
 					HangfireQueues.DEFAULT,
-					HangfireQueues.Immediate.ADMIN			 
+					HangfireQueues.Immediate.ALPHA			 
 		};
 
 

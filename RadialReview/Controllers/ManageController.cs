@@ -203,6 +203,8 @@ namespace RadialReview.Controllers {
 		public ActionResult Payment() {
 			UpdateViewbag();
 			OrganizationViewModel model = GetAdminDataModel(false, true);
+			ViewBag.Credits = PaymentAccessor.GetCredits(GetUser(), GetUser().Organization.Id);
+
 			return View(model);
 		}
 
@@ -216,7 +218,6 @@ namespace RadialReview.Controllers {
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 			if (testManageFinance)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
-
 
 			var model = new OrganizationViewModel() {
 				Id = user.Organization.Id,
@@ -235,30 +236,24 @@ namespace RadialReview.Controllers {
 				RockName = user.Organization.Settings.RockName,
 				TimeZone = user.Organization.Settings.TimeZoneId,
 				WeekStart = user.Organization.Settings.WeekStart,
-				Cards = PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id),
-
 				OnlySeeRockAndScorecardBelowYou = user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou,
-
-				PaymentPlan = PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id),
-
 				ScorecardPeriod = user.Organization.Settings.ScorecardPeriod,
-
 				StartOfYearMonth = user.Organization.Settings.StartOfYearMonth,
 				StartOfYearOffset = user.Organization.Settings.StartOfYearOffset,
-
 				DateFormat = user.Organization.Settings.DateFormat,
 				NumberFormat = user.Organization.Settings.NumberFormat,
-
 				LimitFiveState = user.Organization.Settings.LimitFiveState,
-
 				AllowAddClient = user.Organization.Settings.AllowAddClient,
-
 				DefaultSendTodoTime = user.Organization.Settings.DefaultSendTodoTime,
 				PossibleTodoTimes = TimingUtility.GetPossibleTimes(user.Organization.Settings.DefaultSendTodoTime),
-
 				AccountabilityChartId = user.Organization.AccountabilityChartId
-
 			};
+
+			if (testManageFinance) {
+				model.PaymentPlan = PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id);
+				model.Cards = PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id);
+			}
+
 			return model;
 		}
 

@@ -13,4 +13,12 @@ namespace RadialReview.Models.Enums
 		production,
         local_test_sqlite
 	}
+
+	public enum ApplicationVersion {
+		invalid,
+		local,
+		alpha,
+		beta,
+		production
+	}
 }

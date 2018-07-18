@@ -246,6 +246,20 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		public static IEnumerable<PaymentCredit> GetCredits(UserOrganizationModel caller, long organizationId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetCredits(s, perms, organizationId);
+				}
+			}
+		}
+
+		public static IEnumerable<PaymentCredit> GetCredits(ISession s, PermissionsUtility perms, long organizationId) {
+			perms.CanView(PermItem.ResourceType.UpdatePaymentForOrganization, organizationId);
+			return s.QueryOver<PaymentCredit>().Where(x => x.OrgId == organizationId && x.DeleteTime == null).List().ToList();
+		}
+
 		#endregion
 		#region Charge
 		public static async Task<string> EnqueueChargeOrganizationFromTask(long organizationId, long taskId, bool forceUseTest = false, bool sendReceipt = true, DateTime? executeTime = null) {

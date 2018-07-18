@@ -6,6 +6,8 @@ using RadialReview.Models;
 using RadialReview.Models.Enums;
 using System.IO;
 using System.Threading;
+using System.Collections.Specialized;
+using System.Configuration;
 
 namespace RadialReview.Utilities {
 	public class Config {
@@ -293,6 +295,7 @@ namespace RadialReview.Utilities {
 							while (!File.Exists(file)) {
 								Thread.Sleep(100);
 							}
+							Thread.Sleep(100);
 						}
 						if (version == File.ReadAllText(file))
 							return false;
@@ -470,6 +473,17 @@ namespace RadialReview.Utilities {
 				return result;
 			}
 			throw new Exception("Invalid Environment");
+		}
+
+
+		public static bool IsDefinitelyAlpha() {
+			return GetVersion() == ApplicationVersion.alpha;
+		}
+
+		private static ApplicationVersion GetVersion() {
+			var version = ApplicationVersion.invalid;
+			var versions = GetAppSetting("ApplicationVersion", ""+ApplicationVersion.invalid);
+			return version;			
 		}
 
 		public static string GetSecret() {

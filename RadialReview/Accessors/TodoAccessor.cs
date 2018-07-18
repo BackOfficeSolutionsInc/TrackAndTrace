@@ -517,15 +517,15 @@ namespace RadialReview.Accessors {
 					//var org = todos.FirstOrDefault().NotNull(x => x.Organization);
 					//var ts = timesettings.GetTimeSettings();
 					var now = TimeData.ConvertFromServerTime(DateTime.UtcNow, timezoneOffset).Date;
-					var format = dateFormat;// for .NotNull(x => x.Settings.NotNull(y => y.GetDateFormat())) ?? "MM-dd-yyyy";
+					var format = dateFormat ?? "MM-dd-yyyy";// for .NotNull(x => x.Settings.NotNull(y => y.GetDateFormat())) ?? "MM-dd-yyyy";
 					foreach (var todo in todos.OrderBy(x => x.DueDate.Date).ThenBy(x => x.Message)) {
 						var color = todo.DueDate.Date <= now ? "color:#F22659;" : "color: #34AD00;";
 						var completionIcon = Config.BaseUrl(null) + @"Image/TodoCompletion?id=" + HttpUtility.UrlEncode(Crypto.EncryptStringAES("" + todo.Id, _SharedSecretTodoPrefix(todo.AccountableUserId))) + "&userId=" + todo.AccountableUserId;
 						var duedate = todo.DueDate;
 						duedate = TimeData.ConvertFromServerTime(DateTime.UtcNow, timezoneOffset);
 
-						table.Append(@"<tr><td width=""16px"" valign=""top"" style=""padding: 3px 0 0 0;""><img src='").Append(completionIcon).Append("' width='15' height='15'/>").Append(@"</td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(null) + @"Todo/List"">")
-							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(null) + @"Todo/List?todo=" + todo.Id + @""">")
+						table.Append(@"<tr><td width=""16px"" valign=""top"" style=""padding: 2px 0 0 0;""><img src='").Append(completionIcon).Append("' width='15' height='15'/>").Append(@"</td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(null) + @"Todo/List"">")
+							.Append(i).Append(@". </a></b></td><td align=""left"" valign=""top""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(null) + @"Todo/List?todo=" + todo.Id + @""">")
 							.Append(todo.Message).Append(@"</a></b></td><td  align=""right"" valign=""top"" style=""" + color + @""">")
 							.Append(duedate.ToString(format)).Append("</td></tr>");
 

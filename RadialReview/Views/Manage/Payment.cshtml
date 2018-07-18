@@ -236,9 +236,61 @@
 					}
 @if (ViewBag.IsRadialAdmin == true) {
 	<div class="btn btn-danger pull-right" onclick="window.location='/invoice/ForceUpdateCard/@ViewBag.OrganizationId'">Force charge '@ViewBag.Organization.Name'</div>
-
 }
 <div class="btn btn-primary pull-left" onclick="window.location='/invoice'">View Invoices</div>
+
+@if (ViewBag.IsRadialAdmin == true) {
+	<div class="clearfix smallBreak2"></div>
+	<hr />
+	<div id="creditsTable"></div>
+
+
+	//using (Html.BeginScripts()) {
+
+	<script>
+		var creditLoader= function(){
+			if (typeof(DataTable) == "undefined"){
+				setTimeout(creditLoader,100);
+			}else{
+
+				var creditData =  @Html.ArrayToString(((List<RadialReview.Models.Payments.PaymentCredit>)ViewBag.Credits));
+
+				var creditModal = {
+					title:"Apply a credit to @(Html.Encode(Model.OrganizationName))",
+					fields:[
+						{name:"Message",text:"Message",placeholder:"Why are we applying the credit?"},
+						{name:"OriginalAmount",text:"Amount",type:"number"},
+						{name:"OrgId",type:"hidden",value:@Model.Id},
+					],
+					pushUrl:"/Payment/ApplyCredit",
+					success:function(){
+						showAlert("Credit Applied.");
+					}
+				};
+
+				var creditTable = DataTable({
+					container:"#creditsTable",
+					data: creditData,
+					addButton : {text:"Add credit"},
+					clickAdd: creditModal,
+					clickRemove:"/payment/RemoveCredit/{0}",
+					cells:[
+						{rowNum:true},
+						{name:"Credits",contents:function(x){return x.Message;},title:"Message",classes:"fullWidth",},
+						{name:"Amount",contents:function(x){return "<b>$"+x.AmountRemaining.toFixed(2)+"</b>/<small>$"+x.OriginalAmount.toFixed(2)+"</small>";},title:"Amount"},
+						{name:"Date",contents:function(x){return getFormattedDate(x.CreateTime);},title:"Date",classes:"nowrap"},
+						@if (ViewBag.IsRadialAdmin == true) {
+							@:{ remove: true}
+						}
+					]
+				});
+			}
+		};
+		creditLoader();
+
+	</script>
+}
+
 
 @using (Html.BeginStyles()) {
 	<style>
