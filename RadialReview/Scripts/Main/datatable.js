@@ -470,9 +470,9 @@ var DataTable = function (settings) {
 		var html = resolve(contents, row, i, settings);
 
 		if (contents == null)
-			console.warn("Contents null for " + s);
+			console.warn("Contents null for " + i);
 		if (typeof (html) === "undefined")
-			console.warn("Cell was undefined for " + s + " (Did you forget to 'return'?)");
+			console.warn("Cell was undefined for " + i + " (Did you forget to 'return'?)");
 
 		cell.html(html);
 

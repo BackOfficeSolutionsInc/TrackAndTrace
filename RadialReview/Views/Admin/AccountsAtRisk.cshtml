@@ -1,0 +1,40 @@
+﻿@model List<RadialReview.Accessors.StatsAccessor.AdminOrgStats>
+@{
+	ViewBag.Title = "AccountsAtRisk";
+}
+
+<h2>Accounts At Risk</h2>
+<div>
+	<h3>Range:</h3>
+	<div> @ViewBag.Start </div>
+	<div> @ViewBag.End</div>
+
+</div>
+
+
+<div id="table"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+		DataTable({
+			container:"#table",
+			data: @Html.ArrayToString(Model),
+			cellId: function(x){return x.OrgId;},
+			cells:[
+				{contents:function(x){return x.OrgId;}, name:"Org Id"},
+				{contents:function(x){return "<a href='/organization/which/"+x.OrgId+"'>"+x.OrgName+"</a>";}, name:"Org Name", classes:"fullWidth"},
+				{contents:function(x){
+					var g= x.Registrations.PercentageFromWindowMax;
+					return Math.round(g.Numerator/g.Denominator*100)+"%";
+				}, name:"Growth"},
+				{contents:function(x){return x.Registrations.StartValue;}, name:"Begin"},
+				{contents:function(x){return x.Registrations.MaxValue;}, name:"Max"},
+				{contents:function(x){return x.Registrations.EndValue;}, name:"End"},
+			]
+		});
+
+		$(function(){
+			$("table").tablesorter({sortList: [[2,0]]});
+		});
+	</script>
+}

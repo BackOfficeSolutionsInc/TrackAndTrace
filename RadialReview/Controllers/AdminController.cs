@@ -151,6 +151,20 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> AccountsAtRisk(int days = 60,decimal growth=-.1m) {
+			var start = DateTime.UtcNow.AddDays(-days);
+			var end = DateTime.UtcNow;
+			var stats = StatsAccessor.GetSuperAdminStatistics_Unsafe(start,end);
+			var range = stats.Where(x => x.Registrations.PercentageFromWindowMax.GetValue(2) < 1m + growth).ToList();
+
+			ViewBag.Start = start;
+			ViewBag.End = end;
+
+			return View(range);
+		}
+
+
+		[Access(AccessLevel.Radial)]
 		public async Task<ActionResult> EmployeeCount(CancellationToken token, Divisor divisor = null) {
 			divisor = divisor ?? new Divisor();
 			ViewBag.Divisor = divisor;

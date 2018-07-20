@@ -24,7 +24,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
 function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel, contentType) {
-	debugger;
+	//debugger;
 	$("#modal").modal("hide");
 	$("#modal-icon").attr("class", "");
 	$("#modal #class-container").attr("class", "");

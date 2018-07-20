@@ -240,7 +240,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult CreateIssueRecurrence() {
+		public PartialViewResult CreateIssueRecurrence(long? recurrenceId=null,long? meetingId = null) {
 			//if (meeting != -1)
 			//	_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
@@ -250,9 +250,10 @@ namespace RadialReview.Controllers {
 
 			var model = new IssueVM() {
 				ByUserId = GetUser().Id,
-				MeetingId = -1,
+				MeetingId = meetingId?? -1,
 				PossibleUsers = null,
-				OwnerId = GetUser().Id
+				OwnerId = GetUser().Id,
+				RecurrenceId = recurrenceId ?? 0,				
 			};
 			return PartialView("CreateIssueRecurrenceModal", model);
 		}

@@ -235,7 +235,7 @@ namespace RadialReview.Accessors {
 				perms.ViewOrganization(user.Organization.Id);
 				var caller = perms.GetCaller();
 
-				if (caller.Id != userId && !PermissionsUtility.IsAdmin(caller)) {
+				if (caller.Id != userId && !PermissionsUtility.IsAdmin(s,caller)) {
 					AccountabilityNode parent = null;
 					AccountabilityNode child1 = null;
 					var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null)
@@ -438,7 +438,7 @@ namespace RadialReview.Accessors {
 		public static List<AccountabilityNode> GetChildrenAndSelfModels(ISession s, UserOrganizationModel caller, long nodeId, bool allowAnyFromSameOrg = false) {
 			var node = s.Get<AccountabilityNode>(nodeId);
 
-			if (caller.Id != node.UserId && !PermissionsUtility.IsAdmin(caller)) {
+			if (caller.Id != node.UserId && !PermissionsUtility.IsAdmin(s,caller)) {
 
 				if (allowAnyFromSameOrg && node.OrganizationId == caller.Organization.Id) {
 					//warning... this overrides the following permissions check...
@@ -480,7 +480,7 @@ namespace RadialReview.Accessors {
 		public static List<long> GetChildrenAndSelf(ISession s, UserOrganizationModel caller, long nodeId, PermissionType? type = null) {
 			var node = s.Get<AccountabilityNode>(nodeId);
 
-			if (caller.Id != node.UserId && !PermissionsUtility.IsAdmin(caller)) {
+			if (caller.Id != node.UserId && !PermissionsUtility.IsAdmin(s,caller)) {
 				//var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ManagerId == caller.Id && x.SubordinateId == nodeId).SingleOrDefault();
 				AccountabilityNode parent = null;
 				var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ChildId == nodeId)

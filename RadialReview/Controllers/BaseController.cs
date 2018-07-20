@@ -62,10 +62,15 @@ namespace RadialReview.Controllers {
 			UserManager = userManager;
 		}
 
-		protected async Task SignInAsync(UserModel user, bool isPersistent = false) {
+		protected async Task SignInAsync(UserModel user, bool isPersistent = false,TimeSpan? expiration=null) {
 			AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
 			var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-			AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, identity);
+			var settings = new AuthenticationProperties() { IsPersistent = isPersistent };
+			if (expiration != null) {
+				settings.ExpiresUtc = DateTime.UtcNow.Add(expiration.Value);
+				settings.AllowRefresh = false;				
+			}
+			AuthenticationManager.SignIn(settings, identity);
 		}
 
 		public NHibernateUserManager UserManager { get; protected set; }
@@ -306,6 +311,16 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+		protected void AllowAdminsWithoutAudit() {
+			try {
+				var user = GetUser();
+				if (user!=null && user._AdminShortCircuit != null) {
+					user._AdminShortCircuit.AllowAdminWithoutAudit = true;
+				}
+			} catch (Exception e) {
+			}
+		}
+
 		protected List<UserOrganizationModel> GetUserOrganizations(String redirectUrl) //Boolean full = false)
 		{
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -522,7 +537,7 @@ namespace RadialReview.Controllers {
 			ActionDescriptor actionDescriptor = controllerDescriptor.FindAction(controllerContext, controllerContext.RouteData.Values["action"].ToString());
 			return (actionDescriptor as ReflectedActionDescriptor).MethodInfo;
 		}
-
+		
 		protected override void OnException(ExceptionContext filterContext) {
 			try {
 				ChromeExtensionComms.SendCommand("pageError");
@@ -596,6 +611,16 @@ namespace RadialReview.Controllers {
 					var type = ((MeetingException)filterContext.Exception).MeetingExceptionType;
 					log.Info("MeetingException: [" + Request.Url.PathAndQuery + "] --> [" + type + "]");
 					filterContext.Result = RedirectToAction("ErrorMessage", "L10", new { area = "", message = filterContext.Exception.Message, type });
+					filterContext.ExceptionHandled = true;
+					filterContext.HttpContext.Response.Clear();
+				} else if (filterContext.Exception is AdminSetRoleException) {
+					var ex = (AdminSetRoleException)filterContext.Exception;
+					var redirectUrl = ex.RedirectUrl;
+					log.Info("AdminSetRoleException: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
+					if (ex.AccessLevel == Models.Admin.AdminAccessLevel.View) 
+						filterContext.Result = RedirectToAction("AdminSetRole", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl, Id = ex.RequestedRoleId  });
+					if (ex.AccessLevel == Models.Admin.AdminAccessLevel.SetAs)
+						filterContext.Result = RedirectToAction("SetAsUser", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl, Id = ex.RequestedEmail });					
 					filterContext.ExceptionHandled = true;
 					filterContext.HttpContext.Response.Clear();
 				} else if (filterContext.Exception is RedirectException) {
@@ -696,6 +721,7 @@ namespace RadialReview.Controllers {
 							case AccessLevel.Radial:
 								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
 									throw new PermissionsException("You do not have access to this resource.");
+								AllowAdminsWithoutAudit();
 								break;
 							case AccessLevel.RadialData:
 								var ids = s.GetSettingOrDefault(Variable.Names.USER_RADIAL_DATA_IDS, () => "").Split(new[] { ',' },StringSplitOptions.RemoveEmptyEntries).Select(x=>long.Parse(x)).ToList();
@@ -709,6 +735,7 @@ namespace RadialReview.Controllers {
 								}
 								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
 									throw new PermissionsException("You do not have access to this resource.");
+								AllowAdminsWithoutAudit();
 								break;
 							default:
 								throw new Exception("Unknown Access Type");
@@ -739,13 +766,20 @@ namespace RadialReview.Controllers {
 #pragma warning disable CS0618 // Type or member is obsolete
 								var lu = s.Get<UserLookup>(oneUser.Cache.Id);
 #pragma warning restore CS0618 // Type or member is obsolete
-								var isRadialAdmin = GetUserModel(s).IsRadialAdmin;
-								oneUser._IsRadialAdmin = oneUser._IsRadialAdmin || isRadialAdmin;
+								var actualUserModel = GetUserModel(s);
+								var isRadialAdmin = oneUser.IsRadialAdmin || actualUserModel.IsRadialAdmin;
 
-								Thread.SetData(Thread.GetNamedDataSlot("IsRadialAdmin"), oneUser._IsRadialAdmin);
-								filterContext.Controller.ViewBag.IsRadialAdmin = oneUser._IsRadialAdmin;
+								//if (oneUser.User.Id != actualUserModel.Id) {
+								oneUser._AdminShortCircuit = new UserOrganizationModel.AdminShortCircuit() {
+									IsRadialAdmin = isRadialAdmin,
+									ActualUserId = actualUserModel.Id,
+									IsMocking = oneUser.User.Id != actualUserModel.Id,
+								};
+								//}
+								oneUser._IsRadialAdmin = isRadialAdmin;
+								filterContext.Controller.ViewBag.IsRadialAdmin = isRadialAdmin;
 
-								if (!oneUser._IsRadialAdmin) {
+								if (!isRadialAdmin) {
 									lu.LastLogin = DateTime.UtcNow;
 									s.Update(lu);
 

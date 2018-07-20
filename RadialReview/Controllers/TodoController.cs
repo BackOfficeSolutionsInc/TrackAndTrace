@@ -35,13 +35,13 @@ namespace RadialReview.Controllers {
 			public string name { get; set; }
 		}
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult CreateTodoRecurrence(long? id = null) {
-
+		public PartialViewResult CreateTodoRecurrence(long? id = null, long? recurrenceId = null, long? meetingId = null) {
+			var recurId = id ?? recurrenceId ?? -2;
 			var model = new TodoVM(GetUser().Id, GetUser()) {
 				ByUserId = GetUser().Id,
 				AccountabilityId = new[] { GetUser().Id },
-				MeetingId = -1,
-				RecurrenceId = id ?? -2
+				MeetingId = meetingId ?? -1,
+				RecurrenceId = recurId,
 			};
 
 			var meetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
@@ -146,7 +146,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult CreateTodo(long recurrence, long meeting = -1, string todo = null, long? modelId = null, string modelType = null,string details=null) {
+		public PartialViewResult CreateTodo(long recurrence, long meeting = -1, string todo = null, long? modelId = null, string modelType = null, string details = null) {
 			if (meeting != -1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
@@ -279,7 +279,7 @@ namespace RadialReview.Controllers {
 				throw new PermissionsException("Rock Id blank");
 			}
 			var r = rr.Value;
-			
+
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
 			var s = RockAccessor.GetRockInMeeting(GetUser(), r, meeting);

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using static RadialReview.Models.Charts.Line;
+using static RadialReview.Utilities.DatePointAnalyzerUtility;
 
 namespace RadialReview.Accessors {
 	public class StatsAccessor {
@@ -64,6 +65,79 @@ namespace RadialReview.Accessors {
 			var mg = new MetricGraphic(name, null);
 			mg.AddTimeseries(new MetricGraphicTimeseries(points, legendTitle));
 			return mg;
+		}
+
+
+		public static List<DatePoint> GenerateDateDataFromEvents(List<EventTimes> times) {
+			var adder = new List<Tuple<DateTime,int>>();
+			foreach (var evt in times) {
+				adder.Add(Tuple.Create(evt.CreateTime, +1));
+				if (evt.DeleteTime != null && evt.CompleteTime != null) {
+					adder.Add(Tuple.Create(Math2.Min(evt.DeleteTime.Value, evt.CompleteTime.Value), -1));
+				} else if (evt.DeleteTime != null) {
+					adder.Add(Tuple.Create(evt.DeleteTime.Value, -1));
+				} else if (evt.CompleteTime != null) {
+					adder.Add(Tuple.Create(evt.CompleteTime.Value, -1));
+				}
+			}
+			var count = 0;
+			var result = new List<DatePoint>();
+			foreach (var a in adder.OrderBy(x => x.Item1)) {
+				count += a.Item2;
+				result.Add(new DatePoint(a.Item1,count));
+			}
+			return result;
+		}
+
+		public class AdminOrgStats {
+			public long OrgId { get; set; }		
+			public string OrgName { get; set; }	
+			public WindowAnalysis Registrations { get; set; }
+		}
+
+		public static List<AdminOrgStats> GetSuperAdminStatistics_Unsafe(DateTime start,DateTime? end = null) {
+			end = end ?? DateTime.UtcNow;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					UserModel userAlias = null;
+					OrganizationModel orgAlias = null;
+					LocalizedStringModel orgNameAlias = null;
+					var data = s.QueryOver<UserOrganizationModel>()
+									.Left.JoinAlias(x => x.User, () => userAlias)
+									.Left.JoinAlias(x => x.Organization, () => orgAlias)
+									.Left.JoinAlias(x => orgAlias.Name, () => orgNameAlias)
+									.Where(x => orgAlias.DeleteTime == null)
+									.Select(x => x.AttachTime, x => x.DeleteTime, x => x.CreateTime, x => userAlias.CreateTime, x => x.Id, x => x.Organization.Id, x=> orgNameAlias.Standard)
+									.List<object[]>()
+									.Select(x => new {
+										attachTime = (DateTime)x[0],
+										deleteTime = (DateTime?)x[1],
+										createTime = (DateTime)x[2],
+										registrationTime = (DateTime?)x[3],
+										userId = (long)x[4],
+										orgId = (long)x[5],
+										orgName = (string)x[6],
+									}).ToList();
+					
+
+
+					var registrationByOrg = data.Where(x => x.registrationTime != null).GroupBy(x => x.orgId);
+					var result = new List<AdminOrgStats>();
+					foreach (var orgReg in registrationByOrg) {
+						var eventTimes = orgReg.Select(x => new EventTimes(x.registrationTime, x.deleteTime, x.deleteTime)).ToList();
+						var orgData = GenerateDateDataFromEvents(eventTimes);
+						result.Add(new AdminOrgStats() {
+							OrgId = orgReg.Key,
+							OrgName = orgReg.First().orgName,
+							Registrations = DatePointAnalyzerUtility.AnalyzeWindow(orgData, start, end.Value)
+						});						
+					}
+
+					return result;
+				}
+			}
+
 		}
 
 		public static MetricGraphic GetOrganizationRockCompletionBurndown(UserOrganizationModel caller, long orgId) {

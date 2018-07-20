@@ -59,6 +59,8 @@ namespace RadialReview.Controllers {
 		public ActionResult Plan_Monthly(long? orgid = null, bool msg = false) {
 			var id = orgid ?? GetUser().Organization.Id;
 
+			AllowAdminsWithoutAudit();
+
 			var plan = PaymentAccessor.GetPlan(GetUser(), id);
 			var org = _OrganizationAccessor.GetOrganization(GetUser(), id);
 			ViewBag.ShowPostMsg = msg;

@@ -41,6 +41,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
 		public ActionResult List(long? id = null) {
+			AllowAdminsWithoutAudit();
 			var orgid = id ?? GetUser().Organization.Id;
 			var list = InvoiceAccessor.GetInvoicesForOrganization(GetUser(), orgid);
 			ViewBag.OrgId = id;

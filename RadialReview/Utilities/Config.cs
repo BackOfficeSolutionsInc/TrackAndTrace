@@ -663,6 +663,10 @@ namespace RadialReview.Utilities {
 			return server;
 		}
 
+		public static long GetTractionToolsOrgId() {
+			return 1634;
+		}
+
 		internal static string NoteApiKey() {
 			return GetAppSetting("NotesServer_ApiKey");
 		}

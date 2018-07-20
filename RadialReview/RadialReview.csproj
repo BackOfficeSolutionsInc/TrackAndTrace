@@ -195,6 +195,7 @@
       <DependentUpon>HangfireConstants.tt</DependentUpon>
     </Compile>
     <Compile Include="Crosscutting\Schedulers\TodoEmailsScheduler.cs" />
+    <Compile Include="Exceptions\AdminSetRoleException.cs" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnaylzerGenerators.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="Crosscutting\Hooks\CrossCutting\UpdateUserCache.cs" />
     <Compile Include="Crosscutting\Hooks\UserRegistration\UpdatePlaceholder.cs" />
     <Compile Include="Hubs\CoreProcessHub.cs" />
+    <Compile Include="Models\Admin\AdminAuditLog.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Angular\LocalDateTime.cs" />
@@ -404,6 +406,7 @@
     <Compile Include="Utilities\Constants\PdfImageConst.cs" />
     <Compile Include="Utilities\DataTypes\FixedSizedQueue.cs" />
     <Compile Include="Utilities\DataTypes\LazyCollection.cs" />
+    <Compile Include="Utilities\DatePointAnalyzerUtility.cs" />
     <Compile Include="Utilities\DivisorUtility.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
@@ -1886,6 +1889,9 @@
     <Content Include="Views\Organization\Flags.cshtml" />
     <Content Include="Views\Rocks\All.cshtml" />
     <Content Include="Views\Admin\AllEmails.cshtml" />
+    <Content Include="Views\Account\AdminSetRole.cshtml" />
+    <Content Include="Views\Account\AdminAuditLog.cshtml" />
+    <Content Include="Views\Admin\AccountsAtRisk.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

@@ -3,6 +3,7 @@ using RadialReview.Crosscutting.Flags;
 using RadialReview.Hangfire;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
+using RadialReview.Models.Admin;
 using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
 using RadialReview.Models.Payments;
@@ -51,7 +52,7 @@ namespace RadialReview.Accessors {
 		}
 
 		private static long ExportId = 1;
-		private static FixedSizedQueue<LatestExport> AllUserDataExports = new FixedSizedQueue<LatestExport>(4) ;
+		private static FixedSizedQueue<LatestExport> AllUserDataExports = new FixedSizedQueue<LatestExport>(4);
 
 
 		[Obsolete("Not safe and expensive")]
@@ -65,7 +66,7 @@ namespace RadialReview.Accessors {
 			AllUserDataExports.Empty();
 		}
 
-		[Obsolete("Not safe and expensive")]		
+		[Obsolete("Not safe and expensive")]
 		[Queue(HangfireQueues.Immediate.ALPHA)]/*Queues must be lowecase alphanumeric. You must add queues to BackgroundJobServerOptions in Startup.auth.cs*/
 		[AutomaticRetry(Attempts = 0, OnAttemptsExceeded = AttemptsExceededAction.Fail)]
 		public static Csv GenerateAllUserData_Admin_Unsafe(DateTime now) {
@@ -307,12 +308,70 @@ namespace RadialReview.Accessors {
 						Id = ExportId++,
 						Data = csv,
 						GeneratedAt = now,
-						GenerationDuration = elapsed						
+						GenerationDuration = elapsed
 					});
 					return csv;
 				}
 			}
 		}
 
+
+
+		[Obsolete("Not safe")]
+		public static List<AdminAccessModel> GetAdminAccessLogs_Unsafe(int days) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var logs = s.QueryOver<AdminAccessModel>().Where(x => x.DeleteTime > DateTime.UtcNow.AddDays(-days)).List().ToList();
+
+					var adminsIds = logs.Select(x => x.AdminUserId).Distinct().ToArray();
+					var accessIds = logs.Select(x => x.AccessId).Distinct().ToArray();
+					var userEmails = logs.Select(x => x.SetAsEmail).Distinct().ToArray();
+
+					var adminQ = s.QueryOver<UserModel>()
+						.WhereRestrictionOn(x => x.Id).IsIn(adminsIds)
+						.Select(x => x.FirstName, x => x.LastName, x => x.UserName, x => x.Id)
+						.Future<object[]>()
+						.Select(x => new { firstName = (string)x[0], lastName = (string)x[1], email = (string)x[2], Id = (string)x[3] });
+
+					var userEmailQ = s.QueryOver<UserModel>().WhereRestrictionOn(x => x.UserName).IsIn(userEmails)
+						.Select(x => x.FirstName, x => x.LastName, x => x.UserName)
+						.Future<object[]>()
+						.Select(x => new { firstName = (string)x[0], lastName = (string)x[1], email = (string)x[2]/*, Email = (string)x[3]*/ });
+
+					UserModel userAlias = null;
+					OrganizationModel orgAlias = null;
+					LocalizedStringModel nameAlias = null;
+					var accessQ = s.QueryOver<UserOrganizationModel>()
+						.JoinAlias(x => x.User, () => userAlias)
+						.JoinAlias(x => x.Organization, () => orgAlias)
+						.JoinAlias(x => orgAlias.Name, () => nameAlias)
+						.WhereRestrictionOn(x => x.Id).IsIn(accessIds)
+						.Select(x => userAlias.FirstName, x => userAlias.LastName, x => userAlias.UserName, x => x.Id, x => nameAlias.Standard)
+						.Future<object[]>()
+						.Select(x => new { firstName = (string)x[0], lastName = (string)x[1], email = (string)x[2], Id = (long)x[3], OrgName = (string)x[4] });
+
+					var adminLU = adminQ.ToDefaultDictionary(x => x.Id, x => x, x => null);
+					var userEmailLU = userEmailQ.ToDefaultDictionary(x => x.email, x => x, x => null);
+					var accessLU = accessQ.ToDefaultDictionary(x => x.Id, x => x, x => null);
+					var orgLU = accessQ.ToDefaultDictionary(x => x.Id, x => x, x => null);
+
+					foreach (var log in logs) {
+						var ue = userEmailLU[log.SetAsEmail??""].NotNull(x => x.firstName + " " + x.lastName);
+						var orgName = "";
+						if (ue == null) {
+							var access = accessLU[log.AccessId];
+							if (access != null) {
+								ue = access.NotNull(x => x.firstName + " " + x.lastName);
+								orgName = access.OrgName;
+							}
+						}
+						log._AccessName = ue;
+						log._AdminName = adminLU[log.AdminUserId??""].NotNull(x => x.firstName + " " + x.lastName);
+						log._AccessOrganization = orgName;
+					}
+					return logs;
+				}
+			}
+		}
 	}
 }

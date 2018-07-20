@@ -1799,7 +1799,7 @@ namespace RadialReview.Accessors {
 
 
 			//group by owner name 
-			var getRock = recur.Rocks.Where(t => t.VtoRock == false).GroupBy(x => new { x.Owner.Name }, (key, group) => new {
+			var getRock = recur.Rocks/*.Where(t => t.VtoRock == false)*/.GroupBy(x => new { x.Owner.Name }, (key, group) => new {
 				OwnerName = key.Name,
 				Result = group.ToList()
 			}).ToList();
@@ -1821,9 +1821,9 @@ namespace RadialReview.Accessors {
 				List<Cell> cells;
 				List<Table> tables;
 				if (l > 0) {
-					AddPage_Rock(section, doc, vto, data[l], baseHeight, out cells, out tables);
+					AddPage_Rock(section, doc, data[l], baseHeight, out cells, out tables);
 				} else {
-					AddPage_Rock(section, doc, vto, data[l], baseHeight, out cells, out tables, true);
+					AddPage_Rock(section, doc, data[l], baseHeight, out cells, out tables, true);
 				}
 
 				List<int> page_count = new List<int>();
@@ -1940,7 +1940,7 @@ namespace RadialReview.Accessors {
 					}
 
 					if (p + 1 < maxPage) {
-						AddPage_Rock(section, doc, vto, data[l], baseHeight, out cells, out tables);
+						AddPage_Rock(section, doc, data[l], baseHeight, out cells, out tables);
 						for (int i = 0; i < cells.Count; i++) {
 							AppendAll(cells[i], new DocumentObject[] { tables[i] }.ToList());
 						}
@@ -1967,7 +1967,7 @@ namespace RadialReview.Accessors {
 		}
 
 		
-		private static void AddPage_Rock(Section section1, Document doc, AngularVTO vto, List<RockPdfModel> list, Unit height, out List<Cell> cells, out List<Table> tables, bool includeSection = false) {
+		private static void AddPage_Rock(Section section1, Document doc, List<RockPdfModel> list, Unit height, out List<Cell> cells, out List<Table> tables, bool includeSection = false) {
 
 			var container = section1.AddTable();
 
@@ -2047,7 +2047,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static void AddHeadLines(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
+		public static void AddHeadLines(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, bool addPageNumber = true) {
 			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);

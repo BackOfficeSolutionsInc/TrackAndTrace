@@ -217,7 +217,9 @@ namespace RadialReview.Controllers {
 
 					Thread.SetData(Thread.GetNamedDataSlot("AllowSpecialOrgs"), true);
 
-					var perms = PermissionsUtility.Create(s, GetUser());//.ManagingOrganization(id.Value);
+					var user = GetUser();
+					user._AdminShortCircuit.AllowAdminWithoutAudit = true;
+					var perms = PermissionsUtility.Create(s, user);//.ManagingOrganization(id.Value);
 
 					var org = s.Get<OrganizationModel>(id);
 					var b = org.PaymentPlan.FreeUntil;

@@ -22,6 +22,9 @@ using RadialReview.Models.Components;
 using System.Web.Script.Serialization;
 
 namespace RadialReview.Models {
+
+
+
 	[DebuggerDisplay("User: {EmailAtOrganization}")]
 	[DataContract]
 	public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IHistorical, TimeSettings, IForModel/*, IAngularizer<UserOrganizationModel>*/
@@ -68,6 +71,14 @@ namespace RadialReview.Models {
 		public virtual long? _ClientTimestamp { get; set; }
 		public virtual int? _ClientOffset { get; set; }
 		protected virtual TimeData _timeData { get; set; }
+
+		public class AdminShortCircuit{
+			public bool IsMocking { get; internal set; }
+			public bool IsRadialAdmin { get; set; }
+			public string ActualUserId { get; set; }
+			public bool AllowAdminWithoutAudit { get; set; }
+		}
+		public virtual AdminShortCircuit _AdminShortCircuit { get; set; }
 		public virtual bool _IsRadialAdmin { get; set; }
 
 		public virtual ITimeData GetTimeSettings() {

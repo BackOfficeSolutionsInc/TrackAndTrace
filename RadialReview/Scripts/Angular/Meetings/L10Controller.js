@@ -834,15 +834,15 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			var _clientTimestamp = new Date().getTime();
 			//self.Hide = true;
 			var origArchive = self.Archived;
-			self.Archived = true;
+			//self.Archived = true;
 
 			$(".editable-wrap").remove();
 
-			var url = Time.addTimestamp("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
+			var url = Time.addTimestamp("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.recurrenceId + "&connectionId=" + $scope.connectionId);
 
 			$http.post(url, dat).error(function (data) {
 				showJsonAlert(data, false, true);
-				self.Archived = origArchive;
+				//self.Archived = origArchive;
 				//self.Hide = false;
 			}).finally(function () {
 				// reload
@@ -854,17 +854,17 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			var dat = angular.copy(self);
 			var _clientTimestamp = new Date().getTime();
 			var origArchive = self.Archived;
-			self.Archived = false;
+			//self.Archived = false;
 			//self.Hide = true;
 
 			$(".editable-wrap").remove();
 
-			var url = Time.addTimestamp("/L10/Unarchive" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
+			var url = Time.addTimestamp("/L10/Unarchive" + self.Type + "/?recurrenceId=" + $scope.recurrenceId + "&connectionId=" + $scope.connectionId);
 
 			$http.post(url, dat).error(function (data) {
 				showJsonAlert(data, false, true);
 				//self.Hide = false;
-				self.Archived = origArchive;
+				//self.Archived = origArchive;
 			}).finally(function () {
 				// reload
 				$scope.functions.reload(true, $scope.model.dataDateRange, false);

@@ -114,7 +114,7 @@ namespace RadialReview.Controllers {
 			}
 			if (headlines && angRecur.Headlines.Any()) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout6");
-				PdfAccessor.AddHeadLines(GetUser(), doc, quarterly, angRecur, vtoModel, addPageNumber: false);
+				PdfAccessor.AddHeadLines(GetUser(), doc, quarterly, angRecur, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}

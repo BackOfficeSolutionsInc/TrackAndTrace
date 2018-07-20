@@ -231,7 +231,8 @@ $(function () {
             "<span class='btn btn-default btn-xs doneButton on-edit-enabled'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox hidden' type='checkbox' " + (checked ? "checked" : "") + "/> Resolve</span>" +
             "</span>" +
             "<span class='expandContract btn-group'>" +
-            "<span class='btn btn-default btn-xs copyButton issuesModal on-edit-enabled' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + window.recurrenceId + "'><span class='icon fontastic-icon-forward-1' title='Move issue to another L10'></span> Move To</span>" +
+			//        + '<span class="issuesButton issuesModal_move icon fontastic-icon-forward-1" data-copyto="' + window.recurrenceId + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-method="copymodal" style="padding-right: 5px"></span>\n'
+			"<span class='btn btn-default btn-xs issuesModal_move copyButton on-edit-enabled' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + window.recurrenceId + "'><span class='icon fontastic-icon-forward-1' title='Move issue to another L10'></span> Move To</span>" +
             "<span class='btn btn-default btn-xs createTodoButton todoModal on-edit-enabled' data-method='CreateTodoFromIssue' data-meeting='" + window.meetingId + "' data-issue='" + issueId + "' data-recurrence='" + window.recurrenceId + "' ><span class='glyphicon glyphicon-unchecked todoButton'></span> To-Do</span>" +
             "</span>" +
             "</div>" +

@@ -36,6 +36,7 @@ using RadialReview.Models.Reviews;
 using RadialReview.Utilities.RealTime;
 using System.Diagnostics;
 using RadialReview.Utiliities;
+using RadialReview.Models.Admin;
 
 namespace RadialReview.Accessors {
 
@@ -535,18 +536,89 @@ namespace RadialReview.Accessors {
 
 		}
 
-		public void ChangeRole(UserModel caller, UserOrganizationModel callerUserOrg, long roleId) {
+		public void ChangeRole(UserModel caller, UserOrganizationModel callerUserOrg, long roleId, AdminAccessViewModel audit = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					caller = s.Get<UserModel>(caller.Id);
-					if ((caller != null && caller.IsRadialAdmin) || (callerUserOrg != null && callerUserOrg.IsRadialAdmin) || caller.UserOrganizationIds.Any(x => x == roleId))
-						caller.CurrentRole = roleId;
-					else
+					var myUserOrganizations = caller.UserOrganizationIds;
+					var isAdmin = caller != null && ((caller.IsRadialAdmin) || (callerUserOrg != null && callerUserOrg.IsRadialAdmin));
+
+					var requestedOrg = s.Get<UserOrganizationModel>(roleId).Organization;
+					var recordAudit = new Action(() => s.Save(audit.ToDatabaseModel(caller.Id)));
+
+					if (!CanChangeToRole(roleId, myUserOrganizations, requestedOrg.Id, requestedOrg.AccountType, Config.GetTractionToolsOrgId(), isAdmin, audit, recordAudit)) {
 						throw new PermissionsException();
+					}
+					caller.CurrentRole = roleId;
+
 					s.Update(caller);
 					tx.Commit();
 					s.Flush();
 				}
+			}
+		}
+
+		public static UserModel GetSetAsUser(UserModel caller, UserOrganizationModel callerUserOrg, string requestedEmail, AdminAccessViewModel audit = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var requestedUser = new UserAccessor().GetUserByEmail(requestedEmail);
+					var isAdmin = caller != null && ((caller.IsRadialAdmin) || (callerUserOrg != null && callerUserOrg.IsRadialAdmin));
+
+					var recordAudit = new Action(() => s.Save(audit.ToDatabaseModel(caller.Id)));
+					if (!CanSetAs(isAdmin, caller.Id, requestedUser.Id, requestedEmail, "tractiontools.com", audit, recordAudit)) {
+						throw new PermissionsException();
+					}
+
+					s.Update(caller);
+					tx.Commit();
+					s.Flush();
+					return requestedUser;
+				}
+			}
+		}
+
+		public static bool CanSetAs(bool isAdmin, string callerUserId, string requestedUserId, string requestedEmail, string tractionToolsEmailSubstring, AdminAccessViewModel audit, Action onAdminAllow) {
+			if (!isAdmin) {
+				return false;
+			} else {
+				if (callerUserId == requestedUserId)
+					return true;
+				if (requestedEmail.ToLower().Contains(tractionToolsEmailSubstring.ToLower()))
+					return false;
+				if (audit == null)
+					throw new AdminSetRoleException(requestedEmail);
+				audit.EnsureValid();
+				onAdminAllow?.Invoke();
+				return true;
+			}
+		}
+
+		public static bool CanChangeToRole(long requestedUserOrgId, long[] myUserOrganizations, long requestedOrganizationId, AccountType requestedOrganizationType, long tractionToolsOrgId, bool isAdmin, AdminAccessViewModel audit, Action onAdminAllow) {
+			if (!isAdmin && myUserOrganizations.Any(x => x == requestedUserOrgId)) {
+				//Not an admin and has Access
+				//caller.CurrentRole = roleId;
+				return true;
+			} else if (isAdmin) {
+				if (requestedOrganizationType == AccountType.SwanServices) {
+					//Auto set if Swan services
+					return true;
+				} else if (requestedOrganizationId == tractionToolsOrgId) {
+					//Only allow TT if owned..
+					if (myUserOrganizations.Any(x => x == requestedUserOrgId))
+						return true;
+					return false;
+				} else {
+					//Is Admin
+					if (audit == null) {
+						throw new AdminSetRoleException(requestedUserOrgId);
+					}
+					audit.EnsureValid();
+					onAdminAllow?.Invoke();
+					//caller.CurrentRole = roleId;
+					return true;
+				}
+			} else {
+				return false;
 			}
 		}
 

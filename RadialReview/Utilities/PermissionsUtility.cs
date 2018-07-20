@@ -42,6 +42,7 @@ using RadialReview.Utilities.CoreProcess;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Crosscutting.EventAnalyzers.Models;
 using RadialReview.Areas.People.Accessors;
+using RadialReview.Models.Admin;
 
 namespace RadialReview.Utilities {
 	//[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -91,21 +92,68 @@ namespace RadialReview.Utilities {
 				return this;
 			throw new PermissionsException();
 		}
-		protected static Boolean IsRadialAdmin(UserOrganizationModel caller, bool allowSpecialOrgs = false) {
 
-			var adminFromThread = Thread.GetData(Thread.GetNamedDataSlot("IsRadialAdmin")).NotNull(x => (bool)x);
+		protected Boolean IsRadialAdmin(UserOrganizationModel caller, bool allowSpecialOrgs = false) {
+			return IsRadialAdmin(session, caller, allowSpecialOrgs);
+		}
+
+
+		protected static Boolean IsRadialAdmin(ISession session, UserOrganizationModel caller, bool allowSpecialOrgs = false,bool allowAdminsWithoutAudit = false) {
+
+			if (caller.Id == UserOrganizationModel.ADMIN_ID)
+				return true;
+
+			// var adminFromThread = Thread.GetData(Thread.GetNamedDataSlot("IsRadialAdmin")).NotNull(x => (bool)x);
 			allowSpecialOrgs = allowSpecialOrgs || Thread.GetData(Thread.GetNamedDataSlot("AllowSpecialOrgs")).NotNull(x => (bool)x);
 
-			if (caller != null && (caller.IsRadialAdmin || caller._IsRadialAdmin || adminFromThread || (caller.User != null && caller.User.IsRadialAdmin))) {
-				if (!allowSpecialOrgs && caller.Organization != null && (caller.Organization.Id == 1795 || caller.Organization.Id == 1634)) {
-					//1795 = EOSWW
-					//1634 = TT
-					return false;
+			#region As an admin
+			//We are an admin...
+			if (TestIsAdmin(caller)) {
+				if (caller._AdminShortCircuit != null) {
+					if (caller._AdminShortCircuit.AllowAdminWithoutAudit)
+						return true;
+					if (caller._AdminShortCircuit.IsMocking) {
+						//1795 = EOSWW, 1634 = TT
+						if (!allowSpecialOrgs && caller.Organization != null && (caller.Organization.Id == 1795 || caller.Organization.Id == 1634)) {
+							return false;
+						}
+						//We're logged in as someone else...
+						if (HasSuperAdminAccess(session, caller, caller._AdminShortCircuit.ActualUserId)) {
+							return true;
+						} else {//admin, but no audit log...
+							throw new AdminSetRoleException(caller.Id);
+						}
+					} else {
+						//Not mocking, we're just a standard user..
+						return false;
+					}
+					//throw new PermissionsException("You must login at this organization to view this data");						
 				}
-				return true;
+			}
+			#endregion
+			return false;
+		}
+
+		private static bool TestIsAdmin(UserOrganizationModel caller) {
+			return caller != null && (
+						(caller.IsRadialAdmin) ||
+						(caller.User != null && caller.User.IsRadialAdmin) ||
+						(caller._AdminShortCircuit!=null && caller._AdminShortCircuit.IsRadialAdmin)
+					);
+		}
+
+		public static bool HasSuperAdminAccess(ISession s, UserOrganizationModel caller, string adminId) {
+			var callerId = caller.Id;
+			if (TestIsAdmin(caller)) {
+				var any = s.QueryOver<AdminAccessModel>()
+					.Where(x => x.AccessId == callerId && x.AdminUserId == adminId)
+					.Where(x=> x.CreateTime <= DateTime.UtcNow && DateTime.UtcNow <= x.DeleteTime)
+					.RowCount();
+				return (any > 0);
 			}
 			return false;
 		}
+		
 
 
 		#region Construction
@@ -124,6 +172,7 @@ namespace RadialReview.Utilities {
 			if (!session.Contains(caller) && caller.Id != UserOrganizationModel.ADMIN_ID) {
 				attached = session.Load<UserOrganizationModel>(caller.Id);
 				attached._ClientTimestamp = caller._ClientTimestamp;
+				attached._AdminShortCircuit = caller._AdminShortCircuit;
 			}
 			if (caller.DeleteTime != null && caller.DeleteTime < DateTime.UtcNow) {
 				throw new PermissionsException("User has been deleted") {
@@ -289,7 +338,7 @@ namespace RadialReview.Utilities {
 				var found = session.Get<UserOrganizationModel>(userId);
 
 				//try {
-					return CanEdit(PermItem.ResourceType.EditDeleteUserDataForOrganization, found.Organization.Id);
+				return CanEdit(PermItem.ResourceType.EditDeleteUserDataForOrganization, found.Organization.Id);
 				//} catch (Exception) {
 				//}
 
@@ -522,8 +571,8 @@ namespace RadialReview.Utilities {
 				return Self(userId);
 			} catch (PermissionsException e) {
 			}
-			
-			var shareingIds = QuarterlyConversationAccessor.GetUsersWhosePeopleAnalyzersICanSee(session,this, caller.Id);
+
+			var shareingIds = QuarterlyConversationAccessor.GetUsersWhosePeopleAnalyzersICanSee(session, this, caller.Id);
 			if (shareingIds.Contains(userId))
 				return this;
 
@@ -906,8 +955,8 @@ namespace RadialReview.Utilities {
 
 
 			/*
-            if(IsOwnedBelowOrEqual(caller,x=>x.Id==review.CreatedById))
-                return this;*/
+			if(IsOwnedBelowOrEqual(caller,x=>x.Id==review.CreatedById))
+				return this;*/
 
 			throw new PermissionsException();
 		}
@@ -1751,7 +1800,7 @@ namespace RadialReview.Utilities {
 				throw new PermissionsException("User is not attendee.");
 			}
 			var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf || (user.IsManager() && user.Organization.Settings.ManagersCanEditSelf);
-			return Or(x=>x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId),x=>x.ManagesUserOrganization(userId, canEditSelf));
+			return Or(x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId), x => x.ManagesUserOrganization(userId, canEditSelf));
 
 			/*var canEditSelf = user.Organization.Settings.EmployeesCanEditSelf
 				|| (user.IsManager() && user.Organization.Settings.ManagersCanEditSelf);
@@ -2261,8 +2310,8 @@ namespace RadialReview.Utilities {
 		}
 
 
-		public static bool IsAdmin(UserOrganizationModel caller) {
-			return IsRadialAdmin(caller);
+		public static bool IsAdmin(ISession s, UserOrganizationModel caller) {
+			return IsRadialAdmin(s, caller);
 		}
 
 		public delegate PermissionsUtility LongFunc(long id);

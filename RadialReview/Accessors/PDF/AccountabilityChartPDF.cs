@@ -130,12 +130,12 @@ namespace RadialReview.Accessors.PDF {
 			var docs = new List<PdfDocument>();
 			roots = roots.Where(x => x != null).Distinct(x => x.Id).ToList();
 			var seen = new List<long>();
+			
 			foreach (var r in roots) {
 				_collapser(r);
 				if (r.HasChildren() || !seen.Contains(r.Id)) {
 
 					var useCompact = r.GetDirectChildren().Count() >= 8;
-
 
 					var useSettings = settings ?? new TreeSettings() {
 						compact = useCompact
