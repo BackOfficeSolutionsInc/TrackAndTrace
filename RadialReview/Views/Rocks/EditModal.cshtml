@@ -3,39 +3,48 @@
 	var guid = Guid.NewGuid().ToString().Replace("-", "");
 }
 <div class="rock-modal-@guid">
-	<div class="row smallBreak2">
-		@*<div class="col-md-2 alignRight">
-			<label class="control-label">@Html.Organization().Settings.RockName:</label>
-		</div>*@
-		<div class="col-md-12">
-			@Html.TextBoxFor(x => x.Rock.Name, new { @class = "form-control" })
-			@Html.HiddenFor(x => x.Rock.Id)
-		</div>
-	</div>
-	<div class="row">
-		@*<div class="col-md-2 alignRight">
-		</div>*@
-		<div class="col-md-12">
-			<div class="form-group">
-				<iframe src="/Rocks/Pad/@Model.Rock.Id" width="99.6%"></iframe>
-			</div>
-		</div>
-	</div>
+    <div class="row smallBreak2">
+        @*<div class="col-md-2 alignRight">
+                <label class="control-label">@Html.Organization().Settings.RockName:</label>
+            </div>*@
+        <div class="col-md-12">
+            @Html.TextBoxFor(x => x.Rock.Name, new { @class = "form-control" })
+            @Html.HiddenFor(x => x.Rock.Id)
+        </div>
+    </div>
+    <div class="row">
+        @*<div class="col-md-2 alignRight">
+            </div>*@
+        <div class="col-md-12">
+            <div class="form-group">
+                <iframe src="/Rocks/Pad/@Model.Rock.Id" width="99.6%"></iframe>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-5">
+            <div class="form-group">
+                <label>Due Date:</label>
+                @Html.Partial("~/Views/Shared/" + (ViewBag.CanEdit == false ? "DisplayTemplates" : "EditorTemplates") + "/DateTime.cshtml", Model.Rock.DueDate,
+                          new ViewDataDictionary() { { "name", "Rock.DueDate" },{ "id","Rock_DueDate"} ,{ "localize", true } })
+            </div>
+        </div>
+    </div>
 
-	@if (ViewBag.AnyL10sWithMilestones) {
-		@*<hr />*@
-		<div class="row">
-			<div class="col-md-2 alignRight">
-				<label class="control-label">Milestones:</label>
-			</div>
-			<div class="col-md-10">
-				<div class="btn btn-default pull-right btn-sm add-milestone" style="margin-top:2px" onclick="addMilestone@(guid)()">Add Milestone</div>
-				<table class="milestones-@guid milestone-table-modal"></table>
-			</div>
-		</div>
+    @if (ViewBag.AnyL10sWithMilestones) {
+        @*<hr />*@
+        <div class="row">
+            <div class="col-md-2 alignRight">
+                <label class="control-label">Milestones:</label>
+            </div>
+            <div class="col-md-10">
+                <div class="btn btn-default pull-right btn-sm add-milestone" style="margin-top:2px" onclick="addMilestone@(guid)()">Add Milestone</div>
+                <table class="milestones-@guid milestone-table-modal"></table>
+            </div>
+        </div>
 
 
-		<script>
+        <script>
 			(function () {
 				var milestones = @Html.ArrayToString(Model.Milestones);
 				var rock = @Html.ArrayToString(new[] { Model.Rock });
@@ -160,8 +169,8 @@
 					}
 				});
 			}
-		</script>
-	}
+        </script>
+    }
 </div>
 <style>
 	#modal .milestone-table-modal tr {

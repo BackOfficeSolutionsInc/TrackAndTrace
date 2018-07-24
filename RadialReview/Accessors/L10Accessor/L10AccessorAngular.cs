@@ -362,7 +362,7 @@ namespace RadialReview.Accessors {
 			} else if (model.Type == typeof(AngularRock).Name) {
 				var m = (AngularRock)model;
 				//TODO re-add company rock
-				await UpdateRock(caller, m.Id, m.Name, m.Completion, m.Owner.NotNull(x => (long?)x.Id), connectionId, recurrenceRockId: m.RecurrenceRockId, vtoRock: m.VtoRock);
+				await UpdateRock(caller, m.Id, m.Name, m.Completion, m.Owner.NotNull(x => (long?)x.Id), connectionId, dueDate:m.DueDate, recurrenceRockId: m.RecurrenceRockId, vtoRock: m.VtoRock);
 			} /*else if (model.Type == typeof(AngularMeasurable).Name) {
                 var m = (AngularMeasurable)model;
                 await ScorecardAccessor.UpdateMeasurable(caller, m.Id, m.Name, m.Direction, m.Target, m.Owner.NotNull(x => (long?)x.Id), m.Admin.NotNull(x => (long?)x.Id));
