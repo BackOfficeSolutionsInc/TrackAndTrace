@@ -415,7 +415,7 @@ namespace RadialReview.Accessors {
 					csv.SetTitle(caller.Organization.Settings.RockName);
 
 					foreach (var r in rocks) {
-						csv.Add(r.Rock, "Owner", r.AccountableUser.GetName());
+						csv.Add(r.Rock, "Owner", r.AccountableUser.GetName()??"not specified");
 						//csv.Add(r.Rock, "Manager", string.Join(" & ", r.AccountableUser.ManagedBy.Select(x => x.Manager.GetName())));
 						csv.Add(r.Rock, "Status", "" + RockStateExtensions.GetCompletionVal(r.Completion));
 						csv.Add(r.Rock, "CreateTime", "" + r.CreateTime);

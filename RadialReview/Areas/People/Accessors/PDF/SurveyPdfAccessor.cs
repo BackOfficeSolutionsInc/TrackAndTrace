@@ -116,7 +116,6 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			frame.MarginRight = Unit.FromInch(.25);
 			frame.MarginLeft = Unit.FromInch(.25);
 
-
 			var title = frame.AddTable();
 			title.Borders.Color = TractionOrange;//TableBlack;
 
@@ -148,6 +147,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			var cell = superRow.Cells[0];
 			//cell.Borders.Color = Color.FromArgb(150, 0, 0, 150);
 
+			superTable.KeepTogether = true;
 
 			AddSectionTitle(cell, iSection.GetName());
 			var shouldDraw = PdfSectionFactory.CreateSection(cell, iSection, usableWidth);

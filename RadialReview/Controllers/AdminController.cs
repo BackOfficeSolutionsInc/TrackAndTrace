@@ -44,6 +44,9 @@ using static RadialReview.Models.OrganizationModel;
 using static RadialReview.Accessors.AdminAccessor;
 using Hangfire;
 using RadialReview.Crosscutting.Schedulers;
+using RadialReview.Variables;
+using RadialReview.Utilities.Encrypt;
+using RadialReview.Utilities.Pdf;
 
 namespace RadialReview.Controllers {
 
@@ -151,10 +154,10 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
-		public async Task<ActionResult> AccountsAtRisk(int days = 60,decimal growth=-.1m) {
+		public async Task<ActionResult> AccountsAtRisk(int days = 60, decimal growth = -.1m) {
 			var start = DateTime.UtcNow.AddDays(-days);
 			var end = DateTime.UtcNow;
-			var stats = StatsAccessor.GetSuperAdminStatistics_Unsafe(start,end);
+			var stats = StatsAccessor.GetSuperAdminStatistics_Unsafe(start, end);
 			var range = stats.Where(x => x.Registrations.PercentageFromWindowMax.GetValue(2) < 1m + growth).ToList();
 
 			ViewBag.Start = start;
@@ -205,6 +208,7 @@ namespace RadialReview.Controllers {
 				}
 			}
 		}
+
 		public class MergeAcc {
 			public UserOrganizationModel Main { get; set; }
 			public UserOrganizationModel ToMerge { get; set; }
@@ -225,6 +229,7 @@ namespace RadialReview.Controllers {
 			}
 			return View(model);
 		}
+
 		[Access(AccessLevel.Radial)]
 		public ActionResult PerformMergeAccounts(long mainId, long mergeId) {
 			UserOrganizationModel main;
@@ -668,7 +673,6 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-
 		[Access(AccessLevel.RadialData)]
 		public ActionResult AllDeleted() {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -681,8 +685,8 @@ namespace RadialReview.Controllers {
 						.Left.JoinAlias(x => x.User, () => userAlias)
 						.Left.JoinAlias(x => x.TempUser, () => tempUserAlias)
 						.Left.JoinAlias(x => x.Organization, () => orgAlias)
-						.Where(x => x.DeleteTime != null || orgAlias.DeleteTime !=null )
-							.Select(x => x.Id, x => x.DeleteTime, x=>userAlias.UserName, x => tempUserAlias.Email, x => orgAlias.DeleteTime)
+						.Where(x => x.DeleteTime != null || orgAlias.DeleteTime != null)
+							.Select(x => x.Id, x => x.DeleteTime, x => userAlias.UserName, x => tempUserAlias.Email, x => orgAlias.DeleteTime)
 						.List<object[]>().ToList();
 
 					var csv = new Csv();
@@ -707,7 +711,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.RadialData)]
-		public ActionResult AllEmails(long? id=null) {			
+		public ActionResult AllEmails(long? id = null) {
 
 			var exports = AdminAccessor.GetExportList();
 			var found = exports.FirstOrDefault(x => x.Id == id);
@@ -727,9 +731,82 @@ namespace RadialReview.Controllers {
 		public ActionResult GenerateAllEmails() {
 			var now = DateTime.UtcNow;
 			Scheduler.Enqueue(() => AdminAccessor.GenerateAllUserData_Admin_Unsafe(now));
-			return Content("Generating: "+ now.ToString());
+			return Content("Generating: " + now.ToString());
 		}
 
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult Variables() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var vars = s.QueryOver<Variable>().List().ToList();
+					return View(vars);
+				}
+			}
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.Radial)]
+		public JsonResult Variables(string id, Variable model) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var variable = s.UpdateSetting(id, model.V);
+
+					tx.Commit();
+					s.Flush();
+					return Json(ResultObject.SilentSuccess(variable));
+				}
+			}
+		}
+
+		public class ErrorResult {
+			public List<ErrorLog> Logs { get; set; }
+			public List<KeyValuePair<string, int>> CountByType { get; set; }
+			public List<KeyValuePair<string, int>> CountByUser { get; set; }
+			public List<KeyValuePair<string, int>> CountByPath { get; set; }
+			public List<KeyValuePair<string, int>> CountByMessage { get; set; }
+		}
+		
+		[Access(AccessLevel.Radial)]
+		public ActionResult Errors(long days = 7, int limit = 10) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var errs = s.QueryOver<ErrorLog>()
+								.Where(x => x.DeleteTime == null && x.CreateTime > DateTime.UtcNow.AddDays(-days))
+								.List().ToList();
+
+					var res = new ErrorResult() {
+						Logs = errs,
+						CountByMessage = errs.GroupBy(x => x.Message).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).OrderByDescending(x=>x.Value).Take(limit).ToList(),
+						CountByPath = errs.GroupBy(x => x.Path).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).OrderByDescending(x => x.Value).Take(limit).ToList(),
+						CountByUser = errs.GroupBy(x => x.UserId).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).OrderByDescending(x => x.Value).Take(limit).ToList(),
+						CountByType = errs.GroupBy(x => x.ExceptionType).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).OrderByDescending(x => x.Value).Take(limit).ToList(),
+					};
+					return View(res);
+				}
+			}
+		}
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult Error(string id) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var errs = s.Get<ErrorLog>(id);
+
+					var res = new ErrorResult() {
+						Logs = errs.AsList(),
+					};
+					return View("Errors",errs);
+				}
+			}
+		}
+
+
+		[HttpGet]
+		[Access(AccessLevel.Radial)]
+		public ActionResult Decrypt(string message,string shared) {
+			return Content(Crypto.DecryptStringAES(message, ERROR_CODE_SHARED));
+		}
 
 
 
@@ -738,66 +815,66 @@ namespace RadialReview.Controllers {
 		//	using (var s = HibernateSession.GetCurrentSession()) {
 		//		using (var tx = s.BeginTransaction()) {
 
-			//			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
-			//			var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
-			//			var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
-			//			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
-			//			var nodes = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).List().ToList();
+		//			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
+		//			var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
+		//			var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
+		//			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
+		//			var nodes = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).List().ToList();
 
-			//			var allUsersF = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && x.HasJoined).Future();
+		//			var allUsersF = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && x.HasJoined).Future();
 
-			//			var allUsers = allUsersF.ToList();
-			//			var allLocalizedStrings = localizedStringF.Select(x => new {
-			//				Id = (long)x[0],
-			//				Name = (string)x[1]
-			//			}).ToDictionary(x => x.Id, x => x.Name);
-
-
-			//			var allOrgs = allOrgsF.Select(x => new {
-			//				Id = (long)x[0],
-			//				NameId = (long)x[1],
-			//				Name = (string)allLocalizedStrings.GetOrDefault((long)x[1], ""),
-			//				DeleteTime = (DateTime?)x[2],
-			//				CreateTime = (DateTime)x[3],
-			//				AccountType = (AccountType)x[4],
-			//			}).ToDictionary(x => x.Id, x => x);			
-
-			//			var items = allUsers.Select(x => {
-			//				var org = allOrgs.GetOrDefault(x.OrganizationId, null);
-			//				if (org.DeleteTime != null)
-			//					return null;
-			//				return new AllUserEmail() {
-			//					UserName = x.Name,
-			//					UserEmail = x.Email,
-			//					UserId = x.UserId,
-			//					OrgId = x.OrganizationId,
-			//					OrgName = org.NotNull(y => y.Name),
-			//					AccountType = "" + org.NotNull(y => y.AccountType),
-			//					OrgCreateTime = org.NotNull(y => y.CreateTime),
-			//					UserCreateTime = x.CreateTime
-
-			//				};
-			//			}).Where(x => x != null).ToList();
-
-			//			var csv = new Csv();
-			//			csv.Title = "UserId";
-			//			foreach (var o in items) {
-			//				csv.Add("" + o.UserId, "UserName", o.UserName);
-			//				csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
-			//				csv.Add("" + o.UserId, "OrgName", o.OrgName);
-			//				csv.Add("" + o.UserId, "UserId", "" + o.UserId);
-			//				csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
-			//				csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
-			//				csv.Add("" + o.UserId, "AccountType", o.AccountType);
-			//				csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
-			//			}
-
-			//			return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
+		//			var allUsers = allUsersF.ToList();
+		//			var allLocalizedStrings = localizedStringF.Select(x => new {
+		//				Id = (long)x[0],
+		//				Name = (string)x[1]
+		//			}).ToDictionary(x => x.Id, x => x.Name);
 
 
-			//		}
-			//	}
-			//}
+		//			var allOrgs = allOrgsF.Select(x => new {
+		//				Id = (long)x[0],
+		//				NameId = (long)x[1],
+		//				Name = (string)allLocalizedStrings.GetOrDefault((long)x[1], ""),
+		//				DeleteTime = (DateTime?)x[2],
+		//				CreateTime = (DateTime)x[3],
+		//				AccountType = (AccountType)x[4],
+		//			}).ToDictionary(x => x.Id, x => x);			
+
+		//			var items = allUsers.Select(x => {
+		//				var org = allOrgs.GetOrDefault(x.OrganizationId, null);
+		//				if (org.DeleteTime != null)
+		//					return null;
+		//				return new AllUserEmail() {
+		//					UserName = x.Name,
+		//					UserEmail = x.Email,
+		//					UserId = x.UserId,
+		//					OrgId = x.OrganizationId,
+		//					OrgName = org.NotNull(y => y.Name),
+		//					AccountType = "" + org.NotNull(y => y.AccountType),
+		//					OrgCreateTime = org.NotNull(y => y.CreateTime),
+		//					UserCreateTime = x.CreateTime
+
+		//				};
+		//			}).Where(x => x != null).ToList();
+
+		//			var csv = new Csv();
+		//			csv.Title = "UserId";
+		//			foreach (var o in items) {
+		//				csv.Add("" + o.UserId, "UserName", o.UserName);
+		//				csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
+		//				csv.Add("" + o.UserId, "OrgName", o.OrgName);
+		//				csv.Add("" + o.UserId, "UserId", "" + o.UserId);
+		//				csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
+		//				csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
+		//				csv.Add("" + o.UserId, "AccountType", o.AccountType);
+		//				csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
+		//			}
+
+		//			return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
+
+
+		//		}
+		//	}
+		//}
 
 
 
@@ -969,6 +1046,19 @@ namespace RadialReview.Controllers {
 			var duration = (DateTime.UtcNow - start).TotalSeconds;
 
 			return Content("Todos: +" + addedTodos + "/-" + deletedTodos + " <br/>Issues: +" + addedIssues + "/-" + deletedIssues + " <br/>Scores: +" + addedScores + "/-" + deletedScores + " <br/>Duration: " + duration + "s");
+		}
+
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult UpdateAppVariables() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					ApplicationAccessor.InitializeAppVariables(s);
+					tx.Commit();
+					s.Flush();
+					return Json(LayoutTrialResult.Weighting,JsonRequestBehavior.AllowGet);
+				}
+			}
 		}
 
 

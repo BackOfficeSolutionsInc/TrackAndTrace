@@ -1,25 +1,31 @@
-﻿using Hangfire;
+﻿using FluentNHibernate.Mapping;
+using Hangfire;
+using NHibernate;
 using RadialReview.Crosscutting.Flags;
 using RadialReview.Hangfire;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Admin;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Interfaces;
 using RadialReview.Models.L10;
 using RadialReview.Models.Payments;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Utilities.Encrypt;
+using RadialReview.Variables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using static RadialReview.Models.OrganizationModel;
 
 namespace RadialReview.Accessors {
 
 	[Obsolete("Not safe and expensive")]
-	public class AdminAccessor {
+	public class AdminAccessor : BaseAccessor {
 
 		public class AllUserEmail {
 			public String UserName { get; set; }
@@ -315,7 +321,86 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		public class ErrorLog : IHistorical {
+			public virtual Guid Id { get; set; }
+			public virtual DateTime CreateTime { get; set; }
+			public virtual DateTime? DeleteTime { get; set; }
+			public virtual string Message { get; set; }
+			public virtual string StackTrace { get; set; }
+			public virtual string Path { get; set; }
+			public virtual string UserId { get; set; }
+			public virtual string ExceptionType { get; set; }
+			public virtual string QueryParams { get; set; }
+			public virtual string HttpMethod { get; set; }
+			public ErrorLog() {
+				CreateTime = DateTime.UtcNow;
+			}
+			public class Map : ClassMap<ErrorLog> {
+				public Map() {
+					Id(x => x.Id).GeneratedBy.Guid();
+					Map(x => x.CreateTime);
+					Map(x => x.DeleteTime);
+					Map(x => x.Message);
+					Map(x => x.StackTrace).Length(10000);
+					Map(x => x.Path).Length(256);
+					Map(x => x.UserId).Length(256);
+					Map(x => x.ExceptionType).Length(128);
+					Map(x => x.QueryParams).Length(256);
+					Map(x => x.HttpMethod).Length(16);
+				}
+			}
 
+			public override string ToString() {
+				var sb = new StringBuilder();
+				sb.AppendLine("CreateTime = " + CreateTime);
+				sb.AppendLine("Message = " + Message);
+				sb.AppendLine("StackTrace = " + StackTrace.NotNull(x=>string.Join("\n",x.Split('\n').Take(10))));
+				sb.AppendLine("Path = " + Path);
+				sb.AppendLine("UserId = " + UserId);
+				sb.AppendLine("ExceptionType = " + ExceptionType);
+				sb.AppendLine("QueryParams = " + QueryParams);
+				sb.AppendLine("HttpMethod = " + HttpMethod);
+
+				return sb.ToString();
+			}
+		}
+
+		public static string ERROR_CODE_SHARED = "8B502893-2C5D-4C53-B094-2AA9514B10C3";
+
+		public static string LogError(HttpContextBase context, Exception ex) {
+			try {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						var userId = context.NotNull(x => x.User.Identity.Name);
+						var httpMethod = context.NotNull(x => x.Request.HttpMethod);
+						var url = context.NotNull(x => x.Request.Url);
+						var err = new ErrorLog() {
+							Message = ex.NotNull(x => x.Message),
+							StackTrace = ex.NotNull(x => x.StackTrace),
+							ExceptionType = ex.NotNull(x => x.GetType().Name),
+							Path = url.NotNull(x => x.AbsolutePath),
+							QueryParams = url.NotNull(x => x.Query),
+							HttpMethod = httpMethod,
+							UserId = userId
+						};
+
+						var shouldLog = s.GetSettingOrDefault(Variable.Names.LOG_ERRORS, true);
+						if (shouldLog) {
+							s.Save(err);
+							tx.Commit();
+							s.Flush();
+							return ""+err.Id;
+						}
+						
+						return Crypto.EncryptStringAES(err.ToString(), ERROR_CODE_SHARED);
+					}
+				}
+			} catch (Exception e) {
+				log.Error("Error logging exception",e);
+			}
+			return null;
+
+		}
 
 		[Obsolete("Not safe")]
 		public static List<AdminAccessModel> GetAdminAccessLogs_Unsafe(int days) {
@@ -356,7 +441,7 @@ namespace RadialReview.Accessors {
 					var orgLU = accessQ.ToDefaultDictionary(x => x.Id, x => x, x => null);
 
 					foreach (var log in logs) {
-						var ue = userEmailLU[log.SetAsEmail??""].NotNull(x => x.firstName + " " + x.lastName);
+						var ue = userEmailLU[log.SetAsEmail ?? ""].NotNull(x => x.firstName + " " + x.lastName);
 						var orgName = "";
 						if (ue == null) {
 							var access = accessLU[log.AccessId];
@@ -366,7 +451,7 @@ namespace RadialReview.Accessors {
 							}
 						}
 						log._AccessName = ue;
-						log._AdminName = adminLU[log.AdminUserId??""].NotNull(x => x.firstName + " " + x.lastName);
+						log._AdminName = adminLU[log.AdminUserId ?? ""].NotNull(x => x.firstName + " " + x.lastName);
 						log._AccessOrganization = orgName;
 					}
 					return logs;

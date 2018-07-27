@@ -35,6 +35,9 @@ namespace RadialReview.Models.ViewModels {
 		public NumberFormat NumberFormat { get; set; }
 		public long AccountabilityChartId { get; set; }
 
+		public string PrimaryColorHex { get; set; }
+		public ImageUploadViewModel LogoUrl { get; set; }
+
 		public int? DefaultSendTodoTime { get; set; }
 		public List<SelectListItem> PossibleTodoTimes { get; set; }
 

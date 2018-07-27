@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading;
 using System.Collections.Specialized;
 using System.Configuration;
+using NHibernate;
 
 namespace RadialReview.Utilities {
 	public class Config {
@@ -665,6 +666,10 @@ namespace RadialReview.Utilities {
 
 		public static long GetTractionToolsOrgId() {
 			return 1634;
+		}
+
+		public static long[] GetDisallowedOrgIds(ISession s) {
+			return new[] { GetTractionToolsOrgId(), 1795 /*EOSWW*/};
 		}
 
 		internal static string NoteApiKey() {

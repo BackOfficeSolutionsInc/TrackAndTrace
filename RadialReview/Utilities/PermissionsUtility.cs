@@ -114,7 +114,7 @@ namespace RadialReview.Utilities {
 						return true;
 					if (caller._AdminShortCircuit.IsMocking) {
 						//1795 = EOSWW, 1634 = TT
-						if (!allowSpecialOrgs && caller.Organization != null && (caller.Organization.Id == 1795 || caller.Organization.Id == 1634)) {
+						if (!allowSpecialOrgs && caller.Organization != null && (Config.GetDisallowedOrgIds(session).Contains(caller.Organization.Id))) {
 							return false;
 						}
 						//We're logged in as someone else...
@@ -320,6 +320,13 @@ namespace RadialReview.Utilities {
 
 			}, alsoCheck);
 			//}, PermissionType.ManageEmployees);
+		}
+
+		public PermissionsUtility CreatedSurvey(long surveyContainerId) {
+			var surveyContainer = session.Get<SurveyContainer>(surveyContainerId);
+			if (caller.ToKey() != surveyContainer.GetCreator().ToKey())
+				throw new PermissionsException();
+			return this;
 		}
 
 		public PermissionsUtility CanAddUserToOrganization(long orgId) {

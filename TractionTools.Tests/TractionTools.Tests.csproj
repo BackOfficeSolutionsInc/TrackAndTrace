@@ -315,6 +315,7 @@
     <Compile Include="Accessors\Payment\PaymentAccessorTests.cs" />
     <Compile Include="Accessors\Scorecard\ScorecardAccessorTests.cs" />
     <Compile Include="Accessors\Scorecard\ScorecardFormulaTests.cs" />
+    <Compile Include="Algorithms\JenksFischerBreakTests.cs" />
     <Compile Include="API\v1\IssueApiTests_v1.cs" />
     <Compile Include="API\v1\L10ApiTests_v1.cs" />
     <Compile Include="API\v1\MilestonesApiTests_v1.cs" />
@@ -349,6 +350,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="Crosscutting\Notifications\AppNotificationsTest.cs" />
     <Compile Include="PDF\MigradocExtension.cs" />
+    <Compile Include="PDF\MultipageLayoutOptimizerTests.cs" />
     <Compile Include="PDF\PdfResizerTests.cs" />
     <Compile Include="PDF\PeopleAnalyzerPdf.cs" />
     <Compile Include="PDF\SurveyPdfTest.cs" />

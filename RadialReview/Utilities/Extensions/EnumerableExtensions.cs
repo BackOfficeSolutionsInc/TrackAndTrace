@@ -38,7 +38,15 @@ namespace RadialReview {
                         .GroupBy(x => x.inx / maxItems)
                         .Select(g => g.Select(x => x.item));
         }
-        public static double? Median<TColl, TValue>(this IEnumerable<TColl> source, Func<TColl, TValue> selector) {
+
+		public static double Variance<T>(this IEnumerable<T> items, Func<T,double> selector) {
+			var values = items.Select(selector);
+			double avg = values.Average();
+			return values.Average(v => (v - avg)* (v - avg));
+		}
+
+
+		public static double? Median<TColl, TValue>(this IEnumerable<TColl> source, Func<TColl, TValue> selector) {
             return source.Select(selector).Median();
         }
 
@@ -251,6 +259,7 @@ namespace RadialReview {
             });
         }
 
+		
         /*public static Boolean Contains<T>(this IEnumerable<T> enumerable, Func<T, Boolean> contains)
         {
             return enumerable.FirstOrDefault(contains) != null;

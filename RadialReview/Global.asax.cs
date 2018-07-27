@@ -25,6 +25,8 @@ using PdfSharp.Drawing;
 using RadialReview.Utilities.NHibernate;
 using RadialReview.Controllers;
 using static RadialReview.Utilities.ViewUtility;
+using RadialReview.Variables;
+using RadialReview.Models.Application;
 
 namespace RadialReview {
 
@@ -85,15 +87,19 @@ namespace RadialReview {
 		protected void Application_Error(object sender, EventArgs e) {
 			Exception ex = Server.GetLastError();
 			string message = null;
+			var shouldLog = true;
+
 			if (ex is HttpException) {
 				var ee = (HttpException)ex;
 				if (ee.Message.StartsWith("A potentially dangerous Request.Path value was detected from the client (:)")) {
 					HttpContext.Current.Server.ClearError();
 					HttpContext.Current.Response.Redirect("~/Home/Index");
+					shouldLog = false;
 				}
 				if (ee.Message.StartsWith("A public action method '")) {
 					HttpContext.Current.Server.ClearError();
 					message = "Page does not exist.";
+					shouldLog = false;
 				}
 			}
 
@@ -107,6 +113,11 @@ namespace RadialReview {
 				if (!string.IsNullOrWhiteSpace(message)) {
 					view.ViewData["Message"] = message;
 				}
+				string errorCode=null;
+				if (shouldLog) {
+					errorCode = AdminAccessor.LogError(new HttpContextWrapper(HttpContext.Current), ex);
+				}
+				view.ViewData["ErrorCode"] = errorCode ?? "1";
 				var html = view.Execute();
 				HttpContext.Current.Server.ClearError();
 				var response = HttpContext.Current.Response;
@@ -114,6 +125,13 @@ namespace RadialReview {
 				response.ClearContent();
 				response.StatusCode = 500;
 				response.Write(html);
+
+
+			} catch (Exception ee) {
+			}
+
+			try {
+				HttpContext.Current.Server.ClearError();
 			} catch (Exception ee) {
 			}
 

@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 using RadialReview.Models.ViewModels;
 using RadialReview.Crosscutting.Flags;
 using RadialReview.Crosscutting.Hooks.Interfaces;
+using RadialReview.Models.Components;
 
 namespace RadialReview.Accessors {
 
@@ -852,7 +853,9 @@ namespace RadialReview.Accessors {
 				NumberFormat? numberFormat = null,
 				bool? limitFiveState = null,
 				int? defaultTodoSendTime = null,
-				bool? allowAddClient = null
+				bool? allowAddClient = null,
+				//string imageUrl = null,
+				string primaryColorHex = null
 			) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -943,6 +946,12 @@ namespace RadialReview.Accessors {
 
 					if (allowAddClient != null)
 						org.Settings.AllowAddClient = allowAddClient.Value;
+
+					if (primaryColorHex != null)
+						org.Settings.PrimaryColor = ColorComponent.FromHex(primaryColorHex);
+
+					//if (imageUrl != null)
+					//	org.Settings.ImageGuid= imageUrl;
 
 					s.Update(org);
 

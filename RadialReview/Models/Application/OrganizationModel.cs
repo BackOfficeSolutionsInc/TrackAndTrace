@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using NHibernate.Mapping;
 using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Components;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;
@@ -207,6 +208,10 @@ namespace RadialReview.Models {
 				LimitFiveState = true;
 				DateFormat = "MM-dd-yyyy";
 				RockName = "Rocks";
+
+				PrimaryColor = ColorComponent.TractionOrange();
+				TextColor = ColorComponent.TractionBlack();
+
 			}
 			public virtual string RockName { get; set; }
 
@@ -244,6 +249,9 @@ namespace RadialReview.Models {
 					Map(x => x.ScorecardPeriod).CustomType<ScorecardPeriod>();
 					Map(x => x.StartOfYearMonth).CustomType<Month>();
 					Map(x => x.StartOfYearOffset).CustomType<DateOffset>();
+					Map(x => x.ImageGuid);
+					Component(x => x._PrimaryColor).ColumnPrefix("PrimaryColor_");
+					Component(x => x._TextColor).ColumnPrefix("TextColor_");
 				}
 			}
 
@@ -254,6 +262,11 @@ namespace RadialReview.Models {
 			public virtual NumberFormat NumberFormat { get; set; }
 			public virtual bool LimitFiveState { get; set; }
 			public virtual bool DisableUpgradeUsers { get; set; }
+			public virtual string ImageGuid { get; set; }
+			public virtual ColorComponent _PrimaryColor { get; set; }
+			public virtual ColorComponent _TextColor { get; set; }
+			public virtual ColorComponent TextColor { get { return _TextColor ?? ColorComponent.TractionBlack(); } set { _TextColor = value; } }
+			public virtual ColorComponent PrimaryColor { get { return _PrimaryColor ?? ColorComponent.TractionOrange(); } set { _PrimaryColor = value; } }
 
 			public virtual string GetAngularNumberFormat() {
 				return NumberFormat.Angular();
@@ -271,6 +284,21 @@ namespace RadialReview.Models {
 					WeekStart = WeekStart,
 					YearStart = YearStart,
 				};
+			}
+			public bool HasImage() {
+				return !string.IsNullOrWhiteSpace(ImageGuid);
+			}
+
+			public string GetImageUrl(ImageSize size = ImageSize._64) {
+				if (string.IsNullOrWhiteSpace(ImageGuid)) {
+					return ConstantStrings.AmazonS3Location + ConstantStrings.ImageOrganizationPlaceholder;
+				}
+
+				var suffix = "/" + ImageGuid + ".png";
+				if (size == ImageSize._suffix)
+					return suffix;
+				var s = size.ToString().Substring(1);
+				return ConstantStrings.AmazonS3Location + s + suffix;
 			}
 		}
 
@@ -368,7 +396,7 @@ namespace RadialReview.Models {
 #pragma warning restore CS0114 // Member hides inherited member; missing override keyword
 		public virtual DateTime CreationTime { get; set; }
 		public virtual bool SendEmailImmediately { get; set; }
-		public virtual String ImageUrl { get; set; }
+		//public virtual String ImageUrl { get; set; }
 		public virtual long AccountabilityChartId { get; set; }
 
 		[JsonIgnore]
@@ -426,7 +454,7 @@ namespace RadialReview.Models {
 			return Name.Translate();
 		}
 		public override string GetImageUrl() {
-			return ImageUrl ?? base.GetImageUrl();
+			return Settings.GetImageUrl() ?? base.GetImageUrl();
 		}
 
 		public override string GetGroupType() {
@@ -442,7 +470,7 @@ namespace RadialReview.Models {
 				Map(x => x.AccountType);
 				Map(x => x.ManagersCanEdit);
 				Map(x => x.DeleteTime);
-				Map(x => x.ImageUrl);
+				//Map(x => x.ImageUrl); //use Settings.ImageUrl
 				Map(x => x.CreationTime);
 				Map(x => x.StrictHierarchy);
 				Map(x => x.ManagersCanEditPositions);

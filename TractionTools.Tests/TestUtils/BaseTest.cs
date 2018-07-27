@@ -4,6 +4,7 @@ using MigraDoc.Rendering;
 using Moq;
 using Newtonsoft.Json.Linq;
 using NHibernate;
+using PdfSharp.Pdf;
 using RadialReview;
 using RadialReview.Accessors;
 using RadialReview.Controllers;
@@ -451,6 +452,10 @@ namespace TractionTools.Tests.TestUtils {
 			renderer.RenderDocument();
 			renderer.PdfDocument.Save(Path.Combine(GetCurrentPdfFolder(), name));
 			renderer.PdfDocument.Save(Path.Combine(GetPdfFolder(), name));
+		}
+		protected void Save(PdfDocument doc, string name) {
+			doc.Save(Path.Combine(GetCurrentPdfFolder(), name));
+			doc.Save(Path.Combine(GetPdfFolder(), name));
 		}
 
 	}

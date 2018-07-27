@@ -160,17 +160,27 @@ namespace RadialReview.Controllers {
 			if (file != null && file.ContentLength > 0) {
 				// extract only the fielname
 				var uploadType = forType.Parse<UploadType>();
-				var url = await _ImageAccessor.UploadImage(userModel, Server, file, uploadType);
+				var url = await _ImageAccessor.UploadImage(userModel,null, Server, file, uploadType);
 				return Json(ResultObject.Create(url));
 			}
 			return Json(new ResultObject(true, ExceptionStrings.SomethingWentWrong));
 		}
 
 
-
-
-
-
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> Logo(HttpPostedFileBase file) {
+			var user = GetUser();
+			if (user == null)
+				throw new PermissionsException();
+			//you can put your existing save code here
+			if (file != null && file.ContentLength > 0) {
+				// extract only the fielname
+				var url = await _ImageAccessor.UploadImage(GetUserModel(),GetUser(), Server, file, UploadType.Logo);
+				return Json(ResultObject.Create(url));
+			}
+			return Json(new ResultObject(true, ExceptionStrings.SomethingWentWrong));
+		}
 
 
 

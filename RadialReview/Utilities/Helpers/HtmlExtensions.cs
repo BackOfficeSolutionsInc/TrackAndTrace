@@ -237,10 +237,12 @@ namespace System.Web {
 			return new HtmlString(output);
 		}
 
-		public static MvcHtmlString ArrayToString<T>(this HtmlHelper html, IEnumerable<T> items) {
+		public static MvcHtmlString ArrayToString<T>(this HtmlHelper html, IEnumerable<T> items,bool format=false) {
 			//	var unproxied = items.Select(x => NHibernateProxyRemover.From(x));
 
-			return new MvcHtmlString(JsonConvert.SerializeObject(items));
+			return new MvcHtmlString(JsonConvert.SerializeObject(items, new JsonSerializerSettings() {
+				Formatting = format ? Formatting.Indented : Formatting.None
+			}).Replace("</script>","<\\/script>"));
 			//Json.Encode());
 		}
 

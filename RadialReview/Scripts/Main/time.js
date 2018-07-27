@@ -172,4 +172,8 @@
 		var day = 24 * 60 * 60 * 1000 * 7 * week;
 		return new Date(day);
 	};
+
+	this.formatDate=function(date){
+		return window.getFormattedDate(date);
+	};
 }

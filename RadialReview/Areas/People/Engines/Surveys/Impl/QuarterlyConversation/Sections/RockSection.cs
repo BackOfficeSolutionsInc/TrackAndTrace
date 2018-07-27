@@ -29,6 +29,14 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
 		public const string AUDIT_ROCKS = "AuditRocks";
 
+		public class LookupMethods {
+			public LookupRocks LookupRocks { get; set; }
+			public LookupAuditRocks LookupAuditRocks { get; set; }
+			public LookupAccountabilityNodes LookupAccountabilityNodes { get; set; }
+			public LookupSurveyUserNodes LookupSurveyUserNodes { get; set; }
+		}
+
+
 		/// <summary>
 		/// Pass in the full range of the quarter. It automatically trims the range.
 		/// 
@@ -51,12 +59,19 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		///                         +-----------------------Deleted--------------------------->
 		///                                         
 		/// </summary>
-		/// <param name="searchRange"></param>
-		public RockSection(DateRange qtrRange) {
+		public RockSection(DateRange qtrRange, double startPaddingPercent = .1, double endPaddingPercent = .23, LookupMethods replacementLookupMethods =null) {
+
+			//var replacementLookupMethods = new LookupMethods();
+			replacementLookupMethods = replacementLookupMethods ?? new LookupMethods();
+			replacementLookupMethods.LookupRocks = replacementLookupMethods.LookupRocks ?? DB_LookupRocks;
+			replacementLookupMethods.LookupAuditRocks = replacementLookupMethods.LookupAuditRocks ?? DB_LookupAuditRocks;
+			replacementLookupMethods.LookupAccountabilityNodes = replacementLookupMethods.LookupAccountabilityNodes ?? DB_LookupAccountabilityNodes;
+			replacementLookupMethods.LookupSurveyUserNodes = replacementLookupMethods.LookupSurveyUserNodes ?? DB_LookupSurveyUserNodes;
+			lookupMethods = replacementLookupMethods;
 
 			var ts = qtrRange.ToTimespan();
-			var start = qtrRange.StartTime.AddDays(ts.TotalDays * 9 / 90);
-			var end = qtrRange.EndTime.AddDays(-ts.TotalDays * 21 / 90);
+			var start = qtrRange.StartTime.AddDays(ts.TotalDays * startPaddingPercent);
+			var end = qtrRange.EndTime.AddDays(-ts.TotalDays * endPaddingPercent);
 
 			SearchRange = new DateRange(start, end);
 		}
@@ -65,40 +80,83 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 			return new[] { new RockItems(null, null) };
 		}
 
-		public void Prelookup(IInitializerLookupData data) {
-			var rocks = data.Session.QueryOver<RockModel>()
-				//.Where(x=>x.CreateTime>=SearchRange.StartTime && x.CreateTime<=SearchRange.EndTime)
-				.Where(SearchRange.Filter<RockModel>())
-				.Where(x => x.OrganizationId == data.OrgId)
-				.Future();
+		public delegate IEnumerable<RockModel> LookupRocks(IInitializerLookupData data);
+		public delegate IEnumerable<RockModel> LookupAuditRocks(IInitializerLookupData data);
+		public delegate IEnumerable<AccountabilityNode> LookupAccountabilityNodes(IInitializerLookupData data, long[] nodeIds);
+		public delegate IEnumerable<SurveyUserNode> LookupSurveyUserNodes(IInitializerLookupData data, long[] surveyUserNodeIds);
 
+		private LookupMethods lookupMethods;
+
+		public void Prelookup(IInitializerLookupData data) {
+			//All rocks
+			IEnumerable<RockModel> rocks = lookupMethods.LookupRocks(data);
+			IEnumerable<RockModel> auditRocks = lookupMethods.LookupAuditRocks(data);
+			data.Lookup.Add(AUDIT_ROCKS, auditRocks.ToList());
+			data.Lookup.AddList(rocks);
+
+			//All nodes
+			var nodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() })
+									.Where(x => x.Is<AccountabilityNode>())
+									.Select(x => x.ModelId)
+									.ToArray();
+			if (nodeIds.Any()) {
+				data.Lookup.AddList(lookupMethods.LookupAccountabilityNodes(data, nodeIds));
+			}
+
+			//All survey user-nodes
+			var surveyUserNodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() })
+												.Where(x => x.Is<SurveyUserNode>())
+												.Select(x => x.ModelId)
+												.ToArray();
+			if (surveyUserNodeIds.Any()) {
+				data.Lookup.AddList(lookupMethods.LookupSurveyUserNodes(data, surveyUserNodeIds));
+			}
+		}
+
+		#region Db Lookup Methods
+		private static IEnumerable<SurveyUserNode> DB_LookupSurveyUserNodes(IInitializerLookupData data, long[] surveyUserNodeIds) {
+			return data.Session.QueryOver<SurveyUserNode>()
+									.WhereRestrictionOn(x => x.Id).IsIn(surveyUserNodeIds)
+									.Fetch(x => x.AccountabilityNode).Eager
+									.Fetch(x => x.User).Eager
+									.Future();
+		}
+
+		private static IEnumerable<AccountabilityNode> DB_LookupAccountabilityNodes(IInitializerLookupData data, long[] nodeIds) {
+			return data.Session.QueryOver<AccountabilityNode>().WhereRestrictionOn(x => x.Id).IsIn(nodeIds).Future();
+		}
+		private IEnumerable<RockModel> DB_LookupAuditRocks(IInitializerLookupData data) {
 			var audit = data.Session.AuditReader();
 			var orgProp = AuditEntity.Property(HibernateSession.Names.ColumnName<RockModel>(x => x.OrganizationId));
-			var auditRocks = audit.CreateQuery().ForEntitiesAtRevision<RockModel>(audit.GetRevisionNumberForDate(SearchRange.EndTime))
+			//var auditRocks = audit.CreateQuery()//.ForEntitiesAtRevision<RockModel>(audit.GetRevisionNumberForDate(SearchRange.EndTime))
+			//					.ForRevisionsOfEntity(typeof(RockModel), true, false)
+			//					.Add(SearchRange.FilterAudit<RockModel>())
+			//					.Add(orgProp.Eq(data.OrgId))
+			//					.GetResultList<RockModel>()
+			//					.ToList();
+
+			
+			try {
+				var revisionId = audit.GetRevisionNumberForDate(SearchRange.EndTime);
+				var auditRocks = audit.CreateQuery().ForEntitiesAtRevision<RockModel>(revisionId)								
 								.Add(SearchRange.FilterAudit<RockModel>())
 								.Add(orgProp.Eq(data.OrgId))
 								.Results().ToList();
-			data.Lookup.Add(AUDIT_ROCKS, auditRocks);
-
-			data.Lookup.AddList(rocks);
-
-			var nodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() }).Where(x => x.Is<AccountabilityNode>()).Select(x => x.ModelId).ToArray();
-			if (nodeIds.Any()) {
-				data.Lookup.AddList(data.Session.QueryOver<AccountabilityNode>().WhereRestrictionOn(x => x.Id).IsIn(nodeIds).Future());
+				return auditRocks;
+			} catch (Exception e) {
+				return new List<RockModel>();
 			}
 
-			var surveyUserNodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() }).Where(x => x.Is<SurveyUserNode>()).Select(x => x.ModelId).ToArray();
-			if (surveyUserNodeIds.Any()) {
-				data.Lookup.AddList(
-					data.Session.QueryOver<SurveyUserNode>()
-						.WhereRestrictionOn(x => x.Id).IsIn(surveyUserNodeIds)
-						.Fetch(x => x.AccountabilityNode).Eager
-						.Fetch(x => x.User).Eager
-						.Future()
-				);
-				//data.Lookup.AddList(data.Session.QueryOver<AccountabilityNode>().WhereRestrictionOn(x => x.Id).IsIn(surveyUserNodeIds).Future());
-			}
 		}
+		private IEnumerable<RockModel> DB_LookupRocks(IInitializerLookupData data) {
+			var rocks = data.Session.QueryOver<RockModel>()
+							//.Where(x=>x.CreateTime>=SearchRange.StartTime && x.CreateTime<=SearchRange.EndTime)
+							.Where(SearchRange.Filter<RockModel>())
+							.Where(x => x.OrganizationId == data.OrgId)
+							.Future();
+			return rocks;
+		}
+		#endregion
 
 		public ISection InitializeSection(ISectionInitializerData data) {
 			return new SurveySection(data, "Rocks", SurveySectionType.Rocks, "mk-rocks");

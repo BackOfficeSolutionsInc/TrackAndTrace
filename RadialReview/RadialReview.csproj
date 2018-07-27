@@ -129,6 +129,7 @@
     <Compile Include="Accessors\OrganizationAccessors\JoinOrganizationAccessor.cs" />
     <Compile Include="Accessors\PdfChartAccessor.cs" />
     <Compile Include="Accessors\PDF\AccountabilityChartPDF.cs" />
+    <Compile Include="Accessors\PDF\AccountabilityChartSettings.cs" />
     <Compile Include="Accessors\PDF\JS\D3.js.cs" />
     <Compile Include="Accessors\PDF\DocumentPlacer.cs" />
     <Compile Include="Accessors\PDF\JS\Tree.js.cs" />
@@ -175,6 +176,7 @@
     <Content Include="Content\Angular\angular-material.less" />
     <Content Include="Areas\People\Views\QuarterlyConversation\Archive.cshtml" />
     <Content Include="Areas\People\Views\QuarterlyConversation\EditModal.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Admin.cshtml" />
     <None Include="Content\Chart\metric-graphics.less" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
@@ -263,6 +265,7 @@
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\Charts\MetricGraphic.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
+    <Compile Include="Models\Components\ColorComponent.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
     <Compile Include="Models\Frontend\EditorModels.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
@@ -274,6 +277,8 @@
     <Compile Include="Models\UserModels\UserRole.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Attributes\Untested.cs" />
+    <Compile Include="Utilities\Algorithms\BinPacking.cs" />
+    <Compile Include="Utilities\Algorithms\BreakOptimization.cs" />
     <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
     <Compile Include="Utilities\AsyncUtility.cs" />
     <Compile Include="Utilities\CoreProcess\BpmnUtility.cs" />
@@ -408,6 +413,7 @@
     <Compile Include="Utilities\DataTypes\LazyCollection.cs" />
     <Compile Include="Utilities\DatePointAnalyzerUtility.cs" />
     <Compile Include="Utilities\DivisorUtility.cs" />
+    <Compile Include="Utilities\Pdf\DocumentMerger.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
     <Compile Include="Crosscutting\Hooks\Integrations\BasecampTodoHook.cs" />
@@ -949,7 +955,7 @@
     <Compile Include="Utilities\Extensions\TimespanExtensions.cs" />
     <Compile Include="Utilities\Extensions\ViewBagExtensions.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
-    <Compile Include="Utilities\DistanceUtility.cs" />
+    <Compile Include="Utilities\Algorithms\DistanceUtility.cs" />
     <Compile Include="Utilities\ForModelUtil.cs" />
     <Compile Include="Utilities\FormulaUtility.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
@@ -981,6 +987,10 @@
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PaymentSpringUtil.cs" />
+    <Compile Include="Utilities\Pdf\LayoutOptimizer.cs" />
+    <Compile Include="Utilities\Pdf\LayoutTrialResult.cs" />
+    <Compile Include="Utilities\Pdf\MultiPageDocument.cs" />
+    <Compile Include="Utilities\Pdf\PdfDocumentAndStats.cs" />
     <Compile Include="Utilities\Pdf\PdfOptimizer.cs" />
     <Compile Include="Utilities\Pdf\PdfWordWrapper.cs" />
     <Compile Include="Utilities\PermissionItemHelper.cs" />
@@ -1892,6 +1902,8 @@
     <Content Include="Views\Account\AdminSetRole.cshtml" />
     <Content Include="Views\Account\AdminAuditLog.cshtml" />
     <Content Include="Views\Admin\AccountsAtRisk.cshtml" />
+    <Content Include="Views\Admin\Variables.cshtml" />
+    <Content Include="Views\Admin\Errors.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

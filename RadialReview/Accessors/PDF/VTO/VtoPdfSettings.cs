@@ -12,7 +12,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.IO;
 using RadialReview.Utilities.DataTypes;
-
+using static RadialReview.Models.OrganizationModel;
 
 namespace RadialReview.Accessors {
 	public partial class PdfAccessor {
@@ -42,7 +42,17 @@ namespace RadialReview.Accessors {
 				}
 				return _Download;
 			}
+			public VtoPdfSettings(OrganizationSettings settings) :this(){
+				FillColor = settings.PrimaryColor.WithAlpha(100).ToMigradocColor();
+				BorderColor = settings.PrimaryColor.ToMigradocColor();
+				TextColor = settings.TextColor.ToMigradocColor();
+				LightBorderColor = FillColor;
+				if (settings.HasImage()) {
+					ImageUrl = settings.GetImageUrl(ImageSize._img);
+				}
+			}
 
+			[Obsolete("Use other constructor")]
 			public VtoPdfSettings() {
 
 				FillColor = new Color(100, 100, 100, 100);

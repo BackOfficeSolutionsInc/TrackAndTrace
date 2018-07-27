@@ -28,6 +28,7 @@ using RadialReview.Accessors.VideoConferenceProviders;
 using Ionic.Zip;
 using System.Text;
 using static RadialReview.Models.L10.L10Recurrence;
+using RadialReview.Utilities.Pdf;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {

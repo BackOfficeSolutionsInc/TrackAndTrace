@@ -15,6 +15,11 @@ using System.Threading.Tasks;
 using static RadialReview.Accessors.PdfAccessor;
 using RadialReview.Areas.People.Accessors.PDF;
 using RadialReview.Areas.People.Accessors;
+using RadialReview.Utilities;
+using PdfSharp;
+using RadialReview.Utilities.Pdf;
+using MigraDoc.DocumentObjectModel;
+using PdfSharp.Drawing;
 
 namespace RadialReview.Controllers {
 	public class QuarterlyController : BaseController {
@@ -122,7 +127,7 @@ namespace RadialReview.Controllers {
 				//vtoModel 
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout1");
 
-				var settings = new VtoPdfSettings();
+				var settings = new VtoPdfSettings(GetUser().GetOrganizationSettings());
 
 				await PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat(), settings);
 				anyPages = true;
@@ -145,11 +150,13 @@ namespace RadialReview.Controllers {
 					foreach (var n in nodes) {
 						n._hasParent = topNodes.All(x => x.Id != n.Id);
 					}
+					var doc = AccountabilityChartPDF.GenerateAccountabilityChartSingleLevelsMultiDocumentsPerPage(nodes, XUnit.FromInch(11), XUnit.FromInch(8.5),new AccountabilityChartPDF.AccountabilityChartSettings() , true);
 
-					merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, 11, 8.5, true));
+				
+					merger.AddDoc(doc);
 					anyPages = true;
-				} catch (Exception) {
-
+				} catch (Exception e) {
+					int a = 0;
 				}
 			}
 			if (l10) {

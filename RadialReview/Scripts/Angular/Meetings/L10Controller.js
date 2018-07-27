@@ -65,7 +65,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 								var foundKey = $scope.ScoreLookup[value.ForWeek][value.Measurable.Id];
 								var newKey = value.Key;
 								if (typeof (foundKey) !== "undefined" && foundKey.localeCompare(value.Key) > 0) {
-									debugger;
 									newKey = foundKey;
 								}
 								$scope.ScoreLookup[value.ForWeek][value.Measurable.Id] = newKey;
@@ -339,7 +338,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 				}
 			}
 			return function (a) {
-				debugger;
 				if (a.Id in dict)
 					return dict[a.Id];
 				if (a.Ordering)

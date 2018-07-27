@@ -7,6 +7,7 @@ using TractionTools.Tests.Permissions;
 using System.IO;
 using RadialReview.Accessors.PDF.JS;
 using System.Threading.Tasks;
+using PdfSharp.Drawing;
 
 namespace TractionTools.UITests.PDF {
 	[TestClass]
@@ -17,7 +18,7 @@ namespace TractionTools.UITests.PDF {
 			var tree = AccountabilityAccessor.GetTree(c.Manager, c.Org.Organization.AccountabilityChartId);
 			//Tree.Update(tree.Root, false);
 
-			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(tree.Root, 8.5, 10, false);
+			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(tree.Root, XUnit.FromInch(11), XUnit.FromInch(8.5), new AccountabilityChartPDF.AccountabilityChartSettings(), false).Document;
 
 			pdf.Save(Path.Combine(GetPdfFolder(),"FullTreeDiagram.pdf"));
 		}

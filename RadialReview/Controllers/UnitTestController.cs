@@ -21,6 +21,11 @@ using RadialReview.Models.ViewModels;
 using RadialReview.Exceptions;
 using Hangfire;
 using RadialReview.Crosscutting.Schedulers;
+using PdfSharp.Drawing;
+using RadialReview.Utilities.Pdf;
+using PdfSharp.Pdf;
+using MigraDoc.DocumentObjectModel;
+using System.Drawing;
 
 namespace RadialReview.Controllers
 {
@@ -248,5 +253,34 @@ namespace RadialReview.Controllers
 			return Json(new { status = "Started" }, JsonRequestBehavior.AllowGet);
 		}
 
+
+		private PdfDocumentAndStats CreateRectPage(int x, int y, int w, int h, double scale) {
+			var doc = new PdfDocument();
+			var p = doc.AddPage();
+			var gfx = XGraphics.FromPdfPage(p);
+			var ux = Unit.FromInch(x);
+			var uy = Unit.FromInch(y);
+			var uw = Unit.FromInch(w * scale);
+			var uh = Unit.FromInch(h * scale);
+			gfx.DrawString("asdb", new XFont("arial", 1 * scale), Brushes.Blue, new XPoint(ux, uy));
+			var rect = new XRect(ux, uy, uw, uh);
+			gfx.DrawRectangle(Brushes.Red, rect);
+			return new PdfDocumentAndStats(doc, new DocStats(rect, scale));
+		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult LayoutOptimizer() {
+			var docs = new[] {
+				CreateRectPage(1, 1, 1, 1, 1),
+				CreateRectPage(2, 1, 2, 1, 1),
+				CreateRectPage(3, 1, 3, 1, 1),
+				CreateRectPage(1, 1, 3, 2, 1),
+				CreateRectPage(1, 2, 2, 3, 1),
+				CreateRectPage(1, 3, 1, 3, 1),
+				CreateRectPage(2, 2, 1, 2, 1)
+			};
+			var layout = MultipageLayoutOptimizer.GetBestLayout(docs,new MultiPageDocument.Settings(new XSize(8.5, 11)));
+			return Json(layout, JsonRequestBehavior.AllowGet);
+		}
 	}
 }

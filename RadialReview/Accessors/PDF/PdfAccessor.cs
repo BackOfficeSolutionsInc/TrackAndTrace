@@ -30,6 +30,7 @@ using PdfSharp.Pdf.IO;
 using System.Collections;
 using RadialReview.Models.Angular.Rocks;
 using System.Threading.Tasks;
+using PdfSharp;
 
 namespace RadialReview.Accessors {
 	public class LayoutHelper {
@@ -66,163 +67,7 @@ namespace RadialReview.Accessors {
 		}
 	}
 
-	public class DocumentMerger {
 
-		protected List<object> docs { get; set; }
-
-		public void AddDocs(IEnumerable<PdfDocument> docList) {
-			foreach (var doc in docList) {
-				docs.Add(doc);
-			}
-		}
-		public void AddDocs(IEnumerable<Document> docList) {
-			foreach (var doc in docList) {
-				docs.Add(doc);
-			}
-		}
-		public void AddDoc(PdfDocument doc) {
-			docs.Add(doc);
-		}
-		public void AddDoc(Document doc) {
-			docs.Add(doc);
-		}
-		public void AddDoc(PdfDocumentRenderer doc) {
-			docs.Add(doc);
-		}
-
-		public DocumentMerger() {
-			docs = new List<object>();
-		}
-
-		protected void DrawNumber(XGraphics gfx, XFont font, int? number, DateTime? date, string dateFormat, string name = null) {
-
-			var wmargin = 35;
-			var hmargin = 22;
-
-			var size = new XSize(gfx.PageSize.Width - wmargin * 2, gfx.PageSize.Height - hmargin * 2);
-
-			//var text = "";
-			if (number != null) {
-				gfx.DrawString(number.ToString(), font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
-
-				//text += number.ToString();
-			}
-			if (date != null) {
-				//	if (number != null) {
-				//		text += " | ";
-				//	};
-				var text = "" + date.Value.ToString(dateFormat ?? "MM-dd-yyyy") + "   " + name ?? "";
-				var gray = new XSolidBrush(XColor.FromArgb(100, 100, 100, 100));
-				var dateFont = new XFont("Arial Narrow", 9, XFontStyle.Regular);
-
-				gfx.DrawString(text, dateFont, gray, new XRect(new XPoint(wmargin/*22*/, hmargin), size), XStringFormats.BottomLeft);
-				//gfx.DrawString(text, font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
-
-			}
-
-
-			//gfx.DrawString(text, font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
-		}
-
-
-		public PdfDocument Flatten(string title, bool includeNumber, bool includeDate = true, string dateFormat = null, string name = null) {
-			DateTime now = DateTime.Now;
-			//  filename = filename.ToLower().EndsWith(".pdf")?filename:filename+".pdf";
-			PdfDocument document = new PdfDocument();
-			document.Info.Title = title;
-			document.Info.Author = "Traction Tools";
-			document.Info.Keywords = "Traction Tools";
-			document.Info.CreationDate = now;
-
-			var pages = 0;
-			XFont font = new XFont("Verdana", 10, XFontStyle.Regular);
-
-			if (!docs.Any()) {
-				//Cannot save empty document
-				var doc = new Document();
-				var section = new Section();
-				var paragraph = new Paragraph();
-				var text = paragraph.AddFormattedText("Page intentionally left blank.", new Font("Verdana", 10));
-				text.Color = Colors.Gray;
-				paragraph.Format.Alignment = ParagraphAlignment.Center;
-				section.Add(paragraph);
-				doc.Add(section);
-				AddDoc(doc);
-			}
-
-			foreach (var doc in docs) {
-				if (doc is PdfDocument) {
-					var pdfDoc = (PdfDocument)doc;
-					PdfDocument newPdfDoc;
-
-					using (var stream = new MemoryStream()) {
-						pdfDoc.Save(stream, false);
-						newPdfDoc = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
-					}
-
-					foreach (var p in newPdfDoc.Pages) {
-						var page = document.AddPage(p);
-						page.Width = p.Width;
-						page.Height = p.Height;
-						page.Orientation = p.Orientation;
-						XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
-
-						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
-
-						pages += 1;
-					}
-				}
-				if (doc is Document) {
-					var mdoc = (Document)doc;
-
-					DocumentRenderer docRenderer = new DocumentRenderer(mdoc);
-					docRenderer.PrepareDocument();
-
-					int pageCount = docRenderer.FormattedDocument.PageCount;
-					for (int idx = 0; idx < pageCount; idx++) {
-						PdfPage page = document.AddPage();
-
-						var pageInfo = docRenderer.FormattedDocument.GetPageInfo(idx + 1);
-						page.Width = pageInfo.Width;
-						page.Height = pageInfo.Height;
-						page.Orientation = pageInfo.Orientation;
-
-						XGraphics gfx = XGraphics.FromPdfPage(page);
-						gfx.MUH = PdfFontEncoding.Unicode;
-						docRenderer.RenderPage(gfx, idx + 1);
-						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
-						pages += 1;
-					}
-				}
-				if (doc is PdfDocumentRenderer) {
-					var mdoc = (PdfDocumentRenderer)doc;
-					PdfDocument newPdfDoc;
-
-					using (var stream = new MemoryStream()) {
-						mdoc.Save(stream, false);
-						newPdfDoc = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
-					}
-
-					foreach (var p in newPdfDoc.Pages) {
-						var page = document.AddPage(p);
-						page.Width = p.Width;
-						page.Height = p.Height;
-						page.Orientation = p.Orientation;
-						XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
-						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
-						pages += 1;
-					}
-
-				}
-			}
-
-
-
-			return document;
-
-		}
-
-	}
 
 
 	public partial class PdfAccessor {
@@ -242,7 +87,7 @@ namespace RadialReview.Accessors {
 			var document = new Document();
 
 			document.Info.Title = docTitle ?? "Traction Tools printout";
-			document.Info.Author = caller.NotNull(x=>x.GetName()) ?? "Traction® Tools";
+			document.Info.Author = caller.NotNull(x => x.GetName()) ?? "Traction® Tools";
 			document.Info.Comment = "Created with Traction® Tools";
 
 
@@ -1044,9 +889,9 @@ namespace RadialReview.Accessors {
 						getPadText = padTexts[m.GetPadId()].ToString();
 
 					} catch (Exception) {
-						
+
 					}
-					
+
 					row.Cells[4].AddParagraph(getPadText);
 					row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
 				}
@@ -1617,7 +1462,7 @@ namespace RadialReview.Accessors {
 
 
 			var getStatusText = new Func<RockState?, string>(x => {
-				
+
 				if (quarterlyPrintout)
 					return (x == RockState.Complete) ? "Done" : "Not Done";
 				if (x == null)
@@ -1728,7 +1573,7 @@ namespace RadialReview.Accessors {
 				var com_h = row.Cells[0].AddParagraph("COMPANY ROCKS");
 				com_h.Format.Font.Name = "Arial Narrow";
 				com_h.Format.Font.Size = 10;
-				
+
 				//com_h.Format.Font.Bold = true;
 				//com_h.Format.Borders.Color = TableBlack;
 				com_h.Format.Alignment = ParagraphAlignment.Left;
@@ -1765,12 +1610,12 @@ namespace RadialReview.Accessors {
 					row.HeightRule = RowHeightRule.AtLeast;
 					row.VerticalAlignment = VerticalAlignment.Center;
 					row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
-					
+
 					//use the functions above to simiplify.
 					var status = getStatusText(m.Completion);
 					var bold = m.Completion == RockState.AtRisk;
 					Color statusColor = getStatusColor(m.Completion);
-					
+
 
 					row.Cells[0].AddParagraph("" + (sr_count + 1) + ")  " + m.NotNull(x => x.Name));
 					row.Cells[0].Format.Alignment = ParagraphAlignment.Left;
@@ -1844,20 +1689,20 @@ namespace RadialReview.Accessors {
 						for (var j = 0; j < goals.Count; j++) {
 							var status = getStatusText(goals[j].Completion);//.NotNull(x => x.Value.GetDisplayName());
 							Color statusColor = getStatusColor(goals[j].Completion);//Colors.DarkRed;
-							////Update below also
-							//switch (goals[j].Completion) {
-							//	case RockState.OnTrack:
-							//		statusColor = Colors.DarkBlue;
-							//		break;
-							//	case RockState.AtRisk:
-							//		statusColor = Colors.DarkRed;
-							//		break;
-							//	case RockState.Complete:
-							//		statusColor = Colors.DarkGreen;
-							//		break;
-							//	default:
-							//		break;
-							//}
+																					////Update below also
+																					//switch (goals[j].Completion) {
+																					//	case RockState.OnTrack:
+																					//		statusColor = Colors.DarkBlue;
+																					//		break;
+																					//	case RockState.AtRisk:
+																					//		statusColor = Colors.DarkRed;
+																					//		break;
+																					//	case RockState.Complete:
+																					//		statusColor = Colors.DarkGreen;
+																					//		break;
+																					//	default:
+																					//		break;
+																					//}
 
 							var r = new Row();
 							//rockTable.AddRow();
@@ -1966,7 +1811,7 @@ namespace RadialReview.Accessors {
 			return list;
 		}
 
-		
+
 		private static void AddPage_Rock(Section section1, Document doc, List<RockPdfModel> list, Unit height, out List<Cell> cells, out List<Table> tables, bool includeSection = false) {
 
 			var container = section1.AddTable();
@@ -1988,7 +1833,7 @@ namespace RadialReview.Accessors {
 			//AddTitledPage(doc, "Quarterly " + caller.Organization.Settings.RockName, Orientation.Landscape, addPageNumber: addPageNumber);
 			if (!includeSection) {
 				var table_empty = container_cell.Elements.AddTable();//section.AddTable();
-				
+
 				table_empty.AddColumn(Unit.FromInch(2.5425));
 				var empty_row = table_empty.AddRow();
 				empty_row.Height = Unit.FromInch(0.45);
@@ -2001,7 +1846,7 @@ namespace RadialReview.Accessors {
 			List<Table> tables1 = new List<Table>();
 
 			var table = container_cell.Elements.AddTable();
-			
+
 			foreach (var item in list) {
 				table.AddColumn(Unit.FromInch(3.39));
 			}
@@ -2031,7 +1876,7 @@ namespace RadialReview.Accessors {
 
 
 			var tractionData = table.AddRow();
-			
+
 
 			for (int i = 0; i < list.Count; i++) {
 				cells1.Add(tractionData.Cells[i]);
@@ -2183,8 +2028,8 @@ namespace RadialReview.Accessors {
 			table.Borders.Color = TableBlack;
 			table.Borders.Width = 1;
 			/*table.Borders.Left.Width = 0.25;
-            table.Borders.Right.Width = 0.25;
-            table.Borders.Top.Width = 7.0/8.0;*/
+			table.Borders.Right.Width = 0.25;
+			table.Borders.Top.Width = 7.0/8.0;*/
 			table.Rows.LeftIndent = 0;
 			table.LeftPadding = 0;
 			table.RightPadding = 0;
@@ -2330,7 +2175,7 @@ namespace RadialReview.Accessors {
 			futureDate.Format.Font.Name = "Arial Narrow";
 			futureDate.Format.Font.Size = fontSize;
 			futureDate.AddFormattedText("Future Date: ", TextFormat.Bold);
-			if (section!=null && section.FutureDate.HasValue)
+			if (section != null && section.FutureDate.HasValue)
 				futureDate.AddFormattedText(section.FutureDate.Value.ToString(dateformat), TextFormat.NotBold);
 
 
@@ -2430,10 +2275,10 @@ namespace RadialReview.Accessors {
 						family = fontName;
 					var size = GetSize(ctx, e, family, fontSize, maxWidth);
 					s.Width = Math.Max(s.Width, size.Width);
-					s.Height +=  size.Height;
+					s.Height += size.Height;
 				}
 				s.Width += (para.Format.LeftIndent + para.Format.RightIndent);//(para.Format.LeftIndent.Inch + para.Format.RightIndent.Inch) * 6.0225;
-				s.Height += (para.Format.SpaceBefore + para.Format.SpaceAfter)+2;// (para.Format.SpaceBefore.Inch + para.Format.SpaceAfter.Inch) * 6.0225;
+				s.Height += (para.Format.SpaceBefore + para.Format.SpaceAfter) + 2;// (para.Format.SpaceBefore.Inch + para.Format.SpaceAfter.Inch) * 6.0225;
 			} else if (o is Table) {
 				var table = (Table)o;
 				var family = table.Format.Font.Name;

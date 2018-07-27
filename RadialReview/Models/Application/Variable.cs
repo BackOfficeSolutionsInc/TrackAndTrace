@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace RadialReview.Models.Application {
+namespace RadialReview {
 	public class Variable {
 
 		public static class Names {
@@ -21,6 +21,10 @@ namespace RadialReview.Models.Application {
 			public static string DELINQUENT_MESSAGE_MEETING = "DELINQUENT_MESSAGE_MEETING";
 			public static string UPDATE_CARD_SUBJECT = "UPDATE_CARD_SUBJECT";
 			public static string TODO_DIVISOR = "TODO_DIVISOR";
+			public static string INJECTED_SCRIPTS = "INJECTED_SCRIPTS";
+			public static string LOG_ERRORS = "LOG_ERRORS";
+			public static string LAYOUT_WEIGHTS = "LAYOUT_WEIGHTS";
+			public static string LAYOUT_SETTINGS = "LAYOUT_SETTINGS";
 		}
 
 		public virtual string K { get; set; }
@@ -42,12 +46,33 @@ namespace RadialReview.Models.Application {
 
 }
 namespace RadialReview.Variables {
-
+	
 	public class VariableAccessor {
+		public static string Get(string key, Func<string> defaultValue) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var v = s.GetSettingOrDefault(key, ()=>defaultValue());
+					tx.Commit();
+					s.Flush();
+					return v;
+				}
+			}
+		}
 		public static T Get<T>(string key, Func<T> defaultValue) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var v = s.GetSettingOrDefault(key, defaultValue);
+					tx.Commit();
+					s.Flush();
+					return v;
+				}
+			}
+		}
+
+		public static T Get<T>(string key, T defaultValue) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var v = s.GetSettingOrDefault(key,()=> defaultValue);
 					tx.Commit();
 					s.Flush();
 					return v;
@@ -81,16 +106,17 @@ namespace RadialReview.Variables {
 		public static T GetSettingOrDefault<T>(this ISession s, string key, T defaultValue) {
 			return JsonConvert.DeserializeObject<T>(_GetSettingOrDefault(s, key, () => JsonConvert.SerializeObject(defaultValue)).V);
 		}
-		public static void UpdateSetting<T>(this ISession s, string key, T newValue) {
-			UpdateSetting(s, key, JsonConvert.SerializeObject(newValue));
+		public static Variable UpdateSetting<T>(this ISession s, string key, T newValue) {
+			return UpdateSetting(s, key, JsonConvert.SerializeObject(newValue));
 		}
-		public static void UpdateSetting(this ISession s, string key, string newValue) {
+		public static Variable UpdateSetting(this ISession s, string key, string newValue) {
 			var found = _GetSettingOrDefault(s, key, () => newValue);
 			if (found.V != newValue) {
 				found.V = newValue;
 				found.LastUpdate = DateTime.UtcNow;
 				s.Update(found);
 			}
+			return found;
 		}
 		#endregion
 		#region StatelessSession

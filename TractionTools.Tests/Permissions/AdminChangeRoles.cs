@@ -28,10 +28,10 @@ namespace TractionTools.Tests.Permissions {
 			var requestedOrgId = isTT ? ttOrgId : 6;
 
 			try {
-				var result = UserAccessor.CanChangeToRole(requestedUserOrganizationId, myUserOrganizationIds, requestedOrgId, accountType, ttOrgId, isAdmin, audit, null);
+				var result = UserAccessor.CanChangeToRole(requestedUserOrganizationId, myUserOrganizationIds, requestedOrgId, accountType, new long[] { ttOrgId }, isAdmin, audit, null);
 				if (adminSetRoleException)
 					Assert.Fail("Expected exception: " + testName);
-				Assert.AreEqual(expected, result, "FAILED:" + testName);
+				Assert.AreEqual(expected, result.Allowed, "FAILED:" + testName);
 			} catch (AdminSetRoleException e) {
 				if (!adminSetRoleException)
 					Assert.Fail("Unexpected exception: " + testName);

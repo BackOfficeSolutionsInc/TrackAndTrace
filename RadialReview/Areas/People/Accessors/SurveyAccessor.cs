@@ -260,6 +260,17 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 		}
 
+		public static IEnumerable<IForModel> GetAllAboutsForSurveyContainer(UserOrganizationModel caller, long surveyContainerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.CreatedSurvey(surveyContainerId);
+					var surveys = s.QueryOver<Survey>().Where(x => x.DeleteTime == null && x.SurveyContainerId == surveyContainerId).List().ToList();
+					return surveys.Select(x => x.GetAbout()).Distinct(x => x.ToKey()).ToList();
+				}
+			}
+		}
+
 		public static IEnumerable<AngularSurveyContainer> GetSurveyContainersIssuedBy(UserOrganizationModel caller, IForModel creatorModel, SurveyType type) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -376,6 +387,45 @@ namespace RadialReview.Areas.People.Accessors {
 					s.Flush();
 
 					return true;
+				}
+			}
+		}
+
+		public static IEnumerable<AngularSurvey> GetSurveysForContainer_Unsafe(long surveyContainerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var surveys = s.QueryOver<Survey>().Where(x => x.SurveyContainerId == surveyContainerId).List().ToList();
+					var sections = s.QueryOver<SurveySection>().Where(x => x.SurveyContainerId == surveyContainerId).List().ToList();
+					var items = s.QueryOver<SurveyItem>().Where(x => x.SurveyContainerId == surveyContainerId).List().ToList();
+					var itemFormats = s.QueryOver<SurveyItemFormat>().Where(x => x.SurveyContainerId == surveyContainerId).List().ToList().ToDefaultDictionary(x=>x.Id,x=>x,x=>null);
+
+					var containers = items.Select(x => new AngularSurveyItemContainer() {
+						Item = new AngularSurveyItem(x),
+						ItemFormat = itemFormats[x.ItemFormatId].NotNull(y=>new AngularSurveyItemFormat(y))
+					}).ToList();
+
+					UserModel uA = null;
+					var uoms = s.QueryOver<UserOrganizationModel>()
+								.JoinAlias(x => x.User, () => uA)						
+								.WhereRestrictionOn(x => x.Id).IsIn(surveys.Select(x => x.By.ModelId).ToList())
+								.Select(x=>x.Id,x=>uA.FirstName,x=>uA.LastName)
+								.List<object[]>().ToList().ToDefaultDictionary(x => (long)x[0], x => ((string)x[1]) + " " + ((string)x[2]), x => null);
+
+					var suns = s.QueryOver<SurveyUserNode>()								
+								.WhereRestrictionOn(x => x.Id).IsIn(surveys.Select(x => x.About.ModelId).ToList())
+								.Select(x=>x.Id,x=>x.UsersName,x=>x.PositionName)
+								.List<object[]>().ToList().ToDefaultDictionary(x => (long)x[0], x => ((string)x[1])+" - "+((string)x[2]), x => null);
+
+
+					return surveys.Select(survey => {
+						var ss = new AngularSurvey(survey) {
+							Sections = sections.Where(y => y.SurveyId == survey.Id).Select(section => new AngularSurveySection(section) {
+								Items = containers.Where(z => z.Item.SectionId == section.Id).ToList()
+							}).ToList()
+						};
+						ss.Help = uoms[ss.GetBy().ModelId]+"("+ ss.GetBy().ModelId + ")" + " ==>  " + suns[ss.GetAbout().ModelId]+ "("+ss.GetAbout().ModelId+")";
+						return ss;
+					}).ToList();
 				}
 			}
 		}

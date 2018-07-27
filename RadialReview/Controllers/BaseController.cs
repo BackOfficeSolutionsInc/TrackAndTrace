@@ -62,13 +62,13 @@ namespace RadialReview.Controllers {
 			UserManager = userManager;
 		}
 
-		protected async Task SignInAsync(UserModel user, bool isPersistent = false,TimeSpan? expiration=null) {
+		protected async Task SignInAsync(UserModel user, bool isPersistent = false, TimeSpan? expiration = null) {
 			AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
 			var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
 			var settings = new AuthenticationProperties() { IsPersistent = isPersistent };
 			if (expiration != null) {
 				settings.ExpiresUtc = DateTime.UtcNow.Add(expiration.Value);
-				settings.AllowRefresh = false;				
+				settings.AllowRefresh = false;
 			}
 			AuthenticationManager.SignIn(settings, identity);
 		}
@@ -314,7 +314,7 @@ namespace RadialReview.Controllers {
 		protected void AllowAdminsWithoutAudit() {
 			try {
 				var user = GetUser();
-				if (user!=null && user._AdminShortCircuit != null) {
+				if (user != null && user._AdminShortCircuit != null) {
 					user._AdminShortCircuit.AllowAdminWithoutAudit = true;
 				}
 			} catch (Exception e) {
@@ -391,35 +391,6 @@ namespace RadialReview.Controllers {
 		}
 
 		protected ActionResult Pdf(PdfDocument document, string name = null, bool inline = true) {
-			//var stream = new MemoryStream();
-			////try {
-			////	document.Save("C:\\Users\\Clay\\Desktop\\Stuff\\doc.pdf");
-			////} catch (Exception e) {
-			////	int a = 0;
-			////}
-			//document.Save(stream, false);
-			//name = name ?? (Guid.NewGuid() + ".pdf");
-			////if (inline){
-			////    Response.AppendHeader("content-disposition", "inline; filename=\""+name+"\"");
-			////}
-			////stream.Seek(0, SeekOrigin.Begin);
-			////stream.Position = 0;
-
-			////Response.ContentEncoding = Encoding.UTF8;
-			////return new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
-			//stream.Seek(0, SeekOrigin.Begin);
-
-			//Response.ContentType = "application/pdf";
-			//Response.AddHeader("Content-Disposition", "attachment;filename=" + name);
-			//Response.Buffer = true;
-			//Response.Clear();
-			//Response.OutputStream.Write(stream.GetBuffer(), 0, stream.GetBuffer().Length);
-			//Response.OutputStream.Flush();
-			//Response.End();
-
-			//return new FileStreamResult(Response.OutputStream, "application/pdf");
-
-			//XPdfFontOptions opt = new XPdfFontOptions(PdfFontEmbedding.Default);
 			name = name ?? document.Info.Title;
 
 			MemoryStream stream = new MemoryStream();
@@ -434,34 +405,8 @@ namespace RadialReview.Controllers {
 			}
 			Response.AddHeader("content-length", stream.Length.ToString());
 			Response.BinaryWrite(stream.ToArray());
-			//Response.Flush();
 			stream.Close();
-			//Response.End();
-			//var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
-			//pdfRenderer.PdfDocument = document;
-			//pdfRenderer.DocumentRenderer = new DocumentRenderer(document) { PrivateFonts = pfc };
-			//pdfRenderer.RenderDocument();
-
-			//var stream = new MemoryStream();
-			//pdfRenderer.Save(stream, false);
-			//name = name ?? (Guid.NewGuid() + ".pdf");
-			////var file = File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
-			//if (inline) {
-			//	//Response.Headers.Remove("Content-Disposition");
-			//	//var f = Response.Filter;
-			//	//Response.Filter = null;
-			//	//if (Response.Headers.AllKeys.Any(x => x == "Content-Encoding"))
-			//	//    Response.Headers.Remove("Content-Encoding");
-			//	//Response.AppendHeader("Content-Disposition", "inline; filename=output.pdf");
-			//	//Response.AppendHeader("Cache-Control", "private");
-
-			//}
 			return new EmptyResult();
-			//new ActionResult(stream, System.Net.Mime.MediaTypeNames.Application.Pdf);
-
-
-
-			//return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
 		}
 		private static string MappedAppPath() {
 			string APP_PATH = System.Web.HttpContext.Current.Request.ApplicationPath.ToLower();
@@ -537,8 +482,9 @@ namespace RadialReview.Controllers {
 			ActionDescriptor actionDescriptor = controllerDescriptor.FindAction(controllerContext, controllerContext.RouteData.Values["action"].ToString());
 			return (actionDescriptor as ReflectedActionDescriptor).MethodInfo;
 		}
-		
+
 		protected override void OnException(ExceptionContext filterContext) {
+			bool shouldLog = false;
 			try {
 				ChromeExtensionComms.SendCommand("pageError");
 				var f = filterContext.HttpContext.Response.Filter;
@@ -566,7 +512,6 @@ namespace RadialReview.Controllers {
 						if (re.StatusCodeOverride != null) {
 							statusOverride = re.StatusCodeOverride.Value;
 						}
-
 					}
 
 					filterContext.ExceptionHandled = true;
@@ -576,7 +521,6 @@ namespace RadialReview.Controllers {
 					filterContext.Result = new JsonResult() { Data = exception, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 					return;
 				}
-
 
 				if (filterContext.ExceptionHandled)
 					return;
@@ -606,6 +550,7 @@ namespace RadialReview.Controllers {
 					} else {
 						filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
 					}
+					shouldLog = true;
 					filterContext.ExceptionHandled = true;
 				} else if (filterContext.Exception is MeetingException) {
 					var type = ((MeetingException)filterContext.Exception).MeetingExceptionType;
@@ -617,10 +562,10 @@ namespace RadialReview.Controllers {
 					var ex = (AdminSetRoleException)filterContext.Exception;
 					var redirectUrl = ex.RedirectUrl;
 					log.Info("AdminSetRoleException: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
-					if (ex.AccessLevel == Models.Admin.AdminAccessLevel.View) 
-						filterContext.Result = RedirectToAction("AdminSetRole", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl, Id = ex.RequestedRoleId  });
+					if (ex.AccessLevel == Models.Admin.AdminAccessLevel.View)
+						filterContext.Result = RedirectToAction("AdminSetRole", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl, Id = ex.RequestedRoleId });
 					if (ex.AccessLevel == Models.Admin.AdminAccessLevel.SetAs)
-						filterContext.Result = RedirectToAction("SetAsUser", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl, Id = ex.RequestedEmail });					
+						filterContext.Result = RedirectToAction("SetAsUser", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl, Id = ex.RequestedEmail });
 					filterContext.ExceptionHandled = true;
 					filterContext.HttpContext.Response.Clear();
 				} else if (filterContext.Exception is RedirectException) {
@@ -642,6 +587,14 @@ namespace RadialReview.Controllers {
 				log.Info("OnException(Exception)", e);
 				filterContext.Result = Content(e.Message + "  " + e.StackTrace);
 			}
+
+			string errorCode = null;
+			if (shouldLog) {
+				errorCode = AdminAccessor.LogError(filterContext.HttpContext, filterContext.Exception);
+			}
+			ViewBag.ErrorCode = errorCode ?? "1";
+
+
 		}
 
 		protected void CompressContent(ActionExecutedContext filterContext) {
@@ -724,7 +677,7 @@ namespace RadialReview.Controllers {
 								AllowAdminsWithoutAudit();
 								break;
 							case AccessLevel.RadialData:
-								var ids = s.GetSettingOrDefault(Variable.Names.USER_RADIAL_DATA_IDS, () => "").Split(new[] { ',' },StringSplitOptions.RemoveEmptyEntries).Select(x=>long.Parse(x)).ToList();
+								var ids = s.GetSettingOrDefault(Variable.Names.USER_RADIAL_DATA_IDS, () => "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x)).ToList();
 								var u3 = GetUser(s);
 								if (u3 != null && ids.Contains(u3.Id)) {
 									if (u3.DeleteTime != null)
@@ -921,6 +874,7 @@ namespace RadialReview.Controllers {
 			filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
 			filterContext.Controller.ViewBag.Organization = oneUser.Organization;
 			filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);
+			filterContext.Controller.ViewBag.InjectedScripts = VariableAccessor.Get(Variable.Names.INJECTED_SCRIPTS, () => "<script>/*none*/</script>");
 		}
 
 		protected override void OnActionExecuted(ActionExecutedContext filterContext) {

@@ -546,8 +546,9 @@ namespace RadialReview.Accessors {
 					var requestedOrg = s.Get<UserOrganizationModel>(roleId).Organization;
 					var recordAudit = new Action(() => s.Save(audit.ToDatabaseModel(caller.Id)));
 
-					if (!CanChangeToRole(roleId, myUserOrganizations, requestedOrg.Id, requestedOrg.AccountType, Config.GetTractionToolsOrgId(), isAdmin, audit, recordAudit)) {
-						throw new PermissionsException();
+					var canChange = CanChangeToRole(roleId, myUserOrganizations, requestedOrg.Id, requestedOrg.AccountType, Config.GetDisallowedOrgIds(s), isAdmin, audit, recordAudit);
+					if (!canChange.Allowed) {
+						throw new PermissionsException(canChange.Message);
 					}
 					caller.CurrentRole = roleId;
 
@@ -593,20 +594,29 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static bool CanChangeToRole(long requestedUserOrgId, long[] myUserOrganizations, long requestedOrganizationId, AccountType requestedOrganizationType, long tractionToolsOrgId, bool isAdmin, AdminAccessViewModel audit, Action onAdminAllow) {
+		public class CanChangeRole {
+			public CanChangeRole(bool allowed, string message) {
+				Allowed = allowed;
+				Message = message;
+			}
+			public bool Allowed { get; set; }
+			public string Message { get; set; }
+		}
+
+		public static CanChangeRole CanChangeToRole(long requestedUserOrgId, long[] myUserOrganizations, long requestedOrganizationId, AccountType requestedOrganizationType, long[] disallowedOrgIds, bool isAdmin, AdminAccessViewModel audit, Action onAdminAllow) {
 			if (!isAdmin && myUserOrganizations.Any(x => x == requestedUserOrgId)) {
 				//Not an admin and has Access
 				//caller.CurrentRole = roleId;
-				return true;
+				return new CanChangeRole(true,"success");
 			} else if (isAdmin) {
 				if (requestedOrganizationType == AccountType.SwanServices) {
 					//Auto set if Swan services
-					return true;
-				} else if (requestedOrganizationId == tractionToolsOrgId) {
+					return new CanChangeRole(true, "success");
+				} else if (disallowedOrgIds.Contains(requestedOrganizationId)) {
 					//Only allow TT if owned..
 					if (myUserOrganizations.Any(x => x == requestedUserOrgId))
-						return true;
-					return false;
+						return new CanChangeRole(true, "success");
+					return new CanChangeRole(false, "Admins cannot access disallowed organizations.");
 				} else {
 					//Is Admin
 					if (audit == null) {
@@ -615,10 +625,10 @@ namespace RadialReview.Accessors {
 					audit.EnsureValid();
 					onAdminAllow?.Invoke();
 					//caller.CurrentRole = roleId;
-					return true;
+					return new CanChangeRole(true, "success");
 				}
 			} else {
-				return false;
+				return new CanChangeRole(false, "Cannot access.");
 			}
 		}
 

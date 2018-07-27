@@ -90,6 +90,13 @@ namespace RadialReview.Areas.People.Controllers {
 			return View(vm);
 		}
 
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> Admin(long id) {
+			var items = SurveyAccessor.GetSurveysForContainer_Unsafe(id);
+			return View(items);
+		}
+
+
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		[AsyncTimeout(20 * 60000)]
@@ -211,11 +218,19 @@ namespace RadialReview.Areas.People.Controllers {
 
 			var doc = SurveyPdfAccessor.CreateDoc(GetUser(), "All Quarterly Conversations");
 
-			var allAbout = QuarterlyConversationAccessor.GetPeopleAnalyzer(GetUser(), GetUser().Id).Responses
-				.Where(x => x.SurveyContainerId == surveyContainerId && x.SunId.HasValue)
-				.Select(x => ForModel.Create<SurveyUserNode>(x.SunId.Value))
-				.Distinct(x => x.ToKey())
-				.ToList();
+			//var allAbout = QuarterlyConversationAccessor.GetPeopleAnalyzer(GetUser(), GetUser().Id).Responses
+			//	.Where(x => x.SurveyContainerId == surveyContainerId && x.SunId.HasValue)
+			//	.Select(x => ForModel.Create<SurveyUserNode>(x.SunId.Value))
+			//	.Distinct(x => x.ToKey())
+			//	.ToList();
+
+			var allAbout = SurveyAccessor.GetAllAboutsForSurveyContainer(GetUser(), surveyContainerId)
+											
+											//.Select(x => ForModel.Create<SurveyUserNode>(x.SunId.Value))
+											.ToList();
+			;
+
+
 			foreach (var about in allAbout) {
 				var surveyContainer = SurveyAccessor.GetSurveyContainerAbout(GetUser(), about, surveyContainerId);
 				foreach (var survey in surveyContainer.GetSurveys()) {

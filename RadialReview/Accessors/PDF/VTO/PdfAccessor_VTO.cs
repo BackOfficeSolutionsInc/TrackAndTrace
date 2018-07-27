@@ -399,7 +399,7 @@ namespace RadialReview.Accessors {
 			//Add spacer
 			if (!isFirst) {
 				var spacer = new Paragraph();
-				spacer.Format.Borders.Top.Color = TableGray;
+				spacer.Format.Borders.Top.Color = setting.LightBorderColor;
 				//spacer.Format.SpaceBefore = fs * 1.5;
 				//spacer.Format.SpaceAfter = fs * .75;
 				paragraphs.Add(spacer);
@@ -832,11 +832,13 @@ namespace RadialReview.Accessors {
 			table.AddColumn(Unit.FromInch(3.47));
 			table.AddColumn(Unit.FromInch(3.47));
 			table.AddColumn(Unit.FromInch(3.47));
-			table.Borders.Color = TableBlack;
+			table.Borders.Color = settings.BorderColor;
 
 			var tractionHeader = table.AddRow();
 			tractionHeader.KeepWith = 1;
-			tractionHeader.Shading.Color = TableGray;
+			tractionHeader.Shading.Color = settings.FillColor;
+			//tractionHeader.Borders.Bottom.Color = settings.BorderColor;
+			//tractionHeader.Borders.Right.Color = settings.BorderColor;
 			tractionHeader.Height = Unit.FromInch(0.55);
 			var paragraph = tractionHeader.Cells[0].AddParagraph(oneYearPlan.OneYearPlanTitle ?? "1-YEAR PLAN");
 			paragraph.Format.Font.Name = "Arial Narrow";
@@ -872,18 +874,18 @@ namespace RadialReview.Accessors {
 			o.quarterlyRocks = tractionData.Cells[1];
 			o.issuesList = tractionData.Cells[2];
 			o.issueTable = new Table();
-			o.issueTable.Borders.Color = TableGray;
+			o.issueTable.Borders.Color = settings.LightBorderColor;
 			o.issueTable.AddColumn(Unit.FromInch(.28));
 			o.issueTable.AddColumn(Unit.FromInch(3));
 
 			o.rockTable = new Table();
-			o.rockTable.Borders.Color = TableGray;
+			o.rockTable.Borders.Color = settings.LightBorderColor;
 			o.rockTable.AddColumn(Unit.FromInch(.28));
 			o.rockTable.AddColumn(Unit.FromInch(2.6));
 			o.rockTable.AddColumn(Unit.FromInch(.4));
 
 			o.goalTable = new Table();
-			o.goalTable.Borders.Color = TableGray;
+			o.goalTable.Borders.Color = settings.LightBorderColor;
 			o.goalTable.AddColumn(Unit.FromInch(.28));
 			o.goalTable.AddColumn(Unit.FromInch(3));
 

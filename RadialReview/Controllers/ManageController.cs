@@ -14,6 +14,7 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Controllers {
 	public class ManageController : BaseController {
@@ -246,7 +247,15 @@ namespace RadialReview.Controllers {
 				AllowAddClient = user.Organization.Settings.AllowAddClient,
 				DefaultSendTodoTime = user.Organization.Settings.DefaultSendTodoTime,
 				PossibleTodoTimes = TimingUtility.GetPossibleTimes(user.Organization.Settings.DefaultSendTodoTime),
-				AccountabilityChartId = user.Organization.AccountabilityChartId
+				AccountabilityChartId = user.Organization.AccountabilityChartId,
+
+				PrimaryColorHex = user.Organization.Settings.PrimaryColor.ToHex(false),
+				LogoUrl = new ImageUploadViewModel() {
+					ImageUrl = user.Organization.Settings.GetImageUrl(),
+					UploadUrl = "/upload/Logo/",
+					ForType = UploadType.Logo.ToString(),
+
+				},
 			};
 
 			if (testManageFinance) {
@@ -294,7 +303,9 @@ namespace RadialReview.Controllers {
 				model.NumberFormat,
 				model.LimitFiveState,
 				model.DefaultSendTodoTime,
-				model.AllowAddClient);
+				model.AllowAddClient,				
+				model.PrimaryColorHex
+				);
 			ViewBag.Success = "Successfully Saved.";
 
 			//model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)

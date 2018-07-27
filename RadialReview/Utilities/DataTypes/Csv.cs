@@ -28,6 +28,9 @@ namespace RadialReview.Utilities.DataTypes {
 
 		public void Add(String row, String column, String value) {
 
+			row = row ?? "null";
+			column = column ?? "null";
+
 			if (RowsPositions[row] == null) {
 				Rows.Add(row);
 				RowsPositions[row] = RowLength;

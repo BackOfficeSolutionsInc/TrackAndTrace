@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using log4net;
+using Newtonsoft.Json;
 using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Areas.People.Angular;
@@ -55,8 +56,9 @@ namespace RadialReview.Areas.People.Accessors {
 		public static IEnumerable<ByAboutSurveyUserNode> AvailableByAboutsFiltered(UserOrganizationModel caller, IEnumerable<SurveyUserNode> abouts, bool includeSelf, bool supervisorLMA) {
 			var allAvailable = AvailableByAboutsForMe(caller, includeSelf, supervisorLMA);
 			return allAvailable
-						.Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.About.ToViewModelKey()));
-						//.Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.By.ToViewModelKey()));
+						.Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.About.ToViewModelKey()))
+						//Needs to be added otherwise we get too many QCs are generated..
+						.Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.By.ToViewModelKey()));
 		}
 
 		private static SurveyUserNode SunGetter(Dictionary<string, SurveyUserNode> existingItems, AccountabilityNode toAdd) {
@@ -345,6 +347,12 @@ namespace RadialReview.Areas.People.Accessors {
 
 			var linkUrl = Config.BaseUrl(null, "/People/QuarterlyConversation/");
 
+
+			var json = JsonConvert.SerializeObject(container,new JsonSerializerSettings() {
+				Formatting = Formatting.Indented,
+				ReferenceLoopHandling =ReferenceLoopHandling.Ignore
+			});
+
 			var result = new QuarterlyConversationGeneration() {
 				SurveyContainerId = containerId,
 			};
@@ -379,7 +387,7 @@ namespace RadialReview.Areas.People.Accessors {
 			TransformValueAnswer["sometimes"] = "+/–";
 			TransformValueAnswer["not-often"] = "–";
 		}
-		
+
 		public static List<long> GetUsersWhosePeopleAnalyzersICanSee(ISession s, PermissionsUtility perms, long myUserId, long? recurrenceId = null) {
 			perms.Self(myUserId);
 			var callerMeetings = L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, myUserId, onlyPersonallyAttending: true)
@@ -403,7 +411,7 @@ namespace RadialReview.Areas.People.Accessors {
 			return (new[] { myUserId }).Union(shareingIds).Distinct().ToList();
 		}
 
-		public static AngularPeopleAnalyzer GetVisiblePeopleAnalyzers(UserOrganizationModel caller, long userId, long? recurrenceId=null,DateRange range = null) {
+		public static AngularPeopleAnalyzer GetVisiblePeopleAnalyzers(UserOrganizationModel caller, long userId, long? recurrenceId = null, DateRange range = null) {
 			List<long> allVisibleUsers = new List<long>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -416,18 +424,18 @@ namespace RadialReview.Areas.People.Accessors {
 			var pas = allVisibleUsers.Select(id => GetPeopleAnalyzer(caller, id, range)).ToList();
 
 			var flat = new AngularPeopleAnalyzer();
-			var rows= new List<AngularPeopleAnalyzerRow>();
-			var response= new List<AngularPeopleAnalyzerResponse>();
-			var values= new List<PeopleAnalyzerValue>();
-			var containers= new List<AngularSurveyContainer>();
-			var lockins= new List<AngularLockedIn>();
+			var rows = new List<AngularPeopleAnalyzerRow>();
+			var response = new List<AngularPeopleAnalyzerResponse>();
+			var values = new List<PeopleAnalyzerValue>();
+			var containers = new List<AngularSurveyContainer>();
+			var lockins = new List<AngularLockedIn>();
 
 			foreach (var p in pas) {
 				flat.DateRange = p.DateRange;
 				rows.AddRange(p.Rows);
 				response.AddRange(p.Responses);
 				values.AddRange(p.Values);
-				values = values.Distinct(x=>x.Key).ToList();
+				values = values.Distinct(x => x.Key).ToList();
 				containers.AddRange(p.SurveyContainers);
 				containers = containers.Distinct(x => x.Key).ToList();
 				lockins.AddRange(p.LockedIn);
@@ -435,7 +443,7 @@ namespace RadialReview.Areas.People.Accessors {
 			flat.Rows = rows.OrderBy(x => x.About.PrettyString).ToList();
 			flat.Responses = response.OrderBy(x => x.IssueDate).ToList();
 			flat.Values = values;
-			flat.SurveyContainers = containers.OrderBy(x=>x.IssueDate).ToList();
+			flat.SurveyContainers = containers.OrderBy(x => x.IssueDate).ToList();
 			flat.LockedIn = lockins;
 
 			return flat;
@@ -459,7 +467,7 @@ namespace RadialReview.Areas.People.Accessors {
 					perms.ViewPeopleAnalyzer(userId);
 					var myNodes = AccountabilityAccessor.GetNodesForUser(s, perms, userId);
 #pragma warning disable CS0618 // Type or member is obsolete
-					var acNodeChildrenModels = myNodes.SelectMany(node => DeepAccessor.GetChildrenAndSelfModels(s, caller, node.Id, allowAnyFromSameOrg:true)).ToList();
+					var acNodeChildrenModels = myNodes.SelectMany(node => DeepAccessor.GetChildrenAndSelfModels(s, caller, node.Id, allowAnyFromSameOrg: true)).ToList();
 					if (!includeSelf) {
 						acNodeChildrenModels = acNodeChildrenModels.Where(x => !myNodes.Any(y => y.Id == x.Id)).ToList();
 					}
@@ -572,7 +580,7 @@ namespace RadialReview.Areas.People.Accessors {
 						//row.Key._PrettyString = userLu[row.Key/*.ToKey()*/];
 						var sun = discriminatorToSun[row.Key];
 
-						var arow = new AngularPeopleAnalyzerRow(sun.AccountabilityNode, !myNodes.Any(x => x.Id == sun.AccountabilityNodeId));					
+						var arow = new AngularPeopleAnalyzerRow(sun.AccountabilityNode, !myNodes.Any(x => x.Id == sun.AccountabilityNodeId));
 						rows.Add(arow);
 					}
 
