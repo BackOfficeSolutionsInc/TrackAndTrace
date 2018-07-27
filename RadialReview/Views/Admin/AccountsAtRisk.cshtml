@@ -25,9 +25,15 @@
 				{contents:function(x){return x.OrgId;}, name:"Org Id"},
 				{contents:function(x){return "<a href='/organization/which/"+x.OrgId+"'>"+x.OrgName+"</a>";}, name:"Org Name", classes:"fullWidth"},
 				{contents:function(x){
+					var g= x.Registrations.GrowthPercentageFromBeginning;
+					if (g.Denominator==0)
+						return "-";
+					return Math.round((g.Numerator/g.Denominator-1)*100)+"%";
+				}, name:"Growth (begin)"},
+				{contents:function(x){
 					var g= x.Registrations.PercentageFromWindowMax;
-					return Math.round((1-g.Numerator/g.Denominator)*100)+"%";
-				}, name:"Growth"},
+					return Math.round((g.Numerator/g.Denominator-1)*100)+"%";
+				}, name:"Growth (max)"},
 				//{contents:function(x){return x.AccountType;}, name:"Type"},
 				{contents:function(x){return x.Registrations.StartValue;}, name:"Begin"},
 				{contents:function(x){return x.Registrations.MaxValue;}, name:"Max"},
@@ -36,7 +42,7 @@
 		});
 
 		$(function(){
-			$("table").tablesorter({sortList: [[2,0]]});
+			$("table").tablesorter({sortList: [[3,1]]});
 		});
 	</script>
 }
