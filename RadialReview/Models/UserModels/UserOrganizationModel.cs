@@ -80,6 +80,8 @@ namespace RadialReview.Models {
 		}
 		public virtual AdminShortCircuit _AdminShortCircuit { get; set; }
 		public virtual bool _IsRadialAdmin { get; set; }
+		[Obsolete("For testing only")]
+		public virtual bool _IsTestAdmin { get; set; }
 
 		public virtual ITimeData GetTimeSettings() {
 			if (_timeData == null) {
@@ -454,6 +456,8 @@ namespace RadialReview.Models {
 
 		public virtual long ModelId { get { return Id; } }
 		public virtual string ModelType { get { return ForModel.GetModelType<UserOrganizationModel>(); } }
+
+
 		public virtual bool Is<T>() {
 			return typeof(UserOrganizationModel).IsAssignableFrom(typeof(T));
 		}

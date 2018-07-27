@@ -32,6 +32,7 @@ using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Meeting;
 using PdfSharp.Pdf;
 using RadialReview.Models.Reviews;
+using RadialReview.Accessors.PDF;
 
 namespace RadialReview.Controllers {
 	public class ReviewController : BaseController {
@@ -980,10 +981,11 @@ namespace RadialReview.Controllers {
 
 			PdfDocument document = new PdfDocument();
 
+			var settings = new PdfSettings(GetUser().Organization.Settings);
 			foreach (var id in idList) {
 				var review = _ReviewAccessor.GetReview(GetUser(), id);
 				var model = await GetReviewDetails(review, true);
-				PdfAccessor.AddReviewPrintout(GetUser(), document, model);
+				PdfAccessor.AddReviewPrintout(GetUser(), document, model, settings);
 			}
 			return Pdf(document);
 		}
@@ -1006,10 +1008,11 @@ namespace RadialReview.Controllers {
 			if (managesUser)
 				ViewBag.Reviewing = true;
 			ViewBag.ReviewId = id;
+			var settings = new PdfSettings(GetUser().Organization.Settings);
 
 			if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization) {
 				var model = await GetReviewDetails(review, true);
-				return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(), model));
+				return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(), model, settings));
 			} else {
 				throw new PermissionsException("This report has not been shared with you. If you feel this is in error, please contact your supervisor.");
 			}

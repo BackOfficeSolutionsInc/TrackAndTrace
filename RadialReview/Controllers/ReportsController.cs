@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Utilities;
+using RadialReview.Accessors.PDF;
 
 namespace RadialReview.Controllers
 {
@@ -151,8 +152,9 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult PeopleAnalyzer(long id) {
 
+			var settings = new PdfSettings(GetUser().Organization.Settings);
 			var pad = FastReviewQueries.PeopleAnalyzerData(GetUser(), id);
-			var pdf =PdfAccessor.GeneratePeopleAnalyzer(GetUser(), pad);
+			var pdf =PdfAccessor.GeneratePeopleAnalyzer(GetUser(), pad,settings);
 
 			return Pdf(pdf);
 		}

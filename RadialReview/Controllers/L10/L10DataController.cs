@@ -29,6 +29,7 @@ using Ionic.Zip;
 using System.Text;
 using static RadialReview.Models.L10.L10Recurrence;
 using RadialReview.Utilities.Pdf;
+using RadialReview.Accessors.PDF;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -662,7 +663,8 @@ namespace RadialReview.Controllers {
 			var anyPages = false;
 
 			var doc = PdfAccessor.CreateDoc(GetUser(), "To-do Printout");
-			await PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false, printTileTodo: true);
+			var settings = new PdfSettings(GetUser().Organization.Settings);
+			await PdfAccessor.AddTodos(GetUser(), doc, angRecur, settings, addPageNumber: false, printTileTodo: true);
 			merger.AddDoc(doc);
 			anyPages = true;
 

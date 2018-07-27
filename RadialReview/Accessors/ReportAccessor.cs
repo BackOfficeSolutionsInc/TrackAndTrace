@@ -11,6 +11,7 @@ using System.Web;
 using RadialReview.Controllers;
 using Amazon.S3;
 using Amazon.S3.Transfer;
+using RadialReview.Accessors.PDF;
 
 namespace RadialReview.Accessors {
 	public class ReportAccessor {
@@ -32,8 +33,8 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ViewReview(model.Review.Id);
-
-					var pdf = PdfAccessor.GenerateReviewPrintout(caller, model);
+					var settings = new PdfSettings(caller.Organization.Settings);
+					var pdf = PdfAccessor.GenerateReviewPrintout(caller, model, settings);
 
 					if (finalized) {
 						var existingFinalized = s.QueryOver<ReportPdfModel>().Where(x => x.Finalized == true && x.DeleteTime == null && x.ForReviewId == model.Review.Id).List().ToList();

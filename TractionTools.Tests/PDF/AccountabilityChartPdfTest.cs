@@ -347,7 +347,9 @@ namespace TractionTools.Tests.PDF {
 			var tree = AccountabilityAccessor.GetTree(c.Manager, c.Org.Organization.AccountabilityChartId, expandAll: true);
 			var root = adjTree(tree);
 			var noncompactTS = new TreeSettings() { compact = false };
-			var pdfs = AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(root, XUnit.FromInch(11), XUnit.FromInch(8.5), new AccountabilityChartPDF.AccountabilityChartSettings(), false, noncompactTS).Select(x=>x.Document);
+			var pdfs = AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(root, XUnit.FromInch(11), XUnit.FromInch(8.5), new AccountabilityChartPDF.AccountabilityChartSettings(), false, noncompactTS)
+				.Select(x=>x.Document)
+				.ToList();
 			var merger = new DocumentMerger();
 			merger.AddDocs(pdfs);
 			var pdf = merger.Flatten("FullTreeDiagram_SingleLevel", true, true);

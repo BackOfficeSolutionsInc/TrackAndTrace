@@ -255,7 +255,7 @@ namespace RadialReview.Controllers {
 				UserName = username
 			};
 
-			ViewBag.SpecialOffer = VariableAccessor.Get("LOGIN_SPECIAL_OFFER", () =>
+			ViewBag.SpecialOffer = VariableAccessor.Get<string>("LOGIN_SPECIAL_OFFER", () =>
 @"<div class=""row"">
 	<div class=""col-md-offset-2 col-md-8 alignCenter"">
 		Would you like to test the latest Traction<sup>®</sup> Tools features before anyone else?<br/>

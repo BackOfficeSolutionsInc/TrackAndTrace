@@ -95,16 +95,15 @@ namespace TractionTools.Tests.PeopleTools {
 				var expectedManagerQ = new[] {
 					//"M Role","M Rock","Value",
 					"E Role",
-					//"E Rock",
+					"E Rock",
 					"Value",
-					//"Rock Quality/Comments",//"Role Comments", "Value Comments",
+					"Rock Quality/Comments",//"Role Comments", "Value Comments",
 					"Gets it", "Wants it","Capacity to do it",
 					"Comments",
 
 					"Core Values Comments",
 					"5 Roles/GWC Comments",
-					"# of Rocks completed last Quarter",
-					"# of Rocks last Quarter",
+					//"# of Rocks completed last Quarter","# of Rocks last Quarter",
 
 					//"They are rewarding and recognizing",
 					//"They are having quarterly conversations",
@@ -130,9 +129,9 @@ namespace TractionTools.Tests.PeopleTools {
 			{
 				var expectedEmployeeQ = new[] {
 					"E Role",
-					//"E Rock",
+					"E Rock",
 					"Value",
-					//"Rock Quality/Comments",//"Role Comments", "Value Comments",
+					"Rock Quality/Comments",//"Role Comments", "Value Comments",
 					"Gets it", "Wants it","Capacity to do it",
 					"Comments",
 
@@ -173,16 +172,15 @@ namespace TractionTools.Tests.PeopleTools {
 				var expectedManagerQ = new[] {
 					//"M Role","M Rock","Value",
 					"E Role",
-					//"E Rock",
+					"E Rock",
 					"Value",
-					//"Rock Quality/Comments",//"Role Comments", "Value Comments",
+					"Rock Quality/Comments",//"Role Comments", "Value Comments",
 					"Gets it", "Wants it","Capacity to do it",
 					"Comments",
 
 					"Core Values Comments",
 					"5 Roles/GWC Comments",
-					"# of Rocks completed last Quarter",
-					"# of Rocks last Quarter",
+					//"# of Rocks completed last Quarter","# of Rocks last Quarter",
 
 					"I am giving clear direction","I am providing the necessary tools","I am letting go of the vine",
 					"I act with the greater good in mind","I am taking Clarity Breaks™","I keep expectations clear",
@@ -204,9 +202,9 @@ namespace TractionTools.Tests.PeopleTools {
 			{
 				var expectedEmployeeQ = new[] {
 					"E Role",
-					//"E Rock",
+					"E Rock",
 					"Value",
-					//"Rock Quality/Comments",//"Role Comments", "Value Comments",
+					"Rock Quality/Comments",//"Role Comments", "Value Comments",
 					"Gets it", "Wants it","Capacity to do it",
 					"Comments",
 
@@ -240,17 +238,16 @@ namespace TractionTools.Tests.PeopleTools {
 			{
 				var expectedManagerQ = new[] {
 					"E Role",
-					//"E Rock",
+					"E Rock",
 					"Value",
-					//"Rock Quality/Comments",//"Role Comments", "Value Comments",
+					"Rock Quality/Comments",//"Role Comments", "Value Comments",
 					"Gets it", "Wants it","Capacity to do it",
 					"Comments",
 
 					"Core Values Comments",
 					"5 Roles/GWC Comments",
 
-					"# of Rocks completed last Quarter",
-					"# of Rocks last Quarter"
+					//"# of Rocks completed last Quarter","# of Rocks last Quarter"
 				};
 
 				var managerQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Manager, org.Manager, id);

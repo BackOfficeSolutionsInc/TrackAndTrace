@@ -10,7 +10,7 @@ namespace RadialReview.Utilities.Pdf {
 	public class DocStats {
 		public DocStats(XRect? boundary, double scale) {
 			Boundry = boundary??XRect.Empty;
-			HasBoundry = boundary != XRect.Empty;
+			HasBoundry = Boundry != XRect.Empty;
 			Scale = scale;
 
 		}
@@ -26,7 +26,7 @@ namespace RadialReview.Utilities.Pdf {
 		public PdfDocumentAndStats(PdfDocument doc,DocStats stats) {
 			Stats = stats ?? new DocStats(null,1);
 			Document = doc;
-			if (stats.HasBoundry) {
+			if (Stats.HasBoundry) {
 				foreach (var p in Document.Pages) {
 					p.CropBox = new PdfRectangle(Stats.Boundry);
 				}

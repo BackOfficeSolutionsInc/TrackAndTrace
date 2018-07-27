@@ -133,6 +133,7 @@
     <Compile Include="Accessors\PDF\JS\D3.js.cs" />
     <Compile Include="Accessors\PDF\DocumentPlacer.cs" />
     <Compile Include="Accessors\PDF\JS\Tree.js.cs" />
+    <Compile Include="Accessors\PDF\PdfSettings.cs" />
     <Compile Include="Accessors\PDF\VTO\PdfAccessor_VTO.cs" />
     <Compile Include="Accessors\PDF\VTO\VtoPdfSettings.cs" />
     <Compile Include="Accessors\ReportAccessor.cs" />

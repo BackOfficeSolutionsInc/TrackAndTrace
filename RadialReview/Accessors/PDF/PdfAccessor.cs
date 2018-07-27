@@ -31,6 +31,7 @@ using System.Collections;
 using RadialReview.Models.Angular.Rocks;
 using System.Threading.Tasks;
 using PdfSharp;
+using RadialReview.Accessors.PDF;
 
 namespace RadialReview.Accessors {
 	public class LayoutHelper {
@@ -118,24 +119,24 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static Document GeneratePeopleAnalyzer(UserOrganizationModel caller, PeopleAnalyzer peopleAnalyzer) {
+		public static Document GeneratePeopleAnalyzer(UserOrganizationModel caller, PeopleAnalyzer peopleAnalyzer, PdfSettings settings) {
 
 			var doc = CreateDoc(caller, "People Analyzer");
 
 			//var sec = doc.AddSection();
-			AddPeopleAnalyzer(doc, peopleAnalyzer);
+			AddPeopleAnalyzer(doc, peopleAnalyzer, settings);
 
 			return doc;
 		}
 
-		public static void AddPeopleAnalyzer(Document doc, PeopleAnalyzer peopleAnalyzer, bool addPageNumber = true) {
-
-			var section = AddTitledPage(doc, "People Analyzer - " + peopleAnalyzer.ReviewName, addPageNumber: addPageNumber);
+		public static void AddPeopleAnalyzer(Document doc, PeopleAnalyzer peopleAnalyzer,PdfSettings settings, bool addPageNumber = true) {
+			settings = settings ?? new PdfSettings();
+			var section = AddTitledPage(doc, "People Analyzer - " + peopleAnalyzer.ReviewName,settings, addPageNumber: addPageNumber);
 			//var section = doc.AddSection();
 			var table = section.AddTable();
 
 			table.Style = "Table";
-			table.Borders.Color = TableBlack;
+			table.Borders.Color = settings.BorderColor;
 			table.Borders.Width = 1;
 			table.Rows.LeftIndent = 0;
 			table.LeftPadding = 0;
@@ -173,7 +174,7 @@ namespace RadialReview.Accessors {
 			row.HeadingFormat = true;
 			row.Format.Alignment = ParagraphAlignment.Center;
 			row.Format.Font.Bold = true;
-			row.Shading.Color = TableGray;
+			row.Shading.Color = settings.FillColor;
 
 			row.Height = Unit.FromInch(0.25);
 
@@ -252,8 +253,8 @@ namespace RadialReview.Accessors {
 
 		}
 
-		public static void AddReviewPrintout(UserOrganizationModel caller, PdfDocument document, ReviewController.ReviewDetailsViewModel review) {
-
+		public static void AddReviewPrintout(UserOrganizationModel caller, PdfDocument document, ReviewController.ReviewDetailsViewModel review,PdfSettings settings) {
+			settings = settings ?? new PdfSettings();
 			var pageNum = 0;
 			var AddPageNum = new Action<XGraphics, XRect>((g, pageDim) => {
 				pageNum++;
@@ -368,7 +369,7 @@ namespace RadialReview.Accessors {
 
 			if (review.Review.ClientReview.IncludeScorecard && review.Review.ClientReview._ScorecardRecur.Scorecard.Measurables.Any()) {
 				Document doc = new Document();
-				var sc = GenerateScorecard(review.Review.ClientReview._ScorecardRecur, true);
+				var sc = GenerateScorecard(review.Review.ClientReview._ScorecardRecur,settings, true);
 				var sec = doc.AddSection();
 				sec.Add(sc);
 
@@ -470,7 +471,8 @@ namespace RadialReview.Accessors {
 
 		}
 
-		public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review) {
+		public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review,PdfSettings settings) {
+			settings = settings ?? new PdfSettings();
 			var name = review.Review.ReviewerUser.GetName();
 			PdfDocument document = new PdfDocument();
 			document.Info.Author = "Traction® Tools";
@@ -478,7 +480,7 @@ namespace RadialReview.Accessors {
 			document.Info.Creator = "" + caller.GetName();
 			//document.Info.CreationDate = DateTime.UtcNow;
 			document.Info.Keywords = "Traction Tools, " + name + ", " + review.ReviewContainer.ReviewName;
-			AddReviewPrintout(caller, document, review);
+			AddReviewPrintout(caller, document, review,settings);
 			return document;
 
 		}
@@ -487,7 +489,7 @@ namespace RadialReview.Accessors {
 		public static Color TableDark = new Color(50, 50, 50);
 		public static Color TableBlack = new Color(0, 0, 0);
 
-		protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true) {
+		protected static Section AddTitledPage(Document document, string pageTitle,PdfSettings settings, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true) {
 			Section section;
 
 			if (addSection || document.LastSection == null) {
@@ -532,7 +534,7 @@ namespace RadialReview.Accessors {
 
 
 			var title = frame.AddTable();
-			title.Borders.Color = TableBlack;
+			title.Borders.Color = settings.BorderColor;
 
 			var size = Unit.FromInch(5.5);
 			if (orientation == Orientation.Landscape)
@@ -544,7 +546,7 @@ namespace RadialReview.Accessors {
 			rr.Format.Font.Bold = true;
 			//rr.Format.Font.Size = .4;
 			rr.Format.Font.Name = "Arial Narrow";
-			rr.Shading.Color = TableGray;
+			rr.Shading.Color = settings.FillColor;
 			rr.HeightRule = RowHeightRule.AtLeast;
 			rr.VerticalAlignment = VerticalAlignment.Center;
 			rr.Height = Unit.FromInch(0.4);
@@ -649,9 +651,9 @@ namespace RadialReview.Accessors {
 		}
 		#endregion
 
-		public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting, bool addPageNumber = false) {
+		public static Document AddL10(Document doc, AngularRecurrence recur,PdfSettings settings, DateTime? lastMeeting, bool addPageNumber = false) {
 			//CreateDoc(caller,"THE LEVEL 10 MEETING");
-			var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™", addPageNumber: addPageNumber);
+			var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™", settings, addPageNumber: addPageNumber);
 			var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS and Traction® Tools. All Rights Reserved.");
 			p.Format.Font.Size = 8;
 			p.Format.Font.Color = TableGray;
@@ -787,12 +789,12 @@ namespace RadialReview.Accessors {
 			return doc;
 		}
 
-		public static async Task AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool addPageNumber = true, bool printTileTodo = false) {
+		public static async Task AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur, PdfSettings settings, bool addPageNumber = true, bool printTileTodo = false) {
 			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
-
-			var section = AddTitledPage(doc, "To-do List", addPageNumber: addPageNumber);
+			settings = settings ?? new PdfSettings();
+			var section = AddTitledPage(doc, "To-do List", settings, addPageNumber: addPageNumber);
 
 			var format = caller.Organization.NotNull(x => x.Settings.NotNull(y => y.GetDateFormat())) ?? "MM-dd-yyyy";
 			Dictionary<string, string> padTexts = null;
@@ -835,7 +837,7 @@ namespace RadialReview.Accessors {
 			row.HeadingFormat = true;
 			row.Format.Alignment = ParagraphAlignment.Center;
 			row.Format.Font.Bold = true;
-			row.Shading.Color = TableGray;
+			row.Shading.Color = settings.FillColor;
 			row.Height = Unit.FromInch(0.25);
 
 			row.Cells[1].AddParagraph("Due");
@@ -900,12 +902,12 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void AddIssues(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool mergeWithTodos, bool addPageNumber = true) {
+		public static void AddIssues(UserOrganizationModel caller, Document doc, AngularRecurrence recur, PdfSettings settings, bool mergeWithTodos, bool addPageNumber = true) {
 			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
-
-			var section = AddTitledPage(doc, "Issues List", addSection: !mergeWithTodos, addPageNumber: addPageNumber);
+			settings = settings ?? new PdfSettings();
+			var section = AddTitledPage(doc, "Issues List",settings, addSection: !mergeWithTodos, addPageNumber: addPageNumber);
 
 			var table = section.AddTable();
 			table.Format.Font.Size = 9;
@@ -939,7 +941,7 @@ namespace RadialReview.Accessors {
 			row.HeadingFormat = true;
 			row.Format.Alignment = ParagraphAlignment.Center;
 			row.Format.Font.Bold = true;
-			row.Shading.Color = TableGray;
+			row.Shading.Color = settings.FillColor;
 			row.Height = Unit.FromInch(0.25);
 
 			row.Cells[1].AddParagraph(isPriority ? "Priority" : "");
@@ -993,12 +995,13 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void AddRocks_old(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
+		public static void AddRocks_old(UserOrganizationModel caller, Document doc,PdfSettings settings, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
 			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
+			settings = settings ?? new PdfSettings();
 
-			var section = AddTitledPage(doc, "Quarterly " + caller.Organization.Settings.RockName, Orientation.Landscape, addPageNumber: addPageNumber);
+			var section = AddTitledPage(doc, "Quarterly " + caller.Organization.Settings.RockName,settings, Orientation.Landscape, addPageNumber: addPageNumber);
 			Table table;
 			double mult;
 			Row row;
@@ -1243,7 +1246,7 @@ namespace RadialReview.Accessors {
 			row.HeadingFormat = true;
 			row.Format.Alignment = ParagraphAlignment.Center;
 			row.Format.Font.Bold = true;
-			row.Shading.Color = TableGray;
+			row.Shading.Color = settings.FillColor;
 			row.Height = Unit.FromInch(0.25);
 
 			row.Cells[1].AddParagraph(/*"Due"*/"");
@@ -1451,7 +1454,7 @@ namespace RadialReview.Accessors {
 			return section;
 		}
 
-		public static void AddRocks(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
+		public static void AddRocks(UserOrganizationModel caller, Document doc,PdfSettings settings, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
 
 			var section = AddTitledPage_rock(doc, "Quarterly " + caller.Organization.Settings.RockName + " Sheet", Orientation.Landscape, addPageNumber: addPageNumber);
 			Table table;
@@ -1548,7 +1551,7 @@ namespace RadialReview.Accessors {
 				table.RightPadding = 0;
 
 				table.Format.Alignment = ParagraphAlignment.Center;
-				table.Borders.Color = TableBlack;
+				table.Borders.Color = settings.BorderColor;
 				table.Borders.Width = 0;
 
 
@@ -1567,7 +1570,7 @@ namespace RadialReview.Accessors {
 				row.HeadingFormat = true;
 				row.Format.Alignment = ParagraphAlignment.Right;
 				row.Format.Font.Bold = true;
-				row.Shading.Color = TableGray;
+				row.Shading.Color = settings.FillColor;
 				row.Height = Unit.FromInch(0.25);
 				row.VerticalAlignment = VerticalAlignment.Center;
 				var com_h = row.Cells[0].AddParagraph("COMPANY ROCKS");
@@ -1666,9 +1669,9 @@ namespace RadialReview.Accessors {
 				List<Cell> cells;
 				List<Table> tables;
 				if (l > 0) {
-					AddPage_Rock(section, doc, data[l], baseHeight, out cells, out tables);
+					AddPage_Rock(section, doc, data[l], baseHeight,settings, out cells, out tables);
 				} else {
-					AddPage_Rock(section, doc, data[l], baseHeight, out cells, out tables, true);
+					AddPage_Rock(section, doc, data[l], baseHeight, settings, out cells, out tables, true);
 				}
 
 				List<int> page_count = new List<int>();
@@ -1785,7 +1788,7 @@ namespace RadialReview.Accessors {
 					}
 
 					if (p + 1 < maxPage) {
-						AddPage_Rock(section, doc, data[l], baseHeight, out cells, out tables);
+						AddPage_Rock(section, doc, data[l], baseHeight, settings, out cells, out tables);
 						for (int i = 0; i < cells.Count; i++) {
 							AppendAll(cells[i], new DocumentObject[] { tables[i] }.ToList());
 						}
@@ -1812,7 +1815,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		private static void AddPage_Rock(Section section1, Document doc, List<RockPdfModel> list, Unit height, out List<Cell> cells, out List<Table> tables, bool includeSection = false) {
+		private static void AddPage_Rock(Section section1, Document doc, List<RockPdfModel> list, Unit height,PdfSettings settings, out List<Cell> cells, out List<Table> tables, bool includeSection = false) {
 
 			var container = section1.AddTable();
 
@@ -1850,13 +1853,13 @@ namespace RadialReview.Accessors {
 			foreach (var item in list) {
 				table.AddColumn(Unit.FromInch(3.39));
 			}
-			table.Borders.Color = TableBlack;
+			table.Borders.Color = settings.BorderColor;
 			table.Borders.Width = 0;
 			table.Format.Alignment = ParagraphAlignment.Center;
 			table.LeftPadding = 0;
 
 			var tractionHeader = table.AddRow();
-			tractionHeader.Shading.Color = TableGray;
+			tractionHeader.Shading.Color = settings.FillColor;
 			tractionHeader.Height = Unit.FromInch(0.25);
 			tractionHeader.Borders.Right.Width = Unit.FromInch(.125);
 			tractionHeader.Borders.Right.Color = Colors.Transparent;
@@ -1892,12 +1895,12 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static void AddHeadLines(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, bool addPageNumber = true) {
+		public static void AddHeadLines(UserOrganizationModel caller, Document doc,PdfSettings settings, bool quarterlyPrintout, AngularRecurrence recur, bool addPageNumber = true) {
 			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
-
-			var section = AddTitledPage(doc, "Headlines", Orientation.Landscape, addPageNumber: addPageNumber);
+			settings = settings ?? new PdfSettings();
+			var section = AddTitledPage(doc, "People Headlines",settings, Orientation.Landscape, addPageNumber: addPageNumber);
 			Table table;
 			double mult;
 			Row row;
@@ -1963,40 +1966,40 @@ namespace RadialReview.Accessors {
 
 			mult = 10.0 / 7.5;
 			//Number
-			column = table.AddColumn(Unit.FromInch(0.001 * mult));//*0.2* 0.001 * mult));
-			column.Format.Alignment = ParagraphAlignment.Center;
+			//column = table.AddColumn(Unit.FromInch(0.001 * mult));//*0.2* 0.001 * mult));
+			//column.Format.Alignment = ParagraphAlignment.Center;
 			//Due
-			column = table.AddColumn(Unit.FromInch(/*0.7*/0.001 * mult));
-			column.Format.Alignment = ParagraphAlignment.Center;
+			//column = table.AddColumn(Unit.FromInch(/*0.7*/0.001 * mult));
+			//column.Format.Alignment = ParagraphAlignment.Center;
 			//Owner
-			column = table.AddColumn(Unit.FromInch(1 + 0.2 * mult));
+			column = table.AddColumn(Unit.FromInch(1.5));
 			column.Format.Alignment = ParagraphAlignment.Center;
 			//About
-			column = table.AddColumn(Unit.FromInch(1 + 0.4 * mult));
+			column = table.AddColumn(Unit.FromInch(1.5));
 			column.Format.Alignment = ParagraphAlignment.Center;
 			//Headlines
-			column = table.AddColumn(Unit.FromInch((4.4 + .3) * mult));
+			column = table.AddColumn(Unit.FromInch(7));
 			column.Format.Alignment = ParagraphAlignment.Left;
 
 			row = table.AddRow();
 			row.HeadingFormat = true;
 			row.Format.Alignment = ParagraphAlignment.Center;
 			row.Format.Font.Bold = true;
-			row.Shading.Color = TableGray;
+			row.Shading.Color = settings.FillColor;
 			row.Height = Unit.FromInch(0.25);
 
-			row.Cells[1].AddParagraph(/*"Due"*/"");
+			//row.Cells[1].AddParagraph(/*"Due"*/" ");
+			//row.Cells[1].VerticalAlignment = VerticalAlignment.Center;
+
+			row.Cells[0].AddParagraph("Owner");
+			row.Cells[0].VerticalAlignment = VerticalAlignment.Center;
+
+			row.Cells[1].AddParagraph("About");
 			row.Cells[1].VerticalAlignment = VerticalAlignment.Center;
 
-			row.Cells[2].AddParagraph("Owner");
+			row.Cells[2].AddParagraph("Headlines");
+			row.Cells[2].Format.Alignment = ParagraphAlignment.Left;
 			row.Cells[2].VerticalAlignment = VerticalAlignment.Center;
-
-			row.Cells[3].AddParagraph("About");
-			row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
-
-			row.Cells[4].AddParagraph("Headlines");
-			row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
-			row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
 			//table.Format.Font.Size = Unit.FromInch(.1); // --- 1/16"
 			mn = 1;
 			foreach (var m in recur.Headlines.OrderBy(x => x.Owner.Name).ThenBy(x => x.CreateTime)) {
@@ -2008,24 +2011,21 @@ namespace RadialReview.Accessors {
 				row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
 
 
-				row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
-				row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
-				row.Cells[3].AddParagraph("" + m.About != null ? m.About.Name ?? "" : "");
-
-
-
-				row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
-				row.Cells[4].AddParagraph("" + m.Name ?? "");
+				row.Cells[0].AddParagraph("" + m.Owner.NotNull(x => x.Name));
+				row.Cells[0].Format.Alignment = ParagraphAlignment.Center;
+				row.Cells[1].AddParagraph("" + m.About != null ? m.About.Name ?? "" : "");
+				row.Cells[1].Format.Alignment = ParagraphAlignment.Center;
+				row.Cells[2].AddParagraph("" + m.Name ?? "");
 
 				mn++;
 			}
 		}
 
-		private static Table GenerateScorecard(AngularRecurrence recur, bool includeDisabled = false) {
-
+		private static Table GenerateScorecard(AngularRecurrence recur,PdfSettings settings, bool includeDisabled = false) {
+			settings = settings ?? new PdfSettings();
 			var table = new Table();
 			table.Style = "Table";
-			table.Borders.Color = TableBlack;
+			table.Borders.Color = settings.BorderColor;
 			table.Borders.Width = 1;
 			/*table.Borders.Left.Width = 0.25;
 			table.Borders.Right.Width = 0.25;
@@ -2065,7 +2065,7 @@ namespace RadialReview.Accessors {
 			row.HeadingFormat = true;
 			row.Format.Alignment = ParagraphAlignment.Center;
 			row.Format.Font.Bold = true;
-			row.Shading.Color = TableGray;
+			row.Shading.Color = settings.FillColor;
 			row.Height = Unit.FromInch(0.25);
 
 			row.Cells[1].AddParagraph("Who");
@@ -2154,12 +2154,13 @@ namespace RadialReview.Accessors {
 			return table;
 		}
 
-		public static bool AddScorecard(Document doc, AngularRecurrence recur, bool addPageNumber = true) {
+		public static bool AddScorecard(Document doc, AngularRecurrence recur,PdfSettings settings, bool addPageNumber = true) {
+			settings = settings ?? new PdfSettings();
 			if (recur.Scorecard.Measurables.Any()) {
-				var section = AddTitledPage(doc, "Scorecard", Orientation.Landscape, addPageNumber: addPageNumber);
+				var section = AddTitledPage(doc, "Scorecard",settings, Orientation.Landscape, addPageNumber: addPageNumber);
 				var TableGray = new Color(100, 100, 100, 100);
 				var TableBlack = new Color(0, 0, 0);
-				var table = GenerateScorecard(recur, true);
+				var table = GenerateScorecard(recur,settings, true);
 				section.Add(table);
 				return true;
 			}

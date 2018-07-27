@@ -67,6 +67,7 @@ namespace TractionTools.Tests.TestUtils {
 
 				AdminUsers[id] = new UserOrganizationModel() {
 					IsRadialAdmin = true,
+					_IsTestAdmin = true,
 					User = user,
 					Organization = AdminOrganizations[id],
 					Cache = new UserLookup()
@@ -159,6 +160,7 @@ namespace TractionTools.Tests.TestUtils {
 					s.Update(org);
 					var u = new UserOrganizationModel() {
 						IsRadialAdmin = true,
+						_IsTestAdmin=true,
 						User = user,
 						Organization = org,
 						Cache = new UserLookup()

@@ -26,6 +26,7 @@ using static RadialReview.Utilities.SelectExistingOrCreateUtility;
 using Newtonsoft.Json;
 using RadialReview.Variables;
 using RadialReview.Models.Application;
+using RadialReview.Accessors.PDF;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -407,8 +408,8 @@ namespace RadialReview.Controllers {
 			var d = L10Accessor.GetLastMeetingEndTime(GetUser(), id);
 
 			var doc = PdfAccessor.CreateDoc(GetUser(), "THE LEVEL 10 MEETING");
-
-			PdfAccessor.AddL10(doc, recur, d);
+			var settings = new PdfSettings(GetUser().Organization.Settings);
+			PdfAccessor.AddL10(doc, recur, settings, d);
 
 			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
 			return Pdf(doc, now + "_" + recur.Basics.Name + "_L10Meeting.pdf", true);

@@ -18,24 +18,24 @@ namespace TractionTools.Tests.PDF {
 		public void TestLayoutTesters() {
 
 			var s = Stopwatch.StartNew();
-			var layoutTesters = Enumerable.Range(0, 3).Select(i => {
-				var res = MultipageLayoutOptimizer.GetTestableLayouts(new Settings(new XSize(1, 1)),i);
+			var layoutTesters = Enumerable.Range(0, 4).Select(i => {
+				var res = MultipageLayoutOptimizer.GetTestableLayouts(new Settings(new XSize(1000, 1000)),i);
 				return res;
 			}).ToList();
 			var elapse = s.ElapsedMilliseconds;
 			int a = 0;
 
 			Assert.AreEqual(1, layoutTesters[0].Count);
-			Assert.AreEqual(9, layoutTesters[1].Count);
-			Assert.AreEqual(73, layoutTesters[2].Count);
-			Assert.AreEqual(585, layoutTesters[3].Count);
-			Assert.AreEqual(4681, layoutTesters[4].Count);
-			Assert.AreEqual(37449, layoutTesters[5].Count);
-			Assert.AreEqual(299593, layoutTesters[6].Count);
+			Assert.AreEqual(3, layoutTesters[1].Count);
+			Assert.AreEqual(37, layoutTesters[2].Count);
+			Assert.AreEqual(5477, layoutTesters[3].Count);
+			//Assert.AreEqual(123, layoutTesters[4].Count);
+			//Assert.AreEqual(37449, layoutTesters[5].Count);
+			//Assert.AreEqual(299593, layoutTesters[6].Count);
 
-			Assert.IsTrue(elapse < 2000);
+			Assert.IsTrue(elapse < 5000);
 
-			Throws<ArgumentOutOfRangeException>(() => MultipageLayoutOptimizer.GetTestableLayouts(new Settings(new XSize(1, 1)), 7));
+			Throws<ArgumentOutOfRangeException>(() => MultipageLayoutOptimizer.GetTestableLayouts(new Settings(new XSize(1, 1)), 4));
 		}
 
 		private PdfDocumentAndStats CreateRectPage(int x, int y, int w, int h, double scale,int i) {

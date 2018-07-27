@@ -34,6 +34,10 @@ namespace RadialReview.Utilities {
 			File.WriteAllText(file, version);
 		}
 
+		public static bool IsTest() {
+			return GetEnv() == Env.local_test_sqlite;
+		}
+
 		public static bool RunChromeExt() {
 			switch (GetEnv()) {
 				case Env.local_test_sqlite:

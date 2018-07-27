@@ -58,12 +58,17 @@ namespace RadialReview.Accessors.PDF {
 			public XUnit allowedHeight {get {return pageHeight - 2 * margin;}}
 
 			public AccountabilityChartSettings() {}
+			
 
-			public AccountabilityChartSettings(ColorComponent border) {
-				boxPen = new XPen(border.ToXColor(), 1);
+			public AccountabilityChartSettings(OrganizationModel.OrganizationSettings settings) {
+				boxPen = new XPen(settings.PrimaryColor.ToXColor(), 1);
+				linePen = new XPen(settings.PrimaryColor.ToXColor(), .5) {
+					LineJoin = XLineJoin.Miter,
+					MiterLimit = 10,
+					LineCap = XLineCap.Square
+				};
+
 			}
-
-			public AccountabilityChartSettings(OrganizationModel.OrganizationSettings settings) : this(settings.PrimaryColor){}
 		}
 	}
 }

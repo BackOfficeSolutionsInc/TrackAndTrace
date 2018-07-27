@@ -18,7 +18,8 @@ namespace TractionTools.Tests.Permissions {
 				AccessId = 1,
 				AccessLevel = AdminAccessLevel.View,
 				RequestedDurationMinutes = 1,
-				Reason = "asdf"
+				Reason = "asdf",
+				SetAsEmail="-view-",
 			};
 
 			//isAdmin

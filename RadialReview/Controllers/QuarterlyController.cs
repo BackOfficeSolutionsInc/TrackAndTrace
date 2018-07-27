@@ -109,17 +109,17 @@ namespace RadialReview.Controllers {
 			//
 			var anyPages = false;
 			AngularVTO vtoModel = VtoAccessor.GetAngularVTO(GetUser(), angRecur.VtoId.Value);
-
+			var settings  = new PdfSettings(GetUser().Organization.Settings);
 
 			if (rocks) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout6");
-				PdfAccessor.AddRocks(GetUser(), doc, quarterly, angRecur, vtoModel, addPageNumber: false);
+				PdfAccessor.AddRocks(GetUser(), doc, settings, quarterly, angRecur, vtoModel, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}
 			if (headlines && angRecur.Headlines.Any()) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout6");
-				PdfAccessor.AddHeadLines(GetUser(), doc, quarterly, angRecur, addPageNumber: false);
+				PdfAccessor.AddHeadLines(GetUser(), doc, settings, quarterly, angRecur, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}
@@ -127,9 +127,9 @@ namespace RadialReview.Controllers {
 				//vtoModel 
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout1");
 
-				var settings = new VtoPdfSettings(GetUser().GetOrganizationSettings());
+				var vtoSettings = new VtoPdfSettings(GetUser().GetOrganizationSettings());
 
-				await PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat(), settings);
+				await PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat(), vtoSettings);
 				anyPages = true;
 				merger.AddDoc(doc);
 			}
@@ -150,7 +150,8 @@ namespace RadialReview.Controllers {
 					foreach (var n in nodes) {
 						n._hasParent = topNodes.All(x => x.Id != n.Id);
 					}
-					var doc = AccountabilityChartPDF.GenerateAccountabilityChartSingleLevelsMultiDocumentsPerPage(nodes, XUnit.FromInch(11), XUnit.FromInch(8.5),new AccountabilityChartPDF.AccountabilityChartSettings() , true);
+					var acSettings = new AccountabilityChartPDF.AccountabilityChartSettings(GetUser().Organization.Settings);
+					var doc = AccountabilityChartPDF.GenerateAccountabilityChartSingleLevelsMultiDocumentsPerPage(nodes, XUnit.FromInch(11), XUnit.FromInch(8.5),acSettings , true);
 
 				
 					merger.AddDoc(doc);
@@ -161,13 +162,13 @@ namespace RadialReview.Controllers {
 			}
 			if (l10) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printou2t");
-				PdfAccessor.AddL10(doc, angRecur, L10Accessor.GetLastMeetingEndTime(GetUser(), id), addPageNumber: false);
+				PdfAccessor.AddL10(doc, angRecur, settings, L10Accessor.GetLastMeetingEndTime(GetUser(), id), addPageNumber: false);
 				anyPages = true;
 				merger.AddDoc(doc);
 			}
 			if (scorecard) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printou5t");
-				var addedSC = PdfAccessor.AddScorecard(doc, angRecur, addPageNumber: false);
+				var addedSC = PdfAccessor.AddScorecard(doc, angRecur, settings, addPageNumber: false);
 				anyPages = anyPages || addedSC;
 				if (addedSC) {
 					merger.AddDoc(doc);
@@ -175,20 +176,20 @@ namespace RadialReview.Controllers {
 			}
 			if (todos) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout3");
-				await PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false);
+				await PdfAccessor.AddTodos(GetUser(), doc,  angRecur,settings, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}
 			if (issues) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout4");
-				PdfAccessor.AddIssues(GetUser(), doc, angRecur, todos, addPageNumber: false);
+				PdfAccessor.AddIssues(GetUser(), doc, angRecur, settings, todos, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}
 			if (pa) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout5");
 				var peopleAnalyzer = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(GetUser(), GetUser().Id, id);
-				var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(GetUser(), doc, peopleAnalyzer, DateTime.MaxValue);
+				var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(GetUser(), doc, peopleAnalyzer, settings, DateTime.MaxValue);
 				merger.AddDoc(renderer);
 				anyPages = true;
 			}

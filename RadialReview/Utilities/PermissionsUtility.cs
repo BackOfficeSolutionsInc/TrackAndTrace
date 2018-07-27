@@ -103,6 +103,9 @@ namespace RadialReview.Utilities {
 			if (caller.Id == UserOrganizationModel.ADMIN_ID)
 				return true;
 
+			if (caller._IsTestAdmin)
+				return true;
+
 			// var adminFromThread = Thread.GetData(Thread.GetNamedDataSlot("IsRadialAdmin")).NotNull(x => (bool)x);
 			allowSpecialOrgs = allowSpecialOrgs || Thread.GetData(Thread.GetNamedDataSlot("AllowSpecialOrgs")).NotNull(x => (bool)x);
 
@@ -173,6 +176,7 @@ namespace RadialReview.Utilities {
 				attached = session.Load<UserOrganizationModel>(caller.Id);
 				attached._ClientTimestamp = caller._ClientTimestamp;
 				attached._AdminShortCircuit = caller._AdminShortCircuit;
+				attached._IsTestAdmin = caller._IsTestAdmin;
 			}
 			if (caller.DeleteTime != null && caller.DeleteTime < DateTime.UtcNow) {
 				throw new PermissionsException("User has been deleted") {

@@ -93,7 +93,7 @@ namespace RadialReview.Utilities.Pdf {
 			document.Info.Keywords = "Traction Tools";
 			document.Info.CreationDate = now;
 
-			var pages = 0;
+			int? pages = 0;
 			XFont font = new XFont("Verdana", 10, XFontStyle.Regular);
 
 			if (!docs.Any()) {
@@ -115,26 +115,26 @@ namespace RadialReview.Utilities.Pdf {
 					var scaleDoc = ((MultiPageDocument)docPage);
 					doc = scaleDoc.Flatten().Document;
 				}
-				pages += 1;
-				RenderPage(document, doc, name, pages, includeNumber, includeDate, dateFormat, font, now);
+				//pages += 1;
+				RenderPage(document, doc, name,ref pages, includeNumber, includeDate, dateFormat, font, now);
 			}
 			return document;
 
 		}
 
-		protected void RenderPage(PdfDocument parentDoc, object doc, string name, int? pageNumber, bool includeNumber, bool includeDate, string dateFormat, XFont font, DateTime now) {
+		protected void RenderPage(PdfDocument parentDoc, object doc, string name,ref int? pageNumber, bool includeNumber, bool includeDate, string dateFormat, XFont font, DateTime now) {
 			if (doc is PdfDocument) {
-				RenderPdfDocument(parentDoc, (PdfDocument)doc, name, pageNumber, includeNumber, includeDate, dateFormat, font, now);
+				RenderPdfDocument(parentDoc, (PdfDocument)doc, name,ref pageNumber, includeNumber, includeDate, dateFormat, font, now);
 			}
 			if (doc is Document) {
-				RenderMigradoc(parentDoc, name, pageNumber, includeNumber, includeDate, dateFormat, font, now, (Document)doc);
+				RenderMigradoc(parentDoc, name,ref pageNumber, includeNumber, includeDate, dateFormat, font, now, (Document)doc);
 			}
 			if (doc is PdfDocumentRenderer) {
-				RenderPdfRenderer(parentDoc, name, pageNumber, includeNumber, includeDate, dateFormat, font, now, (PdfDocumentRenderer)doc);
+				RenderPdfRenderer(parentDoc, name,ref pageNumber, includeNumber, includeDate, dateFormat, font, now, (PdfDocumentRenderer)doc);
 			}
 		}
 
-		private void RenderPdfRenderer(PdfDocument parentDoc, string name, int? pageNumber, bool includeNumber, bool includeDate, string dateFormat, XFont font, DateTime now, PdfDocumentRenderer mdoc) {
+		private void RenderPdfRenderer(PdfDocument parentDoc, string name,ref int? pageNumber, bool includeNumber, bool includeDate, string dateFormat, XFont font, DateTime now, PdfDocumentRenderer mdoc) {
 			PdfDocument newPdfDoc;
 			using (var stream = new MemoryStream()) {
 				mdoc.Save(stream, false);
@@ -146,11 +146,12 @@ namespace RadialReview.Utilities.Pdf {
 				page.Height = p.Height;
 				page.Orientation = p.Orientation;
 				XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
+				pageNumber += 1;
 				DrawNumber(gfx, font, pageNumber != null ? (int?)(pageNumber) : null, now, includeNumber, includeDate, dateFormat, name);
 			}
 		}
 
-		private void RenderMigradoc(PdfDocument parentDoc, string name, int? pageNumber, bool includeNumber, bool includeDate, string dateFormat, XFont font, DateTime now, Document mdoc) {
+		private void RenderMigradoc(PdfDocument parentDoc, string name,ref int? pageNumber, bool includeNumber, bool includeDate, string dateFormat, XFont font, DateTime now, Document mdoc) {
 			DocumentRenderer docRenderer = new DocumentRenderer(mdoc);
 			docRenderer.PrepareDocument();
 			int pageCount = docRenderer.FormattedDocument.PageCount;
@@ -163,11 +164,12 @@ namespace RadialReview.Utilities.Pdf {
 				XGraphics gfx = XGraphics.FromPdfPage(page);
 				gfx.MUH = PdfFontEncoding.Unicode;
 				docRenderer.RenderPage(gfx, idx + 1);
+				pageNumber += 1;
 				DrawNumber(gfx, font, pageNumber != null ? (int?)(pageNumber) : null, now, includeNumber, includeDate, dateFormat, name);
 			}
 		}
 
-		private void RenderPdfDocument(PdfDocument parentDoc, PdfDocument pdfDoc, string name, int? pageNumber, bool includeNumber, bool includeDate, string dateFormat, XFont font, DateTime now) {
+		private void RenderPdfDocument(PdfDocument parentDoc, PdfDocument pdfDoc, string name,ref int? pageNumber, bool includeNumber, bool includeDate, string dateFormat, XFont font, DateTime now) {
 
 			PdfDocument newPdfDoc;
 			using (var stream = new MemoryStream()) {
@@ -181,6 +183,7 @@ namespace RadialReview.Utilities.Pdf {
 					page.Height = p.Height;
 					page.Orientation = p.Orientation;
 					XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
+					pageNumber += 1;
 					DrawNumber(gfx, font, pageNumber != null ? (int?)(pageNumber) : null, now, includeNumber, includeDate, dateFormat, name);
 				}
 			} catch (Exception e) {

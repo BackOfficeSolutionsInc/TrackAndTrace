@@ -234,6 +234,10 @@ namespace RadialReview.Accessors {
 
 		private UserOrganizationModel GetUserOrganizationModel(ISession session, long id, Boolean full) {
 			var result = session.Get<UserOrganizationModel>(id);
+
+			if (Config.IsTest() && result.IsRadialAdmin) {
+				result._IsTestAdmin = true;
+			}
 			return result;
 		}
 
@@ -607,7 +611,7 @@ namespace RadialReview.Accessors {
 			if (!isAdmin && myUserOrganizations.Any(x => x == requestedUserOrgId)) {
 				//Not an admin and has Access
 				//caller.CurrentRole = roleId;
-				return new CanChangeRole(true,"success");
+				return new CanChangeRole(true, "success");
 			} else if (isAdmin) {
 				if (requestedOrganizationType == AccountType.SwanServices) {
 					//Auto set if Swan services

@@ -126,7 +126,7 @@ namespace RadialReview.Accessors.PDF {
 			}
 			return docs;
 		}
-		
+
 		public static MultiPageDocument GenerateAccountabilityChartSingleLevelsMultiDocumentsPerPage(List<AngularAccountabilityNode> roots, XUnit width, XUnit height, AccountabilityChartSettings pageProps, bool restrictSize = false, TreeSettings settings = null) {
 			var docsAndStats = GenerateAccountabilityChartSingleLevels(roots, width, height, pageProps, restrictSize, settings);
 			var docSettings = new MultiPageDocument.Settings() {
@@ -134,7 +134,7 @@ namespace RadialReview.Accessors.PDF {
 				OutputSize = new XSize(width, height)
 			};
 			try {
-				var layout = MultipageLayoutOptimizer.GetBestLayout( docsAndStats, docSettings, reorderable: true);
+				var layout = MultipageLayoutOptimizer.GetBestLayout(docsAndStats, docSettings, reorderable: true);
 				var scaledDoc = new MultiPageDocument(layout);
 				return scaledDoc;
 			} catch (Exception e) {
@@ -179,16 +179,25 @@ namespace RadialReview.Accessors.PDF {
 
 
 			var margin = XUnit.FromInch(.5);
-			var pageProp = new AccountabilityChartSettings() {
+			//pageProps = pageProps ?? new AccountabilityChartSettings();
+			//pageProps.pageWidth = width;
+			//pageProps.pageHeight = height;
+			//pageProps.margin = margin;
+
+			var pageProps2 = new AccountabilityChartSettings() {
 				pageWidth = width,
 				pageHeight = height,
-				margin = margin
+				margin = margin,				
 			};
-			var n = JS.Tree.Update(rootACNode, x => HeightFunc(x, pageProp), settings);
-			return GenerateAccountabilityChart(rootACNode, pageProp, settings, restrictSize, anyAboveRoot);
+
+			pageProps2.linePen = pageProps.linePen;
+			pageProps2.boxPen = pageProps.boxPen;
+
+			var n = JS.Tree.Update(rootACNode, x => HeightFunc(x, pageProps2), settings);
+			return GenerateAccountabilityChart(rootACNode, pageProps2, settings, restrictSize, anyAboveRoot);
 		}
 
-		
+
 		#region AC Helpers 
 		private static XRect ACDrawRole(XGraphics gfx, ACNode me, AccountabilityChartSettings pageProps, double[] origin = null) {
 			origin = origin ?? new[] { 0.0, 0.0 };
@@ -255,7 +264,7 @@ namespace RadialReview.Accessors.PDF {
 
 
 			if (shouldDrawLine && me.height > ch) {
-				gfx.DrawLine(XPens.Black, x + pad, y + ch, x + (me.width - 2 * pad), y + ch);
+				gfx.DrawLine(pageProps.linePen, x + pad, y + ch, x + (me.width - 2 * pad), y + ch);
 			}
 
 			tf = new XTextFormatter(gfx);
@@ -554,7 +563,7 @@ namespace RadialReview.Accessors.PDF {
 
 			gfx.DrawLine(pageProps.linePen, xx1, yy1, xx2, yy2);
 
-			return new XRect(Math.Min(xx1,xx2), Math.Min(yy1,yy2), Math.Abs(xx2 - xx1), Math.Abs(yy2 - yy1));
+			return new XRect(Math.Min(xx1, xx2), Math.Min(yy1, yy2), Math.Abs(xx2 - xx1), Math.Abs(yy2 - yy1));
 			//for (var ii = 0; ii < 3; ii += 1) {
 			//	var i = (3 + 6 * ii) * pageProps.scale;
 			//	var d = (3.0) * pageProps.scale;
@@ -757,13 +766,13 @@ namespace RadialReview.Accessors.PDF {
 			} else {
 				ACGenerate_Full(document, root, pageProps, settings, .5, anyAboveRoot);
 			}
-			return new PdfDocumentAndStats(document,docStats);
+			return new PdfDocumentAndStats(document, docStats);
 		}
 		private static DocStats ACGenerate_Resized(PdfPage page, ACNode root, AccountabilityChartSettings pageProp, TreeSettings settings, bool anyAboveRoot = false) {
 			var ranges = ACRanges(root);
 			ACNormalize(root, ranges, pageProp, null);
 			XGraphics gfx = XGraphics.FromPdfPage(page);
-			var roles= ACDrawRoles(gfx, root, pageProp, settings, anyAboveRoot: anyAboveRoot);
+			var roles = ACDrawRoles(gfx, root, pageProp, settings, anyAboveRoot: anyAboveRoot);
 			//gfx.DrawRectangle(new XPen(XPens.Blue), roles);
 			return new DocStats(roles, pageProp.scale);
 		}
@@ -796,7 +805,7 @@ namespace RadialReview.Accessors.PDF {
 					doc.AddPage(pageLookup[x]);
 				});
 			RemoveBlankPages(doc);
-			
+
 		}
 	}
 
