@@ -8,6 +8,7 @@
 	<h3>Range:</h3>
 	<div> @ViewBag.Start </div>
 	<div> @ViewBag.End</div>
+	<div> @ViewBag.AccountType</div>
 
 </div>
 
@@ -25,8 +26,9 @@
 				{contents:function(x){return "<a href='/organization/which/"+x.OrgId+"'>"+x.OrgName+"</a>";}, name:"Org Name", classes:"fullWidth"},
 				{contents:function(x){
 					var g= x.Registrations.PercentageFromWindowMax;
-					return Math.round(g.Numerator/g.Denominator*100)+"%";
+					return Math.round((1-g.Numerator/g.Denominator)*100)+"%";
 				}, name:"Growth"},
+				//{contents:function(x){return x.AccountType;}, name:"Type"},
 				{contents:function(x){return x.Registrations.StartValue;}, name:"Begin"},
 				{contents:function(x){return x.Registrations.MaxValue;}, name:"Max"},
 				{contents:function(x){return x.Registrations.EndValue;}, name:"End"},

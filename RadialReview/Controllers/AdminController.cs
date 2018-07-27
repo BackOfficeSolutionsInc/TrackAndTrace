@@ -154,14 +154,17 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
-		public async Task<ActionResult> AccountsAtRisk(int days = 60, decimal growth = -.1m) {
+		public async Task<ActionResult> AccountsAtRisk(int days = 60, decimal growth = -.1m,AccountType type=AccountType.Paying) {
 			var start = DateTime.UtcNow.AddDays(-days);
 			var end = DateTime.UtcNow;
 			var stats = StatsAccessor.GetSuperAdminStatistics_Unsafe(start, end);
 			var range = stats.Where(x => x.Registrations.PercentageFromWindowMax.GetValue(2) < 1m + growth).ToList();
 
+			range = range.Where(x => x.AccountType == type).ToList();
+
 			ViewBag.Start = start;
 			ViewBag.End = end;
+			ViewBag.AccountType = type;
 
 			return View(range);
 		}
@@ -1157,6 +1160,7 @@ namespace RadialReview.Controllers {
 			txt += dbTimeRow;
 			txt += "<tr><td>Server Time:</td><td>" + now.ToString("U") + " </td><td> [ticks: " + now.Ticks + "]</td></tr>";
 			txt += serverRow;
+			txt += "<tr><td>Version:</td><td>" + Config.GetVersion() + " </td><td></td></tr>";
 			txt += "</table>";
 
 			return Content(txt);

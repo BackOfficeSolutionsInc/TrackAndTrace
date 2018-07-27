@@ -485,9 +485,10 @@ namespace RadialReview.Utilities {
 			return GetVersion() == ApplicationVersion.alpha;
 		}
 
-		private static ApplicationVersion GetVersion() {
-			var version = ApplicationVersion.invalid;
-			var versions = GetAppSetting("ApplicationVersion", ""+ApplicationVersion.invalid);
+		public static ApplicationVersion GetVersion() {
+			ApplicationVersion version = ApplicationVersion.invalid;
+			if (Enum.TryParse(GetAppSetting("ApplicationVersion",""+ ApplicationVersion.invalid).ToLower(), out version)) {
+			}
 			return version;			
 		}
 

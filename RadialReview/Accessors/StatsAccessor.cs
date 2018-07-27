@@ -3,6 +3,7 @@ using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Charts;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Todo;
 using RadialReview.Utilities;
@@ -90,6 +91,7 @@ namespace RadialReview.Accessors {
 		}
 
 		public class AdminOrgStats {
+			public AccountType AccountType { get; set; }
 			public long OrgId { get; set; }		
 			public string OrgName { get; set; }	
 			public WindowAnalysis Registrations { get; set; }
@@ -108,7 +110,7 @@ namespace RadialReview.Accessors {
 									.Left.JoinAlias(x => x.Organization, () => orgAlias)
 									.Left.JoinAlias(x => orgAlias.Name, () => orgNameAlias)
 									.Where(x => orgAlias.DeleteTime == null)
-									.Select(x => x.AttachTime, x => x.DeleteTime, x => x.CreateTime, x => userAlias.CreateTime, x => x.Id, x => x.Organization.Id, x=> orgNameAlias.Standard)
+									.Select(x => x.AttachTime, x => x.DeleteTime, x => x.CreateTime, x => userAlias.CreateTime, x => x.Id, x => x.Organization.Id, x=> orgNameAlias.Standard,x=> orgAlias.AccountType)
 									.List<object[]>()
 									.Select(x => new {
 										attachTime = (DateTime)x[0],
@@ -118,6 +120,7 @@ namespace RadialReview.Accessors {
 										userId = (long)x[4],
 										orgId = (long)x[5],
 										orgName = (string)x[6],
+										accType = (AccountType)x[7]
 									}).ToList();
 					
 
@@ -130,6 +133,7 @@ namespace RadialReview.Accessors {
 						result.Add(new AdminOrgStats() {
 							OrgId = orgReg.Key,
 							OrgName = orgReg.First().orgName,
+							AccountType = orgReg.First().accType,
 							Registrations = DatePointAnalyzerUtility.AnalyzeWindow(orgData, start, end.Value)
 						});						
 					}
