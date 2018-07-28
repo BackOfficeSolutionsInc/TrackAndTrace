@@ -642,8 +642,9 @@ namespace RadialReview.Controllers {
 						var accessAttributes = filterContext.ActionDescriptor.GetCustomAttributes(typeof(AccessAttribute), false).Cast<AccessAttribute>();
 						if (accessAttributes.Count() == 0)
 							throw new NotImplementedException("Access attribute missing.");
-
-						switch ((AccessLevel)accessAttributes.Min(x => (int)x.AccessLevel)) {
+						var accessLevel = (AccessLevel)accessAttributes.Min(x => (int)x.AccessLevel);
+						var adminShortCircuit = false;
+						switch (accessLevel) {
 							case AccessLevel.SignedOut: {
 									if (Request.IsAuthenticated) {
 										SignOut();
@@ -674,7 +675,7 @@ namespace RadialReview.Controllers {
 							case AccessLevel.Radial:
 								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
 									throw new PermissionsException("You do not have access to this resource.");
-								AllowAdminsWithoutAudit();
+								adminShortCircuit = true;
 								break;
 							case AccessLevel.RadialData:
 								var ids = s.GetSettingOrDefault(Variable.Names.USER_RADIAL_DATA_IDS, () => "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x)).ToList();
@@ -688,7 +689,7 @@ namespace RadialReview.Controllers {
 								}
 								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
 									throw new PermissionsException("You do not have access to this resource.");
-								AllowAdminsWithoutAudit();
+								adminShortCircuit = true;
 								break;
 							default:
 								throw new Exception("Unknown Access Type");
@@ -703,7 +704,9 @@ namespace RadialReview.Controllers {
 						//    Thread.CurrentThread.CurrentUICulture = culture;
 						//}
 
-						filterContext.Controller.ViewBag.IsLocal = Config.IsLocal();
+						var viewBag = filterContext.Controller.ViewBag;
+
+						viewBag.IsLocal = Config.IsLocal();
 						filterContext.Controller.ViewBag.HasBaseController = true;
 						filterContext.Controller.ViewBag.AppVersion = GetAppVersion();
 						filterContext.Controller.ViewBag.IsRadialAdmin = false;
@@ -721,14 +724,16 @@ namespace RadialReview.Controllers {
 #pragma warning restore CS0618 // Type or member is obsolete
 								var actualUserModel = GetUserModel(s);
 								var isRadialAdmin = oneUser.IsRadialAdmin || actualUserModel.IsRadialAdmin;
-
-								//if (oneUser.User.Id != actualUserModel.Id) {
-								oneUser._AdminShortCircuit = new UserOrganizationModel.AdminShortCircuit() {
+								
+								oneUser._AdminShortCircuit = new UserOrganizationModel.PermissionsShortCircuit() {
 									IsRadialAdmin = isRadialAdmin,
 									ActualUserId = actualUserModel.Id,
 									IsMocking = oneUser.User.Id != actualUserModel.Id,
 								};
-								//}
+								if (adminShortCircuit) {
+									AllowAdminsWithoutAudit();
+								}
+
 								oneUser._IsRadialAdmin = isRadialAdmin;
 								filterContext.Controller.ViewBag.IsRadialAdmin = isRadialAdmin;
 

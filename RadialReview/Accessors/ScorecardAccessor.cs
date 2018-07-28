@@ -340,11 +340,11 @@ namespace RadialReview.Accessors {
 					}
 				}
 
-				return results;
+				return results.Where(x => x.DeleteTime == null).ToList();
 			} else {
 				//q = s.QueryOver<MeasurableModel>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null);
 				if (perms.IsPermitted(x => x.ViewOrganizationScorecard(organizationId))) {
-					return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
+					return GetOrganizationMeasurables(s, perms, organizationId, loadUsers).Where(x => x.DeleteTime == null).ToList();
 				} else {
 					var results = GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers, false, true);
 
@@ -366,7 +366,7 @@ namespace RadialReview.Accessors {
 						}
 					}
 
-					return results;
+					return results.Where(x => x.DeleteTime == null).ToList();
 				}
 			}
 		}

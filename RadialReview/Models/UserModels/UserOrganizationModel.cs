@@ -489,6 +489,11 @@ namespace RadialReview.Models {
 			return _ClientOffset ?? GetOrganizationSettings().GetTimezoneOffset();
 		}
 
+		internal class PermissionsShortCircuit : AdminShortCircuit {
+			public string ActualUserId { get; set; }
+			public bool IsMocking { get; set; }
+			public bool IsRadialAdmin { get; set; }
+		}
 	}
 
 	public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel> {
