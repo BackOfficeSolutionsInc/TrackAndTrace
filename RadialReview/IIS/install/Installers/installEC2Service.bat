@@ -6,4 +6,5 @@ net start ec2config
 
 
 %systemroot%\system32\inetsrv\appcmd.exe set config -section:system.applicationHost/applicationPools /[name='DefaultAppPool'].cpu.action:"KillW3wp" /commit:apphost
-%systemroot%\system32\inetsrv\appcmd.exe set config -section:system.applicationHost/applicationPools /[name='DefaultAppPool'].cpu.resetInterval:"00:04:00" /commit:apphost
+%systemroot%\system32\inetsrv\appcmd.exe set config -section:system.applicationHost/applicationPools /[name='DefaultAppPool'].cpu.resetInterval:"00:01:00" /commit:apphost
+%systemroot%\system32\inetsrv\appcmd.exe set config -section:system.applicationHost/applicationPools /[name='DefaultAppPool'].cpu.limit:80000 /commit:apphost
