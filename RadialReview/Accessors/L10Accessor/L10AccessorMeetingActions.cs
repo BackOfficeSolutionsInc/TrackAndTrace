@@ -199,12 +199,12 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task<L10Recurrence> CreateBlankRecurrence(UserOrganizationModel caller, long orgId, MeetingType meetingType = MeetingType.L10) {
+		public static async Task<L10Recurrence> CreateBlankRecurrence(UserOrganizationModel caller, long orgId, bool addCreator, MeetingType meetingType = MeetingType.L10) {
 			L10Recurrence recur;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					recur = await CreateBlankRecurrence(s, perms, orgId, meetingType);
+					recur = await CreateBlankRecurrence(s, perms, orgId, addCreator, meetingType);
 					tx.Commit();
 					s.Flush();
 				}
@@ -212,7 +212,7 @@ namespace RadialReview.Accessors {
 			return recur;
 		}
 
-		public static async Task<L10Recurrence> CreateBlankRecurrence(ISession s, PermissionsUtility perms, long orgId, MeetingType meetingType = MeetingType.L10) {
+		public static async Task<L10Recurrence> CreateBlankRecurrence(ISession s, PermissionsUtility perms, long orgId, bool addCreator, MeetingType meetingType = MeetingType.L10) {
 			L10Recurrence recur;
 			var caller = perms.GetCaller();
 			perms.CreateL10Recurrence(orgId);
@@ -277,6 +277,12 @@ namespace RadialReview.Accessors {
 			});
 
 			await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.CreateRecurrence(ses, recur));
+
+			if (addCreator) {
+				using (var rt = RealTimeUtility.Create()) {
+					await AddAttendee(s, perms, rt, recur.Id, caller.Id);
+				}
+			}
 
 			return recur;
 		}
@@ -702,7 +708,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		
+
 		public static string BuildConcludeStatsTable(int tzOffset, Ratio todoCompletion, Ratio meetingRating, DateTime? start, DateTime? end, int issuesSolved) {
 			var table = new StringBuilder();
 			try {
@@ -718,8 +724,8 @@ namespace RadialReview.Accessors {
 				if (start != null)
 					startTime = TimeData.ConvertFromServerTime(start.Value, tzOffset).ToString("HH:mm");
 				if (end != null)
-					endTime   = TimeData.ConvertFromServerTime(end.Value, tzOffset).ToString("HH:mm");
-				
+					endTime = TimeData.ConvertFromServerTime(end.Value, tzOffset).ToString("HH:mm");
+
 				if (end != null && start != null) {
 					var durationMins = (end.Value - start.Value).TotalMinutes;
 					var durationSecs = (end.Value - start.Value).TotalSeconds;
@@ -730,12 +736,12 @@ namespace RadialReview.Accessors {
 						unit = "Minute";
 					} else if (durationMins > 1) {
 						duration = (int)durationMins + " minute".Pluralize((int)durationMins);
-						ellapse = ""+(int)Math.Max(1,durationMins);
+						ellapse = "" + (int)Math.Max(1, durationMins);
 						unit = "Minute".Pluralize((int)durationMins);
 					} else {
 						ellapse = "" + (int)Math.Max(1, durationSecs);
 						duration = (int)(durationSecs) + " second".Pluralize((int)durationSecs);
-						unit = "Second".Pluralize((int)durationSecs); 
+						unit = "Second".Pluralize((int)durationSecs);
 					}
 				}
 
@@ -774,8 +780,8 @@ namespace RadialReview.Accessors {
 		}
 
 		[Queue(HangfireQueues.Immediate.CONCLUSION_EMAIL)]/*Queues must be lowecase alphanumeric. You must add queues to BackgroundJobServerOptions in Startup.auth.cs*/
-		[AutomaticRetry(Attempts = 0,OnAttemptsExceeded =AttemptsExceededAction.Fail)]
-		public static async Task SendConclusionEmail_Unsafe(long meetingId,long? onlySendToUser) {
+		[AutomaticRetry(Attempts = 0, OnAttemptsExceeded = AttemptsExceededAction.Fail)]
+		public static async Task SendConclusionEmail_Unsafe(long meetingId, long? onlySendToUser) {
 
 			var unsent = new List<Mail>();
 			long recurrenceId = 0;

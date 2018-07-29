@@ -253,7 +253,7 @@ namespace RadialReview.Controllers {
 				//AddExtras(0, model);
 				//ViewBag.InfoAlert = "You can use the same L10 meeting each week. No need to create a new on each week.";
 
-				var l10 = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id, type ?? MeetingType.L10);
+				var l10 = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id,true, type ?? MeetingType.L10);
 				return RedirectToAction("Wizard", new { id = l10.Id, tname = Request["tname"], tmethod = Request["tmethod"] });
 			} else {
 				//var recurrenceId = id.Value;

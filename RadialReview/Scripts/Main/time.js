@@ -173,7 +173,12 @@
 		return new Date(day);
 	};
 
-	this.formatDate=function(date){
-		return window.getFormattedDate(date);
+	//Formats:
+	//dd-MM-yyyy	= 12-31-1999
+	//HH:mm:ss		= 23:59:59
+	//hh:mm:sst		= 12:59:59p
+	//hh:mm:sstt	= 12:59:59pm
+	this.formatDate = function (date, format) {
+		return window.getFormattedDate(date, format);
 	};
 }

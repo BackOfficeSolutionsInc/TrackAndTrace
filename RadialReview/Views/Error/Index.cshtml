@@ -22,7 +22,7 @@
 		@if (Context.IsDebuggingEnabled && Model != null && !String.IsNullOrWhiteSpace(Model.StackTrace)) {
 			<div class="error-window"><b>Error Code: </b><br /><span style="padding-left:10px">@errorCode</span></div>
 			<div class="review hidden" style="white-space: pre;font-size: 11px;overflow-x: auto;">@Model.NotNull(x => x.StackTrace)</div>
-			<a class="pull-right" target="_blank" href="mailto:@ProductStrings.SupportEmail?subject=Error:@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A@(errorCode)">Email Support</a>
+			<a class="pull-right" target="_blank" href="mailto:@ProductStrings.SupportEmail?subject=Received+an+error+@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A%0D%0A@(errorCode)">Email Support</a>
 		}
 
 		@if (((int?)ViewBag.Organizations ?? 0) == 0 && !(ViewBag.NoAccessCode ?? false)) {
@@ -51,16 +51,14 @@
 	</div>
 </div>
 @using (Html.BeginScripts()) {
-<script>
-	try {
-		console.error("@ViewBag.Message");
-		console.error("@Model.NotNull(x => x.Message)");
-		console.error("@Model.NotNull(x => x.StackTrace.Replace("\\", "\\\\")).Replace("\r\n", "\\n")");
-	} catch (e) {
-		console.warn(e);
+	<script>
+		@{try {
+			@:console.error("@ViewBag.Message");console.error("@Model.NotNull(x => x.Message)");console.error("@Model.NotNull(x => x.StackTrace.Replace("\\", "\\\\")).Replace("\r\n", "\\n")");
+		} catch (Exception e) {
+			@:console.warn(e);
+		}}
+	</script>
 	}
-</script>
-}
 
 <style>
 	.error-window {
@@ -68,6 +66,7 @@
 		background-color: #FDFDFD;
 		padding: 10px 15px;
 		border-radius: 0px;
-		margin-bottom:10px;
+		margin-bottom: 10px;
+		word-break: break-word;
 	}
 </style>

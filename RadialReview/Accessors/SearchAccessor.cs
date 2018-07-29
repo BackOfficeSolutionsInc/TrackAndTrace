@@ -212,6 +212,7 @@ namespace RadialReview.Accessors {
 		public static List<SearchResult> AdminSearchAllUsers(UserOrganizationModel caller, string search) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
+
 					PermissionsUtility.Create(s, caller).RadialAdmin(true);
 					return SearchUsersUnsafe(s, search, includeOrganizationName: true);
 				}

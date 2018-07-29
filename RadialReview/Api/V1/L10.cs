@@ -52,7 +52,7 @@ namespace RadialReview.Api.V1 {
 		[Route("L10/create")]
 		[HttpPost]
 		public async Task<CreatedMeeting> CreateL10([FromBody]CreateMeeting body) {
-			var _recurrence = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id);
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id, false);
 			await L10Accessor.UpdateRecurrence(GetUser(), _recurrence.Id, body.title);
 			if (body.addSelf) {
 				await L10Accessor.AddAttendee(GetUser(), _recurrence.Id, GetUser().Id);

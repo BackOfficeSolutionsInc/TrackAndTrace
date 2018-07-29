@@ -149,6 +149,11 @@
 
 			if (typeof(format)==="undefined" || format===null) { format = window.dateFormat; }
 
+			//Formats:
+			//dd-MM-yyyy	= 12-31-1999
+			//HH:mm:ss		= 23:59:59
+			//hh:mm:sst		= 12:59:59p
+			//hh:mm:sstt	= 12:59:59pm
 			var _d = date.getDate(),dd = _d > 9 ? _d : '0' + _d,_M = date.getMonth() + 1,MM = _M > 9 ? _M : '0' + _M,yyyy = date.getFullYear(),formatted = MM + '-' + dd + '-' + (yyyy),
 				H = date.getHours(),HH =H > 9 ? H : '0' + H,  h = H%12||12; hh =h > 9 ? h : '0' + h,m = date.getMinutes(),mm =m > 9 ? m : '0' + m,s = date.getSeconds(),ss =s > 9 ? s : '0' + s, t = H>=12?"p":"a", tt = t+"m";
 

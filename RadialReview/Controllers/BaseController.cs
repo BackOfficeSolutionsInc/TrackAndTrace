@@ -223,7 +223,7 @@ namespace RadialReview.Controllers {
 				if (orgIdParam != null)
 					userOrganizationId = long.Parse(orgIdParam);
 			}
-			
+
 			var cache = new Cache();
 
 			if (userOrganizationId == null && cache.Get(CacheKeys.USERORGANIZATION_ID) is long) {
@@ -485,7 +485,15 @@ namespace RadialReview.Controllers {
 
 		protected override void OnException(ExceptionContext filterContext) {
 			bool shouldLog = false;
+			Uri url = null;
+			Uri urlReferrer = null;
+
 			try {
+				try {
+					url = Request.Url;
+					urlReferrer = Request.UrlReferrer;
+				} catch (Exception e) {
+				}
 				ChromeExtensionComms.SendCommand("pageError");
 				var f = filterContext.HttpContext.Response.Filter;
 				filterContext.HttpContext.Response.Filter = null;
@@ -590,7 +598,11 @@ namespace RadialReview.Controllers {
 
 			string errorCode = null;
 			if (shouldLog) {
-				errorCode = AdminAccessor.LogError(filterContext.HttpContext, filterContext.Exception);
+				try {
+					var userId = filterContext.HttpContext.User.Identity.Name;
+					errorCode = AdminAccessor.LogError(userId, Request.HttpMethod, url, urlReferrer, filterContext.Exception);
+				} catch (Exception) {
+				}
 			}
 			ViewBag.ErrorCode = errorCode ?? "1";
 
@@ -724,7 +736,7 @@ namespace RadialReview.Controllers {
 #pragma warning restore CS0618 // Type or member is obsolete
 								var actualUserModel = GetUserModel(s);
 								var isRadialAdmin = oneUser.IsRadialAdmin || actualUserModel.IsRadialAdmin;
-								
+
 								oneUser._AdminShortCircuit = new UserOrganizationModel.PermissionsShortCircuit() {
 									IsRadialAdmin = isRadialAdmin,
 									ActualUserId = actualUserModel.Id,

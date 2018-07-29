@@ -354,7 +354,7 @@ namespace RadialReview.Accessors {
 				var sb = new StringBuilder();
 				sb.AppendLine("CreateTime = " + CreateTime);
 				sb.AppendLine("Message = " + Message);
-				sb.AppendLine("StackTrace = " + StackTrace.NotNull(x=>string.Join("\n",x.Split('\n').Take(10))));
+				sb.AppendLine("StackTrace = " + StackTrace.NotNull(x => string.Join("\n", x.Split('\n').Take(10))));
 				sb.AppendLine("Path = " + Path);
 				sb.AppendLine("UserId = " + UserId);
 				sb.AppendLine("ExceptionType = " + ExceptionType);
@@ -368,12 +368,17 @@ namespace RadialReview.Accessors {
 		public static string ERROR_CODE_SHARED = "8B502893-2C5D-4C53-B094-2AA9514B10C3";
 
 		public static string LogError(HttpContextBase context, Exception ex) {
+			var name = context.NotNull(x => x.User.Identity.Name);
+			var httpMethod = context.NotNull(x => x.Request.HttpMethod);
+			var url = context.NotNull(x => x.Request.Url);
+			var referrer = context.NotNull(x => x.Request.UrlReferrer);
+			return LogError(name, httpMethod, url, referrer, ex);
+		}
+
+		public static string LogError(string userId, string httpMethod, Uri url, Uri referrer, Exception ex) {
 			try {
 				using (var s = HibernateSession.GetCurrentSession()) {
 					using (var tx = s.BeginTransaction()) {
-						var userId = context.NotNull(x => x.User.Identity.Name);
-						var httpMethod = context.NotNull(x => x.Request.HttpMethod);
-						var url = context.NotNull(x => x.Request.Url);
 						var err = new ErrorLog() {
 							Message = ex.NotNull(x => x.Message),
 							StackTrace = ex.NotNull(x => x.StackTrace),
@@ -383,23 +388,21 @@ namespace RadialReview.Accessors {
 							HttpMethod = httpMethod,
 							UserId = userId
 						};
-
 						var shouldLog = s.GetSettingOrDefault(Variable.Names.LOG_ERRORS, true);
 						if (shouldLog) {
 							s.Save(err);
 							tx.Commit();
 							s.Flush();
-							return ""+err.Id;
+							return "" + err.Id;
 						}
-						
+
 						return Crypto.EncryptStringAES(err.ToString(), ERROR_CODE_SHARED);
 					}
 				}
 			} catch (Exception e) {
-				log.Error("Error logging exception",e);
+				log.Error("Error logging exception", e);
 			}
 			return null;
-
 		}
 
 		[Obsolete("Not safe")]

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using NHibernate;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Controllers {
 	public class InvoiceController : BaseController {
@@ -68,8 +69,12 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Radial)]
 		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
-		public ActionResult Outstanding() {
+		public ActionResult Outstanding(AccountType? type=null) {
 			var o = InvoiceAccessor.AllOutstanding_Unsafe(GetUser());
+			if (type != null) {
+				o = o.Where(x => x.Organization.AccountType == type.Value).ToList();
+			}
+
 			ViewBag.ShowOrganization = true;
 			return View("List", o);
 		}

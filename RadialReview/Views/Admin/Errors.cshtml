@@ -37,8 +37,8 @@
 			cells:[
 				{contents:function(x){return x.UserId;}, name:"Key",classes:"nowrap"},
 				{contents:function(x){
-					return Time.formatDate(x.CreateTime);
-				}, name:"Time",classes:"nowrap"},
+					return Time.formatDate(x.CreateTime,"dd-MM-yy HH:mm:ss");
+				}, name:"Time (UTC)",classes:"nowrap"},
 				{contents:function(x){
 					return "<div class='message' onclick='show(this)'><span class='m'>"+x.Message+
 							"</span><pre class='trace hidden'>"+x.StackTrace+"</pre></div>";
