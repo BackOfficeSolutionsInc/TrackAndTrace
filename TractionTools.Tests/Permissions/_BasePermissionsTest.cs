@@ -46,7 +46,7 @@ namespace TractionTools.Tests.Permissions {
 			public async Task<L10> CreateL10(UserOrganizationModel caller, ISession s, string name, params UserOrganizationModel[] attendees) {
 				var perms = PermissionsUtility.Create(s, caller);
 				var orgId = caller.Organization.Id;
-				var l10 = await L10Accessor.CreateBlankRecurrence(s,perms,orgId);
+				var l10 = await L10Accessor.CreateBlankRecurrence(s,perms,orgId, false);
 
 				foreach (var a in attendees ?? new UserOrganizationModel[0]) {
 					await L10Accessor.AddAttendee(s, perms, null, l10.Id, a.Id);
@@ -63,7 +63,7 @@ namespace TractionTools.Tests.Permissions {
 				return await CreateL10(caller, "Meeting", attendees);
 			}
 			public async Task<L10> CreateL10(UserOrganizationModel caller, string name, params UserOrganizationModel[] attendees) {
-				var l10 = await L10Accessor.CreateBlankRecurrence(caller, caller.Organization.Id);
+				var l10 = await L10Accessor.CreateBlankRecurrence(caller, caller.Organization.Id, false);
 
 				foreach (var a in attendees ?? new UserOrganizationModel[0]) {
 					await L10Accessor.AddAttendee(caller, l10.Id, a.Id);

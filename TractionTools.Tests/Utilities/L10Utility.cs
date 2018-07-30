@@ -436,7 +436,7 @@ namespace TractionTools.Tests.Utilities {
 				manager = existing.Creator;
 			}
 
-			var recur = await L10Accessor.CreateBlankRecurrence(manager, o.Id);
+			var recur = await L10Accessor.CreateBlankRecurrence(manager, o.Id, false);
 			if (name != null) {
 				BaseTest.DbCommit(s => {
 					recur = s.Get<L10Recurrence>(recur.Id);

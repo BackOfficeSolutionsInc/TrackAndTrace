@@ -37,7 +37,7 @@ namespace TractionTools.Tests.API.v0 {
 
             {
                 //// attach meeting to TODO                
-                var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
+                var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id, false);
 
 				// todo.ForRecurrenceId = _recurrence.Id;
 

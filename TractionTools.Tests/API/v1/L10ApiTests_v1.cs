@@ -296,7 +296,7 @@ namespace TractionTools.Tests.API.v1 {
 			L10Controller cnt = new L10Controller();
 			cnt.MockUser(c.E1);
 
-			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id, false);
 
 			//todo.ForRecurrenceId = _recurrence.Id;
 			var todo = TodoCreation.CreateL10Todo(_recurrence.Id, "GetUserTodo from Test Method", null, c.E1.Id, null);
@@ -429,7 +429,7 @@ namespace TractionTools.Tests.API.v1 {
 			//	Message = "Issue for Test Method",
 			//};
 
-			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id, false);
 			var creation = IssueCreation.CreateL10Issue("Issue for Test Method", null, c.E1.Id, _recurrence.Id);
 			var result = await IssuesAccessor.CreateIssue(c.E1, creation);// _recurrence.Id, c.E1.Id, issue);
 			//var issue1 = new IssueModel() {
