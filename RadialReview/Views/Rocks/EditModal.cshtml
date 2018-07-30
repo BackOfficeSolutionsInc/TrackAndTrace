@@ -25,8 +25,12 @@
         <div class="col-sm-5">
             <div class="form-group">
                 <label>Due Date:</label>
-                @Html.Partial("~/Views/Shared/" + (ViewBag.CanEdit == false ? "DisplayTemplates" : "EditorTemplates") + "/DateTime.cshtml", Model.Rock.DueDate,
-                          new ViewDataDictionary() { { "name", "Rock.DueDate" },{ "id","Rock_DueDate"} ,{ "localize", true } })
+                @if(ViewBag.CanEdit) {
+                    @Html.EditorFor(x=>x.Rock.DueDate, new ViewDataDictionary() { { "name", "Rock.DueDate" }, { "id", "Rock_DueDate" }, { "localize", true } })
+                }
+                else {
+                    @Html.DisplayFor(x => x.Rock.DueDate)
+                }
             </div>
         </div>
     </div>
