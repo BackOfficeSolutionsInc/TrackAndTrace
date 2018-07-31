@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Amazon.ElasticTranscoder.Model;
+
 using RadialReview.Models;
 using RadialReview.Utilities;
 using NHibernate;

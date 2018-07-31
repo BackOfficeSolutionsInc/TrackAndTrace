@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
-using System.Web;
-using Amazon.Auth.AccessControlPolicy;
-using Amazon.EC2;
-using Amazon.ElasticTranscoder.Model;
-using Amazon.IdentityManagement.Model;
-using Microsoft.Ajax.Utilities;
 using RadialReview.Accessors;
-using RadialReview.Controllers;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
@@ -17,13 +9,10 @@ using RadialReview.Models.L10;
 using RadialReview.Models.Accountability;
 using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Areas.CoreProcess.Models.MapModel;
-using RadialReview.Models.Components;
 using RadialReview.Areas.CoreProcess.Accessors;
-using RadialReview.Areas.CoreProcess.Models;
-using RadialReview.Models.Interfaces;
 
 namespace RadialReview.Utilities {
-	public partial class PermissionsUtility {
+    public partial class PermissionsUtility {
 
 		public void UnsafeAllow(PermItem.AccessLevel level, PermItem.ResourceType resourceType, long id) {
 			string key;

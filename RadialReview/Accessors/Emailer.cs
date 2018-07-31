@@ -1,21 +1,14 @@
-﻿using Amazon.DynamoDBv2.DocumentModel;
-using NHibernate;
-using RadialReview.Exceptions;
+﻿using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Json;
 using RadialReview.Properties;
 using RadialReview.Utilities;
-using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net.Mail;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using System.Collections.Concurrent;
 using RadialReview.Utilities.DataTypes;
 using Mandrill.Models;
 using System.Text.RegularExpressions;
@@ -23,7 +16,7 @@ using Mandrill;
 using Mandrill.Requests.Messages;
 
 namespace RadialReview.Accessors {
-	public class EmailResult {
+    public class EmailResult {
 		public int Sent { get; set; }
 		public int Unsent { get; set; }
 		public int Queued { get; set; }

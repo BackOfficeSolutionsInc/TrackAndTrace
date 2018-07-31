@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Amazon.ElasticTranscoder.Model;
+
 using FluentNHibernate.Utils;
 using Microsoft.AspNet.SignalR;
 using NHibernate;

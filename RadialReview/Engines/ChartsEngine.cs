@@ -1,5 +1,5 @@
-﻿using Amazon.ElasticTranscoder.Model;
-using Amazon.IdentityManagement.Model;
+﻿
+
 using FluentNHibernate.Utils;
 using NHibernate;
 using NHibernate.Criterion;

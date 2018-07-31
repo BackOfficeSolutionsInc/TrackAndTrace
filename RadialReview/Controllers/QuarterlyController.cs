@@ -1,28 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Amazon.IdentityManagement.Model;
 using RadialReview.Accessors;
 using RadialReview.Models.Angular.VTO;
-using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
 using RadialReview.Accessors.PDF;
-using RadialReview.Models.Accountability;
 using RadialReview.Models.Angular.Accountability;
 using System.Threading.Tasks;
 using static RadialReview.Accessors.PdfAccessor;
 using RadialReview.Areas.People.Accessors.PDF;
 using RadialReview.Areas.People.Accessors;
-using RadialReview.Utilities;
-using PdfSharp;
 using RadialReview.Utilities.Pdf;
-using MigraDoc.DocumentObjectModel;
 using PdfSharp.Drawing;
 
 namespace RadialReview.Controllers {
-	public class QuarterlyController : BaseController {
+    public class QuarterlyController : BaseController {
 		// GET: Quarterly
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Index() {

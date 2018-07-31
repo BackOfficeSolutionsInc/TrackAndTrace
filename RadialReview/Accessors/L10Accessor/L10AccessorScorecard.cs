@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
 using Amazon.EC2.Model;
-using Amazon.ElasticMapReduce.Model;
+
 using FluentNHibernate.Conventions;
 using ImageResizer.Configuration.Issues;
 using MathNet.Numerics;

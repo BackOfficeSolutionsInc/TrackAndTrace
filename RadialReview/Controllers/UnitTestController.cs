@@ -26,6 +26,7 @@ using RadialReview.Utilities.Pdf;
 using PdfSharp.Pdf;
 using MigraDoc.DocumentObjectModel;
 using System.Drawing;
+using RadialReview.Utilities.Constants;
 
 namespace RadialReview.Controllers
 {
@@ -282,5 +283,13 @@ namespace RadialReview.Controllers
 			var layout = MultipageLayoutOptimizer.GetBestLayout(docs,new MultiPageDocument.Settings(new XSize(8.5, 11)));
 			return Json(layout, JsonRequestBehavior.AllowGet);
 		}
+
+        [Access(AccessLevel.Radial)]
+        public JsonResult TempCred() {
+            if (Config.IsLocal()) {
+                return Json(KeyManager.ProductionDatabaseCredentials, JsonRequestBehavior.AllowGet);
+            }
+            return null;
+        }
 	}
 }

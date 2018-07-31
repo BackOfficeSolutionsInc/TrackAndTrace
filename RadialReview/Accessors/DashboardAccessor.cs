@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Web;
-using Amazon.ElasticTranscoder.Model;
-using FluentNHibernate;
-using FluentNHibernate.Conventions;
-using FluentNHibernate.Utils;
 using NHibernate;
-using NHibernate.Mapping;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Dashboard;
@@ -17,7 +10,7 @@ using RadialReview.Utilities;
 using RadialReview.Models.L10;
 
 namespace RadialReview.Accessors {
-	public class DashboardAccessor {
+    public class DashboardAccessor {
 
 		public static int TILE_HEIGHT = 5;
 

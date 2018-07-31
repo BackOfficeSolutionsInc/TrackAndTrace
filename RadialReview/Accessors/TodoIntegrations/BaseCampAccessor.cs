@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Web;
-using Amazon.IdentityManagement.Model;
 using Newtonsoft.Json.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Models;
@@ -13,7 +11,7 @@ using RadialReview.Models.Components;
 using RadialReview.Models.L10;
 using RadialReview.Models.Todo;
 using RadialReview.Utilities;
-using TrelloNet;
+
 
 namespace RadialReview.Accessors.TodoIntegrations
 {

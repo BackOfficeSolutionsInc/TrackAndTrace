@@ -53,6 +53,7 @@ using NHibernate.Impl;
 using System.Linq.Expressions;
 using log4net;
 using Mapping = NHibernate.Mapping;
+using RadialReview.Utilities.Constants;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -218,10 +219,14 @@ namespace RadialReview.Utilities {
 								break;
 							}
 						case Env.production: {
-								c = new Configuration();
+                                var connectionString = connectionStrings["DefaultConnectionProduction"].ConnectionString;
+                                var dbCred =KeyManager.ProductionDatabaseCredentials;
+                                connectionString = string.Format(connectionString, dbCred.Username, dbCred.Password);
+
+                                c = new Configuration();
 								//SetupAudit(c);
 								factories[env] = Fluently.Configure(c).Database(
-											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
+											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionString).ShowSql())
 								   .Mappings(m => {
 									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
 										   .Conventions.Add<StringColumnLengthConvention>();

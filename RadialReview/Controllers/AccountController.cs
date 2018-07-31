@@ -120,7 +120,7 @@ namespace RadialReview.Controllers {
 						.Subject(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName)
 						.Body(EmailStrings.PasswordReset_Body, user.Name(), Config.BaseUrl(null) + "n/" + token, Config.BaseUrl(null) + "n/" + token, Config.ProductName(null))
 					);
-				TempData["InfoAlert"] = ("Please check your inbox, an email has been sent with further instructions.");
+				TempData["InfoAlert"] = ("Please check your inbox and spam folder, an email has been sent with further instructions.");
 
 				log.Info("Resent login information for " + user.Email);
 

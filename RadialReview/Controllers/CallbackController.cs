@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Amazon.IdentityManagement.Model;
+
 using RadialReview.Accessors;
 using RadialReview.Accessors.TodoIntegrations;
 using TrelloNet;

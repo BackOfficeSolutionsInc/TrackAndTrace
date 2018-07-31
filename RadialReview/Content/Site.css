@@ -85,6 +85,12 @@ html, body {
 	}
 }
 
+@media (max-width: 992px) {
+	.alignCenter-md-max {
+		text-align: center;
+	}
+}
+
 @media (min-width: 769px) {
 
 	.pull-right-sm {

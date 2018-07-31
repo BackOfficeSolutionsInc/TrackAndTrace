@@ -4,7 +4,7 @@ using System.Linq;
 using System.Management.Instrumentation;
 using System.Security;
 using System.Web;
-using Amazon.IdentityManagement.Model;
+
 using Mandrill.Models;
 using NHibernate.Linq;
 using NHibernate.SqlCommand;

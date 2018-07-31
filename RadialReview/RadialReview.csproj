@@ -46,7 +46,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Solver.Foundation, Version=3.0.2.10889, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Runtime" />
@@ -280,6 +279,7 @@
     <Compile Include="Utilities\Attributes\Untested.cs" />
     <Compile Include="Utilities\Algorithms\BinPacking.cs" />
     <Compile Include="Utilities\Algorithms\BreakOptimization.cs" />
+    <Compile Include="Utilities\Constants\KeyManager.cs" />
     <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
     <Compile Include="Utilities\AsyncUtility.cs" />
     <Compile Include="Utilities\CoreProcess\BpmnUtility.cs" />
@@ -2623,6 +2623,7 @@
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Scripts\Models\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
+    <Folder Include="Utilities\NewFolder2\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />
     <Folder Include="Views\Console\" />
@@ -2759,6 +2760,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\XmlComments.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>

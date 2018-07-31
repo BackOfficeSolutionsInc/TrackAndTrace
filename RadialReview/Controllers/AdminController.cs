@@ -1124,7 +1124,7 @@ namespace RadialReview.Controllers {
 			//var server = NetworkAccessor.GetPublicIP();//Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
 			var serverRow = "<tr><td>Amazon Server: </td><td><i>failed</i></td></tr>";
 			try {
-				serverRow = "<tr><td>Amazon Server: </td><td>" + Amazon.EC2.Util.EC2Metadata.InstanceId.ToString() + "</td></tr>";
+				serverRow = "<tr><td>Amazon Server: </td><td>" + Amazon.Util.EC2InstanceMetadata.InstanceId.ToString() + "</td></tr>";
 			} catch (Exception e) {
 
 			}

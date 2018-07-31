@@ -396,7 +396,7 @@
 			}
 			@if (ViewBag.InfoAlert != null) {
 				<script>
-						$(function () { showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" ); });
+						$(function () { showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" , 6000); });
 				</script>
 			}
 			@if (ViewBag.Success != null) {

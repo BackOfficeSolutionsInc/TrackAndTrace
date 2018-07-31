@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Amazon.ElasticTranscoder.Model;
+
 using ImageResizer.Configuration.Issues;
 using RadialReview.Models;
 using RadialReview.Models.Issues;

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using Amazon.ElasticTranscoder.Model;
-using Amazon.IdentityManagement.Model;
 using RadialReview.Accessors;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Json;
@@ -14,7 +10,7 @@ using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 
 namespace RadialReview.Controllers {
-	public class IssuesController : BaseController {
+    public class IssuesController : BaseController {
 
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Pad(long id, bool showControls = true, bool readOnly = false) {
