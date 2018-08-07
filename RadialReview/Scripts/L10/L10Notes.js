@@ -9,7 +9,7 @@
 		$(".notes iframe").animate({"background-color":"#ddd","color":"transparent"},150,function() {
 			$(".notes iframe").val("");
 		});
-
+		
 		
 		var padNum = $(this).data("id");
 
