@@ -12,33 +12,66 @@ using RadialReview.Exceptions;
 using RadialReview.Models.Payments;
 using RadialReview.Utilities;
 
+//install FireSharp.Serialization.JsonNet 1.1.0
+using FireSharp.Config;
+using FireSharp.Interfaces;
+using FireSharp.Response;
+
 namespace RadialReview.Accessors
 {
 	public class PadAccessor :BaseAccessor
 	{
-
+        
 		public static async Task<bool> CreatePad(string padid, string text=null)
 		{
 			try{
-				var client = new HttpClient();
-				var urlText = "";
-				if (!String.IsNullOrWhiteSpace(text))
-					urlText = "&text=" + WebUtility.UrlEncode(text);
+                //start firepad creation
+                IFirebaseConfig FPconfig = new FirebaseConfig
+                {
+                    AuthSecret = Config.FirePadDBSecret(),
+                    BasePath = Config.FirePadUrl()
+                };
+                IFirebaseClient FPClient;
+                FPClient = new FireSharp.FirebaseClient(FPconfig);
+                if (FPClient!=null){
+                    var data = new FPData
+                    {
+                        padID = padid,
+                        text = text
+                    };
+                    SetResponse FPResponse = await FPClient.SetTaskAsync("FirePad/" + padid, data);
+                    FPData FPresult = FPResponse.ResultAs<FPData>();
+                }else
+                {
+                    throw new PermissionsException("Error connecting to firebase");
+                }
 
-				var baseUrl = Config.NotesUrl() + "api/1/createPad?apikey=" + Config.NoteApiKey() + "&padID=" + padid + urlText;
-				HttpResponseMessage response = await client.GetAsync(baseUrl);
-				HttpContent responseContent = response.Content;
-				using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())){
-					var result = await reader.ReadToEndAsync();
-					int code = Json.Decode(result).code;
-					string message = Json.Decode(result).message;
-					if (code != 0){
-						throw new PermissionsException("Error " + code + ": " + message);
-					}
-					return true;
-				}
-			}
-			catch (Exception e){
+                //end firepad creation
+
+                var client = new HttpClient();
+                var urlText = "";
+                if (!String.IsNullOrWhiteSpace(text))
+                    urlText = "&text=" + WebUtility.UrlEncode(text);
+
+                var baseUrl = Config.NotesUrl() + "api/1/createPad?apikey=" + Config.NoteApiKey() + "&padID=" + padid + urlText;
+                HttpResponseMessage response = await client.GetAsync(baseUrl);
+                HttpContent responseContent = response.Content;
+                using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
+                {
+                    var result = await reader.ReadToEndAsync();
+                    int code = Json.Decode(result).code;
+                    string message = Json.Decode(result).message;
+                    if (code != 0)
+                    {
+                        throw new PermissionsException("Error " + code + ": " + message);
+                    }
+                    return true;
+                }
+
+
+                
+            }
+            catch (Exception e){
 				log.Error("Error PadAccessor.CreatePad",e);
 				return false;
 			}

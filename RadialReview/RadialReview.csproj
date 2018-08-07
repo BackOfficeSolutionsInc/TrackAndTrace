@@ -104,6 +104,7 @@
     <Compile Include="Accessors\EventAccessor.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
     <Compile Include="Accessors\ForModelAccessor.cs" />
+    <Compile Include="Accessors\FPData.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\HeadlineAccessor.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorPeopleTools.cs" />

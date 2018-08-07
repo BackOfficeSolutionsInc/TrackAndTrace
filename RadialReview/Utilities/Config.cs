@@ -648,8 +648,23 @@ namespace RadialReview.Utilities {
 			}
 			return server;
 		}
+        //start firepad creation
+        public static string FirePadUrl(string append = "")
+        {
+            var server = GetAppSetting("FirePadServer", "https://tractiontools-72dc6.firebaseio.com");
+            if (!string.IsNullOrWhiteSpace(append))
+            {
+                server = server.TrimEnd('/') + "/" + append;
+            }
+            return server;
+        }
+        internal static string FirePadDBSecret()
+        {
+            return GetAppSetting("FirePadServer_DBSecret");
+        }
+        //end firepad creation
 
-		internal static string NoteApiKey() {
+        internal static string NoteApiKey() {
 			return GetAppSetting("NotesServer_ApiKey");
 		}
 
