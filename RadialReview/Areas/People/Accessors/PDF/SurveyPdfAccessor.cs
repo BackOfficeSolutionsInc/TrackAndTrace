@@ -58,6 +58,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			doc.DefaultPageSetup.StartingNumber = 1;
 			var iSections = survey.GetSections().OrderBy(x => x.GetOrdering());
 			var section = doc.AddSection();
+			section.PageSetup.FooterDistance = BottomPad * 1;
 
 			var usableWidth = doc.DefaultPageSetup.PageWidth - doc.DefaultPageSetup.LeftMargin - doc.DefaultPageSetup.RightMargin;
 			var topPara = section.AddParagraph();
@@ -104,7 +105,13 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			}
 		}
 
-		protected static void AddSectionTitle(Cell section, string pageTitle, Orientation orientation = Orientation.Portrait) {
+		protected static void AddSectionTitle(Section sec, string pageTitle,Unit usableWidth, Orientation orientation = Orientation.Portrait) {
+
+			var table = new Table();
+			table.AddColumn(usableWidth);
+			var row = table.AddRow();
+			var section = row.Cells[0];
+
 			var frame = section.Elements.AddTextFrame();
 			frame.Height = Unit.FromInch(.75);
 			frame.Width = Unit.FromInch(8);
@@ -137,24 +144,26 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			rr.Height = Unit.FromInch(0.4);
 			rr.Format.Font.Size = Unit.FromInch(.2);
 
+			sec.Elements.Add(table);
 		}
 
 		protected static void AddSurveySection(Section section, ISectionAbout iSection) {
 			//var section = doc.AddSection();
 			var usableWidth = section.Document.DefaultPageSetup.PageWidth - section.Document.DefaultPageSetup.LeftMargin - section.Document.DefaultPageSetup.RightMargin;
-			var superTable = new Table();//section.AddTable();
-			superTable.AddColumn(usableWidth);
-			var superRow = superTable.AddRow();
-			var cell = superRow.Cells[0];
+			//var superTable = new Table();//section.AddTable();
+			//superTable.AddColumn(usableWidth);
+			//var superRow = superTable.AddRow();
+			//var cell = superRow.Cells[0];
 			//cell.Borders.Color = Color.FromArgb(150, 0, 0, 150);
 
 
-			AddSectionTitle(cell, iSection.GetName());
-			var shouldDraw = PdfSectionFactory.CreateSection(cell, iSection, usableWidth);
+			//AddSectionTitle(superTable, iSection.GetName());
+			AddSectionTitle(section, iSection.GetName(),usableWidth);
+			var shouldDraw = PdfSectionFactory.CreateSection(section, iSection, usableWidth);
 
-			if (shouldDraw) {
-				section.Elements.Add(superTable);
-			}
+			//if (shouldDraw) {
+			//	section.Elements.Add(superTable);
+			//}
 
 			//var p = cell.AddParagraph();
 			//p.Format.SpaceAfter = Unit.FromInch(.15);
@@ -163,22 +172,22 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 	public class PdfSectionFactory {
 
-		public static bool CreateSection(Cell cell, ISectionAbout isection, Unit usableWidth) {
+		public static bool CreateSection(Section section, ISectionAbout isection, Unit usableWidth) {
 			switch (isection.GetSectionType()) {
 				case "Rocks":
-					return AddRocksSection(cell, isection, usableWidth);
+					return AddRocksSection(section, isection, usableWidth);
 				case "Roles":
-					return AddRolesSection(cell, isection, usableWidth);
+					return AddRolesSection(section, isection, usableWidth);
 				case "Values":
-					return AddValuesSection(cell, isection, usableWidth);
+					return AddValuesSection(section, isection, usableWidth);
 				case "GeneralComments":
-					return AddGeneralCommentsSection(cell, isection, usableWidth);
+					return AddGeneralCommentsSection(section, isection, usableWidth);
 				case "LeadershipAssessment":
-					return AddLeadershipAssessmentSection(cell, isection, usableWidth);
+					return AddLeadershipAssessmentSection(section, isection, usableWidth);
 				case "ManagementAssessment":
-					return AddManagementAssessmentSection(cell, isection, usableWidth);
+					return AddManagementAssessmentSection(section, isection, usableWidth);
 				case "RockCompletion":
-					return AddRockCompletionSection(cell, isection, usableWidth);
+					return AddRockCompletionSection(section, isection, usableWidth);
 				default:
 					throw new ArgumentOutOfRangeException("Unknown section type");
 			}
@@ -365,40 +374,67 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			}
 		}
 
-		private static bool DrawComments(Cell c, string heading, IEnumerable<IItemContainerAbout> generalComments, Unit usableWidth) {
+		private static bool DrawComments(Section section, string heading, IEnumerable<IItemContainerAbout> generalComments, Unit usableWidth) {
+
+			
 
 			if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
 
-				var table = new Table();
-				table.AddColumn(usableWidth * .05);
-				table.AddColumn(usableWidth * .9);
-				var row = table.AddRow();
-				c.Elements.Add(table);
+				//var row_heding = tbl.AddRow();
+				//var cell_heading = row_heding.Cells[0];
 
-				var cell = row[1];
+				//var table = new Table();
+				//table.AddColumn(usableWidth * .05);
+				//table.AddColumn(usableWidth * .9);
+				//var row = table.AddRow();
+				//var cell = row.Cells[1];
 
-				var genCommentsHeading = cell.AddParagraph();
+				var leftIndent = BottomPad * 1.42;
+				var genCommentsHeading = section.AddParagraph();
 				genCommentsHeading.Format.SpaceAfter = BottomPad;
 				genCommentsHeading.AddFormattedText(heading ?? "Comments", HeadingFont);
 				genCommentsHeading.Format.SpaceAfter = BottomPad * .5;
+				genCommentsHeading.Format.LeftIndent = leftIndent;
+
+				//cell_heading.Elements.Add(table);
 
 				foreach (var generalCommentQuestion in generalComments) {
 					//Do we have a response?
 					foreach (var comment in generalCommentQuestion.GetResponses()) {
 						var answer = comment.GetAnswer();
 						var by = comment.GetByAbout().GetBy().ToPrettyString();
+
 						//Do we have an answer
 						if (!string.IsNullOrEmpty(answer)) {
-							var paragraph = cell.AddParagraph();
+
+							var paragraph = section.AddParagraph();
 							paragraph.AddFormattedText(by ?? "", TextFormat.Bold);
-							paragraph = cell.AddParagraph();
+							paragraph.Format.LeftIndent = leftIndent;
+							paragraph = section.AddParagraph();
 							paragraph.AddText(answer ?? "");
 							paragraph.Format.SpaceAfter = BottomPad;
+							paragraph.Format.LeftIndent = leftIndent;
+
+							//var textList = Wrap(answer, 250);
+							//foreach (var item in textList) {
+							//	var row_comment = tbl.AddRow();
+							//	var cell_Comment = row_comment.Cells[0];
+							//	var tbl_comment = new Table();
+							//	tbl_comment.AddColumn(usableWidth * .05);
+							//	tbl_comment.AddColumn(usableWidth * .9);
+							//	var tbl_row = tbl_comment.AddRow();
+							//	var tbl_cell = tbl_row.Cells[1];
+							//	var paragraph1 = tbl_cell.AddParagraph(item ?? "");
+							//	paragraph.Format.SpaceAfter = BottomPad;
+							//	cell_Comment.Elements.Add(tbl_comment);
+							//}
 						}
 					}
 				}
 
-				cell.AddParagraph();
+				//PdfTable.AddSpacerRow(tbl);
+
+				//cell.AddParagraph();				
 				//row.Format.SpaceAfter = BottomPad;
 				//cell.Format.SpaceBefore= BottomPad*2;
 				return true;
@@ -406,7 +442,14 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			return false;
 		}
 
-		private static bool AddValuesSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+
+
+		private static bool AddValuesSection(Section section, ISectionAbout iSection, Unit usableWidth) {
+
+			var tbl = new Table();
+			tbl.AddColumn(usableWidth);
+			var row = tbl.AddRow();
+			var cell = row.Cells[0];
 
 			var valueQuestions = iSection.GetItemContainers().Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.Value).ToList();
 			var responseBuilder = new Action<Cell, IItemFormat, IResponse>((c, format, resp) => {
@@ -517,7 +560,11 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 			//ADD GENERAL COMMENTS
 			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
-			DrawComments(cell, ValueSection.ValueCommentHeading, generalComments, usableWidth);
+
+
+			section.Elements.Add(tbl);
+
+			DrawComments(section, ValueSection.ValueCommentHeading, generalComments, usableWidth);
 			return true;
 			//if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
 			//	var genCommentsHeading = cell.AddParagraph();
@@ -543,7 +590,14 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			//}
 		}
 
-		private static bool AddRockCompletionSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+		private static bool AddRockCompletionSection(Section section, ISectionAbout iSection, Unit usableWidth) {
+
+			var tbl = new Table();
+			tbl.AddColumn(usableWidth);
+			PdfTable.AddSpacerRow(tbl);
+			var row1 = tbl.AddRow();
+			var cell = row1.Cells[0];
+
 			var questions = iSection.GetItemContainers();
 			var rockCompletionQuestions = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.RockCompletion).ToList();
 
@@ -604,10 +658,19 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			PdfTable.AddSpacerRow(table);
 			//Append table
 			cell.Elements.Add(table);
+
+			section.Elements.Add(tbl);
+
 			return true;
 		}
 
-		private static bool AddRolesSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+		private static bool AddRolesSection(Section section, ISectionAbout iSection, Unit usableWidth) {
+
+			var tbl = new Table();
+			tbl.AddColumn(usableWidth);
+			var row1 = tbl.AddRow();
+			var cell = row1.Cells[0];
+
 			var questions = iSection.GetItemContainers();
 
 			var table = new Table();
@@ -736,7 +799,10 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 			//ADD GENERAL COMMENTS
 			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
-			DrawComments(cell, RoleSection.RoleCommentHeading, generalComments, usableWidth);
+
+			section.Elements.Add(tbl);
+
+			DrawComments(section, RoleSection.RoleCommentHeading, generalComments, usableWidth);
 			return true;
 			//if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
 			//	var genCommentsHeading = cell.AddParagraph();
@@ -762,7 +828,15 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			//}
 		}
 
-		private static bool AddRocksSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+		private static bool AddRocksSection(Section section, ISectionAbout iSection, Unit usableWidth) {
+
+			var tbl = new Table();
+			tbl.AddColumn(usableWidth);
+			var row1 = tbl.AddRow();
+			var cell = row1.Cells[0];
+
+
+
 			var questions = iSection.GetItemContainers();
 			var rockQuestions = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.Rock).ToList();
 			var responseBuilder = new Action<Cell, IItemFormat, IResponse>((c, format, resp) => {
@@ -870,17 +944,20 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			#endregion
 			//ADD GENERAL COMMENTS
 			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
-			DrawComments(cell, RockSection.RockCommentHeading, generalComments, usableWidth);
+
+			section.Elements.Add(tbl);
+
+			DrawComments(section, RockSection.RockCommentHeading, generalComments, usableWidth);
 
 			return true;
 		}
 
-		private static bool AddGeneralCommentsSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+		private static bool AddGeneralCommentsSection(Section section, ISectionAbout iSection, Unit usableWidth) {
 
 			var questions = iSection.GetItemContainers();
 			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
 
-			return DrawComments(cell, "General Comments", generalComments, usableWidth);
+			return DrawComments(section, "General Comments", generalComments, usableWidth);
 
 		}
 
@@ -903,24 +980,36 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			});
 		}
 
-		private static bool AddLeadershipAssessmentSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+		private static bool AddLeadershipAssessmentSection(Section section, ISectionAbout iSection, Unit usableWidth) {
+
+			var tbl = new Table();
+			tbl.AddColumn(usableWidth);
+			var row1 = tbl.AddRow();
+			var cell = row1.Cells[0];
 
 			var questions = iSection.GetItemContainers();
 			var leadershipQuestions = iSection.GetItemContainers().Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.LeadershipAssessment).ToList();
 			var table = PdfTable.Build(usableWidth, leadershipQuestions, LmaTable(), PdfTable.DefaultItemBuilder(ParagraphAlignment.Left));
 			cell.Elements.Add(table);
 
+			section.Elements.Add(tbl);
 			//return DrawComments(cell, "General Comments", generalComments, usableWidth);
 			return leadershipQuestions.Any();
 
 		}
 
-		private static bool AddManagementAssessmentSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+		private static bool AddManagementAssessmentSection(Section section, ISectionAbout iSection, Unit usableWidth) {
 
+			var tbl = new Table();
+			tbl.AddColumn(usableWidth);
+			var row1 = tbl.AddRow();
+			var cell = row1.Cells[0];
 			var questions = iSection.GetItemContainers();
 			var managementQuestions = iSection.GetItemContainers().Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.ManagementAssessment).ToList();
 			var table = PdfTable.Build(usableWidth, managementQuestions, LmaTable(), PdfTable.DefaultItemBuilder(ParagraphAlignment.Left));
 			cell.Elements.Add(table);
+
+			section.Elements.Add(tbl);
 
 			return managementQuestions.Any();
 
