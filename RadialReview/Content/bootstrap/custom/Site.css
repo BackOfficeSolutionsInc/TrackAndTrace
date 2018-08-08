@@ -673,6 +673,12 @@ body.modal-open {
   font-size: 32px;
   margin-top: -6px;
 }
+.body-full-width .body-content {
+  padding: 59px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 150px;
+}
 .body-notitlebar #wrap #main {
   top: 0px;
 }
