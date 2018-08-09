@@ -78,8 +78,14 @@ namespace RadialReview.Controllers {
 					dates1 = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
 				}
 
+                var future = DateTime.UtcNow.AddDays(120);
+                var invalidDates = dates1.Where(x => x < new DateTime(2005, 1, 1) || x > future);
+                if (invalidDates.Any())
+                     throw new Exception("Error uploading scorecard, "+invalidDates.Count()+" dates were invalid. Please make sure your scorecard dates are between January 1, 2005 and " + future.ToString("MMMM dd, yyyy"));
 
-				var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
+
+
+                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
 				var allUsers = TinyUserAccessor.GetOrganizationMembers(GetUser(), orgId);
 				// var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id);
 				var userLookups = DistanceUtility.TryMatch(userStrings, allUsers);

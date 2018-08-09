@@ -112,16 +112,16 @@ namespace RadialReview.Utilities {
 			#region As an admin
 			//We are an admin...
 			if (TestIsAdmin(caller)) {
-				if (caller._AdminShortCircuit != null) {
-					if (caller._AdminShortCircuit.AllowAdminWithoutAudit)
+				if (caller._PermissionsOverrides != null) {
+					if (caller._PermissionsOverrides.Admin.AllowAdminWithoutAudit)
 						return true;
-					if (caller._AdminShortCircuit.IsMocking) {
+					if (caller._PermissionsOverrides.Admin.IsMocking) {
 						//1795 = EOSWW, 1634 = TT
 						if (!allowSpecialOrgs && caller.Organization != null && (Config.GetDisallowedOrgIds(session).Contains(caller.Organization.Id))) {
 							return false;
 						}
 						//We're logged in as someone else...
-						if (HasSuperAdminAccess(session, caller, caller._AdminShortCircuit.ActualUserId)) {
+						if (HasSuperAdminAccess(session, caller, caller._PermissionsOverrides.Admin.ActualUserId)) {
 							return true;
 						} else {//admin, but no audit log...
 							throw new AdminSetRoleException(caller.Id);
@@ -141,7 +141,7 @@ namespace RadialReview.Utilities {
 			return caller != null && (
 						(caller.IsRadialAdmin) ||
 						(caller.User != null && caller.User.IsRadialAdmin) ||
-						(caller._AdminShortCircuit!=null && caller._AdminShortCircuit.IsRadialAdmin)
+						(caller._PermissionsOverrides!=null && caller._PermissionsOverrides.Admin.IsRadialAdmin)
 					);
 		}
 
@@ -175,16 +175,19 @@ namespace RadialReview.Utilities {
 			if (!session.Contains(caller) && caller.Id != UserOrganizationModel.ADMIN_ID) {
 				attached = session.Load<UserOrganizationModel>(caller.Id);
 				attached._ClientTimestamp = caller._ClientTimestamp;
-				attached._AdminShortCircuit = caller._AdminShortCircuit;
+				attached._PermissionsOverrides = caller._PermissionsOverrides;
 				attached._IsTestAdmin = caller._IsTestAdmin;
-			}
-			if (caller.DeleteTime != null && caller.DeleteTime < DateTime.UtcNow) {
-				throw new PermissionsException("User has been deleted") {
-					NoErrorReport = true
-				};
-			}
+            }
+            if (caller.DeleteTime != null && caller.DeleteTime < DateTime.UtcNow) {
+                throw new PermissionsException("User has been deleted") {
+                    NoErrorReport = true
+                };
+            }
+            if (caller.Organization !=null && caller.Organization.DeleteTime != null && caller.Organization.DeleteTime < DateTime.UtcNow) {
+                LockoutUtility.ProcessLockout(caller);
+            }
 
-			return new PermissionsUtility(session, attached);
+            return new PermissionsUtility(session, attached);
 		}
 
 		#endregion

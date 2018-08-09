@@ -134,7 +134,8 @@ namespace RadialReview.Accessors.PDF {
 				OutputSize = new XSize(width, height)
 			};
 			try {
-				var layout = MultipageLayoutOptimizer.GetBestLayout(docsAndStats, docSettings, reorderable: true);
+                var timeout = TimeSpan.FromSeconds(6);
+                var layout = MultipageLayoutOptimizer.GetBestLayout(docsAndStats, docSettings,timeout, reorderable: true);
 				var scaledDoc = new MultiPageDocument(layout);
 				return scaledDoc;
 			} catch (Exception e) {

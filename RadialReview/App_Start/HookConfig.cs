@@ -73,11 +73,12 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new ExecutePaymentCardUpdate());
 			HooksRegistry.RegisterHook(new FirstPaymentEmail());
 			HooksRegistry.RegisterHook(new SetDelinquentFlag());
-			HooksRegistry.RegisterHook(new CardExpireEmail());
+            HooksRegistry.RegisterHook(new CardExpireEmail());
+            HooksRegistry.RegisterHook(new UnlockOnCard());
 
 
 
-			HooksRegistry.RegisterHook(new QuarterlyConversationCreationNotifications());
+            HooksRegistry.RegisterHook(new QuarterlyConversationCreationNotifications());
 			HooksRegistry.RegisterHook(new SetPeopleToolsTrial());
 			
 

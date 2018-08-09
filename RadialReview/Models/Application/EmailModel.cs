@@ -37,7 +37,7 @@ namespace RadialReview.Models
         {
 			Id(x => x.Id);
 			Map(x => x.ToAddress);
-			Map(x => x.MandrillId).Index("EmailModel_MandrillId");
+			Map(x => x.MandrillId).Index("EmailModel_MandrillId").Length(256);
 			Map(x => x.EmailType);
 			Map(x => x.Bcc);
             Map(x => x.Body).Length(3000).Not.Nullable();

@@ -720,7 +720,7 @@ namespace RadialReview.Utilities {
 			}
 		}
 
-		public static LayoutOptimizerResults Optimize(IDocumentGenerator layoutGenerator, IEnumerable<IHint> hints, RangedVariables vars) {
+		public static LayoutOptimizerResults Optimize(IDocumentGenerator layoutGenerator, IEnumerable<IHint> hints, RangedVariables vars, TimeoutCheck timeout) {
 
 			var fitResults = new LayoutOptimizerResults();
 
@@ -789,6 +789,8 @@ namespace RadialReview.Utilities {
 
 			//Each page...
 			while (true) {
+
+                timeout.ShouldTimeout();
 
 				var unfitViewBoxes = new List<string>();
 

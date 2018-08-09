@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.IO;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Utilities.Pdf;
 
 namespace RadialReview.Accessors {
 
@@ -532,6 +533,7 @@ namespace RadialReview.Accessors {
 		}
 
 		public static async Task AddVtoVision(Document doc, AngularVTO vto, string dateFormat, VtoPdfSettings settings) {
+            var timeout = new TimeoutCheck(TimeSpan.FromSeconds(8));
 			settings = settings ?? new VtoPdfSettings();
 			var visionLayoutGenerator = new VtoVisionDocumentGenerator(vto, settings);
 
@@ -557,8 +559,7 @@ namespace RadialReview.Accessors {
 			hints.AddRange(marketingStrategyPanel);
 
 			hints.AddRange(GenerateThreeYearHints(vto, dateFormat));
-
-			var result = LayoutOptimizer.Optimize(visionLayoutGenerator, hints, vars);
+			var result = LayoutOptimizer.Optimize(visionLayoutGenerator, hints, vars,timeout);
 
 			LayoutOptimizer.Draw(doc, result);
 		}

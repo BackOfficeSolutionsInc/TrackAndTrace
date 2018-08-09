@@ -522,7 +522,7 @@ namespace RadialReview.Accessors {
 						var color = todo.DueDate.Date <= now ? "color:#F22659;" : "color: #34AD00;";
 						var completionIcon = Config.BaseUrl(null) + @"Image/TodoCompletion?id=" + HttpUtility.UrlEncode(Crypto.EncryptStringAES("" + todo.Id, _SharedSecretTodoPrefix(todo.AccountableUserId))) + "&userId=" + todo.AccountableUserId;
 						var duedate = todo.DueDate;
-						duedate = TimeData.ConvertFromServerTime(DateTime.UtcNow, timezoneOffset);
+						duedate = TimeData.ConvertFromServerTime(duedate, timezoneOffset);
 
 						table.Append(@"<tr><td width=""16px"" valign=""top"" style=""padding: 2px 0 0 0;""><img src='").Append(completionIcon).Append("' width='15' height='15'/>").Append(@"</td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(null) + @"Todo/List"">")
 							.Append(i).Append(@". </a></b></td><td align=""left"" valign=""top""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(null) + @"Todo/List?todo=" + todo.Id + @""">")

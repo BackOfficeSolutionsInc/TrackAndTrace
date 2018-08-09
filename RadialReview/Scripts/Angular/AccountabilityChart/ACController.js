@@ -586,7 +586,7 @@ acapp.directive('rolegroups', function () {
 		"<ul>" +
 		"<li ng-repeat='role in group.Roles | orderBy:\"Ordering\" | filter:excludeHidden'  class='role-row' >" +
 		//"<tt-role tt-overflow='18'  ng-model='role'></tt-role>" +
-		"<textarea textarea-resize ng-trim='false' ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\"></textarea>" +
+		"<textarea textarea-resize ng-trim='false' ng-model-options='{debounce:400}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\"></textarea>" +
 		//"<input tt-overflow='18' ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
 		"<div title='{{role.Name}}' class='role' ng-show='::group.Editable==false'>{{role.Name | ttOverflowTxt:false:18 }}</div>" +
 		"<span ng-if='::group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\" title='Delete Role' tabindex='-1'></span>" +

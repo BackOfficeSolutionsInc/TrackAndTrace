@@ -28,14 +28,25 @@ namespace RadialReview.Controllers {
 			return View();
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		public ActionResult SetCard() {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
+        [Access(AccessLevel.UserOrganization,IgnorePaymentLockout =true)]        
+        public ActionResult Lockout() {
+            var orgId = GetUser().Organization.Id;
+            var canEditPayment = new PermissionsAccessor().IsPermitted(GetUser(), x => x.EditCompanyPayment(orgId));
+                        
+            if (canEditPayment)
+                return View("Lockout");
+            else
+                return View("LockoutNonadmin");
+        }
 
-			return View();
+		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
+		public ActionResult SetCard(int nil = 0,bool noTitleBar=false) {
+			_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
+            ViewBag.NoTitleBar = noTitleBar;
+            return View();
 		}
 
-		[Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
 		public ActionResult SetACH() {
 			_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
 
@@ -425,7 +436,23 @@ namespace RadialReview.Controllers {
 			return fireTime;
 		}
 
-		[Access(AccessLevel.UserOrganization)]
+
+        [Access(AccessLevel.Radial)]
+        public JsonResult LockoutOrganization(long id,bool lockout=true) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var org = s.Get<OrganizationModel>(id);
+                    org.Lockout = lockout ? LockoutType.Payment : LockoutType.NoLockout;
+                    org.DeleteTime = lockout ? (DateTime?)DateTime.UtcNow:null;
+                    s.Update(org);
+                    tx.Commit();
+                    s.Flush();
+                    return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
 		[HttpPost]
 		public async Task<ActionResult> SetCard(bool submit) {
 			await PaymentAccessor.SetCard(
@@ -452,7 +479,7 @@ namespace RadialReview.Controllers {
 			return RedirectToAction("Advanced", "Manage");
 		}
 
-		[Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
 		[HttpPost]
 		public async Task<ActionResult> SetACH(bool submit) {
 			await PaymentAccessor.SetACH(

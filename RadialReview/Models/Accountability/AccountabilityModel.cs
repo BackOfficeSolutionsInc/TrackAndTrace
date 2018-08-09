@@ -84,7 +84,7 @@ namespace RadialReview.Models.Accountability {
 				Map(x => x.Ordering);
 				Map(x => x.OrganizationId);
 				Map(x => x.AccountabilityChartId);
-				Map(x => x.UserId).Column("UserId").Index("idx__AccountabilityNode_UserId");
+				Map(x => x.UserId).Column("UserId").Index("idx__AccountabilityNode_UserId").Length(20);
 				References(x => x.User).Column("UserId").LazyLoad().ReadOnly();
 				Map(x => x.AccountabilityRolesGroupId).Column("RolesGroupId");
 				References(x => x.AccountabilityRolesGroup).Column("RolesGroupId").LazyLoad().ReadOnly();

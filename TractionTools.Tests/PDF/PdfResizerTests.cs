@@ -15,6 +15,7 @@ using static RadialReview.Accessors.PdfAccessor;
 using System.Threading.Tasks;
 using RadialReview.Models.Angular.Rocks;
 using System.Diagnostics;
+using RadialReview.Utilities.Pdf;
 
 namespace TractionTools.Tests.PDF {
 	[TestClass]
@@ -399,7 +400,9 @@ namespace TractionTools.Tests.PDF {
 			var vars = new RangedVariables();
 			vars.Add("Space", Unit.FromInch(.2), Unit.FromInch(.0125), Unit.FromInch(6));
 
-			var result = LayoutOptimizer.Optimize(layoutGen, allHints, vars);
+
+            var timeout = new TimeoutCheck(TimeSpan.FromSeconds(5));
+			var result = LayoutOptimizer.Optimize(layoutGen, allHints, vars, timeout);
 
 			var doc = new Document();
 			doc.DefaultPageSetup.PageWidth = Unit.FromInch(11);

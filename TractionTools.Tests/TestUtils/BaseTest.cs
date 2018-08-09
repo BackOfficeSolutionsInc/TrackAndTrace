@@ -284,8 +284,9 @@ namespace TractionTools.Tests.TestUtils {
 			//RemoveIsTest();
 			using (var s = HibernateSession.GetCurrentSession(singleSession)) {
 				using (var tx = s.BeginTransaction()) {
-					if (s.Connection.ConnectionString != "Data Source=|DataDirectory|\\_testdb.db" && s.Connection.ConnectionString != "FullUri=file:memorydb.db?mode=memory&cache=shared")
-						throw new Exception("ConnectionString must be 'Data Source=|DataDirectory|\\_testdb.db' or 'FullUri=file:memorydb.db?mode=memory&cache=shared'");
+					if (s.Connection.ConnectionString != "Data Source=|DataDirectory|\\_testdb.db" && s.Connection.ConnectionString != "FullUri=file:memorydb.db?mode=memory&cache=shared;PRAGMA journal_mode=WAL;" && s.Connection.ConnectionString!= "server=localhost;port=3306;database=radial-test;user id=root;sslmode=None")
+
+                        throw new Exception("ConnectionString must be 'Data Source=|DataDirectory|\\_testdb.db' or 'FullUri=file:memorydb.db?mode=memory&cache=shared' or 'Server=localhost; Port=3306; Database=radial-test; Uid=root; Pwd=; SslMode=none;'");
 
 					sFunc(s);
 					if (commit) {

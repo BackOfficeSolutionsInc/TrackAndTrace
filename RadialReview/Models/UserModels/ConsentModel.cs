@@ -20,7 +20,7 @@ namespace RadialReview.Models.UserModels {
 			public Map() {
 				Id(x => x.Id);
 				Map(x => x.CreateTime);
-				Map(x => x.UserId).Index("idx__ConsentModel_UserId");
+				Map(x => x.UserId).Index("idx__ConsentModel_UserId").Length(256);
 				Map(x => x.ConsentTime);
 				Map(x => x.DenyTime);
 			}

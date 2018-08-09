@@ -188,6 +188,7 @@
     <Compile Include="Crosscutting\Hooks\Interfaces\IPositionHooks.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IQuarterlyConversationHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IRecurrenceSettings.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\UnlockOnCard.cs" />
     <Compile Include="Crosscutting\Hooks\QuarterlyConversation\QuarterlyConversationCreationNotifications.cs" />
     <Compile Include="Crosscutting\Hooks\Realtime\Position\RealTime_Positions.cs" />
     <Compile Include="Crosscutting\Schedulers\Scheduler.cs" />
@@ -198,6 +199,7 @@
     </Compile>
     <Compile Include="Crosscutting\Schedulers\TodoEmailsScheduler.cs" />
     <Compile Include="Exceptions\AdminSetRoleException.cs" />
+    <Compile Include="Exceptions\RedirectToActionException.cs" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnaylzerGenerators.cs" />
@@ -414,6 +416,8 @@
     <Compile Include="Utilities\DataTypes\LazyCollection.cs" />
     <Compile Include="Utilities\DatePointAnalyzerUtility.cs" />
     <Compile Include="Utilities\DivisorUtility.cs" />
+    <Compile Include="Utilities\LockoutUtility.cs" />
+    <Compile Include="Utilities\Pdf\BreakoutDuration.cs" />
     <Compile Include="Utilities\Pdf\DocumentMerger.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
@@ -989,6 +993,7 @@
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PaymentSpringUtil.cs" />
     <Compile Include="Utilities\Pdf\LayoutOptimizer.cs" />
+    <Compile Include="Utilities\Pdf\LayoutTimeoutException.cs" />
     <Compile Include="Utilities\Pdf\LayoutTrialResult.cs" />
     <Compile Include="Utilities\Pdf\MultiPageDocument.cs" />
     <Compile Include="Utilities\Pdf\PdfDocumentAndStats.cs" />
@@ -1906,6 +1911,8 @@
     <Content Include="Views\Admin\AccountsAtRisk.cshtml" />
     <Content Include="Views\Admin\Variables.cshtml" />
     <Content Include="Views\Admin\Errors.cshtml" />
+    <Content Include="Views\Payment\Lockout.cshtml" />
+    <Content Include="Views\Payment\LockoutNonadmin.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -2813,6 +2820,18 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptMapRoot>~\Scripts\</TypeScriptMapRoot>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptSourceRoot />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

@@ -387,6 +387,9 @@
     <Compile Include="TestUtils\BaseApiTest.cs" />
     <Compile Include="TestUtils\BaseCoreProcessTest.cs" />
     <Compile Include="TestUtils\MockSession.cs" />
+    <Compile Include="Times\TimeZoneInterop.cs" />
+    <Compile Include="Times\TimeZoneTests.cs" />
+    <Compile Include="Upload\UploadScorecard.cs" />
     <Compile Include="Utilities\CompareUtil.cs" />
     <Compile Include="Utilities\Credentials.cs" />
     <Compile Include="Utilities\EventUtilTests.cs" />

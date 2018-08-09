@@ -280,7 +280,8 @@ namespace RadialReview.Controllers
 				CreateRectPage(1, 3, 1, 3, 1),
 				CreateRectPage(2, 2, 1, 2, 1)
 			};
-			var layout = MultipageLayoutOptimizer.GetBestLayout(docs,new MultiPageDocument.Settings(new XSize(8.5, 11)));
+            var timeout = TimeSpan.FromSeconds(6);
+			var layout = MultipageLayoutOptimizer.GetBestLayout(docs,new MultiPageDocument.Settings(new XSize(8.5, 11)), timeout);
 			return Json(layout, JsonRequestBehavior.AllowGet);
 		}
 

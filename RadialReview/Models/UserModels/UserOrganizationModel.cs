@@ -72,13 +72,21 @@ namespace RadialReview.Models {
 		public virtual int? _ClientOffset { get; set; }
 		protected virtual TimeData _timeData { get; set; }
 
+        public class PermissionsOverrides {
+            public AdminShortCircuit Admin { get; set; }
+            public bool IgnorePaymentLockout { get; set; }
+            public PermissionsOverrides() {
+                Admin = new AdminShortCircuit();
+            }
+
+        }
 		public class AdminShortCircuit{
 			public bool IsMocking { get; internal set; }
 			public bool IsRadialAdmin { get; set; }
 			public string ActualUserId { get; set; }
 			public bool AllowAdminWithoutAudit { get; set; }
 		}
-		public virtual AdminShortCircuit _AdminShortCircuit { get; set; }
+		public virtual PermissionsOverrides _PermissionsOverrides { get; set; }
 		public virtual bool _IsRadialAdmin { get; set; }
 		[Obsolete("For testing only")]
 		public virtual bool _IsTestAdmin { get; set; }
@@ -488,12 +496,7 @@ namespace RadialReview.Models {
 		public virtual int GetTimezoneOffset() {
 			return _ClientOffset ?? GetOrganizationSettings().GetTimezoneOffset();
 		}
-
-		internal class PermissionsShortCircuit : AdminShortCircuit {
-			public string ActualUserId { get; set; }
-			public bool IsMocking { get; set; }
-			public bool IsRadialAdmin { get; set; }
-		}
+        
 	}
 
 	public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel> {

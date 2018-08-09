@@ -66,6 +66,11 @@ namespace RadialReview.Models {
 		Other = 7,
 	}
 
+    public enum LockoutType {
+        NoLockout=0,
+        Payment
+    }
+
 	public class OrgCreationData : ILongIdentifiable {
 		public virtual long Id { get; set; }
 
@@ -248,8 +253,8 @@ namespace RadialReview.Models {
 					Map(x => x.Branding).CustomType<BrandingType>();
 					Map(x => x.ScorecardPeriod).CustomType<ScorecardPeriod>();
 					Map(x => x.StartOfYearMonth).CustomType<Month>();
-					Map(x => x.StartOfYearOffset).CustomType<DateOffset>();
-					Map(x => x.ImageGuid);
+                    Map(x => x.StartOfYearOffset).CustomType<DateOffset>();
+                    Map(x => x.ImageGuid);
 					Component(x => x._PrimaryColor).ColumnPrefix("PrimaryColor_");
 					Component(x => x._TextColor).ColumnPrefix("TextColor_");
 				}
@@ -377,7 +382,9 @@ namespace RadialReview.Models {
 			}
 		}
 
-		public virtual AccountType AccountType { get; set; }
+        public virtual LockoutType Lockout { get; set; }
+
+        public virtual AccountType AccountType { get; set; }
 		[JsonIgnore]
 		public virtual IList<UserOrganizationModel> Members { get; set; }
 		[JsonIgnore]
@@ -430,9 +437,10 @@ namespace RadialReview.Models {
 			ManagersCanEdit = false;
 			_Settings = new OrganizationSettings();
 			AccountType = AccountType.Demo;
+            Lockout = LockoutType.NoLockout;
 
-			//Lookup = new OrganizationLookup();
-		}
+            //Lookup = new OrganizationLookup();
+        }
 
 		public virtual List<IOrigin> OwnsOrigins() {
 			var owns = new List<IOrigin>();
@@ -478,7 +486,7 @@ namespace RadialReview.Models {
 				Map(x => x.AccountabilityChartId);
 
 				Map(x => x.PrimaryContactUserId);
-
+                Map(x => x.Lockout).CustomType<LockoutType>();
 				//References(x => x.Lookup).LazyLoad().Cascade.SaveUpdate();
 
 				//Map(x => x.ImageUrl);

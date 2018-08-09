@@ -100,6 +100,12 @@ namespace RadialReview.Accessors {
 			return upload;
 		}
 
+        public static string MockUpload(string file) {
+            var guid = "noaws_" + Guid.NewGuid();
+            Backup[guid] = file;
+            return guid;
+        }
+
 		private static Dictionary<string, string> Backup = new Dictionary<string, string>();
 		public async static Task<UploadInfo> UploadAndParse(UserOrganizationModel caller, UploadType type, HttpPostedFileBase file, ForModel forModel) {
 			if (file != null && file.ContentLength > 0) {

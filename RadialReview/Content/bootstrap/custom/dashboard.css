@@ -1242,7 +1242,7 @@ body.resizing .notes-tile:after,
   font-size: 12px;
 }
 .dashboard .scorecard table .goal-column.value {
-  width: inherit;
+  /*width: inherit;*/
   min-width: 56px;
   max-width: 150px;
 }
@@ -1250,6 +1250,10 @@ body.resizing .notes-tile:after,
   padding-right: 0px !important;
   margin-right: 0px !important;
   margin-left: 0px;
+}
+.dashboard .scorecard table .elastic-input {
+  min-width: 30px;
+  max-width: 300px;
 }
 .dashboard .scorecard table .cumulative-column {
   text-align: center;

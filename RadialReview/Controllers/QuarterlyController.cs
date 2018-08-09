@@ -179,11 +179,15 @@ namespace RadialReview.Controllers {
 				anyPages = true;
 			}
 			if (pa) {
-				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout5");
-				var peopleAnalyzer = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(GetUser(), GetUser().Id, id);
-				var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(GetUser(), doc, peopleAnalyzer, settings, DateTime.MaxValue);
-				merger.AddDoc(renderer);
-				anyPages = true;
+                try {
+                    var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout5");
+                    var peopleAnalyzer = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(GetUser(), GetUser().Id, id);
+                    var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(GetUser(), doc, peopleAnalyzer, settings, DateTime.MaxValue);
+                    merger.AddDoc(renderer);
+                    anyPages = true;
+                }catch(Exception e) {
+                    //eat it..
+                }
 			}
 
 

@@ -61,7 +61,8 @@
 				<th class="alignCenter">UserId</th>
 				<th>Name</th>
 				<th>Email</th>
-				<th>Login</th>
+                <th>Login</th>
+                <th>Admin</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -89,6 +90,7 @@
 					<td><a href="/Manage/UserDetails/@m.UserId">@m.Name</a></td>
 					<td>@m.Email</td>
 					<td class="alignCenter"><a href="/Account/SetRole/@(m.UserId)?ReturnUrl=%2FDashboard">login</a></td>
+                    <td>@(m.IsAdmin?"Y":"")</td>
 				</tr>}
 		</tbody>
 	</table>
