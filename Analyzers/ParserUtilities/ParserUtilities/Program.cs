@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PipelineAnalyzer {
-	class HappyFoxParser {
+namespace ParserUtilities {
+	class Program {
+		static void Main(string[] args) {
+		}
 	}
 }
