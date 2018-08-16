@@ -78,7 +78,7 @@
                                 <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{::rock.Id}}" type="text" value="{{rock.DueDate | date:dateFormat}}" n ng-model-options="{debounce: 400}" />
                             </td>
                             <td md-cell class="company-rock-column checkbox-column" style="min-width: 15px;">
-                                <span class="vto-text-hidden">{{rock.VtoRock?'V/TO':''}}</span>
+                                <span class="vto-status-inline">{{rock.VtoRock?'V/TO':''}}</span>
                                 
                                     <md-checkbox aria-label="Show on V/TO" ng-model="rock.VtoRock" class="md-align-top-left vto-hidden" ng-change="functions.sendUpdate(rock)" title="Show on V/TO"></md-checkbox>
                             </td>
