@@ -106,7 +106,11 @@ namespace RadialReview.Controllers {
 			AngularVTO vtoModel = VtoAccessor.GetAngularVTO(GetUser(), angRecur.VtoId.Value);
 
 
-			if (rocks && angRecur.Rocks.Any()) {
+			if (rocks && (angRecur.Rocks.Any() || !string.IsNullOrEmpty(vtoModel.QuarterlyRocks.Measurables)  
+				|| !string.IsNullOrEmpty(vtoModel.QuarterlyRocks.Profit)
+				|| !string.IsNullOrEmpty(vtoModel.QuarterlyRocks.Revenue)
+				|| !string.IsNullOrEmpty(vtoModel.QuarterlyRocks.RocksTitle)
+				)) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout6");
 				PdfAccessor.AddRocks(GetUser(), doc, quarterly, angRecur, vtoModel, addPageNumber: false);
 				merger.AddDoc(doc);
