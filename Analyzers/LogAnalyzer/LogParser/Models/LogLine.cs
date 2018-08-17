@@ -23,30 +23,36 @@ namespace LogParser.Models {
 		public string scWin32Status { get; private set; }
 		public string timeTaken { get; private set; }
 
+		public bool IsFlagged { get; set; }
+		public int GroupNumber { get; set; }
 		public DateTime StartTime { get; private set; }
 		public DateTime EndTime { get; private set; }
 		public TimeSpan Duration { get; private set; }
 
 
 		public ILogLine ConstructFromLine(string line) {
-			var parts = line.Split(' ');
+			try {
+				var parts = line.Split(' ');
 
-			LogLine ll = null;
-			switch (parts.Length) {
-				case 14:
-					ll = ParseCloudwatchLine(parts);
-					break;
-				case 15:
-					ll = ParseLocalLine(parts);
-					break;
-				default:
-					return null;
+				LogLine ll = null;
+				switch (parts.Length) {
+					case 14:
+						ll = ParseCloudwatchLine(parts);
+						break;
+					case 15:
+						ll = ParseLocalLine(parts);
+						break;
+					default:
+						return null;
+				}
+
+				ll.EndTime = DateTime.Parse(ll.date + " " + ll.time);
+				ll.StartTime = ll.EndTime.AddMilliseconds(-int.Parse(ll.timeTaken));
+				ll.Duration = ll.EndTime - ll.StartTime;
+				return ll;
+			} catch (Exception) {
+				return null;
 			}
-
-			ll.EndTime = DateTime.Parse(ll.date + " " + ll.time);
-			ll.StartTime = ll.EndTime.AddMilliseconds(-int.Parse(ll.timeTaken));
-			ll.Duration = ll.EndTime - ll.StartTime;
-			return ll;
 		}
 
 		private static LogLine ParseLocalLine(string[] parts) {
@@ -90,7 +96,7 @@ namespace LogParser.Models {
 			};
 		}
 
-		public string[] ToTitle() {
+		public string[] GetHeaders() {
 			var items = new[]{
 					"date"          ,
 					"time"          ,
@@ -118,7 +124,15 @@ namespace LogParser.Models {
 
 		}
 
-		public string[] ToLine(DateTime startRange) {
+		public bool AnyFieldContains(string lookup) {
+			lookup = lookup.ToLower();
+			foreach (var f in GetLine(DateTime.MinValue))
+				if (f.ToLower().Contains(lookup))
+					return true;
+			return false;
+		}
+
+		public string[] GetLine(DateTime startRange) {
 			var items = new[]{
 					date          ,
 					time          ,

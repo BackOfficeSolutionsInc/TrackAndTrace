@@ -25,7 +25,7 @@ namespace RadialReview.Accessors {
 					
 					var message = s.GetSettingOrDefault(Variable.Names.CONSENT_MESSAGE,
 						"To create your experience, we record information that you or your organization has supplied. This information includes your name, profile picture, phone number, and corporate email address. " +
-						"<br/>We use this information for your login and to send you meeting summaries, to-dos, feature updates, best practices, and other information relavent to your use of Traction Tools (you can shut these off). " +
+						"<br/>We use this information for your login and to send you meeting summaries, to-dos, feature updates, best practices, and other information relevant to your use of Traction® Tools (you can shut these off). " +
 						"<br/>Traction Tools uses cookies to store your login. We need to collect your billing address. We log all IP addresses to protect the service from non-user actors. " +
 						"<br/>It should go without saying: We will never give away or sell your data. Your data is yours. " +
 						"<br/><br/>Please see our <a href='/privacy'>Privacy Policy</a> and <a href='/tos'>Terms of Service </a> for a complete list of your data privacy rights." +

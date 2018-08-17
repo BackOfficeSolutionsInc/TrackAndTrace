@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ParserUtilities.Utilities.OutputFile {
+namespace ParserUtilities.Utilities.CacheFile {
 	public class FileUtility {
 
 		public static string Filename(string defaultDirectory, string fileName) {

@@ -5,6 +5,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using LogParser.Models;
 using ParserUtilities;
+using ParserUtilities.Utilities.CacheFile;
 using ParserUtilities.Utilities.LogFile;
 using ParserUtilities.Utilities.OutputFile;
 using System;
@@ -29,34 +30,40 @@ namespace LogParser.Downloaders {
 			public string LogStreamName { get; set; }
 			public string LogGroupName { get; set; }
 		}
-		public static LogFile DownloadAccessLogsAround(DateTime time, DateTimeKind kind, double rangeMinutes, bool ignoreRangeWarning = false) {
+		public static LogFile<LogLine> DownloadAccessLogsAround(DateTime time, DateTimeKind kind, double rangeMinutes, bool ignoreRangeWarning = false) {
 			return DownloadAccessLogsAround(time, kind, TimeSpan.FromMinutes(rangeMinutes), ignoreRangeWarning);
 		}
 
-		public static LogFile DownloadAccessLogsAround(DateTime time, DateTimeKind kind, TimeSpan? range = null, bool ignoreRangeWarning = false) {
+		public static LogFile<LogLine> DownloadAccessLogsAround(DateTime time, DateTimeKind kind, TimeSpan? range = null, bool ignoreRangeWarning = false) {
 			var r = range ?? TimeSpan.FromMinutes(30);
-			r = new TimeSpan(r.Ticks / 2);
-			return Download(TTAccessLogs, time - r, time + r, kind, ignoreRangeWarning);
+			
+			var rr = TimeRange.Around(r, time, kind);
+			return Download(TTAccessLogs,  rr, ignoreRangeWarning);
 		}
 
-		public static LogFile DownloadAccessLogs(DateTime startTime, DateTime endTime, DateTimeKind kind, bool ignoreRangeWarning = false) {
-			return Download(TTAccessLogs, startTime, endTime, kind, ignoreRangeWarning);
+		public static LogFile<LogLine> DownloadAccessLogs(TimeRange range, bool ignoreRangeWarning = false) {
+			return Download(TTAccessLogs, range, ignoreRangeWarning);
 		}
-		public static LogFile DownloadAccessLogs(DateTime startTime, TimeSpan duration, DateTimeKind kind, bool ignoreRangeWarning = false) {
-			return Download(TTAccessLogs, startTime, startTime + duration, kind, ignoreRangeWarning);
-		}
-		public static LogFile DownloadAccessLogs(TimeSpan duration, DateTime endTime, DateTimeKind kind, bool ignoreRangeWarning = false) {
-			return Download(TTAccessLogs, endTime - duration, endTime, kind, ignoreRangeWarning);
-		}
-		public static LogFile DownloadAccessLogs(double durationMinutes, DateTime endTime, DateTimeKind kind, bool ignoreRangeWarning = false) {
-			return Download(TTAccessLogs, endTime - TimeSpan.FromMinutes(durationMinutes), endTime, kind, ignoreRangeWarning);
-		}
-		public static LogFile DownloadAccessLogs(DateTime startTime, double durationMinutes, DateTimeKind kind, bool ignoreRangeWarning = false) {
-			return Download(TTAccessLogs, startTime, startTime + TimeSpan.FromMinutes(durationMinutes), kind, ignoreRangeWarning);
-		}
+		//}
+		//public static LogFile<LogLine> DownloadAccessLogs(DateTime startTime, TimeSpan duration, DateTimeKind kind, bool ignoreRangeWarning = false) {
+		//	return Download(TTAccessLogs, startTime, startTime + duration, kind, ignoreRangeWarning);
+		//}
+		//public static LogFile<LogLine> DownloadAccessLogs(TimeSpan duration, DateTime endTime, DateTimeKind kind, bool ignoreRangeWarning = false) {
+		//	return Download(TTAccessLogs, endTime - duration, endTime, kind, ignoreRangeWarning);
+		//}
+		//public static LogFile<LogLine> DownloadAccessLogs(double durationMinutes, DateTime endTime, DateTimeKind kind, bool ignoreRangeWarning = false) {
+		//	return Download(TTAccessLogs, endTime - TimeSpan.FromMinutes(durationMinutes), endTime, kind, ignoreRangeWarning);
+		//}
+		//public static LogFile<LogLine> DownloadAccessLogs(DateTime startTime, double durationMinutes, DateTimeKind kind, bool ignoreRangeWarning = false) {
+		//	return Download(TTAccessLogs, startTime, startTime + TimeSpan.FromMinutes(durationMinutes), kind, ignoreRangeWarning);
+		//}
 
-		public static LogFile Download(LogStream stream, DateTime startTime, DateTime endTime, DateTimeKind kind, bool ignoreRangeWarning = false) {
+		public static LogFile<LogLine> Download(LogStream stream, TimeRange range, bool ignoreRangeWarning = false) {
 			var nowMs = DateTime.UtcNow.ToJsMs();
+			var startTime = range.Start;
+			var endTime = range.End;
+			var kind = range.Kind;
+
 			if (endTime.ToJsMs() == nowMs || startTime.ToJsMs() == nowMs) {
 				Log.Warn("Using UtcNow as input will disable caching",false);
 			}

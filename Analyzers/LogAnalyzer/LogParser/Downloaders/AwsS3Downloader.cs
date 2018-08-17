@@ -1,6 +1,7 @@
 ﻿using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
+using ParserUtilities.Utilities.CacheFile;
 using ParserUtilities.Utilities.OutputFile;
 using System;
 using System.Collections.Generic;

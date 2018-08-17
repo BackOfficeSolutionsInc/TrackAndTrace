@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ParserUtilities.Utilities.OutputFile;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,93 +8,169 @@ using System.Threading.Tasks;
 
 namespace ParserUtilities.Utilities.LogFile {
 
-	public delegate string ILogLineField(dynamic line);
-	public delegate DateTime ILogLineDateField(dynamic line);
+		public delegate string ILogLineField<LINE>(LINE line) where LINE : ILogLine;
+		public delegate DateTime ILogLineDateField<LINE>(LINE line) where LINE : ILogLine;
 
-	public class LogFile {
+	public class LogFile<LINE> where LINE : ILogLine {
 		public string Path { get; set; }
 		public DateTime ParseTime { get; set; }
 		public DateTime StartRange { get; set; }
 		public DateTime EndRange { get; set; }
 
-		protected Func<ILogLine, object> Ordering { get; set; }
-		protected List<ILogLine> Lines { get; set; }
-		protected List<IFilter> Filters { get; set; }
-		protected List<IFilter> RelativeRangeFilter { get; set; }
+		protected Func<LINE, object> Ordering { get; set; }
+		protected List<LINE> Lines { get; set; }
+		protected List<IFilter<LINE>> Filters { get; set; }
+		protected List<IFilter<LINE>> RelativeRangeFilter { get; set; }
+		protected Func<LINE, object> Grouping { get; set; }
+		protected int SkipLines { get; set; }
 
+		protected List<Func<LINE, bool>> Flags { get; set; }
 
-		public LogFile() {
-			Lines = new List<ILogLine>();
-			ParseTime = DateTime.UtcNow;
-			Filters = new List<IFilter>();
-			StartRange = DateTime.MaxValue;
-			EndRange = DateTime.MinValue;
-			RelativeRangeFilter = new List<IFilter>();
+		public LogFile<LINE> Clone() {
+			return new LogFile<LINE>() {
+				Path = Path,
+				ParseTime = ParseTime,
+				StartRange = StartRange,
+				EndRange = EndRange,
+				Ordering = Ordering,
+				Lines = Lines.ToList(),
+				Filters = Filters.ToList(),
+				RelativeRangeFilter	= RelativeRangeFilter.ToList(),
+				Flags = Flags.ToList(),
+				SkipLines = SkipLines,
+				Grouping = Grouping
+			};
 		}
 
-		public ILogLine AddLine(ILogLine line) {
+		public LogFile() {
+			Lines = new List<LINE>();
+			ParseTime = DateTime.UtcNow;
+			Filters = new List<IFilter<LINE>>();
+			StartRange = DateTime.MaxValue;
+			EndRange = DateTime.MinValue;
+			RelativeRangeFilter = new List<IFilter<LINE>>();
+			Flags = new List<Func<LINE, bool>>();
+		}
+
+		public LINE AddLine(LINE line) {
 			StartRange = new DateTime(Math.Min(line.StartTime.Ticks, StartRange.Ticks));
 			EndRange = new DateTime(Math.Max(line.EndTime.Ticks, EndRange.Ticks));
 			Lines.Add(line);
 			return line;
 		}
+		public void SetGrouping<T>(Func<LINE, T> groupBy) {
+			Grouping = x => groupBy(x);
+		}
 
-
-		public void SetOrdering<T>(Func<ILogLine, T> order) {
+		public void SetOrdering<T>(Func<LINE, T> order) {
 			Ordering = x=>order(x);
 		}
 						
-		public void AddFilters(params IFilter[] filters) {
+		public void AddFilters(params IFilter<LINE>[] filters) {
 			foreach (var filter in filters) {
 				TestFilterForConflits(filter);
 				Filters.Add(filter);
 			}
 		}
 
-		private void TestFilterForConflits(IFilter filter) {
+		private void TestFilterForConflits(IFilter<LINE> filter) {
 			var anyConfilts = Filters.Where(x => x.Conflit(filter));
 			if (anyConfilts.Any())
 				throw new Exception("This filter:\n\t" + filter.ToString() + "\nconflicts with the following filters:\n" + string.Join("\n", anyConfilts.Select(x => "\t" + x.ToString())));
 		}
 
-		internal void FilterExact(ILogLineField field, params string[] exclude) {
-			AddFilters(exclude.Select(x => new StringFilter(x, FilterType.Exclude, field, true)).ToArray());
+		public void Skip(int lines) {
+			SkipLines = lines;
 		}
 
-		public void Filter(ILogLineField field, params string[] exclude) {
-			AddFilters(exclude.Select(x=>new StringFilter(x, FilterType.Exclude, field)).ToArray());
+		public void Flag(Func<LINE, bool> condition) {
+			Flags.Add(condition);
 		}
-		public void Filter(Func<ILogLine, bool> predicate, FilterType type = FilterType.Exclude) {
-			AddFilters(new CustomFilter(predicate, type));
+
+		internal void FilterExact(ILogLineField<LINE> field, params string[] exclude) {
+			AddFilters(exclude.Select(x => new StringFilter<LINE>(x, FilterType.Exclude, field, true)).ToArray());
 		}
-		public void FilterRange(DateTime start, DateTime end, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
-			AddFilters(new DateRangeFilter(start, end, type, x => x.StartTime, x => x.EndTime));
+
+		public LogFile<LINE> Filter(ILogLineField<LINE> field, params string[] exclude) {
+			AddFilters(exclude.Select(x=>new StringFilter<LINE>(x, FilterType.Exclude, field)).ToArray());
+			return this;
+		}
+		public LogFile<LINE> Filter(Func<LINE, bool> predicate, FilterType type = FilterType.Exclude) {
+			AddFilters(new CustomFilter<LINE>(predicate, type));
+			return this;
+		}
+		public LogFile<LINE> FilterRange(DateTime start, DateTime end, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
+			AddFilters(new DateRangeFilter<LINE>(start, end, type, x => x.StartTime, x => x.EndTime));
+			return this;
 		}
 
 		[Obsolete("Must be just before save")]
-		public void FilterRelativeRange(double startMinutes, double? endMinutes=null, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
+		public LogFile<LINE> FilterRelativeRange(double startMinutes, double? endMinutes=null, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
 			FilterRelativeRange(TimeSpan.FromMinutes(startMinutes), TimeSpan.FromMinutes(endMinutes??1000000), type);
+			return this;
 		}
 		[Obsolete("Must be just before save")]
-		public void FilterRelativeRange(TimeSpan start, TimeSpan? end=null, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
+		public LogFile<LINE> FilterRelativeRange(TimeSpan start, TimeSpan? end=null, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
 			var first = GetFilteredLines().First();
 			var s = new DateTime(Math.Min(first.StartTime.Ticks, first.EndTime.Ticks));
 			var d = first.EndTime - first.StartTime;
-			var filter = new DateRangeFilter(s + start, s + d + (end ?? TimeSpan.FromMinutes(1000000)), type, x => x.StartTime, x => x.EndTime);
+			var filter = new DateRangeFilter<LINE>(s + start, s + d + (end ?? TimeSpan.FromMinutes(1000000)), type, x => x.StartTime, x => x.EndTime);
 			TestFilterForConflits(filter);
 			RelativeRangeFilter.Add(filter);
+			return this;
 		}
-		
 
+		public int Count() {
+			return GetFilteredLines().Count();
+		}
 
-		public IEnumerable<ILogLine> GetFilteredLines() {
+		public IEnumerable<LINE> GetFilteredLines() {
 			var f= Lines.Where(line => Filters.All(filter => filter.Include(line)));
 			if (Ordering != null)
 				f = f.OrderBy(Ordering);			
 
 			f = f.Where(line => RelativeRangeFilter.All(filter=>filter.Include(line)));
 
-			return f;
+
+			//Handle Grouping
+			if (Grouping != null) {
+				var i = 0;
+				var groups = f.GroupBy(Grouping);
+				f= groups.SelectMany(x => {
+					x.ToList().ForEach(y => { y.GroupNumber = i; });
+					i += 1;
+					return x.ToList();
+				});
+				var groupingsLookup = groups.ToDictionary(x => x.Key, x => x.ToList());
+				if (Ordering != null) {
+					f = f.OrderByDescending(x=>groupingsLookup[Grouping(x)].Count()).ThenBy(x=> groupingsLookup[Grouping(x)].First().StartTime).ThenBy(Grouping).ThenBy(Ordering);
+				} else {
+					f = f.OrderByDescending(x => groupingsLookup[Grouping(x)].Count()).ThenBy(x => groupingsLookup[Grouping(x)].First().StartTime).ThenBy(Grouping);
+				}
+
+				f = f.ToList();
+				var j = -1;
+				var prevGroup = -1;
+				foreach (var item in f) {
+					var ign = item.GroupNumber;
+					if (ign != prevGroup) {
+						j += 1;
+						prevGroup = item.GroupNumber;
+					}
+					item.GroupNumber = j;
+				}
+
+			}
+
+			foreach (var h in Flags) {
+				foreach (var line in f.ToList()) {
+					if (h(line)) {
+						line.IsFlagged = true;
+					}
+				}
+			}
+
+			return f.Skip(SkipLines);
 		}
 		public IEnumerable<string> ToStringLines(string separator) {
 			var f = GetFilteredLines();
@@ -102,10 +179,10 @@ namespace ParserUtilities.Utilities.LogFile {
 			var title ="";
 			if (first != null) {
 				date = first.StartTime;
-				title = string.Join(separator, first.ToTitle() );
+				title = string.Join(separator, first.GetHeaders() );
 			}
 			var lines = new List<string> { title };
-			lines.AddRange(f.Select(x => string.Join(separator, x.ToLine(date))));
+			lines.AddRange(f.Select(x => string.Join(separator, x.GetLine(date))));
 			return lines;
 		}
 		public void Save(string path, string record_separator) {
@@ -115,13 +192,26 @@ namespace ParserUtilities.Utilities.LogFile {
 				Log.Warn("No lines.",true);
 			}
 		}
-		//public void Save() {
-		//	Save(Config.GetBaseDirectory()+"log.txt");
-		//}
 
+		public PivotTable<LINE> ToPivotTable(ILogLineField<LINE> x, ILogLineField<LINE> y,Func<List<LINE>,string> cell) {
+			return new PivotTable<LINE>(this, x, y, cell);
+		}
+
+		public PreMatrix<LINE,XTYPE,YTYPE> ToMatrixBuilder<XTYPE,YTYPE>(Func<LINE, XTYPE> xs, Func<LINE, YTYPE> ys) {
+			return Matrix.Create(this, xs, ys);
+		}
+
+		/*public Matrix<XTYPE,YTYPE,LINE, RESULT> ToMatrix<XTYPE,YTYPE,RESULT>(Func<LINE, XTYPE> xs, Func<LINE, YTYPE> ys,Func<Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixInput, RESULT> cellSelector, Func<Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult, Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult, Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult> aggregator) {
+			return new Matrix<XTYPE, YTYPE, LINE, RESULT>(this, new XTYPE[0], new YTYPE[0], cellSelector, aggregator);
+		}*/
+		/*public Matrix<LINE, RESULT> ToMatrix<RESULT>(Func<MatrixInput<LINE>, RESULT> cellSelector, Func<Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult> aggregator, IEnumerable<string> xs, IEnumerable<string> ys) {
+			return new Matrix<LINE, RESULT>(this, xs.ToArray(), ys.ToArray(), cellSelector, aggregator);
+		}
+		public Matrix<LINE, RESULT> ToMatrix<RESULT>(Func<MatrixInput<LINE>, RESULT> cellSelector, Func<Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult> aggregator, IEnumerable<string> xs, ILogLineField<LINE> ys) {
+			return new Matrix<LINE, RESULT>(this, xs.ToArray(), ys, cellSelector, aggregator);
+		}
+		public Matrix<LINE, RESULT> ToMatrix<RESULT>(Func<MatrixInput<LINE>, RESULT> cellSelector, Func<Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult> aggregator, ILogLineField<LINE> xs, IEnumerable<string> ys) {
+			return new Matrix<LINE, RESULT>(this, xs, ys.ToArray(), cellSelector, aggregator);
+		}*/
 	}
-
-
-	
-
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ParserUtilities.Utilities.OutputFile {
+namespace ParserUtilities.Utilities.CacheFile {
 	public class FileCache {
 
 		private static bool ExistsInFileCache(string fileName) {
@@ -17,7 +17,8 @@ namespace ParserUtilities.Utilities.OutputFile {
 			var file = FileUtility.Filename(cacheDirectory/*Config.GetCacheDirectory()*/,fileName);
 			Log.Info("Getting file:" + file);
 			if (forceExecute || !ExistsInFileCache(file)) {
-				Log.Info("\tcache-miss\n\tGenerating");
+				Log.Info("\tcache-miss");
+				Log.Info("\tGenerating");
 				generator(file);
 				Log.Info("\t...generated.");
 			} else {

@@ -10,26 +10,26 @@ namespace ParserUtilities.Utilities.LogFile {
 		Exclude,
 		Include
 	}
-	public interface IFilter {
-		bool Include(ILogLine line);
-		bool Conflit(IFilter f);
+	public interface IFilter<LINE> where LINE : ILogLine {
+		bool Include(LINE line);
+		bool Conflit(IFilter<LINE> f);
 	}
-	public class RegexFilter : IFilter {
-		public RegexFilter(Regex filterRegex, FilterType type, ILogLineField field) {
+	public class RegexFilter<LINE> : IFilter<LINE> where LINE : ILogLine {
+		public RegexFilter(Regex filterRegex, FilterType type, ILogLineField<LINE> field) {
 			FilterRegex = filterRegex;
 			Type = type;
 			Field = field;
 		}
 
-		public ILogLineField Field { get; set; }
+		public ILogLineField<LINE> Field { get; set; }
 		public Regex FilterRegex { get; set; }
 		public FilterType Type { get; set; }
 
-		public bool Conflit(IFilter f) {
+		public bool Conflit(IFilter<LINE> f) {
 			return false;
 		}
 
-		public bool Include(ILogLine line) {
+		public bool Include(LINE line) {
 			var f = Field(line);
 
 			var match = FilterRegex.IsMatch(f);
@@ -44,20 +44,20 @@ namespace ParserUtilities.Utilities.LogFile {
 		}
 	}
 
-	public class CustomFilter : IFilter {
-		public CustomFilter(Func<ILogLine, bool> predicate, FilterType type) {
+	public class CustomFilter<LINE> : IFilter<LINE> where LINE : ILogLine {
+		public CustomFilter(Func<LINE, bool> predicate, FilterType type) {
 			Predicate = predicate;
 			Type = type;
 		}
 
 		public FilterType Type { get; set; }
-		public Func<ILogLine, bool> Predicate { get; set; }
+		public Func<LINE, bool> Predicate { get; set; }
 
-		public bool Conflit(IFilter f) {
+		public bool Conflit(IFilter<LINE> f) {
 			return false;
 		}
 
-		public bool Include(ILogLine line) {
+		public bool Include(LINE line) {
 			if (Type == FilterType.Include)
 				return Predicate(line);
 			else if (Type == FilterType.Exclude)
@@ -67,8 +67,8 @@ namespace ParserUtilities.Utilities.LogFile {
 	}
 
 
-	public class StringFilter : IFilter {
-		public StringFilter(string substring, FilterType type, ILogLineField field, bool exact = false) {
+	public class StringFilter<LINE> : IFilter<LINE> where LINE : ILogLine {
+		public StringFilter(string substring, FilterType type, ILogLineField<LINE> field, bool exact = false) {
 			Substring = substring;
 			if (!exact)
 				Substring = Substring.ToLower();
@@ -77,16 +77,16 @@ namespace ParserUtilities.Utilities.LogFile {
 			Exact = exact;
 		}
 
-		public static StringFilter Exclude(string substring, ILogLineField field) {
-			return new StringFilter(substring, FilterType.Exclude, field);
+		public static StringFilter<LINE> Exclude(string substring, ILogLineField<LINE> field) {
+			return new StringFilter<LINE>(substring, FilterType.Exclude, field);
 		}
 
-		public ILogLineField Field { get; set; }
+		public ILogLineField<LINE> Field { get; set; }
 		public FilterType Type { get; set; }
 		public string Substring { get; set; }
 		public bool Exact { get; set; }
 
-		public bool Include(ILogLine line) {
+		public bool Include(LINE line) {
 			if (Substring == "")
 				return true;
 
@@ -107,7 +107,7 @@ namespace ParserUtilities.Utilities.LogFile {
 			}
 		}
 
-		public bool Conflit(IFilter f) {
+		public bool Conflit(IFilter<LINE> f) {
 			return false;
 		}
 
@@ -117,7 +117,7 @@ namespace ParserUtilities.Utilities.LogFile {
 		Before,
 		After
 	}
-	public class DateFilter : IFilter {
+	public class DateFilter<LINE> : IFilter<LINE> where LINE : ILogLine  {
 
 		private DateFilterType SwapIf(DateFilterType type, bool shouldSwap) {
 			if (shouldSwap) {
@@ -129,25 +129,25 @@ namespace ParserUtilities.Utilities.LogFile {
 			}
 		}
 
-		public DateFilter(DateTime time, DateFilterType when, FilterType type, ILogLineDateField field) {
+		public DateFilter(DateTime time, DateFilterType when, FilterType type, ILogLineDateField<LINE> field) {
 			FilterOn = time;
 			IncludeWhen = SwapIf(when, type == FilterType.Exclude);
 			Field = field;
 		}
 
-		public static DateFilter ExcludeIfBefore(DateTime time, ILogLineDateField field) {
-			return new DateFilter(time, DateFilterType.Before, FilterType.Exclude, field);
+		public static DateFilter<LINE> ExcludeIfBefore(DateTime time, ILogLineDateField<LINE> field) {
+			return new DateFilter<LINE>(time, DateFilterType.Before, FilterType.Exclude, field);
 		}
-		public static DateFilter ExcludeIfAfter(DateTime time, ILogLineDateField field) {
-			return new DateFilter(time, DateFilterType.After, FilterType.Exclude, field);
+		public static DateFilter<LINE> ExcludeIfAfter(DateTime time, ILogLineDateField<LINE> field) {
+			return new DateFilter<LINE>(time, DateFilterType.After, FilterType.Exclude, field);
 		}
 
-		public ILogLineDateField Field { get; set; }
+		public ILogLineDateField<LINE> Field { get; set; }
 		public DateFilterType IncludeWhen { get; set; }
 
 		public DateTime FilterOn { get; set; }
 
-		public bool Include(ILogLine line) {
+		public bool Include(LINE line) {
 			var f = Field(line);
 			var isBefore = f < FilterOn;
 			if (IncludeWhen == DateFilterType.Before)
@@ -157,9 +157,9 @@ namespace ParserUtilities.Utilities.LogFile {
 			throw new ArgumentOutOfRangeException("" + IncludeWhen);
 		}
 
-		public bool Conflit(IFilter f) {
-			if (f is DateFilter) {
-				var other = f as DateFilter;
+		public bool Conflit(IFilter<LINE> f) {
+			if (f is DateFilter<LINE>) {
+				var other = f as DateFilter<LINE>;
 				if (IncludeWhen == DateFilterType.Before && other.IncludeWhen == DateFilterType.After) {
 					if (this.FilterOn <= other.FilterOn)
 						throw new Exception("Date filters eliminate all items");
@@ -174,33 +174,37 @@ namespace ParserUtilities.Utilities.LogFile {
 
 	public enum DateRangeFilterType {
 		PartlyInRange,
-		CompletelyInRange
+		CompletelyInRange,
+		CompletelyInLowerRange
 	}
 
-	public class DateRangeFilter : IFilter {
+	public class DateRangeFilter<LINE> : IFilter<LINE> where LINE : ILogLine {
 
-		public DateRangeFilter(DateTime startRange, DateTime endRange, DateRangeFilterType when, ILogLineDateField startTimeField, ILogLineDateField endTimeField) {
+		public DateRangeFilter(DateTime startRange, DateTime endRange, DateRangeFilterType when, ILogLineDateField<LINE> startTimeField, ILogLineDateField<LINE> endTimeField) {
 			var beforeSelector = when == DateRangeFilterType.PartlyInRange ? startTimeField : endTimeField;
 			var afterSelector = when == DateRangeFilterType.PartlyInRange ? endTimeField : startTimeField;
 			if (when == DateRangeFilterType.PartlyInRange) {
-				Before = DateFilter.ExcludeIfAfter(endRange, startTimeField);
-				After = DateFilter.ExcludeIfBefore(startRange, endTimeField);
+				Before = DateFilter<LINE>.ExcludeIfAfter(endRange, startTimeField);
+				After = DateFilter<LINE>.ExcludeIfBefore(startRange, endTimeField);
 			} else if (when == DateRangeFilterType.CompletelyInRange) {
-				Before = DateFilter.ExcludeIfAfter(endRange, endTimeField);
-				After = DateFilter.ExcludeIfBefore(startRange, startTimeField);
-			} else {
+				Before = DateFilter<LINE>.ExcludeIfAfter(endRange, endTimeField);
+				After = DateFilter<LINE>.ExcludeIfBefore(startRange, startTimeField);
+			} else if (when == DateRangeFilterType.CompletelyInLowerRange) {
+				Before = DateFilter<LINE>.ExcludeIfAfter(endRange, startTimeField);
+				After = DateFilter<LINE>.ExcludeIfBefore(startRange, startTimeField);
+			}else {
 				throw new ArgumentOutOfRangeException("" + when);
 			}
 		}
 
-		private DateFilter Before { get; set; }
-		private DateFilter After { get; set; }
+		private DateFilter<LINE> Before { get; set; }
+		private DateFilter<LINE> After { get; set; }
 
-		public bool Conflit(IFilter f) {
+		public bool Conflit(IFilter<LINE> f) {
 			return Before.Conflit(f) || After.Conflit(f);
 		}
 
-		public bool Include(ILogLine line) {
+		public bool Include(LINE line) {
 			return Before.Include(line) && After.Include(line);
 		}
 	}

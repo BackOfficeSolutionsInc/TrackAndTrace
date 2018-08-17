@@ -99,7 +99,10 @@
     <Compile Include="Downloaders\AwsChartDownloader.cs" />
     <Compile Include="Downloaders\AwsLogFileDownloader.cs" />
     <Compile Include="Downloaders\AwsS3Downloader.cs" />
+    <Compile Include="Extensions\LogFileExtensions.cs" />
+    <Compile Include="Models\TimeRange.cs" />
     <Compile Include="Models\LogLine.cs" />
+    <Compile Include="Output\DurationChart.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Visualizer\ChartDebugger.cs" />

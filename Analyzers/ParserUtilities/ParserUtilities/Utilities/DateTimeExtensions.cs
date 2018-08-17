@@ -9,8 +9,9 @@ namespace ParserUtilities {
 		public static long ToJsMs(this DateTime time) {
 			return (long)(time - new DateTime(1970, 01, 01)).TotalMilliseconds;
 		}
-		public static DateTime ToDateTime(this long jsMsUtc) {
-			return new DateTime(1970, 01, 01).AddMilliseconds(jsMsUtc);
+		public static DateTime ToDateTime(this long jsMsUtc, DateTimeKind kind = DateTimeKind.Unspecified) {
+			return new DateTime(1970, 01, 01,0,0,0,kind).AddMilliseconds(jsMsUtc);
+			
 		}
 	}
 }
