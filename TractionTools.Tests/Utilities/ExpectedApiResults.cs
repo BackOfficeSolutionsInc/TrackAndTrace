@@ -36,7 +36,7 @@ namespace TractionTools.Tests.Utilities {
 	}
 
 	public class ExpectedApiResults {
-		
+				
 		public class XmlApiResult {
 			[XmlAttribute]
 			public string Name { get; set; }
