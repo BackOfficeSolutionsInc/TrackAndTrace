@@ -54,7 +54,7 @@
 @using (Html.BeginScripts()) {
 	<script>
 		@{try {
-			@:console.error("@ViewBag.Message");console.error("@Model.NotNull(x => x.Message)");console.error("@Model.NotNull(x => x.StackTrace.Replace("\\", "\\\\")).Replace("\r\n", "\\n")");
+			@:console.error("@ViewBag.Message");console.error("@(Model.NotNull(x => x.Message).Replace("\\", "\\\\").Replace("\r\n", "\\n"))");console.error("@Model.NotNull(x => x.StackTrace.Replace("\\", "\\\\")).Replace("\r\n", "\\n")");
 		} catch (Exception e) {
 			@:console.warn(e);
 		}}
