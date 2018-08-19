@@ -18,8 +18,8 @@ namespace RadialReview.Utilities.Constants {
             get {
                 var s=GetSecret("prod/db/radial-enc");
                 return new DatabaseCredentials {
-                    Username = s.GetJsonValue("Username"),
-                    Password = s.GetJsonValue("Password")
+                    Username = s.GetJsonValue("username"),
+                    Password = s.GetJsonValue("password")
                 };
             }
         }
@@ -43,14 +43,14 @@ namespace RadialReview.Utilities.Constants {
             public string SecretPlainText { get; set; }
 
             public string GetJsonValue(string key) {
-                dynamic o =JsonConvert.DeserializeObject(key);
+                dynamic o =JsonConvert.DeserializeObject(SecretPlainText);
                 return o[key];
             }
 
         }
 
 
-        private static Key GetSecret(string secretName) {
+        public static Key GetSecret(string secretName) {
             return KeysLookup[secretName];
         }
 
