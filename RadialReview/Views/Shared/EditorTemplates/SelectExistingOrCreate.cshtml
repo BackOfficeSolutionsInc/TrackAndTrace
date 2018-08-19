@@ -166,9 +166,12 @@
 		top: -18px;
 		right: 0px;
 	}
-
+	
 	.seoc-@guid .seoc-alt-btn .btn{
         font-weight:bold !important;
+	}
+	.seoc-@guid .seoc-alt-btn .btn-link{
+		color:#7b3402 !important;
 	}
 
 	.seoc-@guid .seoc-alt-btn .btn:hover{
@@ -185,7 +188,7 @@
 </style>
 <script>
 	function a@(guid)() {
-		$.getScript("//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.js").done(function () {
+		$.getScript("https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.js").done(function () {
 
 			var container = $(".seoc-@guid");
 
@@ -311,7 +314,7 @@
 					if (tempHidden){
 						$(container).find(".seoc-panel").append(tempHidden);
 					}
-					text = "or select existing";
+					text = "or select existing <span class='glyphicon glyphicon-star' style='color:#ef7622'></span>";
 					$(container).find(".seoc-selectpage").val("false");
 
 				}else{
@@ -320,11 +323,11 @@
 					if (tempHidden){
 						$(container).find(".seoc-panel").append(tempHidden);
 					}
-					text = "or create new";
+					text = "or create new <span class='glyphicon glyphicon-star' style='color:#ef7622'></span>";
 					$(container).find(".seoc-selectpage").val("true");
 				}
 
-				container.find(".seoc-alt-btn .btn").text(text);
+				container.find(".seoc-alt-btn .btn").html(text);
 			}
 
 

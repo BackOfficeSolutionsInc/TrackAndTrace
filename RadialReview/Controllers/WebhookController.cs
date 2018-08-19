@@ -51,8 +51,8 @@ namespace RadialReview.Controllers {
 
             return Content("ok");
         }
-
-        [Access(AccessLevel.UserOrganization)]
+		
+		[Access(AccessLevel.UserOrganization)]
         public ActionResult Index() {
             List<WebHookViewModel> webHook = new List<WebHookViewModel>();
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();

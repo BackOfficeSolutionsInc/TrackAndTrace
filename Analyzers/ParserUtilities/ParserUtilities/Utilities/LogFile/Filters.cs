@@ -179,13 +179,18 @@ namespace ParserUtilities.Utilities.LogFile {
 	}
 
 	public class DateRangeFilter<LINE> : IFilter<LINE> where LINE : ILogLine {
+		public static TimeSpan LogLineResolution = TimeSpan.FromSeconds(1);
+
+		private ILogLineDateField<LINE> ShiftedResolution(ILogLineDateField<LINE> field) {
+			return x => field(x) + LogLineResolution;
+		}
 
 		public DateRangeFilter(DateTime startRange, DateTime endRange, DateRangeFilterType when, ILogLineDateField<LINE> startTimeField, ILogLineDateField<LINE> endTimeField) {
 			var beforeSelector = when == DateRangeFilterType.PartlyInRange ? startTimeField : endTimeField;
 			var afterSelector = when == DateRangeFilterType.PartlyInRange ? endTimeField : startTimeField;
 			if (when == DateRangeFilterType.PartlyInRange) {
 				Before = DateFilter<LINE>.ExcludeIfAfter(endRange, startTimeField);
-				After = DateFilter<LINE>.ExcludeIfBefore(startRange, endTimeField);
+				After = DateFilter<LINE>.ExcludeIfBefore(startRange, ShiftedResolution(endTimeField));
 			} else if (when == DateRangeFilterType.CompletelyInRange) {
 				Before = DateFilter<LINE>.ExcludeIfAfter(endRange, endTimeField);
 				After = DateFilter<LINE>.ExcludeIfBefore(startRange, startTimeField);

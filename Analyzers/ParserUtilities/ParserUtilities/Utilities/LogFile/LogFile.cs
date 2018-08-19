@@ -24,7 +24,8 @@ namespace ParserUtilities.Utilities.LogFile {
 		protected Func<LINE, object> Grouping { get; set; }
 		protected int SkipLines { get; set; }
 
-		protected List<Func<LINE, bool>> Flags { get; set; }
+		protected List<Tuple<Func<LINE, bool>,FlagType>> Flags { get; set; }
+		protected bool FlagsToTop { get; private set; }
 
 		public LogFile<LINE> Clone() {
 			return new LogFile<LINE>() {
@@ -38,7 +39,8 @@ namespace ParserUtilities.Utilities.LogFile {
 				RelativeRangeFilter	= RelativeRangeFilter.ToList(),
 				Flags = Flags.ToList(),
 				SkipLines = SkipLines,
-				Grouping = Grouping
+				Grouping = Grouping,
+				FlagsToTop = FlagsToTop
 			};
 		}
 
@@ -49,7 +51,7 @@ namespace ParserUtilities.Utilities.LogFile {
 			StartRange = DateTime.MaxValue;
 			EndRange = DateTime.MinValue;
 			RelativeRangeFilter = new List<IFilter<LINE>>();
-			Flags = new List<Func<LINE, bool>>();
+			Flags = new List<Tuple<Func<LINE, bool>, FlagType>>();
 		}
 
 		public LINE AddLine(LINE line) {
@@ -83,8 +85,8 @@ namespace ParserUtilities.Utilities.LogFile {
 			SkipLines = lines;
 		}
 
-		public void Flag(Func<LINE, bool> condition) {
-			Flags.Add(condition);
+		public void Flag(Func<LINE, bool> condition,FlagType flagType = FlagType.UserFlag) {
+			Flags.Add(Tuple.Create(condition, flagType));
 		}
 
 		internal void FilterExact(ILogLineField<LINE> field, params string[] exclude) {
@@ -103,12 +105,17 @@ namespace ParserUtilities.Utilities.LogFile {
 			AddFilters(new DateRangeFilter<LINE>(start, end, type, x => x.StartTime, x => x.EndTime));
 			return this;
 		}
+		public LogFile<LINE> FilterRange(DateTime start, DateTime end,double expandByMinutes, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
+			AddFilters(new DateRangeFilter<LINE>(start.AddMinutes(-expandByMinutes/2), end.AddMinutes(expandByMinutes/2), type, x => x.StartTime, x => x.EndTime));
+			return this;
+		}
 
 		[Obsolete("Must be just before save")]
 		public LogFile<LINE> FilterRelativeRange(double startMinutes, double? endMinutes=null, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
 			FilterRelativeRange(TimeSpan.FromMinutes(startMinutes), TimeSpan.FromMinutes(endMinutes??1000000), type);
 			return this;
 		}
+
 		[Obsolete("Must be just before save")]
 		public LogFile<LINE> FilterRelativeRange(TimeSpan start, TimeSpan? end=null, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
 			var first = GetFilteredLines().First();
@@ -125,10 +132,12 @@ namespace ParserUtilities.Utilities.LogFile {
 		}
 
 		public IEnumerable<LINE> GetFilteredLines() {
-			var f= Lines.Where(line => Filters.All(filter => filter.Include(line)));
+			//Apply filters
+			var f= Lines.Where(line => Filters.All(filter => filter.Include(line)));			
+			//apply orderings
 			if (Ordering != null)
-				f = f.OrderBy(Ordering);			
-
+				f = f.OrderBy(Ordering);
+			//Apply relative filter
 			f = f.Where(line => RelativeRangeFilter.All(filter=>filter.Include(line)));
 
 
@@ -147,7 +156,6 @@ namespace ParserUtilities.Utilities.LogFile {
 				} else {
 					f = f.OrderByDescending(x => groupingsLookup[Grouping(x)].Count()).ThenBy(x => groupingsLookup[Grouping(x)].First().StartTime).ThenBy(Grouping);
 				}
-
 				f = f.ToList();
 				var j = -1;
 				var prevGroup = -1;
@@ -162,15 +170,27 @@ namespace ParserUtilities.Utilities.LogFile {
 
 			}
 
+			//Apply flags
 			foreach (var h in Flags) {
 				foreach (var line in f.ToList()) {
-					if (h(line)) {
-						line.IsFlagged = true;
+					var flag = h.Item1(line);
+					if (flag) {
+						line.Flag |= h.Item2;
 					}
 				}
 			}
 
-			return f.Skip(SkipLines);
+			//Skip Lines
+			f = f.Skip(SkipLines);
+
+			//Add flags to top
+			f = f.ToList();
+			if (FlagsToTop) {
+				var orderedFlags = f.Where(x => x.Flag != FlagType.None).OrderByDescending(x => x.Flag).ToList();
+				orderedFlags.AddRange(f.ToList());
+				f = orderedFlags;
+			}
+			return f;
 		}
 		public IEnumerable<string> ToStringLines(string separator) {
 			var f = GetFilteredLines();
@@ -199,6 +219,10 @@ namespace ParserUtilities.Utilities.LogFile {
 
 		public PreMatrix<LINE,XTYPE,YTYPE> ToMatrixBuilder<XTYPE,YTYPE>(Func<LINE, XTYPE> xs, Func<LINE, YTYPE> ys) {
 			return Matrix.Create(this, xs, ys);
+		}
+
+		public void FlagsAtTop() {
+			FlagsToTop = true;
 		}
 
 		/*public Matrix<XTYPE,YTYPE,LINE, RESULT> ToMatrix<XTYPE,YTYPE,RESULT>(Func<LINE, XTYPE> xs, Func<LINE, YTYPE> ys,Func<Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixInput, RESULT> cellSelector, Func<Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult, Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult, Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult> aggregator) {

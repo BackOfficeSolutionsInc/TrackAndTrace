@@ -21,6 +21,7 @@ using RadialReview.Models;
 using RadialReview.Accessors;
 using RadialReview.Hangfire;
 using System.Linq;
+using RadialReview.App_Start;
 
 namespace RadialReview {
 	public partial class Startup {
@@ -64,26 +65,7 @@ namespace RadialReview {
 			// Enable the application to use bearer tokens to authenticate users
 			app.UseOAuthBearerTokens(OAuthOptions);
 
-
-			GlobalConfiguration.Configuration.UseRedisStorage(Config.GetHangfireConnectionString());
-			//GlobalConfiguration.Configuration.UseStorage(new MySqlStorage(Config.GetHangfireConnectionString(), new MySqlStorageOptions()));
-
-			app.UseHangfireDashboard("/hangfire", new DashboardOptions {
-				Authorization = new[] { new HangfireAuth() }
-			});
-
-			var myQueues = HangfireQueues.OrderedQueues;
-
-			if (!Config.IsDefinitelyAlpha()) {
-				myQueues = myQueues.Where(x => x != HangfireQueues.Immediate.ALPHA).ToArray();
-			}
-
-
-			GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
-			app.UseHangfireServer(new BackgroundJobServerOptions() {
-				//WorkerCount = 1,
-				Queues = myQueues
-			});
+			HangfireConfig.Configure(app);
 
 			// Uncomment the following lines to enable logging in with third party login providers
 			//app.UseMicrosoftAccountAuthentication(
@@ -141,6 +123,7 @@ namespace RadialReview {
 			//  }
 			//);
 		}
+		
 
 		//private Task OnAuthenticationFailed(AuthenticationFailedNotification<OpenIdConnectMessage,OpenIdConnectAuthenticationOptions> notification) {
 		//	notification.HandleResponse();
@@ -159,24 +142,6 @@ namespace RadialReview {
 		//}
 
 
-		public class HangfireAuth : IDashboardAuthorizationFilter {
-			public bool Authorize(DashboardContext context) {
-				// In case you need an OWIN context, use the next line, `OwinContext` class
-				// is the part of the `Microsoft.Owin` package.
-				var owinContext = new OwinContext(context.GetOwinEnvironment());
-
-				// Allow all authenticated users to see the Dashboard (potentially dangerous).
-				try {
-					var user = new UserAccessor().GetUserById(owinContext.Authentication.User.Identity.GetUserId());
-					if (user != null) {
-						return user.IsRadialAdmin;
-					}
-				} catch (Exception e) {
-					int a = 0;
-				}
-				return false;
-			}
-		}
 
 		public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider {
 			private readonly string _publicClientId;

@@ -44,20 +44,26 @@ namespace RadialReview.Controllers {
                 builder.Append("<br/><br/><span style='color:#aaaaaa;'>Ticket: <a style='text-decoration:none;color:#aaaaaa;cursor:default;' href='" + Config.BaseUrl(null) + "Support/Details/" + model.Lookup + "'>" + model.Lookup + "</a></span>");
 
                 builder.Append("<img src='" + Config.BaseUrl(null) + "t/mark/" + model.Lookup + "?a=true'/>");
-                //builder.Append("<br/><br/><div style='color:#aaa'>#####################################");
+				//builder.Append("<br/><br/><div style='color:#aaa'>#####################################");
 
-                //builder.Append("<table>");
-                //builder.Append("<tr><th>Email</th><td >" + email + "</td></tr>");
-                //builder.Append("<tr><th>User</th><td >" + model.User + "</td></tr>");
-                //builder.Append("<tr><th>Org</th><td >" + model.Org + "</td></tr>");
-                //builder.Append("<tr><th>PageTitle</th><td >" + model.PageTitle + "</td></tr>");
-                //builder.Append("<tr><th>Url</th><td >" + model.Url + "</td></tr>");
-                //builder.Append("<tr><th>Console</th><td >" + model.Console + "</td></tr>");            
-                //builder.Append("</table></div>");
+				//builder.Append("<table>");
+				//builder.Append("<tr><th>Email</th><td >" + email + "</td></tr>");
+				//builder.Append("<tr><th>User</th><td >" + model.User + "</td></tr>");
+				//builder.Append("<tr><th>Org</th><td >" + model.Org + "</td></tr>");
+				//builder.Append("<tr><th>PageTitle</th><td >" + model.PageTitle + "</td></tr>");
+				//builder.Append("<tr><th>Url</th><td >" + model.Url + "</td></tr>");
+				//builder.Append("<tr><th>Console</th><td >" + model.Console + "</td></tr>");            
+				//builder.Append("</table></div>");
+				var test = false;
+				if (test) {
+					throw new Exception();
+				}
+
 
                 var emailAddress = ProductStrings.SupportEmail;
                 if (model.Status == SupportStatus.JavascriptError)
                     emailAddress = ProductStrings.EngineeringEmail;
+
 
                 var mail = Mail.To(EmailTypes.CustomerSupport, emailAddress)
                 .SubjectPlainText(model.Subject ?? "Customer Service")
@@ -71,15 +77,20 @@ namespace RadialReview.Controllers {
 
                 var result = ResultObject.Success("A message has been sent to support. We'll be contacting you shortly.");
 
-                if (model.Status == SupportStatus.JavascriptError)
-                    result.ForceSilent();
+				if (model.Status == SupportStatus.JavascriptError) {
+					result.ForceSilent();
+					result.ForceNoErrorReport();
+				}
 
                 return Json(result);
             }catch(Exception e) {
                 var result = ResultObject.Success("There was a problem sending your error report.");
-                if (model.Status == SupportStatus.JavascriptError)
-                    result.ForceSilent();
-                return Json(result);
+				result.Status = StatusType.Warning;
+				if (model.Status == SupportStatus.JavascriptError) {
+					result.ForceSilent();
+					result.ForceNoErrorReport();
+				}
+				return Json(result);
             }
 		}
 

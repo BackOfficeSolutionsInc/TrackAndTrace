@@ -154,6 +154,7 @@
     <Compile Include="Api\V1\Todo.cs" />
     <Compile Include="Api\V1\Users.cs" />
     <Compile Include="App_Start\DateTimeModelBinder.cs" />
+    <Compile Include="App_Start\HangfireConfig.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />

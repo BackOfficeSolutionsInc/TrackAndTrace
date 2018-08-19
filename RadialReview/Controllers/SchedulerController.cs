@@ -18,6 +18,8 @@ using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Crosscutting.ScheduledJobs;
+using Hangfire;
+using RadialReview.Crosscutting.Schedulers;
 
 namespace RadialReview.Controllers {
 
@@ -281,8 +283,9 @@ namespace RadialReview.Controllers {
 		[AsyncTimeout(60000 * 30)]//30 minutes..
 		public async Task<JsonResult> Reschedule(CancellationToken ct) {
 			//HttpContext.Server.ScriptTimeout = 20*60; // Twenty minutes..
-			var res = await TaskAccessor.ExecuteTasks();
-			return Json(res, JsonRequestBehavior.AllowGet);
+			Scheduler.Enqueue(() => TaskAccessor.ExecuteTasks(DateTime.UtcNow));
+			//var res = await TaskAccessor.ExecuteTasks(DateTime.UtcNow);
+			return Json(true, JsonRequestBehavior.AllowGet);
 		}
 
 

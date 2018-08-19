@@ -49,21 +49,25 @@ namespace RadialReview.Hangfire
 		public static class Immediate{
 
 			
-			public const string BUILD_TIME = "07/17/2018 20:43:07"; 
-			public const string CONCLUSION_EMAIL = "conclusionemail_636674569873";  
-			public const string GENERATE_QC = "generateqc_636674569873";  
-			public const string ALPHA = "alpha_636674569873";   
-			public const string CRITICAL = "critical_636674569873"; 
-			public const string CHARGE_ACCOUNT_VIA_HANGFIRE = "chargeaccount_636674569873";   
+			public const string BUILD_TIME = "08/19/2018 05:04:40"; 
+			public const string CONCLUSION_EMAIL = "conclusionemail_636702518809";  
+			public const string GENERATE_QC = "generateqc_636702518809";  
+			public const string ALPHA = "alpha_636702518809";   
+			public const string CRITICAL = "critical_636702518809"; 
+			public const string CHARGE_ACCOUNT_VIA_HANGFIRE = "chargeaccount_636702518809";   
+			public const string EXECUTE_TASKS = "executetasks_636702518809";   
+			public const string ETHERPAD = "etherpad_636702518809";   
 
 		}
 
 
 		public static readonly string[] OrderedQueues=new []{
 					HangfireQueues.Immediate.CRITICAL,
+					HangfireQueues.Immediate.ETHERPAD,
 					HangfireQueues.Immediate.CONCLUSION_EMAIL,
 					HangfireQueues.Immediate.GENERATE_QC,
 					HangfireQueues.Immediate.CHARGE_ACCOUNT_VIA_HANGFIRE,
+					HangfireQueues.Immediate.EXECUTE_TASKS,
 					HangfireQueues.DEFAULT,
 					HangfireQueues.Immediate.ALPHA			 
 		};

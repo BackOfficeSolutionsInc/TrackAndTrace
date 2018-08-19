@@ -109,7 +109,8 @@
 				   .bind('change.autoResize', check)
 				   .bind('focus.autoResize', focus)
 				   .bind('blur.autoResize', blur);
-			this.check(null, true);
+			var self = this;
+			self.check(null, true);
 		},
 		focus: function () {
 			var self = this;
@@ -185,6 +186,7 @@
 				}
 				// TEXTAREA
 				clone.height(0).val(value).scrollTop(10000);
+				clone.css({ 'width': $(el).outerWidth() });
 				var scrollTop = clone[0].scrollTop + config.extraSpace;
 				// Don't do anything if scrollTop hasen't changed:
 				if (self.previousScrollTop === scrollTop) {

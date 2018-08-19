@@ -1,4 +1,5 @@
-﻿using ParserUtilities.Utilities.LogFile;
+﻿using ParserUtilities.Utilities;
+using ParserUtilities.Utilities.LogFile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace LogParser.Models {
 	public class LogLine : ILogLine{
+		public string Guid { get; set; }
 		public string date { get; private set; }
 		public string time { get; private set; }
 		public string sIp { get; private set; }
@@ -23,11 +25,19 @@ namespace LogParser.Models {
 		public string scWin32Status { get; private set; }
 		public string timeTaken { get; private set; }
 
-		public bool IsFlagged { get; set; }
+
+		public FlagType Flag { get; set; }
 		public int GroupNumber { get; set; }
 		public DateTime StartTime { get; private set; }
 		public DateTime EndTime { get; private set; }
 		public TimeSpan Duration { get; private set; }
+
+		public int? StatusCode {
+			get {
+				int status = 0;
+				return int.TryParse(scStatus, out status) ? (int?)status : null;
+			}
+		}
 
 
 		public ILogLine ConstructFromLine(string line) {
@@ -49,6 +59,8 @@ namespace LogParser.Models {
 				ll.EndTime = DateTime.Parse(ll.date + " " + ll.time);
 				ll.StartTime = ll.EndTime.AddMilliseconds(-int.Parse(ll.timeTaken));
 				ll.Duration = ll.EndTime - ll.StartTime;
+				ll.Guid = Sha256.Hash(line);
+
 				return ll;
 			} catch (Exception) {
 				return null;

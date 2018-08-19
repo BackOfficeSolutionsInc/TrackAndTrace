@@ -149,11 +149,11 @@ input[type=checkbox].blend:before {
   position: absolute;
   margin-left: 14px;
   margin-top: 14px;
-  -moz-transform: scale(1.666);
-  -ms-transform: scale(1.666);
-  -o-transform: scale(1.666);
-  -webkit-transform: scale(1.666);
-  transform: scale(1.666);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  -webkit-transform: scale(1);
+  transform: scale(1);
 }
 input[type=checkbox].blend:hover:before {
   border: 2px solid rgba(62, 57, 53, 0.6);
@@ -207,11 +207,11 @@ input[type=checkbox].blend:checked:after {
   position: absolute;
   font-weight: bold;
   color: white;
-  -moz-transform: scale(1.666);
-  -ms-transform: scale(1.666);
-  -o-transform: scale(1.666);
-  -webkit-transform: scale(1.666);
-  transform: scale(1.666);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  -webkit-transform: scale(1);
+  transform: scale(1);
 }
 @-webkit-keyframes flash {
   0% {

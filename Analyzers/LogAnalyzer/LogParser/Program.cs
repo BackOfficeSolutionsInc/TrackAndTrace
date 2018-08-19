@@ -5,6 +5,7 @@ using LogParser.Output;
 using ParserUtilities;
 using ParserUtilities.Utilities;
 using ParserUtilities.Utilities.CacheFile;
+using ParserUtilities.Utilities.Colors;
 using ParserUtilities.Utilities.LogFile;
 using ParserUtilities.Utilities.OutputFile;
 using System;
@@ -14,11 +15,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static LogParser.Downloaders.AwsChartDownloader;
+using static LogParser.Downloaders.AwsCloudWatchDownloader;
 
 namespace LogParser {
 	public class Program {
 
 		public static string Session = "20180816";
+		public static AwsEnvironment CurrentEnv = AwsConstants.Environments.Env4;
 
 		public static void Main(string[] args) {
 			Config.SetSession(Session);
@@ -37,7 +41,16 @@ namespace LogParser {
 			var imageChange3 = TimeRange.Around(6, new DateTime(2018, 8, 16, 14, 35, 0), DateTimeKind.Utc);
 			var imageChange4 = TimeRange.Around(10, new DateTime(2018, 8, 16, 16, 35, 0), DateTimeKind.Utc);
 
-			RunRemoteLogFile(fivehundred2);
+			var o20180817 = new TimeRange(new DateTime(2018, 8, 17, 7, 26, 0), new DateTime(2018, 8, 17, 8, 26, 0), DateTimeKind.Local);
+			var o20180817_2132 = new TimeRange(new DateTime(2018, 8, 17, 21, 12, 0), new DateTime(2018, 8, 17, 22, 37, 0), DateTimeKind.Local);
+			var o20180818_1700 = new TimeRange(new DateTime(2018, 8, 18, 17, 00, 0), new DateTime(2018, 8, 18, 17, 16, 0), DateTimeKind.Local);
+
+
+			var o20180816_0037 = new TimeRange(new DateTime(2018, 8, 16, 0, 37, 0), new DateTime(2018, 8, 16, 1, 32, 0), DateTimeKind.Local);
+			var o20180816_0627 = TimeRange.Around(30,new DateTime(2018, 8, 16, 6, 27, 0), DateTimeKind.Local);
+			
+
+			RunRemoteLogFile(o20180816_0627, true);
 
 			//RunLocalLogFile(Config.GetFile("combine.txt"));
 			//Process.Start(@"C:\Users\Clay\Desktop\Diagnosis\log.xlsx");
@@ -49,16 +62,19 @@ namespace LogParser {
 		//	RunRemoteLogFile(endTime - TimeSpan.FromMinutes(durationMins), endTime, kind);
 		//}
 
-		public static void RunRemoteLogFile(TimeRange range) {
+		public static void RunRemoteLogFile(TimeRange range,bool downloadCharts) {
 			var logs = AwsLogFileDownloader.DownloadAccessLogs(range);
-			SaveFiltered(logs);
+			var charts = new DataChart[0];
+			if (downloadCharts)
+				charts = Stat.AllStats.Select(x => AwsCloudWatchDownloader.Download(x, range, CurrentEnv)).ToArray();
+			SaveFiltered(logs, charts);
 		}
 
-		public static void SaveFiltered(LogFile<LogLine> logFile) {
-			//logFile.Filter(x => x.csUriStem, "healthcheck");//system requests
+		public static void SaveFiltered(LogFile<LogLine> logFile,IEnumerable<DataChart> charts) {
+			logFile.Filter(x => x.csUriStem, "healthcheck");//system requests
 			//logFile.Filter(x => x.csUriStem, "healthcheck", "hangfire"); //system requests
-			//logFile.Filter(x => x.csUriStem, "/styles/", "signalr", "bundle", "/content/"); //Irrelavent requests
-			//logFile.Filter(x => x.csUriStem, "/TileData/", "/Image/TodoCompletion", "/styles/", "/bundle/", "/content/", "/dropdown/"); //Noisy requests
+			logFile.Filter(x => x.csUriStem, "/styles/", "signalr", "bundle", "/content/"); //Irrelavent requests
+		//	logFile.Filter(x => x.csUriStem, "/TileData/", "/Image/TodoCompletion", "/styles/", "/bundle/", "/content/", "/dropdown/"); //Noisy requests
 			{
 				//Your custom filters here:
 				//logFile.FilterExact(x => x.csUriStem, "/People"); //Noisy requests
@@ -66,7 +82,7 @@ namespace LogParser {
 				//logFile.Filter(x => x.csUriStem.Contains("hangfire") && x.Duration < TimeSpan.FromSeconds(2));
 				//logFile.Filter(x => x.Duration < TimeSpan.FromSeconds(.1));
 
-				logFile.Filter(x => x.csUriStem,"/signalr/"); //Irrelavent requests
+				//logFile.Filter(x => x.csUriStem,"/signalr/"); //Irrelavent requests
 				//logFile.FilterRange(1534406069398.ToDateTime(DateTimeKind.Local), 1534406208111.ToDateTime(DateTimeKind.Local));
 
 				//logFile.FilterRange(1534406131031.ToDateTime(DateTimeKind.Local), 1534406154581.ToDateTime(DateTimeKind.Local));
@@ -81,11 +97,38 @@ namespace LogParser {
 				//9c5061c9-3c77-4fb0-a54c-a93e01114bec
 				//logFile.Filter(x => !x.csMethod.Contains("POST"));
 			}
-			logFile.SetOrdering(x => x.StartTime);
+
+			logFile.SetOrdering(x => x.EndTime);
+			//logFile.SetGrouping(x => x.sIp);
 			logFile.SetGrouping(x => x.csUsername);
 
+
+			logFile.AutoFlag();
+			logFile.FlagsAtTop();
+			logFile.RemoveInitialSignalR();
+
+			
+
+			//logFile.Filter(x => !x.csUriStem.Contains("healthcheck"));
+			//logFile.Filter(x => !x.csUserAgent.Contains("ELB-HealthChecker/1.0"));
+
+			//logFile.SetGrouping(x => x.sIp);
+			//logFile.SetGrouping(x => x.csUsername);
+			//logFile.Filter(x => x.StatusCode < 400);
+			//logFile.Filter(x => x.StatusCode ==409);
+
+			//logFile.RemoveCachedPages();
+			//logFile.FilterRange(1534400629715.ToDateTime(DateTimeKind.Local), 1534401211965.ToDateTime(DateTimeKind.Local));
+			logFile.Flag(x => x.Guid == "73aff0657e2f5442b262c0064d1fda3558f13b4b324648c681f280036000eb43", FlagType.ByGuid);
+			//logFile.FilterRange(1534401062028.ToDateTime(DateTimeKind.Local), 1534401071307.ToDateTime(DateTimeKind.Local),3);
+			//logFile.FilterRange(1534400803858.ToDateTime(DateTimeKind.Local), 1534400813827.ToDateTime(DateTimeKind.Local));
+			//logFile.FilterRange(1534406037880.ToDateTime(DateTimeKind.Local), 1534406273687.ToDateTime(DateTimeKind.Local),5);
+			//logFile.FilterRange(1534406008645.ToDateTime(DateTimeKind.Local), 1534406053061.ToDateTime(DateTimeKind.Local));
+			//logFile.FilterRange(1534405990094.ToDateTime(DateTimeKind.Local), 1534406212164.ToDateTime(DateTimeKind.Local),2);
+			logFile.FilterRange(1534400222656.ToDateTime(DateTimeKind.Local), 1534400362846.ToDateTime(DateTimeKind.Local));
+
 			logFile.Save(Config.GetBaseDirectory() + "log.txt", " ");
-			DurationChart.SaveDurationChart(Config.GetBaseDirectory() + "chart.html", logFile, x => x.csUsername);
+			DurationChart.SaveDurationChart(Config.GetBaseDirectory() + "chart.html", logFile, x => x.sIp, Pallets.Stratified, charts);
 
 
 		}
@@ -93,7 +136,7 @@ namespace LogParser {
 
 		public static void RunLocalLogFile(string path) {
 			var logFile = LogFileReader.Read<LogLine>(path);
-			SaveFiltered(logFile);
+			SaveFiltered(logFile,null);
 		}
 
 		public static void RunAwsCharts() {

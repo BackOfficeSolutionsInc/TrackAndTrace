@@ -1,4 +1,5 @@
-﻿using RadialReview.Accessors;
+﻿using Hangfire;
+using RadialReview.Accessors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,14 @@ namespace RadialReview.Utilities
 {
     public class ServerUtility
     {
+		///////////////////////////////////////////
+		//THIS FILE IS OBSOLETE.. AWS Lambda calls /scheduler/reschedule instead...
+		//(keep this warning here)
+		///////////////////////////////////////////
+
+
+
+		/*
         private static String DummyCacheKey = "DummyCacheKey";
         private static TaskAccessor _TaskAccessor = new TaskAccessor();
 
@@ -32,15 +41,7 @@ namespace RadialReview.Utilities
             return true;
         }
 
-		//public static async Task SetRequestTimeout(int seconds) {
-		//	try {
-		//		HttpContext.Current.GetType().GetField("_timeoutState", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(System.Web.HttpContext.Current, seconds);
-		//	} catch (Exception) {
-		//		//welp..
-		//		int a = 0;
-		//	}
-		//}
-
+		
 		public static async void Reschedule()
         {
             while (true)
@@ -63,24 +64,8 @@ namespace RadialReview.Utilities
         public static async void CacheItemRemovedCallback(string key, object value, CacheItemRemovedReason reason)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            Reschedule();
-        }
-        /*
-        public static async Task ExecuteAllTasks()
-        {
-            await Task.Run(() =>
-            {
-                Parallel.ForEach(_TaskAccessor.GetTasksToExecute(DateTime.UtcNow), task =>
-                {
-                    //var server=new HttpServerUtility( );
-                    _TaskAccessor.ExecuteTask(GetConfigValue("BaseUrl"), task.Id);
-                });
-            });
+			Reschedule();
         }*/
 
-       /* public static String GetConfigValue(string key)
-        {
-            return WebConfigurationManager.AppSettings[key].ToString();
-        }*/
-    }
+	}
 }

@@ -23,6 +23,9 @@ namespace LogParser.Downloaders {
 		public DateTime X { get; set; }
 		public decimal? Y { get; set; }
 
+		public Point() {
+		}
+
 		public Point(DateTime x, decimal? y) {
 			X = x;
 			Y = y;
@@ -45,8 +48,8 @@ namespace LogParser.Downloaders {
 
 	public class AwsConstants {
 		public class Environments {
-			public static AwsChartDownloader.Environment Env3 = new AwsChartDownloader.Environment("app-tractiontools-env-3", "awseb-e-j-AWSEBLoa-1SFZNUPGVL28D", "us-west-2", "awseb-e-jpqjr2mgak-stack-AWSEBAutoScalingGroup-MLHNOA0L8LN2");
-			public static AwsChartDownloader.Environment Env4 = new AwsChartDownloader.Environment("app-tractiontools-env-4", "awseb-e-d-AWSEBLoa-N797H3PA6H8", "us-west-2", "awseb-e-de9akqpmac-stack-AWSEBAutoScalingGroup-J8AUCDX80SAK");
+			public static AwsChartDownloader.AwsEnvironment Env3 = new AwsChartDownloader.AwsEnvironment("app-tractiontools-env-3", "awseb-e-j-AWSEBLoa-1SFZNUPGVL28D", "us-west-2", "awseb-e-jpqjr2mgak-stack-AWSEBAutoScalingGroup-MLHNOA0L8LN2");
+			public static AwsChartDownloader.AwsEnvironment Env4 = new AwsChartDownloader.AwsEnvironment("app-tractiontools-env-4", "awseb-e-d-AWSEBLoa-N797H3PA6H8", "us-west-2", "awseb-e-de9akqpmac-stack-AWSEBAutoScalingGroup-J8AUCDX80SAK");
 		}
 
 		public class Charts {
@@ -102,8 +105,8 @@ namespace LogParser.Downloaders {
 			},false);
 		}
 
-		public class Environment {
-			public Environment(string name, string loadBalancerName, string region,string autoScalingGroup) {
+		public class AwsEnvironment {
+			public AwsEnvironment(string name, string loadBalancerName, string region,string autoScalingGroup) {
 				Name = name;
 				LoadBalancerName = loadBalancerName;
 				Region = region;
@@ -114,6 +117,10 @@ namespace LogParser.Downloaders {
 			public string LoadBalancerName { get; private set; }
 			public string Region { get; private set; }
 			public string AutoScalingGroup { get;  set; }
+
+			public override string ToString() {
+				return Name;
+			}
 		}
 
 
@@ -137,7 +144,7 @@ namespace LogParser.Downloaders {
 			private string Namespace { get; set; }
 			private string Statistics { get; set; }
 
-			private string GetDimensionStr(Environment env) {
+			private string GetDimensionStr(AwsEnvironment env) {
 				switch (Dimension) {
 					case MetricDimension.LoadBalancer:
 						return "dimension.LoadBalancerName=" + env.LoadBalancerName + "&namespace=AWS%2FELB";
@@ -147,7 +154,7 @@ namespace LogParser.Downloaders {
 				throw new ArgumentOutOfRangeException(""+Dimension);
 			}
 
-			public string ToUrl(Environment app, DateTime start, DateTime end) {
+			public string ToUrl(AwsEnvironment app, DateTime start, DateTime end) {
 
 				var period = (int)(end - start).TotalSeconds / 1440.0;
 
@@ -163,17 +170,17 @@ namespace LogParser.Downloaders {
 
 		}
 
-		public static XYSeries DownloadSeries(ChartDesc chart, Environment app, TimeSpan span) {
+		public static XYSeries DownloadSeries(ChartDesc chart, AwsEnvironment app, TimeSpan span) {
 			return DownloadSeries(chart, app, span, DateTime.UtcNow);
 		}
-		public static XYSeries DownloadSeries(ChartDesc chart, Environment app, TimeSpan span, DateTime end) {
+		public static XYSeries DownloadSeries(ChartDesc chart, AwsEnvironment app, TimeSpan span, DateTime end) {
 			return  DownloadSeries(chart, app, end.Subtract(span), end);
 		}
-		public static XYSeries DownloadSeries(ChartDesc chart, Environment app, DateTime start, TimeSpan span) {
+		public static XYSeries DownloadSeries(ChartDesc chart, AwsEnvironment app, DateTime start, TimeSpan span) {
 			return  DownloadSeries(chart, app, start, start.Add(span));
 		}
 
-		public static XYSeries DownloadSeries(ChartDesc chart, Environment app, DateTime start, DateTime end) {
+		public static XYSeries DownloadSeries(ChartDesc chart, AwsEnvironment app, DateTime start, DateTime end) {
 			var res =  ExecuteGetRequest(chart.ToUrl(app, start, end));
 			dynamic dd = JArray.Parse(res);
 

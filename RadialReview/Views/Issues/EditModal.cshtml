@@ -1,42 +1,49 @@
 ﻿@model RadialReview.Models.Issues.IssueVM
 
 @Html.HiddenFor(x => x.IssueRecurrenceId)
+@{
+	var showDropDown = (ViewBag.Originating != null && ViewBag.ShowMeeting == true);
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
 
-<div class="form-group">
-	@*@Html.LabelFor(x => x.Message)*@
-	@Html.TextAreaFor(x => x.Message, new {
+}
+<div class="modal-@guid">
+	<div class="form-group">
+		@*@Html.LabelFor(x => x.Message)*@
+		@Html.TextAreaFor(x => x.Message, new {
 	@class = "form-control autoResize",
 	placeholder = "Enter Issue message",
 	autocomplete = "off",
 	style = "-webkit-appearance: none;",
+	rows="1",
 	disable = ViewBag.CanEdit == false,
-	
-})
-</div>
-<div class="form-group">
-	<iframe src="/Issues/Pad/@Model.IssueId" width="99.8%"></iframe>
-</div>
 
-<div class="row">
-	@if (ViewBag.PossibleUsers != null) {
-		<div class="col-sm-6">
-			<div class="form-group">
-				@Html.LabelFor(x => x.OwnerId)
-				<select name="@Html.NameFor(x => x.OwnerId)" class="select-user form-control" style="width: 100%;height:64px;" @(ViewBag.CanEdit == false ? "disable" : "")>
-					@foreach (var u in ViewBag.PossibleUsers) {
-						<option data-img="@u.imageUrl" value="@u.id" @(Model.OwnerId == u.Id ? "selected" : "")>@u.GetName()</option>
+})
+	</div>
+	<div class="form-group">
+		<iframe src="/Issues/Pad/@Model.IssueId" width="99.8%" style="padding-right: 1px;"></iframe>
+	</div>
+
+	<div class="row">
+		@if (ViewBag.PossibleUsers != null) {
+			<div class="col-sm-6">
+				<div class="form-group">
+					@Html.LabelFor(x => x.OwnerId)
+					<select name="@Html.NameFor(x => x.OwnerId)" class="select-user form-control" style="width: 100%;height:64px;" @(ViewBag.CanEdit == false ? "disable" : "")>
+						@foreach (var u in ViewBag.PossibleUsers) {
+							<option data-img="@u.imageUrl" value="@u.id" @(Model.OwnerId == u.Id ? "selected" : "")>@u.GetName()</option>
 				}
-				</select>
+					</select>
+				</div>
 			</div>
-		</div>
-	}
-	@*<div class="col-sm-5">
-			<div class="form-group">
-				<label>Due Date:</label>
-				@Html.Partial("~/Views/Shared/" + (ViewBag.CanEdit == false ? "DisplayTemplates" : "EditorTemplates") + "/DateTime.cshtml", Model.DueDate,
-					new ViewDataDictionary() { { "name", "DueDate" }, { "localize", true } })
-			</div>
-		</div>*@
+		}
+		@*<div class="col-sm-5">
+				<div class="form-group">
+					<label>Due Date:</label>
+					@Html.Partial("~/Views/Shared/" + (ViewBag.CanEdit == false ? "DisplayTemplates" : "EditorTemplates") + "/DateTime.cshtml", Model.DueDate,
+						new ViewDataDictionary() { { "name", "DueDate" }, { "localize", true } })
+				</div>
+			</div>*@
+	</div>
 </div>
 
 <script>
@@ -48,12 +55,25 @@
 	//	return $state;
 	//};
 
-	$(".select-user").select2({
+	$(".modal-@guid .select-user").select2({
 		templateResult: imageListFormat,
 		templateSelection: imageListFormat,
 	});
 
-	$(".autoResize").autoResize();
+	(function () {
+		var r = $(".modal-@guid .autoResize").autoResize({
+			extraSpace: 24
+		});
+
+		var i = setInterval(function () {
+			if (!$("#modal").is(".loading")) {
+				r.data('AutoResizer').check();
+				setTimeout(function () {
+					clearInterval(i);
+				}, 600);
+			}
+		}, 100);
+	})();
 
 	@*var now = new Date();
 	now = Date.UTC(now.getYear()+1900, now.getMonth(), now.getDate(),0,0,0);
@@ -64,3 +84,9 @@
 		}
 	});*@
 </script>
+
+<style>
+	.min-32 {
+		min-height: 32px;
+	}
+</style>

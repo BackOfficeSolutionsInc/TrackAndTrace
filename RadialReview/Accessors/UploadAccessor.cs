@@ -183,9 +183,11 @@ namespace RadialReview.Accessors {
 					await Backup[path].ToStream().CopyToAsync(ms);
 					ui.UseAWS = false;
 				} else {
-					var data = await new WebClient().DownloadStringTaskAsync("https://s3.amazonaws.com/" + path);
-					await data.ToStream().CopyToAsync(ms);
-					ui.UseAWS = false;
+					using (var webClient = new WebClient()) {
+						var data = await webClient.DownloadStringTaskAsync("https://s3.amazonaws.com/" + path);
+						await data.ToStream().CopyToAsync(ms);
+						ui.UseAWS = false;
+					}
 				}
 				Parse(ms, ref ui);
 			}

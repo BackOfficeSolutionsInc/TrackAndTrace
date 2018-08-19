@@ -27,5 +27,9 @@ namespace LogParser.Models {
 		public static TimeRange Around(double minutes, DateTime time, DateTimeKind kind) {
 			return Around(TimeSpan.FromMinutes(minutes), time, kind);
 		}
+
+		public override string ToString() {
+			return Start.Ticks+"_"+End.Ticks+"_"+Kind;
+		}
 	}
 }

@@ -58,15 +58,19 @@ namespace RadialReview.Hangfire
 			public const string ALPHA = "alpha_<#=DateTime.UtcNow.Ticks/1000000#>";   
 			public const string CRITICAL = "critical_<#=DateTime.UtcNow.Ticks/1000000#>"; 
 			public const string CHARGE_ACCOUNT_VIA_HANGFIRE = "chargeaccount_<#=DateTime.UtcNow.Ticks/1000000#>";   
+			public const string EXECUTE_TASKS = "executetasks_<#=DateTime.UtcNow.Ticks/1000000#>";   
+			public const string ETHERPAD = "etherpad_<#=DateTime.UtcNow.Ticks/1000000#>";   
 
 		}
 
 
 		public static readonly string[] OrderedQueues=new []{
 					HangfireQueues.Immediate.CRITICAL,
+					HangfireQueues.Immediate.ETHERPAD,
 					HangfireQueues.Immediate.CONCLUSION_EMAIL,
 					HangfireQueues.Immediate.GENERATE_QC,
 					HangfireQueues.Immediate.CHARGE_ACCOUNT_VIA_HANGFIRE,
+					HangfireQueues.Immediate.EXECUTE_TASKS,
 					HangfireQueues.DEFAULT,
 					HangfireQueues.Immediate.ALPHA			 
 		};
