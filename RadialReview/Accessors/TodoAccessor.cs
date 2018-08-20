@@ -164,7 +164,7 @@ namespace RadialReview.Accessors {
 		}
 
 		public static async Task<TodoModel> CreateTodo(ISession s, PermissionsUtility perms, TodoCreation creation) {
-			var todo = creation.Generate(s, perms);
+			var todo = creation.Generate(s, perms); 
 
 			if (!string.IsNullOrWhiteSpace(todo.Details))
 				await PadAccessor.CreatePad(todo.PadId, todo.Details);

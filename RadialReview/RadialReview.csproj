@@ -45,6 +45,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CamundaCSharpClient">
+      <HintPath>..\CamundaCSharpClient\bin\Debug\CamundaCSharpClient.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Solver.Foundation, Version=3.0.2.10889, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -103,8 +106,9 @@
     <Compile Include="Accessors\Emailer.cs" />
     <Compile Include="Accessors\EventAccessor.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
+    <Compile Include="Accessors\Foo.cs" />
     <Compile Include="Accessors\ForModelAccessor.cs" />
-    <Compile Include="Accessors\FPData.cs" />
+    <Compile Include="Models\FirePad\FPData.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\HeadlineAccessor.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorPeopleTools.cs" />
@@ -176,6 +180,7 @@
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
+    <Compile Include="Controllers\FirePadController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\Upload\Upload_OrgUsersController.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\SetPeopleToolsTrial.cs" />
@@ -1869,6 +1874,7 @@
     <Content Include="Views\Account\Consent.cshtml" />
     <Content Include="Views\User\EditUserDetails.cshtml" />
     <Content Include="Views\Organization\Flags.cshtml" />
+    <Content Include="Views\FirePad\Firepad.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -2693,12 +2699,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CamundaCSharpClient\CamundaCSharpClient.csproj">
-      <Project>{220d5704-6b65-4f39-abe2-e3786114f2fd}</Project>
-      <Name>CamundaCSharpClient</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

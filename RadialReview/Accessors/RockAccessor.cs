@@ -458,8 +458,8 @@ namespace RadialReview.Accessors {
 				Rock = message,
 				FromTemplateItemId = templateId
 			};
-
-			s.Save(rock);
+            await PadAccessor.CreatePad(rock.PadId, "");
+            s.Save(rock);
 
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.CreateRock(ss, rock));
 

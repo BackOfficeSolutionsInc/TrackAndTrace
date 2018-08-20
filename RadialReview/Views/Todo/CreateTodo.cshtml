@@ -1,49 +1,56 @@
 ﻿@model RadialReview.Models.Todo.TodoVM
 
+
 @Html.SecuredHiddenFor(x => x.MeetingId)
 @Html.SecuredHiddenFor(x => x.RecurrenceId)
 @Html.SecuredHiddenFor(x => x.ByUserId)
 
-<div class="form-group">
-	@Html.LabelFor(x => x.Message)
-	@Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter To-do message", autocomplete = "off" })
-</div>
-<div class="form-group">
-	@Html.LabelFor(x => x.Details)
-	@Html.TextAreaFor(x => x.Details, new { @class = "form-control verticalOnly", rows = "6", placeholder = "Enter details (optional)" })
-</div>
 
-<div class="row">
-	<div class="col-sm-7">
-		<div class="form-group">
-		@Html.LabelFor(x => x.AccountabilityId)
-		<select name="@Html.NameFor(x => x.AccountabilityId)" class="select-user form-control" style="width: 100%;height:64px;" multiple="multiple">
-			@foreach (var u in Model.PossibleUsers.OrderBy(x=>x.name))
-			{
-				<option data-img="@u.imageUrl" value="@u.id" @(Model.AccountabilityId.Any(x=>x==u.id)?"selected":"")>@u.name</option>
-			}
-		</select>
-		</div>
-	</div>
-	<div class="col-sm-5">
-		<div class="form-group">
-			<label>Due Date:</label>
-            @Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", Model.DueDate, new ViewDataDictionary() { { "name", "DueDate" } })
-            @*<div class="date" data-date="@Model.DueDate.ToString(Html.Organization().Settings.GetDateFormat())" data-date-format="@Html.Organization().Settings.GetDateFormat().ToLower()">
-                <div class="">
-                    @Html.TextBox("DueDate", Model.DueDate.ToString(Html.Organization().Settings.GetDateFormat()), new { @class = "form-control datePicker", id = "TodoDueDate" })
-                    <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
-                </div>
-                <span class="add-on"><i class="icon-th"></i></span>
-            </div>*@
-		</div>
-	</div>
-</div>
 
-@Html.HiddenFor(x=>x.ForModelId)
-@Html.HiddenFor(x=>x.ForModelType)
 
-<script>
+    <div class="form-group">
+        @Html.LabelFor(x => x.Message)
+        @Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter To-do message", autocomplete = "off" })
+    </div>
+    <div class="form-group">
+
+        @Html.LabelFor(x => x.Details)
+        @Html.TextAreaFor(x => x.Details, new { @class = "form-control verticalOnly", rows = "6", placeholder = "Enter details (optional)" })
+       
+        <div id="firepad-container"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="form-group">
+                @Html.LabelFor(x => x.AccountabilityId)
+                <select name="@Html.NameFor(x => x.AccountabilityId)" class="select-user form-control" style="width: 100%;height:64px;" multiple="multiple">
+                    @foreach (var u in Model.PossibleUsers.OrderBy(x => x.name))
+                    {
+                        <option data-img="@u.imageUrl" value="@u.id" @(Model.AccountabilityId.Any(x => x == u.id) ? "selected" : "")>@u.name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="form-group">
+                <label>Due Date:</label>
+                @Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", Model.DueDate, new ViewDataDictionary() { { "name", "DueDate" } })
+                @*<div class="date" data-date="@Model.DueDate.ToString(Html.Organization().Settings.GetDateFormat())" data-date-format="@Html.Organization().Settings.GetDateFormat().ToLower()">
+                        <div class="">
+                            @Html.TextBox("DueDate", Model.DueDate.ToString(Html.Organization().Settings.GetDateFormat()), new { @class = "form-control datePicker", id = "TodoDueDate" })
+                            <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+                        </div>
+                        <span class="add-on"><i class="icon-th"></i></span>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+
+    @Html.HiddenFor(x => x.ForModelId)
+    @Html.HiddenFor(x => x.ForModelType)
+
+    <script>
 	//function formatState(state) {
 	//	if (!state.id) {
 	//		return state.text;
@@ -57,7 +64,7 @@
 		templateSelection: imageListFormat,
 	});
 
-	@*var now = new Date();
+    @*var now = new Date();
 	now = Date.UTC(now.getYear()+1900, now.getMonth(), now.getDate(),0,0,0);
 	$('#TodoDueDate').datepickerX({
 	    format: '@Html.Organization().Settings.GetDateFormat().ToLower()',
@@ -65,4 +72,6 @@
 			return date.valueOf() < now.valueOf() ? 'disabled' : '';
 		}
 	});*@
-</script>
+     
+    </script>
+    

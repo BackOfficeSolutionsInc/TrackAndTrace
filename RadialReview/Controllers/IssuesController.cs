@@ -24,8 +24,19 @@ namespace RadialReview.Controllers {
 				if (readOnly || !_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssue(id))) {
 					padId = await PadAccessor.GetReadonlyPad(issue.PadId);
 				}
-				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
-			} catch (Exception) {
+				
+                //this is to choose what to use between Noteserves or firepad
+                var firePadRef = PadAccessor.getFirePadRef(padId);
+                if (firePadRef == null)
+                {
+                    return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+                }
+                else
+                {
+
+                    return Redirect("~/FirePad/FirePad?PadId=" + padId);
+                }
+            } catch (Exception) {
 				return RedirectToAction("Index", "Error");
 			}
 		}

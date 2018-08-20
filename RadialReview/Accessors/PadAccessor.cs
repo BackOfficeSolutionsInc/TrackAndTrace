@@ -10,12 +10,15 @@ using System.Web;
 using System.Web.Helpers;
 using RadialReview.Exceptions;
 using RadialReview.Models.Payments;
+using RadialReview.Models.FirePad;
 using RadialReview.Utilities;
 
 //install FireSharp.Serialization.JsonNet 1.1.0
 using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace RadialReview.Accessors
 {
@@ -31,13 +34,13 @@ namespace RadialReview.Accessors
                     AuthSecret = Config.FirePadDBSecret(),
                     BasePath = Config.FirePadUrl()
                 };
-                IFirebaseClient FPClient;
-                FPClient = new FireSharp.FirebaseClient(FPconfig);
+                IFirebaseClient FPClient= new FireSharp.FirebaseClient(FPconfig);
                 if (FPClient!=null){
                     var data = new FPData
                     {
                         padID = padid,
-                        text = text
+                        text = text,
+                        firepadRef=" "
                     };
                     SetResponse FPResponse = await FPClient.SetTaskAsync("FirePad/" + padid, data);
                     FPData FPresult = FPResponse.ResultAs<FPData>();
@@ -45,28 +48,28 @@ namespace RadialReview.Accessors
                 {
                     throw new PermissionsException("Error connecting to firebase");
                 }
-
+                return true;
                 //end firepad creation
 
-                var client = new HttpClient();
-                var urlText = "";
-                if (!String.IsNullOrWhiteSpace(text))
-                    urlText = "&text=" + WebUtility.UrlEncode(text);
+                //var client = new HttpClient();
+                //var urlText = "";
+                //if (!String.IsNullOrWhiteSpace(text))
+                //    urlText = "&text=" + WebUtility.UrlEncode(text);
 
-                var baseUrl = Config.NotesUrl() + "api/1/createPad?apikey=" + Config.NoteApiKey() + "&padID=" + padid + urlText;
-                HttpResponseMessage response = await client.GetAsync(baseUrl);
-                HttpContent responseContent = response.Content;
-                using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
-                {
-                    var result = await reader.ReadToEndAsync();
-                    int code = Json.Decode(result).code;
-                    string message = Json.Decode(result).message;
-                    if (code != 0)
-                    {
-                        throw new PermissionsException("Error " + code + ": " + message);
-                    }
-                    return true;
-                }
+                //var baseUrl = Config.NotesUrl() + "api/1/createPad?apikey=" + Config.NoteApiKey() + "&padID=" + padid + urlText;
+                //HttpResponseMessage response = await client.GetAsync(baseUrl);
+                //HttpContent responseContent = response.Content;
+                //using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
+                //{
+                //    var result = await reader.ReadToEndAsync();
+                //    int code = Json.Decode(result).code;
+                //    string message = Json.Decode(result).message;
+                //    if (code != 0)
+                //    {
+                //        throw new PermissionsException("Error " + code + ": " + message);
+                //    }
+                //    return true;
+                //}
 
 
                 
@@ -176,5 +179,63 @@ namespace RadialReview.Accessors
 				return "";
 			}
 		}
-	}
+
+        public static string getFirePadRef(string padId)
+        {
+            string firePadRef = null;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(Config.FirePadUrl());
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var response = client.GetAsync("/FirePad/" + padId + ".json").Result;
+            string res = null;
+            
+            
+            
+            using (HttpContent content = response.Content)
+            {
+                // ... Read the string.
+                Task<string> result = content.ReadAsStringAsync();
+                res = result.Result;
+                if (res != "null")
+                {
+                    var items = JsonConvert.DeserializeObject<FPData>(res);
+                    firePadRef = items.firepadRef;
+                }
+            }
+            
+            
+            
+
+            return firePadRef;
+        }
+        public static FPData getFPData(string padId)
+        {
+            FPData fpdata = null;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(Config.FirePadUrl());
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var response = client.GetAsync("/FirePad/" + padId + ".json").Result;
+            string res = null;
+
+
+
+            using (HttpContent content = response.Content)
+            {
+                // ... Read the string.
+                Task<string> result = content.ReadAsStringAsync();
+                res = result.Result;
+                if (res != "null")
+                {
+                    var items = JsonConvert.DeserializeObject<FPData>(res);
+                    fpdata = items ;
+                }
+            }
+
+
+
+
+            return fpdata;
+        }
+    }
+    
 }

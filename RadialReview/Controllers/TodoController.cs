@@ -64,10 +64,18 @@ namespace RadialReview.Controllers {
 			try {
 				var todo = TodoAccessor.GetTodo(GetUser(), id);
 				var padId = todo.PadId;
-				if (readOnly || !_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id))) {
+                
+                if (readOnly || !_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id))) {
 					padId = await PadAccessor.GetReadonlyPad(todo.PadId);
 				}
-				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+                //this is to choose what to use between Noteserves or firepad
+                var firePadRef = PadAccessor.getFirePadRef(padId);
+                if (firePadRef == null){
+                    return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+                }else{
+                   
+                    return Redirect("~/FirePad/FirePad?PadId=" + padId);
+                }
 			} catch (Exception e) {
 				return RedirectToAction("Index", "Error");
 			}
@@ -105,7 +113,12 @@ namespace RadialReview.Controllers {
 				ViewBag.PossibleMeetings = meetings;
 
 				ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
-				return PartialView(todo);
+
+                //start Creating firepad
+                var padId = todo.PadId;
+                ViewBag.firePadRef = PadAccessor.getFirePadRef(padId);
+                //end creating firepad
+                return PartialView(todo);
 			} else {
 				return RedirectToAction("Modal", "Milestone", new { id = -id });
 			}
