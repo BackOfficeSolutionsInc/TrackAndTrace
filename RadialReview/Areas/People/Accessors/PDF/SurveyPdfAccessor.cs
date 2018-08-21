@@ -105,7 +105,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			}
 		}
 
-		protected static void AddSectionTitle(Section sec, string pageTitle,Unit usableWidth, Orientation orientation = Orientation.Portrait) {
+		protected static void AddSectionTitle(Section sec, string pageTitle, Unit usableWidth, Orientation orientation = Orientation.Portrait) {
 
 			var table = new Table();
 			table.AddColumn(usableWidth);
@@ -797,12 +797,12 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 				p.Format.Font.Italic = true;
 				p.Format.Alignment = ParagraphAlignment.Center;
 			}
-			else {
 
-				PdfTable.AddSpacerRow(table);
-				//Append table
-				section.Add(table);
-			}
+
+			PdfTable.AddSpacerRow(table);
+			//Append table
+			section.Add(table);
+
 
 			#region OLD
 			//var table = new Table();
