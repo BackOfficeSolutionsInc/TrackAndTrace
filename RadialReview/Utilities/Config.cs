@@ -6,6 +6,7 @@ using RadialReview.Models;
 using RadialReview.Models.Enums;
 using System.IO;
 using System.Threading;
+using FireSharp.Config;
 
 namespace RadialReview.Utilities {
 	public class Config {
@@ -658,9 +659,15 @@ namespace RadialReview.Utilities {
             }
             return server;
         }
-        internal static string FirePadDBSecret()
+        
+        public static IFirebaseConfig getFirePadConfig()
         {
-            return GetAppSetting("FirePadServer_DBSecret");
+            IFirebaseConfig FirePadConfig = new FirebaseConfig
+            {
+                AuthSecret = GetAppSetting("FirePadServer_DBSecret"),
+                BasePath = FirePadUrl()
+            };
+            return FirePadConfig;
         }
         //end firepad creation
 

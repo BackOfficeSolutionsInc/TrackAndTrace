@@ -58,13 +58,9 @@ var clickHeadlineRow = function (evt) {
 	$(detailsContents).append("<div class='heading on-edit-enabled'><h4 class='message-holder clickable' data-headline='" + headline + "'><span data-headline='" + headline + "' class='message editable-text'>" + message + "</span></h4></div>");
     //$(detailsContents).append("<textarea id='headlineDetailsField' class='details headline-details' data-headline='" + headline + "'>" + details + "</textarea>");	
 	
-    //dont forget to adjust when inplemented
-	if (new Date(createtime) <= new Date('2018-08-14')) {
-	    $(detailsContents).append("<iframe class='details headline-details on-edit-enabled' name='embed_readwrite' src='https://notes.traction.tools/p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + encodeURI(UserName) + "' width='100%' height='100%'></iframe>");
-	} else {
-        $(detailsContents).append("<iframe class='details headline-details on-edit-enabled' name='embed_readwrite' src='/FirePad/FirePad?PadId=" + padId +  "' width='100%' height='100%'></iframe>");
-	}
     
+	//    $(detailsContents).append("<iframe class='details headline-details on-edit-enabled' name='embed_readwrite' src='https://notes.traction.tools/p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + encodeURI(UserName) + "' width='100%' height='100%'></iframe>");	
+	$(detailsContents).append("<iframe class='details headline-details on-edit-enabled' name='embed_readwrite' src='/headlines/Pad/" + headline + "' width='100%' height='100%'></iframe>");
 	
 
 	$(detailsContents).append(

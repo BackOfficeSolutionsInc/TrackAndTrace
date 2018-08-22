@@ -26,7 +26,7 @@ namespace RadialReview.Controllers {
 				}
 				
                 //this is to choose what to use between Noteserves or firepad
-                var firePadRef = PadAccessor.getFirePadRef(padId);
+                var firePadRef = PadAccessor.GetFirePadRef(padId);
                 if (firePadRef == null)
                 {
                     return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
@@ -34,7 +34,7 @@ namespace RadialReview.Controllers {
                 else
                 {
 
-                    return Redirect("~/FirePad/FirePad?PadId=" + padId);
+                    return Redirect("~/FirePad/" + padId);
                 }
             } catch (Exception) {
 				return RedirectToAction("Index", "Error");

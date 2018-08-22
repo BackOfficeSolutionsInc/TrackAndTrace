@@ -69,12 +69,12 @@ namespace RadialReview.Controllers {
 					padId = await PadAccessor.GetReadonlyPad(todo.PadId);
 				}
                 //this is to choose what to use between Noteserves or firepad
-                var firePadRef = PadAccessor.getFirePadRef(padId);
+                var firePadRef = PadAccessor.GetFirePadRef(padId);
                 if (firePadRef == null){
                     return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
                 }else{
                    
-                    return Redirect("~/FirePad/FirePad?PadId=" + padId);
+                    return Redirect("~/FirePad/" + padId);
                 }
 			} catch (Exception e) {
 				return RedirectToAction("Index", "Error");
@@ -116,7 +116,7 @@ namespace RadialReview.Controllers {
 
                 //start Creating firepad
                 var padId = todo.PadId;
-                ViewBag.firePadRef = PadAccessor.getFirePadRef(padId);
+                ViewBag.firePadRef = PadAccessor.GetFirePadRef(padId);
                 //end creating firepad
                 return PartialView(todo);
 			} else {

@@ -106,9 +106,8 @@
     <Compile Include="Accessors\Emailer.cs" />
     <Compile Include="Accessors\EventAccessor.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
-    <Compile Include="Accessors\Foo.cs" />
     <Compile Include="Accessors\ForModelAccessor.cs" />
-    <Compile Include="Models\FirePad\FPData.cs" />
+    <Compile Include="Models\FirePad\FirePadData.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\HeadlineAccessor.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorPeopleTools.cs" />
@@ -1121,6 +1120,8 @@
     </Content>
     <Content Include="Content\etherpad\web.css" />
     <Content Include="Content\favicon-local.ico" />
+    <Content Include="Content\FirePad\codemirror.css" />
+    <Content Include="Content\FirePad\firepad.css" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
     </Content>
@@ -1376,6 +1377,9 @@
     <Content Include="Scripts\d3\d3.v4.js" />
     <Content Include="Scripts\d3\radial.d3.tree.js" />
     <Content Include="Scripts\Dashboard\dashboard.js" />
+    <Content Include="Scripts\FirePad\codemirror.js" />
+    <Content Include="Scripts\FirePad\firebase.js" />
+    <Content Include="Scripts\FirePad\firepad.min.js" />
     <Content Include="Scripts\home\html2canvas.js" />
     <Content Include="Scripts\home\jspdf.js" />
     <Content Include="Scripts\home\screenshot.js" />
@@ -1874,7 +1878,7 @@
     <Content Include="Views\Account\Consent.cshtml" />
     <Content Include="Views\User\EditUserDetails.cshtml" />
     <Content Include="Views\Organization\Flags.cshtml" />
-    <Content Include="Views\FirePad\Firepad.cshtml" />
+    <Content Include="Views\FirePad\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

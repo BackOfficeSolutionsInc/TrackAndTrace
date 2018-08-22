@@ -17,7 +17,7 @@ namespace RadialReview {
             routes.MapRoute(name: "nexus", url: "n/{id}", defaults: new { controller = "Nexus", action = "Index", id = "" });
             routes.MapRoute(name: "privacy", url: "privacy", defaults: new { controller = "Legal", action = "Privacy", id = "" });
             routes.MapRoute(name: "tos", url: "tos", defaults: new { controller = "Legal", action = "TOS", id = "" });
-
+            routes.MapRoute(name: "firepad", url: "FirePad/{id}", defaults: new { controller = "FirePad", action = "Index", id = "" });
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

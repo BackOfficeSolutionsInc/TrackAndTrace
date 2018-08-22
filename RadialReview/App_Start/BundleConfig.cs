@@ -46,8 +46,9 @@ namespace RadialReview {
 
 			TagInput(bundles);
 			SnackBar(bundles);
+            FirePad(bundles);
 
-			BundleTable.EnableOptimizations = Config.OptimizationEnabled();
+            BundleTable.EnableOptimizations = Config.OptimizationEnabled();
 
 
 
@@ -540,5 +541,17 @@ namespace RadialReview {
 			//    "~/Scripts/Angular/helpers.js",
 			//};
 		}
-	}
+        private static void FirePad(BundleCollection bundles)
+        {
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/FirePad").Include(
+                "~/Scripts/FirePad/firebase.js",
+                "~/Scripts/FirePad/codemirror.js",
+                "~/Scripts/FirePad/firepad.min.js"
+            )));
+
+            bundles.Add(new StyleBundle("~/Content/FirePad")
+                .Include("~/Content/FirePad/codemirror.css",
+                "~/Content/FirePad/firepad.css"));
+        }
+    }
 }
