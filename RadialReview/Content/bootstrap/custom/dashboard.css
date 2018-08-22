@@ -1284,6 +1284,13 @@ body.resizing .notes-tile:after,
 .dashboard .scorecard table .cumulative-column input:focus {
   outline: none;
 }
+.dashboard .scorecard #ScorecardTable_Over {
+  width: min-content;
+  display: -ms-grid;
+  -ms-grid-columns: min-content;
+  width: -moz-min-content;
+  width: -webkit-min-content;
+}
 .dashboard .scorecard .row {
   margin-bottom: 0px;
 }

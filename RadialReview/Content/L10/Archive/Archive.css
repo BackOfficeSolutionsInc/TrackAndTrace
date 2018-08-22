@@ -825,6 +825,17 @@ html {
 .meeting-archive .scorecard-list-container table .cumulative-column input:focus {
   outline: none;
 }
+.meeting-archive .scorecard-list-container #ScorecardTable_Over {
+  width: min-content;
+  display: -ms-grid;
+  -ms-grid-columns: min-content;
+  width: -moz-min-content;
+  width: -webkit-min-content;
+  padding-bottom: 1px;
+}
+.meeting-archive .scorecard-list-container .goal-column .blend {
+  min-width: 50px !important;
+}
 .meeting-archive .todo-list-container .empty-cell,
 .meeting-archive .todo-list-container .delete-column,
 .meeting-archive .todo-list-container .todotype-column,
