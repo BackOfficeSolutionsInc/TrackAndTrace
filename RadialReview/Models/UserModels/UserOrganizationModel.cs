@@ -60,8 +60,9 @@ namespace RadialReview.Models {
 			_ClientRequestId = id;
 		}
 
-		public virtual void SetClientTimeStamp(long timestamp) {
+		public virtual UserOrganizationModel SetClientTimeStamp(long timestamp) {
 			_ClientTimestamp = timestamp;
+            return this;
 		}
 		public virtual void IncrementClientTimestamp() {
 			_ClientTimestamp = (_ClientTimestamp ?? DateTime.UtcNow.ToJsMs()) + 1;

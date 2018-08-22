@@ -311,7 +311,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddTodo("todo1");
 			await l10.AddIssue("issue1");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Segue).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -356,7 +356,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddTodo("todo1");
 			await l10.AddIssue("issue1");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Scorecard).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -403,7 +403,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddTodo("todo1");
 			await l10.AddIssue("issue1");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Rocks).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -453,7 +453,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddIssue("issue1");
 			await l10.AddHeadline("headline");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Headlines).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -502,7 +502,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddIssue("issue1");
 			await l10.AddHeadline("headline");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Todo).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -552,7 +552,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddIssue("issue1");
 			await l10.AddHeadline("headline");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.IDS).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -602,7 +602,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddIssue("issue1");
 			await l10.AddHeadline("headline");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Conclude).Id;
 
 			//Shouldn't go to the page without starting the meeting

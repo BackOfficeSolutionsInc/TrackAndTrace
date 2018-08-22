@@ -84,5 +84,10 @@ namespace RadialReview.Utilities.Synchronize {
 		public static SyncAction UpdateHeadlineMessage(long id) {
 			return new SyncAction("Headln_" + id);
 		}
-	}
+
+
+        public static SyncAction TEST(string name) {
+            return new SyncAction("TEST_" + name);
+        }
+    }
 }

@@ -49,14 +49,15 @@ namespace RadialReview.Hangfire
 		public static class Immediate{
 
 			
-			public const string BUILD_TIME = "08/19/2018 05:04:40"; 
-			public const string CONCLUSION_EMAIL = "conclusionemail_636702518809";  
-			public const string GENERATE_QC = "generateqc_636702518809";  
-			public const string ALPHA = "alpha_636702518809";   
-			public const string CRITICAL = "critical_636702518809"; 
-			public const string CHARGE_ACCOUNT_VIA_HANGFIRE = "chargeaccount_636702518809";   
-			public const string EXECUTE_TASKS = "executetasks_636702518809";   
-			public const string ETHERPAD = "etherpad_636702518809";   
+			public const string BUILD_TIME = "08/22/2018 03:27:22"; 
+			public const string CONCLUSION_EMAIL = "conclusionemail_636705052428";  
+			public const string GENERATE_QC = "generateqc_636705052428";  
+			public const string ALPHA = "alpha_636705052428";   
+			public const string CRITICAL = "critical_636705052428"; 
+			public const string CHARGE_ACCOUNT_VIA_HANGFIRE = "chargeaccount_636705052428";   
+			public const string EXECUTE_TASKS = "executetasks_636705052428";   
+			public const string ETHERPAD = "etherpad_636705052428"; 
+			public const string DAILY_TASKS = "dailytasks_636705052428";  
 
 		}
 

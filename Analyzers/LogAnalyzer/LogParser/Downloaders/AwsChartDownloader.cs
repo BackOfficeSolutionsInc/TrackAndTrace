@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using LogParser.Models;
+using Newtonsoft.Json.Linq;
 using ParserUtilities;
 using ParserUtilities.Utilities;
 using System;
@@ -14,26 +15,6 @@ using static LogParser.Downloaders.AwsChartDownloader;
 
 namespace LogParser.Downloaders {
 
-	[DebuggerDisplay("({X}, {Y})")]
-	[Serializable]
-	public class Point  {
-		/// <summary>
-		/// Use utc time
-		/// </summary>
-		public DateTime X { get; set; }
-		public decimal? Y { get; set; }
-
-		public Point() {
-		}
-
-		public Point(DateTime x, decimal? y) {
-			X = x;
-			Y = y;
-		}
-		public Point(long utc, decimal? y) : this(utc.ToDateTime(), y) {
-		}
-		
-	}
 	[Serializable]
 	public class XYSeries {
 		public string Name { get; set; }
@@ -48,8 +29,8 @@ namespace LogParser.Downloaders {
 
 	public class AwsConstants {
 		public class Environments {
-			public static AwsChartDownloader.AwsEnvironment Env3 = new AwsChartDownloader.AwsEnvironment("app-tractiontools-env-3", "awseb-e-j-AWSEBLoa-1SFZNUPGVL28D", "us-west-2", "awseb-e-jpqjr2mgak-stack-AWSEBAutoScalingGroup-MLHNOA0L8LN2");
-			public static AwsChartDownloader.AwsEnvironment Env4 = new AwsChartDownloader.AwsEnvironment("app-tractiontools-env-4", "awseb-e-d-AWSEBLoa-N797H3PA6H8", "us-west-2", "awseb-e-de9akqpmac-stack-AWSEBAutoScalingGroup-J8AUCDX80SAK");
+			public static AwsEnvironment Env3 = new AwsEnvironment("app-tractiontools-env-3", "awseb-e-j-AWSEBLoa-1SFZNUPGVL28D", "us-west-2", "awseb-e-jpqjr2mgak-stack-AWSEBAutoScalingGroup-MLHNOA0L8LN2");
+			public static AwsEnvironment Env4 = new AwsEnvironment("app-tractiontools-env-4", "awseb-e-d-AWSEBLoa-N797H3PA6H8", "us-west-2", "awseb-e-de9akqpmac-stack-AWSEBAutoScalingGroup-J8AUCDX80SAK");
 		}
 
 		public class Charts {
@@ -103,24 +84,6 @@ namespace LogParser.Downloaders {
 				r.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36";
 				r.Headers.Add("Upgrade-Insecure-Requests: 1");
 			},false);
-		}
-
-		public class AwsEnvironment {
-			public AwsEnvironment(string name, string loadBalancerName, string region,string autoScalingGroup) {
-				Name = name;
-				LoadBalancerName = loadBalancerName;
-				Region = region;
-				AutoScalingGroup = autoScalingGroup;
-			}
-
-			public string Name { get; private set; }
-			public string LoadBalancerName { get; private set; }
-			public string Region { get; private set; }
-			public string AutoScalingGroup { get;  set; }
-
-			public override string ToString() {
-				return Name;
-			}
 		}
 
 

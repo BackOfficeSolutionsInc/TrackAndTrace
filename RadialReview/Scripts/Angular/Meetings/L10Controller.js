@@ -728,21 +728,36 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 				name: "history",
 				value: "false",
 				type: "yesno"
+			}, {///Cumulative
+			    type: "label",
+			    value: "Show Cumulative?"
 			}, {
-				type: "label",
-				value: "Show Cumulative?"
+			    name: "showCumulative",
+			    value: self.ShowCumulative || false,
+			    type: "yesno",
+			    onchange: function () {
+			        $("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
+			    }
 			}, {
-				name: "showCumulative",
-				value: self.ShowCumulative || false,
-				type: "yesno",
-				onchange: function () {
-					$("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
-				}
+			    classes: self.ShowCumulative == true ? "" : "hidden",
+			    name: "cumulativeRange",
+			    value: self.CumulativeRange || new Date(),
+			    type: "date"
+			}, {///Average
+			    type: "label",
+			    value: "Show Average?"
 			}, {
-				classes: self.ShowCumulative == true ? "" : "hidden",
-				name: "cumulativeRange",
-				value: self.CumulativeRange || new Date(),
-				type: "date"
+			    name: "showAverage",
+			    value: self.ShowAverage || false,
+			    type: "yesno",
+			    onchange: function () {
+			        $("#averageRange").toggleClass("hidden", $(this).val() != "true");
+			    }
+			}, {
+			    classes: self.ShowAverage == true ? "" : "hidden",
+			    name: "averageRange",
+			    value: self.AverageRange || new Date(),
+			    type: "date"
 			}, {
 				type: "label",
 				value: "Unit type?"
@@ -816,6 +831,8 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 							"connectionId": null,
 							"cumulativeStart": model.cumulativeRange,
 							"enableCumulative": model.showCumulative,
+							"averageStart": model.averageRange,
+							"enableAverage": model.showAverage,
 							//"Modifier": model.unitType
 						});
 					});

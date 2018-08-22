@@ -1252,6 +1252,7 @@ body,
 .wizard .scorecard-list-container .top-row,
 .wizard .scorecard-list-container .delete-column-alt,
 .wizard .scorecard-list-container .cumulative-column,
+.wizard .scorecard-list-container .average-column,
 .wizard .scorecard-list-container thead {
   display: none;
 }

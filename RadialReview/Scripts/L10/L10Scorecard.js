@@ -55,6 +55,12 @@ function updateCumulative(measurableId, value) {
     $("[data-measurable='" + measurableId + "'] .cumulative-column span").text(value);
 }
 
+function updateAverage(measurableId, value) {
+    if (value == null)
+        value = "";
+    $("[data-measurable='" + measurableId + "'] .average-column span").text(value);
+}
+
 function blurChange(e, d) {
     var self = this;
     var key = $(self).attr("id");

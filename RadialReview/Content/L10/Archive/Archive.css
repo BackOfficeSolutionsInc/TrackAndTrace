@@ -797,15 +797,19 @@ html {
 .meeting-archive .scorecard-list-container table .goal-column.direction {
   text-align: center;
 }
+.meeting-archive .scorecard-list-container table .average-column,
 .meeting-archive .scorecard-list-container table .cumulative-column {
   text-align: center;
   padding-right: 4px;
   cursor: pointer;
 }
+.meeting-archive .scorecard-list-container table .average-column:active,
 .meeting-archive .scorecard-list-container table .cumulative-column:active,
+.meeting-archive .scorecard-list-container table .average-column:focus,
 .meeting-archive .scorecard-list-container table .cumulative-column:focus {
   outline: none;
 }
+.meeting-archive .scorecard-list-container table .average-column input,
 .meeting-archive .scorecard-list-container table .cumulative-column input {
   padding-right: 0px !important;
   padding-left: 0px !important;
@@ -815,7 +819,9 @@ html {
   outline: none;
   cursor: pointer;
 }
+.meeting-archive .scorecard-list-container table .average-column input:active,
 .meeting-archive .scorecard-list-container table .cumulative-column input:active,
+.meeting-archive .scorecard-list-container table .average-column input:focus,
 .meeting-archive .scorecard-list-container table .cumulative-column input:focus {
   outline: none;
 }

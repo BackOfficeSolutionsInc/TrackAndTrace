@@ -77,8 +77,8 @@ namespace TractionTools.Tests.Controllers {
 
 				var tilesJson = ctrl.GetJson(x => x.Tiles(dashId));
 				var tiles = tilesJson.GetModel<List<TileModel>>();
-				Assert.AreEqual(6, tiles.Count);
-				var tileCount = 6;
+				Assert.AreEqual(5, tiles.Count);
+				var tileCount = 5;
 				foreach (TileType e in Enum.GetValues(typeof(TileType))) {
 					if (e != TileType.Invalid) {
 						ctrl.GetJson(x => x.CreateTile(dashId, false, type: e, title: "" + e, dataurl: "/url"));

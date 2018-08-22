@@ -37,7 +37,7 @@ namespace RadialReview.Controllers {
 			);
 
 			var todoModel = TodoAccessor.GetTodo(GetUser(), todo);
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.True());
 			var possible = recur._DefaultAttendees
 				.Select(x => x.User)
 				.Select(x => new IssueVM.AccountableUserVM() {
@@ -196,7 +196,7 @@ namespace RadialReview.Controllers {
 			if (meeting != -1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.True());
 			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
 			people.Add(GetUser());
 			people = people.Distinct(x => x.Id).ToList();
@@ -304,7 +304,7 @@ namespace RadialReview.Controllers {
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
 			ScoreModel s = null;
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.True());
 
 			try {
 				if (score == 0 && userid.HasValue) {

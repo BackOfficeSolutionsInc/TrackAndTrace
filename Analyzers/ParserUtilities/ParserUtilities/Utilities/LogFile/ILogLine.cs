@@ -11,11 +11,12 @@ namespace ParserUtilities.Utilities.LogFile {
 		None=0,
 		UserFlag=1,
 		UnusuallyLongRequest=2,
-		InterestingRequests=4,
+		PotentialCauses=4,
 		LikelyCause = 8,
 		ByGuid = 16,
 		HasError = 32,
-	}
+        Fixed = 64,
+    }
 
 	public interface ILogLine {
 

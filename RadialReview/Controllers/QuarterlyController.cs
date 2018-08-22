@@ -93,7 +93,7 @@ namespace RadialReview.Controllers {
 		[HttpGet]
 		public async Task<ActionResult> Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool headlines = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, bool quarterly = true/*, PdfAccessor.AccNodeJs root = null*/, bool pa = false) {
 
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.False());
 
 			var angRecur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, forceIncludeTodoCompletion: recur.IncludeAggregateTodoCompletionOnPrintout);
 			var merger = new DocumentMerger();

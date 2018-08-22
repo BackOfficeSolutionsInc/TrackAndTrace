@@ -11,10 +11,11 @@ namespace RadialReview.Exceptions
         public PermissionsException(String message,bool disableStacktrace=false): base(message)
         {
 	        DisableStacktrace = disableStacktrace;
+            StatusCodeOverride = System.Net.HttpStatusCode.Forbidden;
         }
 
-        public PermissionsException() : base(ExceptionStrings.DefaultPermissionsException)
-        {
+        public PermissionsException() : base(ExceptionStrings.DefaultPermissionsException) {
+            StatusCodeOverride = System.Net.HttpStatusCode.Forbidden;
         }
     }
 }

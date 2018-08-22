@@ -127,7 +127,7 @@ namespace TractionTools.Tests.Accessors
                 rocks = RockAccessor.GetAllRocks(manager, employee.Id);
                 Assert.AreEqual(3, rocks.Count);
                 //Test L10 rocks
-                var recurLoaded = L10Accessor.GetL10Recurrence(manager, recur.Id, true);
+                var recurLoaded = L10Accessor.GetL10Recurrence(manager, recur.Id, LoadMeeting.True());
                 Assert.AreEqual(0, recurLoaded._DefaultRocks.Count);
 
             row = controller.BlankEditorRow(true, false) as PartialViewResult;
@@ -140,7 +140,7 @@ namespace TractionTools.Tests.Accessors
             newRocks.Add(rowVm);
 			await RockAccessor.EditRocks(manager, employee.Id, newRocks, false, true);
 
-            recurLoaded = L10Accessor.GetL10Recurrence(manager, recur.Id, true);
+            recurLoaded = L10Accessor.GetL10Recurrence(manager, recur.Id, LoadMeeting.True());
             Assert.AreEqual(1, recurLoaded._DefaultRocks.Count);
             Assert.AreEqual("Rock D", recurLoaded._DefaultRocks[0].ForRock.Rock);
             Assert.AreEqual(recur.Id, recurLoaded._DefaultRocks[0].L10Recurrence.Id);

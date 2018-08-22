@@ -149,7 +149,7 @@ namespace TractionTools.UITests.FAQ {
 
 			var l10 = await L10Accessor.CreateBlankRecurrence(AUC.User, AUC.User.Organization.Id, false);
 			await L10Accessor.AddAttendee(AUC.User, l10.Id, AUC.User.Id);
-			var recur = L10Accessor.GetL10Recurrence(AUC.User, l10.Id, true);
+			var recur = L10Accessor.GetL10Recurrence(AUC.User, l10.Id, LoadMeeting.True());
 			recur.RockType =RadialReview.Model.Enums.L10RockType.Milestones;
 			await L10Accessor.EditL10Recurrence(AUC.User, recur);
 			var rock = await RockAccessor.CreateRock(AUC.User, AUC.User.Id, "TimeRock");

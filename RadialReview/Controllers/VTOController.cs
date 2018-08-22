@@ -52,7 +52,7 @@ namespace RadialReview.Controllers {
 			//var onlyCompanyWideRocks = false;
 
 			if (model.L10Recurrence != null) {
-				var isLeadership = L10Accessor.GetL10Recurrence(GetUser(), model.L10Recurrence.Value, false).TeamType == L10TeamType.LeadershipTeam;
+				var isLeadership = L10Accessor.GetL10Recurrence(GetUser(), model.L10Recurrence.Value, LoadMeeting.False()).TeamType == L10TeamType.LeadershipTeam;
 				defaultVision = isLeadership;
 				//onlyCompanyWideRocks = onlyCompanyWideRocks || isLeadership;
 			} else {

@@ -108,30 +108,31 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .swagger-section {
-        ///  background-color: #eee;
-        ///  font-family: &apos;Lato&apos;, sans-serif;
-        ///  /*.signature-nav {
-        ///		display: none !important;
-        ///	}*/
+        ///   Looks up a localized string similar to .instructions .monospace {
+        ///  font-family: monospace;
         ///}
-        ///.swagger-section pre {
-        ///  background-color: #efefef !important;
-        ///  border: 1px solid #e4e4e4 !important;
-        ///  resize: vertical;
-        ///  max-height: 300px !important;
-        ///  min-height: 80px;
+        ///.instructions pre {
+        ///  overflow-x: auto;
+        ///  word-wrap: normal;
+        ///  display: block;
+        ///  padding: 9.5px;
+        ///  margin: 0 0 10px;
+        ///  font-size: 13px;
+        ///  line-height: 1.42857143;
+        ///  word-break: break-all;
+        ///  word-wrap: break-word;
+        ///  color: #333333;
+        ///  background-color: #f5f5f5;
+        ///  border: 1px solid #ccc;
+        ///  border-radius: 4px;
         ///}
-        ///.swagger-section #header,
-        ///.swagger-section .footer {
-        ///  display: none;
+        ///.instructions .table {
+        ///  margin-bottom: 0px;
         ///}
-        ///.swagger-section .swagger-ui-wrap {
-        ///  line-height: 1;
-        ///  font-family: &apos;Lato&apos;, sans-serif;
-        ///  min-width: 100%;
-        ///  max-width: 100%;
-        /// [rest of string was truncated]&quot;;.
+        ///.instructions h1[id]:before,
+        ///.instructions h2[id]:before,
+        ///.instructions h3[id]:before,
+        ///.instructions [rest of string was truncated]&quot;;.
         /// </summary>
         public static string CustomSwaggerStyle {
             get {

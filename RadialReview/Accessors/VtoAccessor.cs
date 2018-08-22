@@ -161,7 +161,7 @@ namespace RadialReview.Accessors {
 
 					if (ang.L10Recurrence != null) {
 						try {
-							var recur = L10Accessor.GetL10Recurrence(s, perms, ang.L10Recurrence.Value, false);
+							var recur = L10Accessor.GetL10Recurrence(s, perms, ang.L10Recurrence.Value, LoadMeeting.False());
 							//var isLeadership = recur.TeamType == L10TeamType.LeadershipTeam;
 							//if (isLeadership) {
 							//   ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();

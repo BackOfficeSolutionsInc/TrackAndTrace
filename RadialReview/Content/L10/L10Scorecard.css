@@ -177,6 +177,7 @@
 .scorecard-table .score.disabled {
   background-color: #ececec !important;
 }
+.scorecard-table .average-column,
 .scorecard-table .cumulative-column {
   font-size: 15px;
   font-family: 'Roboto', sans-serif;

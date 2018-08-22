@@ -53,7 +53,14 @@ namespace RadialReview.Controllers {
 			if (id == null)
 				return Content("Error: url requires a meeting Id");
 			var recurrenceId = id.Value;
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true, true);
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, new LoadMeeting {
+                LoadMeasurables = false,
+                LoadRocks = false,
+                LoadUsers = true,
+                LoadVideos = true,
+                LoadNotes = true,
+                LoadPages = true,
+            });
 
 			ViewBag.VideoChatRoom = new VideoConferenceVM() {
 				RoomId = recurrence.VideoId,
@@ -197,7 +204,7 @@ namespace RadialReview.Controllers {
 			model.PossibleRocks = allRocks;
 
 			if (recurrenceId != 0) {
-				var r = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+				var r = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 				allRocks.AddRange(r._DefaultRocks.Where(x => x.Id > 0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
 				allMeasurables.AddRange(r._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y != null && y.Id != x.Measurable.NotNull(z => z.Id))).Select(x => x.Measurable));
 				model.Recurrence = r;
@@ -240,7 +247,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Pages(long id) {
 			var now = DateTime.UtcNow.ToJavascriptMilliseconds();
-			var model = L10Accessor.GetL10Recurrence(GetUser(), id, true);
+			var model = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.True());
 			return View(model);
 		}
 
@@ -309,7 +316,7 @@ namespace RadialReview.Controllers {
 			model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
 
 			if (model.Recurrence.Id != 0) {
-				var existing = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
+				var existing = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, LoadMeeting.True());
 				allRocks.AddRange(existing._DefaultRocks.Where(x => x.Id > 0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
 				allMeasurables.AddRange(existing._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y != null && y.Id != x.Measurable.NotNull(z => z.Id))).Select(x => x.Measurable));
 			} else {

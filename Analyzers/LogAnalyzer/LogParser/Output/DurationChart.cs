@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static LogParser.Downloaders.AwsCloudWatchDownloader;
 using LogParser.Downloaders;
+using LogParser.Properties;
 
 namespace LogParser.Output {
 	public class DurationChart {
@@ -22,7 +23,7 @@ namespace LogParser.Output {
 
 
 
-		public static void SaveDurationChart(string output, LogFile<LogLine> file, Func<LogLine, object> colorBy = null, IPallet pallet = null, IEnumerable<DataChart> charts = null) {
+		public static void SaveDurationChart(string output, LogFile<LogLine> file, Func<LogLine, object> colorBy = null, IPallet pallet = null, IEnumerable<DataChartModel> charts = null) {
 
 			var builder = new StringBuilder();
 
@@ -135,51 +136,46 @@ namespace LogParser.Output {
 			builder.Append("<div class='dragbar hidden fixedFont'><span></span></div>");
 
 
-			builder.Append(@"<script src=""https://code.jquery.com/jquery-3.3.1.min.js"" integrity=""sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="" crossorigin=""anonymous""></script>");
-			AppendScripts(builder, start, end);
+            //builder.Append(@"<script src=""https://code.jquery.com/jquery-3.3.1.min.js"" integrity=""sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="" crossorigin=""anonymous""></script>");
+            builder.Append("<script>" + Resources.Jquery + "</script>");
+            AppendScripts(builder, start, end);
 			builder.Append("</body>");
 			builder.Append("</html>");
 			File.WriteAllText(output, builder.ToString());
 		}
 
-		private static StringBuilder AppendCharts(StringBuilder sb, DateTime start, DateTime end, IEnumerable<DataChart> charts) {
-			var legend = new StringBuilder();
+		private static StringBuilder AppendCharts(StringBuilder chartBuilder, DateTime start, DateTime end, IEnumerable<DataChartModel> charts) {
+			var legendBuider = new StringBuilder();
 			if (charts != null) {
 
 				var pallet = Pallets.Stratified;
 
-				legend.Append("<form>");
+				legendBuider.Append("<form>");
 				var i = 0;
 				foreach (var c in charts) {
 					var color = pallet.NextColor();
-					var dp = c.Datapoints.OrderBy(x => x.X);
-					if (dp.Any()) {
-						var min = c.Statistic.Min ?? dp.Select(x => (double?)x.Y).Min();
-						var max = c.Statistic.Max ?? dp.Select(x => (double?)x.Y).Max();
-						if (max - min != 0) {
-							var pts = dp.Select(x => Tuple.Create(((x.X - start).TotalSeconds / (end - start).TotalSeconds * 100), (((max-min) - ((double?)x.Y-min)) / (max -min) * 100)));
-							var points = string.Join(" ", pts.Select(x => x.Item1 + "," + x.Item2));
-							var circles = string.Join("", pts.Select(x => "<ellipse cx='" + x.Item1 + "' cy='" + x.Item2 + "' rx='0.1' ry='1' fill='" + color + "'/>"));
-							sb.Append("<div class='chart chart-" + c.Name + " hidden'>");
-							sb.Append(@"<svg width='50%' height='10%' viewBox=""0 0 100 104"" preserveAspectRatio=""none"">");
-							sb.Append(@"<polyline stroke="""+color+@""" points=""" + points + @""" vector-effect=""non-scaling-stroke"" />");
-							sb.Append(circles);
-							sb.Append("</svg>");
-							sb.Append("</div>");
-							legend.Append("<div><span class='legend-dot' style='background-color:" + color + ";'>"+(i+1)+"</span><input data-chart-num='"+i+"' id='cb_" + c.Name+"' type='checkbox' name='chart' value='" + c.Name + "'><label for='cb_" + c.Name + "'>" + c.Name + "</label><span class='chart-max'>["+(Math.Round((min??0)*1000.0)/1000)+", " + (Math.Round((max ?? 0) * 1000.0) / 1000) + "]</span></div>");
-							i += 1;
-						} else {
-							legend.Append("<div>No data for " + c.Name + "</div>");
-						}
+					
+					if (c.Datapoints.Any()) {
+                        var key = "" + (i + 1);
+                        if (i >= 9) {
+                            var keys = new[] { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" };
+                            key = keys[i - 9];
+                        }
+                        var mc = new MetricChart(c, start, end, "50%", "10%");
+                        MetricChart.CreateChart("50%","10%",chartBuilder, start, end, legendBuider, key, c, color, i);
 
-					}
-				}
-				legend.Append("</form>");
+                        
+                        i += 1;
+                    }
+                }
+				legendBuider.Append("</form>");
 			}
-			return legend;
+			return legendBuider;
 		}
 
-		private static DefaultDictionary<object, string> GetColorLookup(Func<LogLine, object> colorBy, IEnumerable<LogLine> lines, IPallet pallet) {
+       
+
+        private static DefaultDictionary<object, string> GetColorLookup(Func<LogLine, object> colorBy, IEnumerable<LogLine> lines, IPallet pallet) {
 			var colorLookup = new DefaultDictionary<object, string>(x => "red");
 			if (colorBy != null) {
 				pallet = pallet ?? new StratifiedPallet();
@@ -201,7 +197,7 @@ namespace LogParser.Output {
 
 		private static void AppendStyles(StringBuilder builder, double secondAsPercentage) {
 			builder.Append(
-			@"<style>
+            @"<style>
 	body{
 		margin-top: 0px;
 		margin-bottom: 0px;
@@ -227,12 +223,18 @@ namespace LogParser.Output {
 		top: -3px;
 		position: relative;
 		font-size: 10px;
-		padding-left: 5px;
+		padding-left: 1px;
+        text-align:center;
 		color: white;
 	}
 
 	input[type='checkbox']{
 	}
+
+    form > div{
+        display: inline-block;
+        width: 50%;
+    }
 
 	.chart-max{
 		opacity: 0.7;
@@ -240,6 +242,10 @@ namespace LogParser.Output {
 		font-size: 69%;
 		margin-left: 10px;
 	}
+
+    .chart svg {
+        border-top: 1px dotted gray;
+    }
 
 	.fixedFont{
 		font-size:1.2vh;
@@ -332,6 +338,20 @@ namespace LogParser.Output {
 		border-radius:3px;
 	}
 
+
+	
+	.full-res .bar:hover{
+        margin-left:" + secondAsPercentage / 2 + @"vw;        
+    }	
+	.full-res .bar:hover:before{
+		left: " + secondAsPercentage / 2 + @"vw;
+		right: 0;    
+    }    
+	.full-res .bar:hover:after{        
+		right: " + secondAsPercentage / 2 + @"vw;
+		left: -" + secondAsPercentage / 2 + @"vw;
+    }
+
 	.url{		
 		text-shadow:1px 0 1px white, 0 1px 1px white, 1px 1px 1px white, 0 0 1px white, 1px 0 1px white, 0 1px 1px white, 1px 1px 1px white, 0 0 1px white;
 	}
@@ -420,7 +440,7 @@ namespace LogParser.Output {
 	}
 
 	.flag-UserFlag{
-		background-color:#f9c7a5;
+		background-color:#e1baf5;
 	}
 
 	.flag-UnusuallyLongRequest{
@@ -428,7 +448,7 @@ namespace LogParser.Output {
 	}
 
 
-	.flag-InterestingRequests{
+	.flag-PotentialCauses{
 		background-color: #bbf9e1;
 	}
 
@@ -449,6 +469,9 @@ namespace LogParser.Output {
 
 	.flag-ByGuid{
 		background-color: lightblue;
+	}
+	.flag-Fixed{
+		background-color: #c5ffbe;
 	}
 
 	.click-flag{
@@ -490,12 +513,13 @@ namespace LogParser.Output {
 		border:1px solid white;
 	}
 
-	.flag-InterestingRequests .flag-icon-InterestingRequests,
+	.flag-PotentialCauses .flag-icon-PotentialCauses,
 	.flag-UnusuallyLongRequest .flag-icon-UnusuallyLongRequest,
 	.flag-UserFlag .flag-icon-UserFlag,
 	.flag-LikelyCause .flag-icon-LikelyCause,
 	.flag-ByGuid .flag-icon-ByGuid,
-	.flag-HasError .flag-icon-HasError
+	.flag-HasError .flag-icon-HasError,
+	.flag-Fixed .flag-icon-Fixed
 	{
 		display:inline-block;
 		color:#ffffff11;
@@ -506,12 +530,12 @@ namespace LogParser.Output {
 	}
 
 	.flag-icon-UserFlag{
-		background-color:orange;
+		background-color:#bb23bd;
 	}
 	.flag-icon-UnusuallyLongRequest{
 		background-color:#FFC107;
 	}
-	.flag-icon-InterestingRequests{
+	.flag-icon-PotentialCauses{
 		background-color:#037a88;
 	}
 	.flag-icon-LikelyCause{
@@ -523,6 +547,10 @@ namespace LogParser.Output {
 	}
 	.flag-icon-HasError{
 		background-color:deeppink;
+	}
+
+	.flag-icon-Fixed{
+		background-color:lime;
 	}
 
 	@keyframes blinker {
@@ -618,11 +646,26 @@ $(document).keyup(function(e){
 		$('[name=\'chart\']:checked').prop('checked',false);
     }
 
+    var keyMaps = {
+        81 : 9,
+        87 : 10,
+        69 : 11,
+        82 : 12,
+        84 : 13,
+        89 : 14,
+        85 : 15,
+        73 : 16,
+        79 : 17,
+        80 : 18,
+    };       
+
 	//show charts;
-	if(e.keyCode >=49 && e.keyCode<=57 || e.keyCode >=97 && e.keyCode<=105){
+	if(e.keyCode >=49 && e.keyCode<=57 || e.keyCode >=97 && e.keyCode<=105 || e.keyCode in keyMaps){
 		var id = e.keyCode-49;
 		if(e.keyCode >=97 && e.keyCode<=105)
 			id = e.keyCode-97;
+        if (e.keyCode in keyMaps)
+            id = keyMaps[e.keyCode];
 		var selected = $('[name=\'chart\'][data-chart-num='+id+']');
 		var shouldSelect = selected.is(':checked');
 		selected.attr('checked',!shouldSelect);

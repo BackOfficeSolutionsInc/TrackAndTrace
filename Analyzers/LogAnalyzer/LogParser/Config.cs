@@ -10,7 +10,7 @@ namespace LogParser {
 	/// Always end directories with '\'
 	/// </summary>
 	public class Config {
-		private static string BaseDirectory = @"C:\Users\Clay\Desktop\Diagnosis\";
+		private static string BaseDirectory = @"C:\Users\Lynnea\Desktop\Diagnosis\";
 		private static string Session = null;
 
 		public static void SetSession(string session) {

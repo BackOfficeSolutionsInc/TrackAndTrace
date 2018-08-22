@@ -386,8 +386,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SurveyResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Scheduler\ExecuteTasks.cs" />
-    <Compile Include="Scheduler\SendTodoEmailTests.cs" />
+    <Compile Include="SchedulerTests\DeleteOldSyncLocks.cs" />
+    <Compile Include="SchedulerTests\ExecuteTasks.cs" />
+    <Compile Include="SchedulerTests\SendTodoEmailTests.cs" />
     <Compile Include="Startup\SetupAssemblyInitializer.cs" />
     <Compile Include="TestUtils\BaseApiTest.cs" />
     <Compile Include="TestUtils\BaseCoreProcessTest.cs" />

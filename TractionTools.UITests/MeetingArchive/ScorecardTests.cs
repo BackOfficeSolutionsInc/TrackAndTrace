@@ -98,7 +98,7 @@ namespace TractionTools.UITests.Selenium {
                     Assert.IsTrue(row.Find(".target.value span").HasClass("modifiers-Dollar"));
                     var dateRows = d.Finds("#ScorecardTable thead tr");
                     var ths = dateRows[0].Finds("th");
-                    for (var i = 7; i < ths.Count - 2; i++) {
+                    for (var i = 8; i < ths.Count - 2; i++) {
                         var top = ths[i].Text;
                         var date1 = DateTime.Parse(top);
 						if (date1 > DateTime.UtcNow.AddDays(180)) {

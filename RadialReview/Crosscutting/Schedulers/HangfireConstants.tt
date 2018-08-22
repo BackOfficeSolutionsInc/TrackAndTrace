@@ -59,7 +59,8 @@ namespace RadialReview.Hangfire
 			public const string CRITICAL = "critical_<#=DateTime.UtcNow.Ticks/1000000#>"; 
 			public const string CHARGE_ACCOUNT_VIA_HANGFIRE = "chargeaccount_<#=DateTime.UtcNow.Ticks/1000000#>";   
 			public const string EXECUTE_TASKS = "executetasks_<#=DateTime.UtcNow.Ticks/1000000#>";   
-			public const string ETHERPAD = "etherpad_<#=DateTime.UtcNow.Ticks/1000000#>";   
+			public const string ETHERPAD = "etherpad_<#=DateTime.UtcNow.Ticks/1000000#>"; 
+			public const string DAILY_TASKS = "dailytasks_<#=DateTime.UtcNow.Ticks/1000000#>";  
 
 		}
 

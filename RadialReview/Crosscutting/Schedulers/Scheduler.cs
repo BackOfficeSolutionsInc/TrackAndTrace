@@ -104,7 +104,7 @@ namespace RadialReview.Crosscutting.Schedulers {
 		private static IBackgroundJobClient PrevSingletonClient { get; set; }
 		private static IBackgroundJobClient GetSingleton() {
 			if (SingletonClient == null)
-				SingletonClient = new BackgroundJobClient();
+ 				SingletonClient = new BackgroundJobClient();
 			return SingletonClient;
 		}
 
