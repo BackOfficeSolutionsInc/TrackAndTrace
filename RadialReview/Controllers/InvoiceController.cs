@@ -51,7 +51,8 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Details(long id) {
-			var invoice = InvoiceAccessor.GetInvoice(GetUser(), id).AsList();
+            AllowAdminsWithoutAudit();
+            var invoice = InvoiceAccessor.GetInvoice(GetUser(), id).AsList();
 			return View(invoice);
 		}
 

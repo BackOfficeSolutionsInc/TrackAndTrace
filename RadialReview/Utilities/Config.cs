@@ -491,6 +491,10 @@ namespace RadialReview.Utilities {
             return GetAppSetting("IsHangfireWorker", "false").ToBooleanJS();
         }
 
+        public static string GetAwsEnv() {
+            return GetAppSetting("AwsEnv", "na");
+        }
+
         public static ApplicationVersion GetVersion() {
             ApplicationVersion version = ApplicationVersion.invalid;
             if (Enum.TryParse(GetAppSetting("ApplicationVersion", "" + ApplicationVersion.invalid).ToLower(), out version)) {

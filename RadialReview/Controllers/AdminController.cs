@@ -805,7 +805,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Error(string id) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var errs = s.Get<ErrorLog>(id);
+					var errs = s.Get<ErrorLog>(Guid.Parse(id));
 
 					var res = new ErrorResult() {
 						Logs = errs.AsList(),

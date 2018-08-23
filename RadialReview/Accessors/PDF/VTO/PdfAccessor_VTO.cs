@@ -23,11 +23,11 @@ namespace RadialReview.Accessors {
 
 
 		public static async Task AddVTO(Document doc, AngularVTO vto, string dateformat, VtoPdfSettings settings) {
-			if (vto.IncludeVision) {
-				//await AddVtoVision_Intermediate(doc, vto, dateformat, settings);
-				await AddVtoVision(doc, vto, dateformat, settings);
-			}
-			await AddVtoTraction(doc, vto, dateformat, settings);
+            if (vto.IncludeVision) {
+                //await AddVtoVision_Intermediate(doc, vto, dateformat, settings);
+                await AddVtoVision(doc, vto, dateformat, settings);
+            }
+            await AddVtoTraction(doc, vto, dateformat, settings);            
 		}
 
 		private static async Task<Section> AddVtoPage(Document doc, string docName, string pageName, VtoPdfSettings settings) {
@@ -559,7 +559,7 @@ namespace RadialReview.Accessors {
 			hints.AddRange(marketingStrategyPanel);
 
 			hints.AddRange(GenerateThreeYearHints(vto, dateFormat));
-			var result = LayoutOptimizer.Optimize(visionLayoutGenerator, hints, vars,timeout);
+			var result = LayoutOptimizer.Optimize(visionLayoutGenerator, hints, vars, timeout);
 
 			LayoutOptimizer.Draw(doc, result);
 		}
