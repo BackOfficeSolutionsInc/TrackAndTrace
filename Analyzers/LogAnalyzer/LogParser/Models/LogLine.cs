@@ -31,6 +31,7 @@ namespace LogParser.Models {
 		public DateTime StartTime { get; private set; }
 		public DateTime EndTime { get; private set; }
 		public TimeSpan Duration { get; private set; }
+        public string InstanceName { get; set; }
 
 		public int? StatusCode {
 			get {

@@ -25,14 +25,18 @@ namespace RadialReview.App_Start {
 				Authorization = new[] { new HangfireAuth() }
 			});
 
-			var myQueues = HangfireQueues.OrderedQueues;
 
-			if (!Config.IsDefinitelyAlpha()) {
-				myQueues = myQueues.Where(x => x != HangfireQueues.Immediate.ALPHA).ToArray();
-			}
+            string[] myQueues = new string[0];
+            if (Config.IsHangfireWorker()) {
+			    myQueues = HangfireQueues.OrderedQueues;
+
+                if (!Config.IsDefinitelyAlpha()) {
+                    myQueues = myQueues.Where(x => x != HangfireQueues.Immediate.ALPHA).ToArray();
+                }
+            }
 
 
-			GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
 			app.UseHangfireServer(new BackgroundJobServerOptions() {
 				//WorkerCount = 1,
 				Queues = myQueues

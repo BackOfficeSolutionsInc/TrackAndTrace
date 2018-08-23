@@ -45,13 +45,17 @@ namespace LogParser.Output {
         fill:transparent;
     }
 </style>");
-            var i = 0;
-            var min = charts.Min(x => x.Datapoints.Min(y => y.X));
-            var max = charts.Max(x => x.Datapoints.Max(y => y.X));
-            foreach (var c in charts) {
-                var mc = new MetricChart(c,min,max,"90%","50%");
-                mc.AppendChart(sb, legend, "red",num:i);
-                i += 1;
+            try {
+                var i = 0;
+                var min = charts.Min(x => x.Datapoints.Min(y => y.X));
+                var max = charts.Max(x => x.Datapoints.Max(y => y.X));
+                foreach (var c in charts) {
+                    var mc = new MetricChart(c, min, max, "90%", "50%");
+                    mc.AppendChart(sb, legend, "red", num: i);
+                    i += 1;
+                }
+            }catch(Exception e) {
+                sb.Append("Error: " + e.Message);
             }
             sb.Append("</html>");
             File.WriteAllText(file,sb.ToString());

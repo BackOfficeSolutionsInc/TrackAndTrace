@@ -28,9 +28,7 @@ namespace LogParser.Output {
 			var builder = new StringBuilder();
 
 
-			///////////////////////////////////
-			// Bar Container
-			///////////////////////////////////
+			
 
 			var lines = file.GetFilteredLines();
 			var start = DateTime.MinValue;
@@ -45,7 +43,12 @@ namespace LogParser.Output {
 			var secondAsPercentage = TimeSpan.FromSeconds(1).TotalSeconds / totalDuration.TotalSeconds * 100.0;
 			builder.Append("<html>");
 			AppendStyles(builder, secondAsPercentage);
-			builder.Append("<body><div class='bar-container'>");
+
+
+            ///////////////////////////////////
+            // Bar Container
+            ///////////////////////////////////
+            builder.Append("<body><div class='bar-container'>");
 			var legend = AppendCharts(builder, start, end, charts);
 			builder.Append("<div>");
 			var i = 0;
@@ -95,10 +98,10 @@ namespace LogParser.Output {
 			builder.Append("</div>");
 
 
-			///////////////////////////////////
-			// Data Container
-			///////////////////////////////////
-			builder.Append("</div><div class='data-container'>");
+            ///////////////////////////////////
+            // Data Container
+            ///////////////////////////////////
+            builder.Append("</div><div class='data-container'>");
 			builder.Append("<div class='row-data json'>");
 			i = 0;
 			foreach (var line in lines) {
@@ -136,6 +139,11 @@ namespace LogParser.Output {
 			builder.Append("<div class='dragbar hidden fixedFont'><span></span></div>");
 
 
+            ////////////////////////////
+            //Slices
+            ////////////////////////////
+            AppendSlices(builder, file.GetSlices(), start, end);
+
             //builder.Append(@"<script src=""https://code.jquery.com/jquery-3.3.1.min.js"" integrity=""sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="" crossorigin=""anonymous""></script>");
             builder.Append("<script>" + Resources.Jquery + "</script>");
             AppendScripts(builder, start, end);
@@ -144,7 +152,22 @@ namespace LogParser.Output {
 			File.WriteAllText(output, builder.ToString());
 		}
 
-		private static StringBuilder AppendCharts(StringBuilder chartBuilder, DateTime start, DateTime end, IEnumerable<DataChartModel> charts) {
+        private static void AppendSlices(StringBuilder builder, List<TimeSlice> slices,DateTime start,DateTime end) {
+            builder.Append("<div class='slice-container'>");
+            var totalDuration = end - start;
+            foreach(var s in slices) {
+                var startOffset = (s.Range.Start - start).TotalSeconds / totalDuration.TotalSeconds * 100;
+                var width = (s.Range.End - s.Range.Start).TotalSeconds / totalDuration.TotalSeconds * 100;
+                var nonZero = "non-zero";
+                if (width == 0)
+                    nonZero = "";
+
+                builder.Append("<div class='slice "+nonZero+"' style='left:" + startOffset + "%;width:"+width+ "%'><span>"+s.Name+"</span></div>");
+            }
+            builder.Append("</div>");
+        }
+
+        private static StringBuilder AppendCharts(StringBuilder chartBuilder, DateTime start, DateTime end, IEnumerable<DataChartModel> charts) {
 			var legendBuider = new StringBuilder();
 			if (charts != null) {
 
@@ -552,6 +575,36 @@ namespace LogParser.Output {
 	.flag-icon-Fixed{
 		background-color:lime;
 	}
+    .slice-container{
+        pointer-events:none;    
+        left:0px;
+        width:50%; 
+        position:fixed;
+        top:0;
+        bottom:0;
+    }
+
+    .slice-container .slice{
+        position:relative;       
+        border-left:1px dashed blue;
+        background-color:#0000ff09;
+        height: 100%;   
+    }
+    .slice-container .slice.non-zero{
+        border-right:1px dashed blue;
+    }
+    .slice-container .slice span{
+        position:absolute;
+        bottom:0px;
+        left:0px;
+        color:blue;
+        font-size:70%;
+        background-color: #ffffff99;
+    }
+
+    .full-res .slice-container{
+        display:none;
+    }
 
 	@keyframes blinker {
 	  50% {
@@ -598,7 +651,7 @@ $('body').mousemove(function(e){
 		offset = offset * 60000;
 		
 
-		$('.status-text').html(logFileVarName+'.FilterRange('+Math.floor(Math.min(time,dragStartTime)- offset)+'.ToDateTime(DateTimeKind.Local),'+Math.floor(Math.max(time,dragStartTime)- offset)+'.ToDateTime(DateTimeKind.Local));');
+		$('.status-text').html(logFileVarName+'.FilterRange(new TimeRange('+Math.floor(Math.min(time,dragStartTime)- offset)+'.ToDateTime(),'+Math.floor(Math.max(time,dragStartTime)- offset)+'.ToDateTime(),DateTimeKind.Local));');
 	}
 });
 

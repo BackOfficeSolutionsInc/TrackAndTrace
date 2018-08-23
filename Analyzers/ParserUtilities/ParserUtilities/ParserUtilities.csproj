@@ -96,6 +96,7 @@
     <Compile Include="Utilities\LogFile\LogFile.cs" />
     <Compile Include="Utilities\LogFile\LogFileReader.cs" />
     <Compile Include="Utilities\DataTypes\Csv.cs" />
+    <Compile Include="Utilities\LogFile\TimeSlice.cs" />
     <Compile Include="Utilities\OutputFile\Matrix.cs" />
     <Compile Include="Utilities\OutputFile\PivotTable.cs" />
     <Compile Include="Utilities\Sha256.cs" />

@@ -121,6 +121,11 @@ namespace RadialReview.Controllers {
 		}
 		#endregion
 
+        [Access(AccessLevel.Radial)]
+        public async Task<string> Name() {
+            return HttpContext.Server.MachineName;
+        }
+
 		[Access(AccessLevel.Radial)]
 		[AsyncTimeout(5000)]
 		public async Task<ActionResult> Wait(CancellationToken ct, int seconds = 10, int timeout = 5) {

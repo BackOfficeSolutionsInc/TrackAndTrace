@@ -1,4 +1,5 @@
-﻿using ParserUtilities.Utilities.OutputFile;
+﻿using ParserUtilities.Utilities.DataTypes;
+using ParserUtilities.Utilities.OutputFile;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace ParserUtilities.Utilities.LogFile {
 
-		public delegate string ILogLineField<LINE>(LINE line) where LINE : ILogLine;
-		public delegate DateTime ILogLineDateField<LINE>(LINE line) where LINE : ILogLine;
+	public delegate string ILogLineField<LINE>(LINE line) where LINE : ILogLine;
+	public delegate DateTime ILogLineDateField<LINE>(LINE line) where LINE : ILogLine;
 
 	public class LogFile<LINE> where LINE : ILogLine {
 		public string Path { get; set; }
@@ -23,25 +24,30 @@ namespace ParserUtilities.Utilities.LogFile {
 		protected List<IFilter<LINE>> RelativeRangeFilter { get; set; }
 		protected Func<LINE, object> Grouping { get; set; }
 		protected int SkipLines { get; set; }
+        protected List<Action<LINE>> ForEachs { get; set; }
 
-		protected List<Tuple<Func<LINE, bool>,FlagType>> Flags { get; set; }
+        protected List<Tuple<Func<LINE, bool>,FlagType>> Flags { get; set; }
 		protected bool FlagsToTop { get; private set; }
+        protected List<TimeSlice> Slices { get; set; }
+
 
 		public LogFile<LINE> Clone() {
-			return new LogFile<LINE>() {
-				Path = Path,
-				ParseTime = ParseTime,
-				StartRange = StartRange,
-				EndRange = EndRange,
-				Ordering = Ordering,
-				Lines = Lines.ToList(),
-				Filters = Filters.ToList(),
-				RelativeRangeFilter	= RelativeRangeFilter.ToList(),
-				Flags = Flags.ToList(),
-				SkipLines = SkipLines,
-				Grouping = Grouping,
-				FlagsToTop = FlagsToTop
-			};
+            return new LogFile<LINE>() {
+                Path = Path,
+                ParseTime = ParseTime,
+                StartRange = StartRange,
+                EndRange = EndRange,
+                Ordering = Ordering,
+                Lines = Lines.ToList(),
+                Filters = Filters.ToList(),
+                RelativeRangeFilter = RelativeRangeFilter.ToList(),
+                Flags = Flags.ToList(),
+                SkipLines = SkipLines,
+                Grouping = Grouping,
+                FlagsToTop = FlagsToTop,
+                ForEachs = ForEachs.ToList(),
+                Slices = Slices.ToList(),
+            };
 		}
 
 		public LogFile() {
@@ -52,6 +58,8 @@ namespace ParserUtilities.Utilities.LogFile {
 			EndRange = DateTime.MinValue;
 			RelativeRangeFilter = new List<IFilter<LINE>>();
 			Flags = new List<Tuple<Func<LINE, bool>, FlagType>>();
+            ForEachs = new List<Action<LINE>>();
+            Slices = new List<TimeSlice>();
 		}
 
 		public LINE AddLine(LINE line) {
@@ -100,8 +108,14 @@ namespace ParserUtilities.Utilities.LogFile {
 		public LogFile<LINE> Filter(Func<LINE, bool> predicate, FilterType type = FilterType.Exclude) {
 			AddFilters(new CustomFilter<LINE>(predicate, type));
 			return this;
-		}
-		public LogFile<LINE> FilterRange(DateTime start, DateTime end, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
+        }
+        public LogFile<LINE> FilterRange(TimeRange range, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
+            return FilterRange(range.Start, range.End, type);
+        }
+        public LogFile<LINE> FilterRange(TimeRange range, double expandBy, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
+            return FilterRange(range.Start, range.End, expandBy, type);
+        }
+        public LogFile<LINE> FilterRange(DateTime start, DateTime end, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
 			AddFilters(new DateRangeFilter<LINE>(start, end, type, x => x.StartTime, x => x.EndTime));
 			return this;
 		}
@@ -190,9 +204,25 @@ namespace ParserUtilities.Utilities.LogFile {
 				orderedFlags.AddRange(f.ToList());
 				f = orderedFlags;
 			}
+
+            foreach (var line in f) {
+                foreach (var each in ForEachs) {
+                    each(line);
+                }
+            }
+
 			return f;
 		}
-		public IEnumerable<string> ToStringLines(string separator) {
+
+        public List<TimeSlice> GetSlices() {
+            return Slices.ToList();
+        }
+
+        public void ForEach(Action<LINE> action) {
+            ForEachs.Add(action);
+        }
+
+        public IEnumerable<string> ToStringLines(string separator) {
 			var f = GetFilteredLines();
 			var first = f.FirstOrDefault();
 			var date = StartRange;
@@ -225,10 +255,22 @@ namespace ParserUtilities.Utilities.LogFile {
 			FlagsToTop = true;
 		}
 
-		/*public Matrix<XTYPE,YTYPE,LINE, RESULT> ToMatrix<XTYPE,YTYPE,RESULT>(Func<LINE, XTYPE> xs, Func<LINE, YTYPE> ys,Func<Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixInput, RESULT> cellSelector, Func<Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult, Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult, Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult> aggregator) {
+        public void AddSlice(TimeRange range, string name) {
+            Slices.Add(new TimeSlice(range, name));
+        }
+
+        public void AddSlice(DateTime time, DateTimeKind kind, string name) {
+            Slices.Add(new TimeSlice(time, kind, name));
+        }
+
+        public void AddSlice(DateTime start, DateTime endTime, string name="") {
+            Slices.Add(new TimeSlice(new TimeRange(start, endTime,start.Kind), name));
+        }
+
+        /*public Matrix<XTYPE,YTYPE,LINE, RESULT> ToMatrix<XTYPE,YTYPE,RESULT>(Func<LINE, XTYPE> xs, Func<LINE, YTYPE> ys,Func<Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixInput, RESULT> cellSelector, Func<Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult, Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult, Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult> aggregator) {
 			return new Matrix<XTYPE, YTYPE, LINE, RESULT>(this, new XTYPE[0], new YTYPE[0], cellSelector, aggregator);
 		}*/
-		/*public Matrix<LINE, RESULT> ToMatrix<RESULT>(Func<MatrixInput<LINE>, RESULT> cellSelector, Func<Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult> aggregator, IEnumerable<string> xs, IEnumerable<string> ys) {
+        /*public Matrix<LINE, RESULT> ToMatrix<RESULT>(Func<MatrixInput<LINE>, RESULT> cellSelector, Func<Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult> aggregator, IEnumerable<string> xs, IEnumerable<string> ys) {
 			return new Matrix<LINE, RESULT>(this, xs.ToArray(), ys.ToArray(), cellSelector, aggregator);
 		}
 		public Matrix<LINE, RESULT> ToMatrix<RESULT>(Func<MatrixInput<LINE>, RESULT> cellSelector, Func<Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult> aggregator, IEnumerable<string> xs, ILogLineField<LINE> ys) {
@@ -237,5 +279,5 @@ namespace ParserUtilities.Utilities.LogFile {
 		public Matrix<LINE, RESULT> ToMatrix<RESULT>(Func<MatrixInput<LINE>, RESULT> cellSelector, Func<Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult, Matrix<LINE, RESULT>.MatrixResult> aggregator, ILogLineField<LINE> xs, IEnumerable<string> ys) {
 			return new Matrix<LINE, RESULT>(this, xs, ys.ToArray(), cellSelector, aggregator);
 		}*/
-	}
+    }
 }

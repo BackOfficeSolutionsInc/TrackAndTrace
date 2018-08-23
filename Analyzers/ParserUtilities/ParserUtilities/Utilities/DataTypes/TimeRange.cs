@@ -11,8 +11,8 @@ namespace ParserUtilities.Utilities.DataTypes {
 		public DateTimeKind Kind { get; set; }
 
 		public TimeRange(DateTime start, DateTime end, DateTimeKind kind) {
-			Start	= new DateTime(Math.Min(start.Ticks,end.Ticks));
-			End		= new DateTime(Math.Max(start.Ticks, end.Ticks));
+			Start	= new DateTime(Math.Min(start.Ticks,end.Ticks), kind);
+			End		= new DateTime(Math.Max(start.Ticks, end.Ticks), kind);
 			Kind	= kind;
 		}
 

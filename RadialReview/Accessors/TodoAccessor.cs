@@ -541,7 +541,7 @@ namespace RadialReview.Accessors {
 							//var details = await PadAccessor.GetHtml(todo.PadId);
 
 							if (!String.IsNullOrWhiteSpace(details.ToHtmlString())) {
-								table.Append(@"<tr><td colspan=""2""></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + Config.BaseUrl(null) + @"Todo/List"">").Append(details.ToHtmlString()).Append("</a></i></td><td></td></tr>");
+								table.Append(@"<tr><td colspan=""2""></td><td><i style=""font-size:12px;""><a style=""color:#333333;text-decoration: none;"" href=""" + Config.BaseUrl(null) + @"Todo/List"">").Append(details.ToHtmlString()).Append("</a></i></td><td></td></tr>");
 							}
 						}
 

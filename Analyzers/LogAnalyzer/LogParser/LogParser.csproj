@@ -51,6 +51,10 @@
       <HintPath>..\packages\AWSSDK.Core.3.3.24.8\lib\net45\AWSSDK.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="AWSSDK.EC2, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.EC2.3.3.59\lib\net45\AWSSDK.EC2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.S3.3.3.20\lib\net45\AWSSDK.S3.dll</HintPath>
       <Private>True</Private>
@@ -102,6 +106,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="Downloaders\AwsChartDownloader.cs" />
     <Compile Include="Downloaders\AwsCloudWatchDownloader.cs" />
+    <Compile Include="Downloaders\AwsInstanceDownloader.cs" />
     <Compile Include="Downloaders\AwsLogFileDownloader.cs" />
     <Compile Include="Downloaders\AwsS3Downloader.cs" />
     <Compile Include="Extensions\LogFileExtensions.cs" />
@@ -130,6 +135,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.CloudWatch.3.3.6.11\analyzers\dotnet\cs\AWSSDK.CloudWatch.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.CloudWatchLogs.3.3.4.13\analyzers\dotnet\cs\AWSSDK.CloudWatchLogs.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.EC2.3.3.59\analyzers\dotnet\cs\AWSSDK.EC2.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.S3.3.3.20\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup>
