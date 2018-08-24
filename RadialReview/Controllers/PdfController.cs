@@ -15,6 +15,8 @@ using RadialReview.Accessors.PDF;
 using RadialReview.Accessors.PDF.JS;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Pdf;
+using MigraDoc.DocumentObjectModel;
+using PdfSharp.Drawing;
 
 namespace RadialReview.Controllers {
 	public class PdfController : BaseController {
@@ -28,17 +30,19 @@ namespace RadialReview.Controllers {
 		//}
 
 		[HttpPost, ValidateInput(false)]
-		[Access(AccessLevel.Any)]
+		[Access(AccessLevel.UserOrganization)]
 		public ActionResult AC(PdfAccessor.AccNodeJs root = null, bool fit = false, bool department = false, PageSize ps = PageSize.Letter, double? pw = null, double? ph = null, long? selected = null, bool? compact = null, bool userCheck = false) {
 			
 			if (pw == null || ph == null) {
 				var s = PageSizeConverter.ToSize(ps);
 				pw = Math.Max(s.Width, s.Height) /*/ 72.0*/;
 				ph = Math.Min(s.Width, s.Height) /*/ 72.0*/;
-
 			}
-			
-			var properties = new AccountabilityChartPDF.AccountabilityChartSettings(GetUser().Organization.Settings);
+
+            var width = XUnit.FromInch(pw.Value);
+            var height = XUnit.FromInch(ph.Value);
+
+            var properties = new AccountabilityChartPDF.AccountabilityChartSettings(GetUser().Organization.Settings);
 
 			PdfDocument pdf=null;
 			var merger = new DocumentMerger();
@@ -46,7 +50,7 @@ namespace RadialReview.Controllers {
 
 				var tree = AccountabilityAccessor.GetTree(GetUser(), GetUser().Organization.AccountabilityChartId, expandAll: true);
 				if (!department)
-					pdf = AccountabilityChartPDF.GenerateAccountabilityChart(tree.Root, pw.Value, ph.Value, properties, restrictSize: fit, selectedNode: root.NodeId);
+					pdf = AccountabilityChartPDF.GenerateAccountabilityChart(tree.Root, width, height, properties, restrictSize: fit, selectedNode: root.NodeId);
 				else {
 					if (selected == null) {
 						var nodes = new List<AngularAccountabilityNode>();
@@ -64,7 +68,7 @@ namespace RadialReview.Controllers {
 
 						nodes = nodes.Where(t => root.NodeId.Contains(t.Id)).ToList();
 						var selectedNode = diveSeletedNode(nodes, root.NodeId);
-						merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(selectedNode, pw.Value, ph.Value, properties, restrictSize: fit).Select(x=>x.Document));
+						merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(selectedNode, width, height, properties, restrictSize: fit).Select(x=>x.Document));
 						pdf = merger.Flatten("", false, false);
 
 					} else {
@@ -85,7 +89,7 @@ namespace RadialReview.Controllers {
 
 						nodes = nodes.Where(t => root.NodeId.Contains(t.Id)).ToList();
 						var selectedNode = diveSeletedNode(nodes, root.NodeId);
-						merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(selectedNode, pw.Value, ph.Value, properties, restrictSize: fit).Select(x => x.Document));
+						merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(selectedNode, width, height, properties, restrictSize: fit).Select(x => x.Document));
 						pdf = merger.Flatten("", false, false);
 					}
 				}
@@ -102,7 +106,7 @@ namespace RadialReview.Controllers {
 						if (x.Id == selected)
 							node = x;
 					});
-					pdf = AccountabilityChartPDF.GenerateAccountabilityChart(node, pw.Value, ph.Value, properties, restrictSize: fit,settings: settings);
+					pdf = AccountabilityChartPDF.GenerateAccountabilityChart(node, width, height, properties, restrictSize: fit,settings: settings);
 					} else {
 
 						var nodes = new List<AngularAccountabilityNode>();
@@ -129,7 +133,7 @@ namespace RadialReview.Controllers {
 						//}
 
 
-						merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, pw.Value, ph.Value, properties, restrictSize: fit, settings: settings).Select(x => x.Document));
+						merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, width, height, properties, restrictSize: fit, settings: settings).Select(x => x.Document));
 						pdf = merger.Flatten("", false, false);
 					}
 				}
@@ -138,7 +142,7 @@ namespace RadialReview.Controllers {
 					var tree = AccountabilityAccessor.GetTree(GetUser(), GetUser().Organization.AccountabilityChartId, expandAll: true);
 					if (!department) {
 
-						pdf = AccountabilityChartPDF.GenerateAccountabilityChart(tree.Root, pw.Value, ph.Value, properties, restrictSize: fit, settings: settings);
+						pdf = AccountabilityChartPDF.GenerateAccountabilityChart(tree.Root, width, height, properties, restrictSize: fit, settings: settings);
 					} else {
 						var nodes = new List<AngularAccountabilityNode>();
 						var topNodes = tree.Root.GetDirectChildren();
@@ -161,7 +165,7 @@ namespace RadialReview.Controllers {
 						}
 
 
-						merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, pw.Value, ph.Value, properties, restrictSize: fit, settings: settings).Select(x => x.Document));
+						merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, width, height, properties, restrictSize: fit, settings: settings).Select(x => x.Document));
 						pdf = merger.Flatten("", false, false);
 					}
 				}
