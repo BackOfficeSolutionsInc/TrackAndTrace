@@ -1344,7 +1344,7 @@ namespace RadialReview.Accessors {
 			var users = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
 			var isRadialAdmin = perms.IsPermitted(x => x.RadialAdmin());
             if (!isRadialAdmin) {
-                users = users.Where(x => !x.IsRadialAdmin).ToList();
+                users = users.Where(x => !x.Email.NotNull(y=>y.ToLower().EndsWith("@mytractiontools.com"))).ToList();
             }
 			if (populatePersonallyManaging) {
 				var subs = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id, type);

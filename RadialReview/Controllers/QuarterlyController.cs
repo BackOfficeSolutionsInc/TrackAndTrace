@@ -91,7 +91,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
-		public async Task<ActionResult> Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool headlines = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, bool quarterly = true/*, PdfAccessor.AccNodeJs root = null*/, bool pa = false) {
+		public async Task<ActionResult> Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool headlines = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, bool quarterly = true/*, PdfAccessor.AccNodeJs root = null*/, bool pa = false,int? maxSec=null) {
 
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.False());
 
@@ -119,9 +119,16 @@ namespace RadialReview.Controllers {
 				//vtoModel 
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout1");
 
-				var vtoSettings = new VtoPdfSettings(GetUser().GetOrganizationSettings());
-
-				await PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat(), vtoSettings);
+				var vtoSettings = new VtoPdfSettings(GetUser().GetOrganizationSettings()) {
+                    MaxSeconds = maxSec
+                };
+                try {
+                    await PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat(), vtoSettings);
+                }catch(LayoutTimeoutException e) {
+                    var sec = doc.AddSection();
+                    var p = sec.AddParagraph("Error: V/TO took too long to generate.");
+                    p.Format.Font.Color = new MigraDoc.DocumentObjectModel.Color(255,0, 0);
+                }
 				anyPages = true;
 				merger.AddDoc(doc);
 			}

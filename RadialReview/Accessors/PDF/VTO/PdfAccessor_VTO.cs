@@ -533,7 +533,7 @@ namespace RadialReview.Accessors {
 		}
 
 		public static async Task AddVtoVision(Document doc, AngularVTO vto, string dateFormat, VtoPdfSettings settings) {
-            var timeout = new TimeoutCheck(TimeSpan.FromSeconds(8));
+            var timeout = new TimeoutCheck(TimeSpan.FromSeconds(settings.MaxSeconds ?? 20));
 			settings = settings ?? new VtoPdfSettings();
 			var visionLayoutGenerator = new VtoVisionDocumentGenerator(vto, settings);
 
