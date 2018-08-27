@@ -184,10 +184,14 @@ namespace RadialReview.Accessors
         public static string GetFirePadRef(string padId)
         {
             string firePadRef = null;
-            var client = new WebClient();
-            client.BaseAddress = Config.FirePadUrl();
-            client.Headers.Add("Accept","application /json");
-            var response = client.DownloadString ("/FirePad/" + padId + ".json");
+            string response=null;
+            using (var client = new WebClient())
+            {
+                client.BaseAddress = Config.FirePadUrl();
+                client.Headers.Add("Accept", "application /json");
+                response = client.DownloadString("/FirePad/" + padId + ".json");
+            }
+            
             if (response != "null")
             {
                 var items = JsonConvert.DeserializeObject<FirePadData>(response);
@@ -198,16 +202,29 @@ namespace RadialReview.Accessors
         public static FirePadData GetFirePadData(string padId)
         {
             FirePadData firePadData = null;
-            var client = new WebClient();
-            client.BaseAddress = Config.FirePadUrl();
-            client.Headers.Add("Accept", "application /json");
-            var response = client.DownloadString("/FirePad/" + padId + ".json");
+            string response;
+            using (var client = new WebClient())
+            {
+                client.BaseAddress = Config.FirePadUrl();
+                client.Headers.Add("Accept", "application /json");
+                response = client.DownloadString("/FirePad/" + padId + ".json");
+            }
             if (response != "null")
             {
                 var items = JsonConvert.DeserializeObject<FirePadData>(response);
                 firePadData = items;
             }
             return firePadData;
+        }
+        public static string GetNotesURL(string padId, bool showControls,string name){
+            string url;
+            var firePadRef = GetFirePadRef(padId);
+            if (firePadRef == null){
+                url=Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + name);
+            }else{
+                url = "~/FirePad/" + padId;
+            }
+            return url;
         }
     }
     

@@ -57,15 +57,8 @@ namespace RadialReview.Controllers {
 					padId = await PadAccessor.GetReadonlyPad(headline.HeadlinePadId);
 				}
                 //this is to choose what to use between Noteserves or firepad
-                var firePadRef = PadAccessor.GetFirePadRef(padId);
-                if (firePadRef == null){
-                    return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
-                }
-                else{
-                    
-                    return Redirect("~/FirePad/" + padId);
-                }
-                
+                return Redirect(PadAccessor.GetNotesURL(padId, showControls, Url.Encode(GetUser().GetName())));
+                  
 			} catch (Exception e) {
 				Response.StatusCode = 400;
 				return Content("<span class='error'>Could not load.</span>");
