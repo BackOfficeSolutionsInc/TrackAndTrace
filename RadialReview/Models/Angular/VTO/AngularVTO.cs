@@ -316,8 +316,7 @@ namespace RadialReview.Models.Angular.VTO {
 		public bool IsEmpty() {
 			return (string.IsNullOrEmpty(Measurables)
 				&& string.IsNullOrEmpty(Profit)
-				&& string.IsNullOrEmpty(Revenue)
-				&& string.IsNullOrEmpty(RocksTitle));
+				&& string.IsNullOrEmpty(Revenue));
 		}
 	}
 
