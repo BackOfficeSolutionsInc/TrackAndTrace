@@ -195,7 +195,7 @@ namespace RadialReview.Utilities {
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
                                     factories[env] = Fluently.Configure(c).Database(
-                                                MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
+                                                MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString)/*.ShowSql()*/)
                                        .Mappings(m => {
                                            m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                                .Conventions.Add<StringColumnLengthConvention>();

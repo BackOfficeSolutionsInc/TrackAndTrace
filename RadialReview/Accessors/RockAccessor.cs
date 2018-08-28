@@ -375,7 +375,7 @@ namespace RadialReview.Accessors {
 					if (loadUsers)
 						rocks = rocks.Fetch(x => x.AccountableUser).Eager;
 
-					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, LoadMeeting.True())._DefaultAttendees.Select(x => x.User.Id).ToList();
 					if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
 						userIds = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
 					}

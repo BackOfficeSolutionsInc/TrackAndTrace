@@ -105,7 +105,7 @@ namespace RadialReview.Accessors {
 		public static async Task<AngularRecurrence> GetOrGenerateAngularRecurrence(ISession s, PermissionsUtility perms, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false, DateRange scorecardRange = null) {
 			perms.ViewL10Recurrence(recurrenceId);
 			var recurrence = s.Get<L10Recurrence>(recurrenceId);
-			_LoadRecurrences(s, true, true, true, true, recurrence);
+			_LoadRecurrences(s, LoadMeeting.True(), recurrence);
 
 			var recur = new AngularRecurrence(recurrence);
 
@@ -264,15 +264,15 @@ namespace RadialReview.Accessors {
 
 						if (model.Type == typeof(AngularIssue).Name) {
 							await UnarchiveIssue(OrderedSession.Indifferent(s), perms, rt, model.Id);
-						} else if (model.Type == typeof(AngularTodo).Name) {
+						} /*else if (model.Type == typeof(AngularTodo).Name) {
 							//await TodoAccessor.CompleteTodo(s, perms, model.Id);
-						} else if (model.Type == typeof(AngularRock).Name) {
+						}*/ else if (model.Type == typeof(AngularRock).Name) {
 							await UnarchiveRock(s, perms, rt, recurrenceId, model.Id);
-						} else if (model.Type == typeof(AngularMeasurable).Name) {
+						} /*else if (model.Type == typeof(AngularMeasurable).Name) {
 							//await DetachMeasurable(s, perms, rt, recurrenceId, model.Id);
-						} else if (model.Type == typeof(AngularUser).Name) {
+						}else if (model.Type == typeof(AngularUser).Name) {
 							//await RemoveAttendee(s, perms, rt, recurrenceId, model.Id);
-						} else if (model.Type == typeof(AngularHeadline).Name) {
+						}*/  else if (model.Type == typeof(AngularHeadline).Name) {
 							await UnarchiveHeadline(s, perms, rt, model.Id);
 						} else {
 							throw new PermissionsException("Unhandled type: " + model.Type);
@@ -297,8 +297,6 @@ namespace RadialReview.Accessors {
 
 
 		public static async Task UnarchiveHeadline(ISession s, PermissionsUtility perm, RealTimeUtility rt, long headlineId) {
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-
 			perm.ViewHeadline(headlineId);
 
 			var r = s.Get<PeopleHeadline>(headlineId);

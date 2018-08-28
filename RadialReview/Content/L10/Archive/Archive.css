@@ -797,15 +797,19 @@ html {
 .meeting-archive .scorecard-list-container table .goal-column.direction {
   text-align: center;
 }
+.meeting-archive .scorecard-list-container table .average-column,
 .meeting-archive .scorecard-list-container table .cumulative-column {
   text-align: center;
   padding-right: 4px;
   cursor: pointer;
 }
+.meeting-archive .scorecard-list-container table .average-column:active,
 .meeting-archive .scorecard-list-container table .cumulative-column:active,
+.meeting-archive .scorecard-list-container table .average-column:focus,
 .meeting-archive .scorecard-list-container table .cumulative-column:focus {
   outline: none;
 }
+.meeting-archive .scorecard-list-container table .average-column input,
 .meeting-archive .scorecard-list-container table .cumulative-column input {
   padding-right: 0px !important;
   padding-left: 0px !important;
@@ -815,9 +819,22 @@ html {
   outline: none;
   cursor: pointer;
 }
+.meeting-archive .scorecard-list-container table .average-column input:active,
 .meeting-archive .scorecard-list-container table .cumulative-column input:active,
+.meeting-archive .scorecard-list-container table .average-column input:focus,
 .meeting-archive .scorecard-list-container table .cumulative-column input:focus {
   outline: none;
+}
+.meeting-archive .scorecard-list-container #ScorecardTable_Over {
+  width: min-content;
+  display: -ms-grid;
+  -ms-grid-columns: min-content;
+  width: -moz-min-content;
+  width: -webkit-min-content;
+  padding-bottom: 1px;
+}
+.meeting-archive .scorecard-list-container .goal-column .blend {
+  min-width: 50px !important;
 }
 .meeting-archive .todo-list-container .empty-cell,
 .meeting-archive .todo-list-container .delete-column,

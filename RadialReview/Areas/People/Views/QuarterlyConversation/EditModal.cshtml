@@ -2,7 +2,7 @@
 
 
 @Html.Hidden("id", Model.Id)
-<div class="row">
+<div class="row smallBreak2">
 	<div class="col-sm-3">
 		<label>Name:</label>
 	</div>
@@ -10,9 +10,9 @@
 		@Html.TextArea("name",Model.Name, new { @class = "form-control verticalOnly" })
 	</div>
 </div>
-<div class="row">
+<div class="row ">
 	<div class="col-sm-3">
-		<label>Name:</label>
+		<label>Due Date:</label>
 	</div>
 	<div class="col-sm-9">
 		@Html.EditorFor(x=>x.DueDate, new { @class = "form-control verticalOnly" })

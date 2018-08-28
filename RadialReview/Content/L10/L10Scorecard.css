@@ -177,6 +177,7 @@
 .scorecard-table .score.disabled {
   background-color: #ececec !important;
 }
+.scorecard-table .average-column,
 .scorecard-table .cumulative-column {
   font-size: 15px;
   font-family: 'Roboto', sans-serif;
@@ -560,7 +561,7 @@
   top: -16px;
 }
 .scorecard .goal-column .blend {
-  min-width: 50px !important;
+  min-width: 68px !important;
   font-size: 14px;
 }
 .scorecard .measurable-column,

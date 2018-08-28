@@ -739,46 +739,39 @@ namespace RadialReview.Controllers {
 							var userOrgsCount = GetUserOrganizationCounts(s, Request.Url.PathAndQuery);
 							UserOrganizationModel oneUser = null;
 							try {
-								oneUser = GetUser(s, permissionsOverrides);
-								if (oneUser == null)
-									throw new NoUserOrganizationException();
+                                oneUser = GetUser(s, permissionsOverrides);
+                                if (oneUser == null)
+                                    throw new NoUserOrganizationException();
 
 #pragma warning disable CS0618 // Type or member is obsolete
-								var lu = s.Get<UserLookup>(oneUser.Cache.Id);
+                                var lu = s.Get<UserLookup>(oneUser.Cache.Id);
 #pragma warning restore CS0618 // Type or member is obsolete
-								var actualUserModel = GetUserModel(s);
-								var isRadialAdmin = oneUser.IsRadialAdmin || actualUserModel.IsRadialAdmin;
+                                var actualUserModel = GetUserModel(s);
+                                var isRadialAdmin = oneUser.IsRadialAdmin || actualUserModel.IsRadialAdmin;
 
-								oneUser._PermissionsOverrides.Admin= new AdminShortCircuit() {
-                                        IsRadialAdmin = isRadialAdmin,
-                                        ActualUserId = actualUserModel.Id,
-                                        IsMocking = oneUser.User.Id != actualUserModel.Id,
-                                };
-								if (adminShortCircuit) {
-									AllowAdminsWithoutAudit();
-								}
+                                SetupPermissionsOverride(oneUser, actualUserModel, isRadialAdmin, adminShortCircuit);
 
-								oneUser._IsRadialAdmin = isRadialAdmin;
-								filterContext.Controller.ViewBag.IsRadialAdmin = isRadialAdmin;
+                                oneUser._IsRadialAdmin = isRadialAdmin;
+                                filterContext.Controller.ViewBag.IsRadialAdmin = isRadialAdmin;
 
-								if (!isRadialAdmin) {
-									lu.LastLogin = DateTime.UtcNow;
-									s.Update(lu);
+                                if (!isRadialAdmin) {
+                                    lu.LastLogin = DateTime.UtcNow;
+                                    s.Update(lu);
 
-									var ol = s.QueryOver<OrganizationLookup>().Where(x => x.OrgId == oneUser.Organization.Id).Take(1).SingleOrDefault();
-									if (ol == null) {
-										ol = new OrganizationLookup() {
-											OrgId = oneUser.Organization.Id,
-											CreateTime = oneUser.Organization.CreationTime
-										};
-									}
-									ol.LastUserLogin = oneUser.Id;
-									ol.LastUserLoginTime = lu.LastLogin.Value;
-									s.SaveOrUpdate(ol);
+                                    var ol = s.QueryOver<OrganizationLookup>().Where(x => x.OrgId == oneUser.Organization.Id).Take(1).SingleOrDefault();
+                                    if (ol == null) {
+                                        ol = new OrganizationLookup() {
+                                            OrgId = oneUser.Organization.Id,
+                                            CreateTime = oneUser.Organization.CreationTime
+                                        };
+                                    }
+                                    ol.LastUserLogin = oneUser.Id;
+                                    ol.LastUserLoginTime = lu.LastLogin.Value;
+                                    s.SaveOrUpdate(ol);
 
 
-								}
-							} catch (OrganizationIdException) {
+                                }
+                            } catch (OrganizationIdException) {
 							} catch (NoUserOrganizationException) {
 							}
 
@@ -844,7 +837,23 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-		protected string GetAppVersion() {
+        private void SetupPermissionsOverride(UserOrganizationModel oneUser, UserModel actualUserModel, bool isRadialAdmin, bool adminShortCircuit) {
+            if (oneUser._PermissionsOverrides == null)
+                oneUser._PermissionsOverrides = new PermissionsOverrides();
+
+            oneUser._PermissionsOverrides.Admin = new AdminShortCircuit() { IsRadialAdmin = isRadialAdmin, };
+            if (actualUserModel != null) {
+                oneUser._PermissionsOverrides.Admin.ActualUserId = actualUserModel.Id;
+                if (oneUser.User != null) {
+                    oneUser._PermissionsOverrides.Admin.IsMocking = oneUser.User.Id != actualUserModel.Id;
+                }
+            }
+            if (adminShortCircuit) {
+                AllowAdminsWithoutAudit();
+            }
+        }
+
+        protected string GetAppVersion() {
 			var version = Assembly.GetExecutingAssembly().GetName().Version;
 			//var buildDate = new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
 			return version.ToString();

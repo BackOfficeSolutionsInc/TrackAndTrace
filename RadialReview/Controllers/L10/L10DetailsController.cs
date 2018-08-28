@@ -25,7 +25,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Details(long id, bool complete = false, long? start = null) {
 			ViewBag.NumberOfWeeks = (int)Math.Ceiling(TimingUtility.ApproxDurationOfPeriod(GetUser().Organization.Settings.ScorecardPeriod).TotalDays) * 13;
 
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.False());
 
 			ViewBag.VtoId = recur.VtoId;
 			ViewBag.IncludeHeadlines = recur.HeadlineType;

@@ -36,7 +36,7 @@ namespace RadialReview.Controllers {
                 todosRect.EnsureRowOrColumn();
 
                 var m = new UploadTodosSelectedDataVM() { };
-                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
+                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.False()).OrganizationId;
                 var allUsers = TinyUserAccessor.GetOrganizationMembers(GetUser(), orgId);
                 m.AllUsers = allUsers.ToSelectList(x => x.FirstName + " " + x.LastName, x => x.UserOrgId);
                 var now = DateTime.UtcNow;

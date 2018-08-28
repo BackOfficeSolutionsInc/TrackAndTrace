@@ -19,6 +19,6 @@ namespace RadialReview.Models.Enums
 		local,
 		alpha,
 		beta,
-		production
+		production,
 	}
 }

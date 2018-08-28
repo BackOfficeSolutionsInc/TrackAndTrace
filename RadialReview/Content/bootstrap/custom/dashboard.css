@@ -699,6 +699,7 @@ body.resizing .notes-tile:after,
   resize: none;
   border: none;
 }
+.dashboard .width_2 .scorecard .average-column,
 .dashboard .width_2 .scorecard .cumulative-column,
 .dashboard .width_2 .scorecard .goal-column {
   display: none;
@@ -1255,15 +1256,19 @@ body.resizing .notes-tile:after,
   min-width: 30px;
   max-width: 300px;
 }
+.dashboard .scorecard table .average-column,
 .dashboard .scorecard table .cumulative-column {
   text-align: center;
   padding-right: 4px;
   cursor: pointer;
 }
+.dashboard .scorecard table .average-column:active,
 .dashboard .scorecard table .cumulative-column:active,
+.dashboard .scorecard table .average-column:focus,
 .dashboard .scorecard table .cumulative-column:focus {
   outline: none;
 }
+.dashboard .scorecard table .average-column input,
 .dashboard .scorecard table .cumulative-column input {
   padding-right: 0px !important;
   padding-left: 0px !important;
@@ -1273,9 +1278,18 @@ body.resizing .notes-tile:after,
   outline: none;
   cursor: pointer;
 }
+.dashboard .scorecard table .average-column input:active,
 .dashboard .scorecard table .cumulative-column input:active,
+.dashboard .scorecard table .average-column input:focus,
 .dashboard .scorecard table .cumulative-column input:focus {
   outline: none;
+}
+.dashboard .scorecard #ScorecardTable_Over {
+  width: min-content;
+  display: -ms-grid;
+  -ms-grid-columns: min-content;
+  width: -moz-min-content;
+  width: -webkit-min-content;
 }
 .dashboard .scorecard .row {
   margin-bottom: 0px;

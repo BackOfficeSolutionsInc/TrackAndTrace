@@ -35,8 +35,9 @@ namespace RadialReview.Accessors {
 			public Color LightTextColor { get; set; }
 			public Color LightBorderColor { get; internal set; }
 			public Color FillTextColor { get; set; }
+            public int? MaxSeconds { get; internal set; }
 
-			public async Task<ImageDownload> GetImage() {
+            public async Task<ImageDownload> GetImage() {
 				if (_Download == null) {
 					_Download = await ImageDownload.GetImage(ImageUrl);
 				}

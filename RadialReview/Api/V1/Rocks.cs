@@ -142,6 +142,17 @@ namespace RadialReview.Api.V1 {
 		public async Task<IEnumerable<AngularRock>> GetRocksForUser(long USER_ID) {
 			return RockAccessor.GetRocks(GetUser(), USER_ID).Select(x => new AngularRock(x, false));
 		}
+
+        /// <summary>
+        /// Restore a rock from the archive
+        /// </summary>
+        /// <param name="ROCK_ID">Rock ID</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("rocks/{ROCK_ID:long}/restore")]
+        public async Task RestoreRock(long ROCK_ID) {
+            await RockAccessor.UnArchiveRock(GetUser(), ROCK_ID);
+        }
 		
 
 	}

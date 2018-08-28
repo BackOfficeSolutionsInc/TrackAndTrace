@@ -571,7 +571,7 @@ namespace RadialReview.Accessors {
 
 					var recordAudit = new Action(() => s.Save(audit.ToDatabaseModel(caller.Id)));
 					if (!CanSetAs(isAdmin, caller.Id, requestedUser.Id, requestedEmail, "tractiontools.com", audit, recordAudit)) {
-						throw new PermissionsException();
+						throw new PermissionsException("Cannot set as other Traction Tools users.");
 					}
 
 					s.Update(caller);

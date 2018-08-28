@@ -168,6 +168,7 @@ body.resizing .notes-tile,
     }
     //SCORECARD
     .width_2 .scorecard {
+        .average-column,
         .cumulative-column,
         .goal-column {
             display: none;
@@ -442,11 +443,12 @@ body.resizing .notes-tile,
                 }
             }
 
-            .elastic-input{
-                min-width:30px;
-                max-width:300px;
+            .elastic-input {
+                min-width: 30px;
+                max-width: 300px;
             }
 
+            .average-column,
             .cumulative-column {
                 text-align: center;
                 padding-right: 4px;
@@ -465,7 +467,7 @@ body.resizing .notes-tile,
                     border: none;
                     outline: none;
                     cursor: pointer;
-                    
+
 
 
                     &:active,
@@ -476,6 +478,14 @@ body.resizing .notes-tile,
             }
         }
 
+        #ScorecardTable_Over {
+            width: min-content;
+            display: -ms-grid;
+            -ms-grid-columns: min-content;
+            width: -moz-min-content;
+            width: -webkit-min-content;
+        }
+        
         .row {
             margin-bottom: 0px;
         }

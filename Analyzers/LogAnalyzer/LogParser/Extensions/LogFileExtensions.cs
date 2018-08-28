@@ -34,7 +34,7 @@ namespace LogParser {
 					.Filter(x => x.Duration < TimeSpan.FromSeconds(1))
 					.Filter(x => x.csUriStem.Contains("signalr"))
 					.GetFilteredLines().ToList();
-				interesting.ForEach(x => x.Flag = FlagType.InterestingRequests);
+				interesting.ForEach(x => x.Flag = FlagType.PotentialCauses);
 
 				var cause = interesting.OrderByDescending(x => x.Duration).FirstOrDefault();
 				if (cause != null)

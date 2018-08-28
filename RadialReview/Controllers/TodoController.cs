@@ -149,7 +149,7 @@ namespace RadialReview.Controllers {
 		public PartialViewResult CreateTodo(long recurrence, long meeting = -1, string todo = null, long? modelId = null, string modelType = null, string details = null) {
 			if (meeting != -1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.True());
 
 			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
 			people.Add(GetUser());
@@ -190,7 +190,7 @@ namespace RadialReview.Controllers {
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
 			ScoreModel s = null;
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.True());
 
 			try {
 				if (score == 0 && accountable.HasValue) {
@@ -283,7 +283,7 @@ namespace RadialReview.Controllers {
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
 			var s = RockAccessor.GetRockInMeeting(GetUser(), r, meeting);
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.True());
 
 			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
 			people.Add(GetUser());
@@ -336,7 +336,7 @@ namespace RadialReview.Controllers {
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
 			var s = HeadlineAccessor.GetHeadline(GetUser(), headline);
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.True());
 
 			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
 			people.Add(GetUser());
@@ -382,7 +382,7 @@ namespace RadialReview.Controllers {
 			if (meeting != null)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting.Value));
 			var i = IssuesAccessor.GetIssue(GetUser(), issue);
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.True());
 
 			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
 			people.Add(GetUser());
@@ -431,7 +431,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult LinkToExternal(long recurrence, long user = 0) {
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.True());
 			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
 			people.Add(GetUser());
 			people = people.Distinct(x => x.Id).ToList();

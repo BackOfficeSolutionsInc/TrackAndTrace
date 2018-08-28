@@ -32,7 +32,7 @@ namespace RadialReview.Controllers {
 			if (!String.IsNullOrEmpty(page) && page != "startmeeting")
 				L10Accessor.UpdatePage(GetUser(), GetUser().Id, recurrenceId, page, connection);
 
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 			var model = new L10MeetingVM() {
 				Recurrence = recurrence,
 				EnableTranscript = recurrence.EnableTranscription,
@@ -198,12 +198,12 @@ namespace RadialReview.Controllers {
 				if (model.Attendees != null)
 					attendees = allMembers.Where(x => model.Attendees.Contains(x)).ToList();
 				await L10Accessor.StartMeeting(GetUser(), GetUser(), model.Recurrence.Id, attendees, preview == "preview");
-				var tempRecur = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
+				var tempRecur = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, LoadMeeting.True());
 				var p = L10Accessor.GetDefaultStartPage(tempRecur);
 				return RedirectToAction("Load", new { id = model.Recurrence.Id, page = p });
 			}
 
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, LoadMeeting.True());
 			model.Recurrence._DefaultAttendees = recurrence._DefaultAttendees;
 
 			return StartMeeting(model, false);
@@ -454,7 +454,7 @@ namespace RadialReview.Controllers {
 		public ActionResult EditRanting(long recurrenceId) {
 			var model = L10Accessor.GetStats(GetUser(), recurrenceId);
 			var latest = model.AllMeetings.Where(x => x.CompleteTime != null).OrderByDescending(x => x.CompleteTime.Value).FirstOrDefault();
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true, true);
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 			var model1 = new L10MeetingVM() {
 				Recurrence = recurrence,
 				Meeting = latest,

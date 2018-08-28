@@ -47,7 +47,8 @@ namespace RadialReview.Models.Admin {
 			PotentialReasons = new List<SelectListItem>() {
 				new SelectListItem() {Text = "Other", Value="" },
 				new SelectListItem() {Selected = true, Text = "Please select a reason...", Value="" },
-				new SelectListItem() {Text = "I need to replicate a client's bug", Value="I need to replicate a client's bug" },
+                new SelectListItem() {Text = "I need to perform a walk-through", Value="I need to perform a walk-through" },
+                new SelectListItem() {Text = "I need to replicate a client's bug", Value="I need to replicate a client's bug" },
 				new SelectListItem() {Text = "I need to help a client export data", Value="I need to help a client export data" },
 			};
 

@@ -431,7 +431,7 @@ namespace TractionTools.Tests.Accessors
 
 
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			
 			Assert.IsFalse(recur.AttendingOffByDefault);
 			Assert.IsFalse(recur.CombineRocks);

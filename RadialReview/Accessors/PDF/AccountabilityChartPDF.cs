@@ -191,8 +191,8 @@ namespace RadialReview.Accessors.PDF {
 				margin = margin,				
 			};
 
-			pageProps2.linePen = pageProps.linePen;
-			pageProps2.boxPen = pageProps.boxPen;
+			pageProps2.lineColor = pageProps.lineColor;
+			pageProps2.boxColor = pageProps.boxColor;
 
 			var n = JS.Tree.Update(rootACNode, x => HeightFunc(x, pageProps2), settings);
 			return GenerateAccountabilityChart(rootACNode, pageProps2, settings, restrictSize, anyAboveRoot);
@@ -265,7 +265,7 @@ namespace RadialReview.Accessors.PDF {
 
 
 			if (shouldDrawLine && me.height > ch) {
-				gfx.DrawLine(pageProps.linePen, x + pad, y + ch, x + (me.width - 2 * pad), y + ch);
+				gfx.DrawLine(pageProps.linePen(), x + pad, y + ch, x + (me.width - 2 * pad), y + ch);
 			}
 
 			tf = new XTextFormatter(gfx);
@@ -299,12 +299,11 @@ namespace RadialReview.Accessors.PDF {
 			me.height = /*Math.Max(me.height,*/ h + 2 * pad/*)*/;
 			var width = (int)Math.Max(0, me.width);
 			var height = (int)Math.Max(0, me.height);
-			gfx.DrawRectangle(pageProps.boxPen, pageProps.brush, x, y, width, height);
+			gfx.DrawRectangle(pageProps.boxPen(), pageProps.brush, x, y, width, height);
 
 
 			if (DEBUG) {
 				gfx.DrawRectangle(new XPen(XPens.Blue) { DashStyle = XDashStyle.Dot }, x + PAGE_MARGIN, y + PAGE_MARGIN, me.width - PAGE_MARGIN * 2, me.height - PAGE_MARGIN * 2);
-
 				gfx.DrawRectangle(XPens.Blue, x, y, me.width, me.height);
 			}
 
@@ -312,8 +311,8 @@ namespace RadialReview.Accessors.PDF {
 		}
 
 		private static void DrawLine(XGraphics gfx, AccountabilityChartSettings pageProps, List<Tuple<double, double>> points) {
-
-			gfx.DrawLines(pageProps.linePen, points.Select(x => new PointF((float)x.Item1, (float)x.Item2)).ToArray());
+            
+			gfx.DrawLines(pageProps.linePen(), points.Select(x => new PointF((float)x.Item1, (float)x.Item2)).ToArray());
 			//for (var i = 1; i < points.Count; i++) {
 			//	var x1 = points[i - 1].Item1;
 			//	var y1 = points[i - 1].Item2;
@@ -348,14 +347,14 @@ namespace RadialReview.Accessors.PDF {
 			var vSeparation = Math.Max(separation * 2.0 / 3.0, separation - 6.6667);
 			var hSeparation = settings.hSeparation * pageProps.scale;
 
-			var adjS = pageProps.linePen.Width * .5/* *pageProps.scale*/;
+			var adjS = pageProps.linePen().Width *.5 ;
 
 
-			var sx = parent.x - origin[0] + parent.width / 2;
-			var sy = parent.y - origin[1] + parent.height - adjS;
-			var tx = me.x - origin[0] + me.width / 2;
-			var ty = me.y - origin[1] - adjS;
-			var my = sy + vSeparation /*- origin[1]*/;
+			var sx = (parent.x - origin[0] + parent.width / 2) - 1; 
+			var sy = (parent.y - origin[1] + parent.height) - (adjS +1);
+			var tx = (me.x - origin[0] + me.width / 2) -1;
+			var ty = me.y - origin[1] - ( adjS );
+			var my = (sy + vSeparation);
 
 			var tempFont = new XFont("Times New Roman", Math.Max(1, 12 * pageProps.scale), XFontStyle.Regular);
 			var sideL = "";
@@ -364,45 +363,30 @@ namespace RadialReview.Accessors.PDF {
 				var tw = me.width;
 				double lx;
 				if (me.side == "left") {
-					//tx = tx - tw / 2 - adjS;
-					//tx = tx + tw - adjS;
-					lx = tx - hSeparation / 2 /*- origin[0]*/+ adjS;
+					lx = tx - hSeparation / 2 + adjS-1;
 					sideL = "L";
-					//gfx.DrawString("L", tempFont, XBrushes.Red, sx, sy);
 				} else if (me.side == "right") {
-					//tx = tx + tw / 2 - adjS;
-					//tx = tx - tw - adjS;
-					lx = tx + hSeparation / 2 /*- origin[0]*/+ adjS;
+					lx = tx + hSeparation / 2 + adjS+1;
 					sideL = "R";
-					//gfx.DrawString("R", tempFont, XBrushes.Red, sx, sy);
 				} else {
-					//lx = tx + tw/2  - hSeparation / 2 - origin[0];//maybe?
 					sideL = "S";
-					lx = tx /*+ hSeparation / 2 - origin[0]+ adjS*/;
+					lx = tx;
 				}
 
-				var tyy = ty; //+ Math.Min(10, me.height / 2);
+				var tyy = ty-1;
 				if (!parent.isLeaf) {
 					points.Add(Tuple.Create(sx, sy));
 					points.Add(Tuple.Create(sx, my));
-					points.Add(Tuple.Create(lx, my));
-				} else {
-					//double ax;
-					//if (me.side == "left") {
-					//	//ax = sx /*- origin[0]*/ - parent.width / 2;// - d.source.width / 2;
-					//	ax = sx /*- origin[0]*/ + parent.width / 2;// - d.source.width / 2;
-					//} else if (me.side == "right") {
-					//	//ax = sx /*- origin[0]*/ + parent.width / 2 - adjS;// - d.source.width / 2;
-					//	ax = sx /*- origin[0]*/ - parent.width / 2 - adjS;// - d.source.width / 2;
-					//}
-					var ay = (sy - parent.height) + Math.Min(10, parent.height / 2) /*- origin[1]*/ - adjS;//d.source.height / 2;
-																										   //points.Add(Tuple.Create(ax, ay));
-					points.Add(Tuple.Create(lx, ay));
+					points.Add(Tuple.Create(lx+.5, my));
+                    //tyy = tyy + 1;
+                } else {
+					var ay = (sy - parent.height) + Math.Min(10, parent.height / 2) - adjS ;
+					points.Add(Tuple.Create(lx+.5, ay));
 				}
 
 
-				points.Add(Tuple.Create(lx, tyy));
-				points.Add(Tuple.Create(tx, tyy));
+				points.Add(Tuple.Create(lx+.5, tyy+.5));
+				points.Add(Tuple.Create(tx+.5, tyy+.5));
 
 				DrawLine(gfx, pageProps, points);
 				if (DEBUG) {
@@ -411,7 +395,8 @@ namespace RadialReview.Accessors.PDF {
 					gfx.DrawString(me.GetDebugNotes(), tempFont2, XBrushes.HotPink, tx + 2, tyy - 4);
 				}
 			} else {
-				var tw = me.width;
+                // (!me.isLeaf || parent.side == "left" || parent.side == "right")
+                var tw = me.width;
 				var th = me.height;
 
 				if (me.side == "left" || me.side == "right") {
@@ -421,21 +406,21 @@ namespace RadialReview.Accessors.PDF {
 					if (parent != null && (parent.side == "left" || parent.side == "right")) {
 						var txParent = parent.x - origin[0] + parent.width / 2;
 						var twParent = parent.width;
-						var leftRightSep = twParent + hSeparation /*- adjS*/;
+						var leftRightSep = twParent + hSeparation ;
 						if (parent.side == "right")
-							leftRightSep = -1 * leftRightSep /*- adjS*/;
+							leftRightSep = -1 * leftRightSep;
 
-						var tyParent = parent.y - origin[1] - adjS;
+						var tyParent = parent.y - origin[1] - adjS + 1;
 						var thParent = parent.height;
-						var eyParent = tyParent + Math.Min(thParent / 2, maxH);
-						sx = txParent + leftRightSep - adjS;
-						sy = eyParent;
+						var eyParent = tyParent + Math.Min(thParent / 2, maxH) - 1;
+						sx = txParent + leftRightSep - adjS - 1;
+						sy = eyParent - 2 ;
 					}
 
 					if (me.side == "left") {
-						var bx = tx + tw + hSeparation - adjS;
+						var bx = tx + tw + hSeparation - adjS ;
 						var ex = tx + tw - adjS;
-						var ey = ty + Math.Min(th / 2, maxH);
+						var ey = ty + Math.Min(th / 2, maxH) -1 +1;
 
 						points.Add(Tuple.Create(sx, sy));
 						points.Add(Tuple.Create(sx, my));
@@ -446,37 +431,28 @@ namespace RadialReview.Accessors.PDF {
 					} else if (me.side == "right") {
 						var bx = tx - (tw + hSeparation) - adjS;
 						var ex = tx - (tw + adjS);
-						var ey = ty + Math.Min(th / 2, maxH);
+						var ey = ty + Math.Min(th / 2, maxH) - 1 +1;
 
 						points.Add(Tuple.Create(sx, sy));
 						points.Add(Tuple.Create(sx, my));
 						points.Add(Tuple.Create(bx, my));
 						points.Add(Tuple.Create(bx, ey));
-						points.Add(Tuple.Create(ex, ey));
-
-						//tx = tx - (tw + hSeparation / 2) + adjS;
-						//my = my + th / 2;
-						//ty = my;
+						points.Add(Tuple.Create(ex, ey));                        
 					}
 				} else {
 					//no action
 					points.Add(Tuple.Create(sx, sy));
 					points.Add(Tuple.Create(sx, my));
 					points.Add(Tuple.Create(tx, my));
-					points.Add(Tuple.Create(tx, ty));
+					points.Add(Tuple.Create(tx, ty  ));
 				}
-
-
-
+                
 				if (DEBUG) {
 					gfx.DrawString(me.side + "_" + tx + "_" + ty, tempFont, XBrushes.DarkRed, tx, ty);
 					var tempFont2 = new XFont("Times New Roman", Math.Max(1, 15 * pageProps.scale), XFontStyle.Bold);
 					gfx.DrawString(me.GetDebugNotes(), tempFont2, XBrushes.HotPink, tx + 2, ty - 4);
 				}
 				DrawLine(gfx, pageProps, points);
-
-
-
 			}
 			if (!points.Any())
 				return XRect.Empty;
@@ -487,40 +463,13 @@ namespace RadialReview.Accessors.PDF {
 			);
 		}
 
-		//private static XRect GetAdjustedBoundry(XRect original, XRect newRect) {
-		//	var origStartX = original.X;
-		//	var origStartY = original.Y;
-		//	var origEndX = original.X + original.Width;
-		//	var origEndY = original.Y + original.Height;
-
-		//	var startX = newRect.X;
-		//	var startY = newRect.Y;
-		//	var endX = newRect.X + newRect.Width;
-		//	var endY = newRect.Y + newRect.Height;
-
-		//	var newStartX = Math.Min(startX, origStartX);
-		//	var newStartY = Math.Min(startY, origStartY);
-		//	var newEndX = Math.Max(endX, origEndX);
-		//	var newEndY = Math.Max(endY, origEndY);
-
-		//	return new XRect() {
-		//		X = newStartX,
-		//		Y = newStartY,
-		//		Width = newEndX - newStartX,
-		//		Height = newEndY - newStartY,
-		//	};
-		//}
-
 		private static XRect ACDrawRoles(XGraphics gfx, ACNode root, AccountabilityChartSettings pageProps, TreeSettings settings, double[] origin = null, bool anyAboveRoot = false) {
 			XRect boundary = XRect.Empty;
-
-
 
 			if (root.children != null) {
 				foreach (var c in root.children) {
 					boundary.Union(ACDrawRoleLine(gfx, root, c, pageProps, settings, origin));
 					boundary.Union(ACDrawRoles(gfx, c, pageProps, settings, origin));
-
 				}
 			}
 			boundary.Union(ACDrawRole(gfx, root, pageProps, origin));
@@ -555,21 +504,16 @@ namespace RadialReview.Accessors.PDF {
 
 			var d = (3.0) * pageProps.scale;
 			var i = (3 + 6 * 2/*ii*/) * pageProps.scale;
-			var adj = pageProps.linePen.Width * .5;
+			var adj = pageProps.linePen().Width * .5;
 
 			var xx1 = x - (d / 2.0);
 			var yy1 = y - (d / 2.0) + adj;
 			var xx2 = x - (d / 2.0);
 			var yy2 = y + mult * i - (d / 2.0) + adj;
 
-			gfx.DrawLine(pageProps.linePen, xx1, yy1, xx2, yy2);
+			gfx.DrawLine(pageProps.linePen(), xx1, yy1, xx2, yy2);
 
 			return new XRect(Math.Min(xx1, xx2), Math.Min(yy1, yy2), Math.Abs(xx2 - xx1), Math.Abs(yy2 - yy1));
-			//for (var ii = 0; ii < 3; ii += 1) {
-			//	var i = (3 + 6 * ii) * pageProps.scale;
-			//	var d = (3.0) * pageProps.scale;
-			//	gfx.DrawEllipse(new XPen(XColors.Black, 0.5), x - (d / 2.0), y + mult * i - (d / 2.0), d, d);
-			//}
 		}
 
 		private static double[] ACRanges(ACNode root) {

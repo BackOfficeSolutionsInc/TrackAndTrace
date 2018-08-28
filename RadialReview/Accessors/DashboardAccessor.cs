@@ -85,12 +85,12 @@ namespace RadialReview.Accessors {
 				//x: 0, y: 0, w: 1, h: 1
 				CreateTile(s, perms, dash.Id, 1, 1 * TILE_HEIGHT, 0, 0 * TILE_HEIGHT, "/TileData/UserProfile2", "Profile", TileType.Profile);
 				CreateTile(s, perms, dash.Id, 1, 1 * TILE_HEIGHT, 0, 1 * TILE_HEIGHT, "/TileData/FAQTips", "FAQ Guide", TileType.FAQGuide);
-				if (caller.IsManager()) {
+				/*if (caller.IsManager()) {
 					//x: 0, y: 1, w: 1, h: 3
 					CreateTile(s, perms, dash.Id, 1, 2 * TILE_HEIGHT, 0, 2 * TILE_HEIGHT, "/TileData/UserManage2", "Managing", TileType.Manage);
-				}
+				}*/
 				//x: 1, y: 2, w: 3, h: 2
-				CreateTile(s, perms, dash.Id, 3, 2 * TILE_HEIGHT, 1, 2 * TILE_HEIGHT, "/TileData/UserTodo2", "To-dos", TileType.Todo);
+				CreateTile(s, perms, dash.Id, 4, 2 * TILE_HEIGHT, 0, 2 * TILE_HEIGHT, "/TileData/UserTodo2", "To-dos", TileType.Todo);
 				//x: 1, y: 0, w: 6, h: 2
 				CreateTile(s, perms, dash.Id, 6, 2 * TILE_HEIGHT, 1, 0 * TILE_HEIGHT, "/TileData/UserScorecard2", "Scorecard", TileType.Scorecard);
 				//x: 4, y: 2, w: 3, h: 2

@@ -99,7 +99,11 @@ namespace RadialReview.Accessors {
                         //SetUtility.AddRemove(old.DefaultAttendees,l10Recurrence.DefaultAttendees,x=>x.)
                     }*/
 					var oldRecur = s.Get<L10Recurrence>(l10Recurrence.Id);
-					_LoadRecurrences(s, false, false, false, false, oldRecur);
+					_LoadRecurrences(s, new LoadMeeting() {
+                        LoadMeasurables = true,
+                        LoadRocks = true,
+                        LoadUsers  = true,                        
+                    }, oldRecur);
 
 					var oldMeeting = _GetCurrentL10Meeting(s, perm, l10Recurrence.Id, true, true);
 					SetUtility.AddedRemoved<MeasurableModel> updateMeasurables = null;

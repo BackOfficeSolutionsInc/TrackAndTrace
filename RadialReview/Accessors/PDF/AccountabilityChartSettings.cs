@@ -14,12 +14,18 @@ namespace RadialReview.Accessors.PDF {
 			public XUnit pageWidth { get; set; }
 			public XUnit pageHeight { get; set; }
 			public XUnit margin { get; set; }
-			public XPen linePen = new XPen(XColors.Gray, .5) {
-				LineJoin = XLineJoin.Miter,
-				MiterLimit = 10,
-				LineCap = XLineCap.Square
-			};
-			public XPen boxPen = new XPen(XColors.Black, 1);
+            public XColor? lineColor { get; set; }
+            public XPen linePen() {
+                return new XPen(lineColor ?? XColors.Gray, .5 * scale) {
+                    LineJoin = XLineJoin.Miter,
+                    MiterLimit = 10,
+                    LineCap = XLineCap.Square,
+                };
+            }
+            public XColor? boxColor { get; set; }
+            public XPen boxPen() {
+                return new XPen(boxColor??XColors.Black, 1*scale);
+            }
 			public XBrush brush = new XSolidBrush(XColors.Transparent);
 
 			public double scale = 1;
@@ -31,12 +37,13 @@ namespace RadialReview.Accessors.PDF {
 			
 
 			public AccountabilityChartSettings(OrganizationModel.OrganizationSettings settings) {
-				boxPen = new XPen(settings.PrimaryColor.ToXColor(), 1);
-				linePen = new XPen(settings.PrimaryColor.ToXColor(), .5) {
-					LineJoin = XLineJoin.Miter,
-					MiterLimit = 10,
-					LineCap = XLineCap.Square
-				};
+				boxColor = settings.PrimaryColor.ToXColor();
+                lineColor = settings.PrimaryColor.ToXColor();
+                //  linePen = new XPen(, .5) {
+				//	LineJoin = XLineJoin.Miter,
+				//	MiterLimit = 10,
+				//	LineCap = XLineCap.Square
+				//};
 
 			}
 		}

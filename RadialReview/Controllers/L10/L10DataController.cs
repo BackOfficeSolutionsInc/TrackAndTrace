@@ -95,12 +95,12 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult AddRock(long id) {
 			var recurrenceId = id;
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 
 			var allRocks = RockAccessor.GetPotentialMeetingRocks(GetUser(), recurrenceId, true);
 			//var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
-			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True())._DefaultAttendees.Select(x => x.User.Id).ToList();
 			var already = recurrence._DefaultRocks.Select(x => x.ForRock.Id).ToList();
 
 			var addableRocks = allRocks
@@ -196,12 +196,12 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult AddMeasurable(long id) {
 			var recurrenceId = id;
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 
 			var allMeasurables = ScorecardAccessor.GetPotentialMeetingMeasurables(GetUser(), recurrenceId, true);
 			//var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
-			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True())._DefaultAttendees.Select(x => x.User.Id).ToList();
 			var already = recurrence._DefaultMeasurables.Where(x => x.Measurable != null).Select(x => x.Measurable.Id).ToList();
 
 			var addableMeasurables = allMeasurables
@@ -350,7 +350,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<FileContentResult> ExportScorecard(long id, string type = "csv") {
 			var csv = await ExportAccessor.Scorecard(GetUser(), id, type);
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.False());
 			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + recur.Name + "_Scorecard.csv");
 		}
 
@@ -407,7 +407,7 @@ namespace RadialReview.Controllers {
             Response.ContentType = "application/zip";
             Response.AddHeader("content-disposition", "filename=" + archiveName);*/
 
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.False());
 			var time = DateTime.UtcNow.ToJavascriptMilliseconds();
 
 			var memoryStream = new MemoryStream();
@@ -816,7 +816,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult CreateL10Page(long id) {
 			var recurrenceId = id;
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 			var page = new L10Recurrence.L10Recurrence_Page() {
 				L10RecurrenceId = recurrenceId
 			};
@@ -855,7 +855,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Members(long id) {
 			var recurrenceId = id;
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 			var result = recur._DefaultAttendees.Select(x => new {
 				id = x.User.Id,
 				name = x.User.GetName(),

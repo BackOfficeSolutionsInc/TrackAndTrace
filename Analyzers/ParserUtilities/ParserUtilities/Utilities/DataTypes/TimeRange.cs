@@ -11,8 +11,8 @@ namespace ParserUtilities.Utilities.DataTypes {
 		public DateTimeKind Kind { get; set; }
 
 		public TimeRange(DateTime start, DateTime end, DateTimeKind kind) {
-			Start	= new DateTime(Math.Min(start.Ticks,end.Ticks));
-			End		= new DateTime(Math.Max(start.Ticks, end.Ticks));
+			Start	= new DateTime(Math.Min(start.Ticks,end.Ticks), kind);
+			End		= new DateTime(Math.Max(start.Ticks, end.Ticks), kind);
 			Kind	= kind;
 		}
 
@@ -22,7 +22,21 @@ namespace ParserUtilities.Utilities.DataTypes {
 
 		public static TimeRange Around(DateTime time, TimeSpan totalSpan, DateTimeKind kind) {
 			var r = new TimeSpan(totalSpan.Ticks / 2);
-			return new TimeRange(time - r, time + r, kind);
+
+            return new TimeRange(time - r, time + r, kind);
 		}
-	}
+        public static TimeRange Around(TimeSpan totalSpan, DateTime time, DateTimeKind kind) {
+            var r = new TimeSpan(totalSpan.Ticks / 2);
+            return new TimeRange(time - r, time + r, kind);
+        }
+
+        public static TimeRange Around(double minutes, DateTime time, DateTimeKind kind) {
+            return Around(TimeSpan.FromMinutes(minutes), time, kind);
+        }
+
+        public override string ToString() {
+            return Start.Ticks + "_" + End.Ticks + "_" + Kind;
+        }
+
+    }
 }

@@ -1342,13 +1342,16 @@ namespace RadialReview.Accessors {
 			var caller = perms.GetCaller();
 			perms.ViewOrganization(organizationId);
 			var users = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
+			var isRadialAdmin = perms.IsPermitted(x => x.RadialAdmin());
+            if (!isRadialAdmin) {
+                users = users.Where(x => !x.Email.NotNull(y=>y.ToLower().EndsWith("@mytractiontools.com"))).ToList();
+            }
 			if (populatePersonallyManaging) {
 				var subs = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id, type);
 
 				var orgManager = PermissionsAccessor.AnyTrue(s, caller, type, x => x.ManagingOrganization);
 
 
-				var isRadialAdmin = perms.IsPermitted(x => x.RadialAdmin());
 				users.ForEach(u =>
 					u._PersonallyManaging = (isRadialAdmin || (orgManager && u.OrganizationId == organizationId) || subs.Contains(u.UserId)));
 			}

@@ -25,6 +25,7 @@ using RadialReview.Api.V1;
 using RadialReview.Api;
 using RadialReview;
 using RadialReview.Exceptions;
+using RadialReview.Crosscutting.Schedulers;
 
 namespace TractionTools.Tests.API.v1 {
 	[TestClass]
@@ -262,24 +263,25 @@ namespace TractionTools.Tests.API.v1 {
 		public async Task TestAttachHeadlineMeetingL10() {
 			var c = await Ctx.Build();
 			L10Controller L10 = new L10Controller();
+            using (Scheduler.Mock()) {
+                L10.MockUser(c.E1);
+                var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
+                var headlineModel = new PeopleHeadline() {
+                    Message = "Test Head Line",
+                    OrganizationId = c.Org.Id,
+                    RecurrenceId = recurrenceId,
+                    _Details = "Test details"
+                };
+                var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+                Assert.AreEqual(0, getAttachHeadline.Count());
 
-			L10.MockUser(c.E1);
-			var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
-			var headlineModel = new PeopleHeadline() {
-				Message = "Test Head Line",
-				OrganizationId = c.Org.Id,
-				RecurrenceId = recurrenceId,
-				_Details = "Test details"
-			};
-			var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
-			Assert.AreEqual(0, getAttachHeadline.Count());
+                var getHeadline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, new CreateHeadline { title = headlineModel.Message, ownerId = null, notes = headlineModel._Details });
 
-			var getHeadline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, new CreateHeadline { title = headlineModel.Message, ownerId = null, notes = headlineModel._Details });
-
-			CompareModelProperties(getHeadline);
-			getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
-			Assert.AreEqual(1, getAttachHeadline.Count());
-			Assert.AreEqual("Test Head Line", getAttachHeadline.First().Message);
+                CompareModelProperties(getHeadline);
+                getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+                Assert.AreEqual(1, getAttachHeadline.Count());
+                Assert.AreEqual("Test Head Line", getAttachHeadline.First().Message);
+            }
 		}
 
 		[TestMethod]
@@ -311,34 +313,36 @@ namespace TractionTools.Tests.API.v1 {
 		}
 
 
-		[TestMethod]
-		[TestCategory("Api_V1")]
-		public async Task TestRemoveHeadlineMeetingL10() {
-			var c = await Ctx.Build();
-			L10Controller L10 = new L10Controller();
-			L10.MockUser(c.E1);
-			var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
-			var headlineModel = new PeopleHeadline() {
-				Message = "Test Head Line",
-				OrganizationId = c.Org.Id,
-				RecurrenceId = recurrenceId,
-				_Details = "Test details",
-			};
+        [TestMethod]
+        [TestCategory("Api_V1")]
+        public async Task TestRemoveHeadlineMeetingL10() {
+            var c = await Ctx.Build();
+            using (Scheduler.Mock()) {
+                L10Controller L10 = new L10Controller();
+                L10.MockUser(c.E1);
+                var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
+                var headlineModel = new PeopleHeadline() {
+                    Message = "Test Head Line",
+                    OrganizationId = c.Org.Id,
+                    RecurrenceId = recurrenceId,
+                    _Details = "Test details",
+                };
 
-			//create headline
-			var headline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, new CreateHeadline { title = headlineModel.Message, ownerId = null, notes = headlineModel._Details });
+                //create headline
+                var headline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, new CreateHeadline { title = headlineModel.Message, ownerId = null, notes = headlineModel._Details });
 
-			//Get headlines
-			var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
-			Assert.AreEqual(1, getAttachHeadline.Count());
+                //Get headlines
+                var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+                Assert.AreEqual(1, getAttachHeadline.Count());
 
-			//Remove headline
-			await L10.RemoveHeadlineL10(recurrenceId, headline.Id);
-			//Get headlines
-			getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
-			Assert.AreEqual(0, getAttachHeadline.Count());
+                //Remove headline
+                await L10.RemoveHeadlineL10(recurrenceId, headline.Id);
+                //Get headlines
+                getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+                Assert.AreEqual(0, getAttachHeadline.Count());
 
-		}
+            }
+        }
 
 
 		[TestMethod]
@@ -382,18 +386,19 @@ namespace TractionTools.Tests.API.v1 {
 			var c = await Ctx.Build();
 			L10Controller L10 = new L10Controller();
 
-			L10.MockUser(c.E1);
-			var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
-			var name = "Test Name For Issue Meeting L10";
+            using (Scheduler.Mock()) {
+                L10.MockUser(c.E1);
+                var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
+                var name = "Test Name For Issue Meeting L10";
 
-			var details = "Test detail For Issue Meeting L10";
+                var details = "Test detail For Issue Meeting L10";
 
-			var result = await L10.CreateIssueL10(recurrenceId, new CreateIssue { title = name, ownerId = c.E1.Id, details = details });
-			CompareModelProperties(/*APIResult.L10ApiTests_v0_TestAttachIssueMeetingL10,*/ result);
-			var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
+                var result = await L10.CreateIssueL10(recurrenceId, new CreateIssue { title = name, ownerId = c.E1.Id, details = details });
+                CompareModelProperties(/*APIResult.L10ApiTests_v0_TestAttachIssueMeetingL10,*/ result);
+                var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
 
-			Assert.AreEqual(1, getIssueMeetingL10.Count());
-
+                Assert.AreEqual(1, getIssueMeetingL10.Count());
+            }
 		}
 
 		[TestMethod]
@@ -402,22 +407,24 @@ namespace TractionTools.Tests.API.v1 {
 			var c = await Ctx.Build();
 			L10Controller L10 = new L10Controller();
 
-			L10.MockUser(c.E1);
-			var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
-			var name = "Test Name For Issue Meeting L10";
+            using (Scheduler.Mock()) {
+                L10.MockUser(c.E1);
+                var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
+                var name = "Test Name For Issue Meeting L10";
 
-			var details = "Test detail For Issue Meeting L10";
+                var details = "Test detail For Issue Meeting L10";
 
-			await L10.CreateIssueL10(recurrenceId, new CreateIssue { title = name, ownerId = c.E1.Id, details = details });
 
-			var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
+                await L10.CreateIssueL10(recurrenceId, new CreateIssue { title = name, ownerId = c.E1.Id, details = details });
 
-			await L10.RemoveIssueL10(recurrenceId, getIssueMeetingL10.FirstOrDefault().Id);
+                var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
 
-			var getIssueMeetingList = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
+                await L10.RemoveIssueL10(recurrenceId, getIssueMeetingL10.FirstOrDefault().Id);
 
-			Assert.AreEqual(0, getIssueMeetingList.Count());
+                var getIssueMeetingList = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
 
+                Assert.AreEqual(0, getIssueMeetingList.Count());
+            }
 		}
 
 

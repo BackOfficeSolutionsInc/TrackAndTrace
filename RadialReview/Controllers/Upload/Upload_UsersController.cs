@@ -39,7 +39,7 @@ namespace RadialReview.Controllers {
                 fnameRect.EnsureRowOrColumn();
 
                 var m = new UploadUsersSelectedDataVM() { };
-                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
+                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.False()).OrganizationId;
                 var allUsers = TinyUserAccessor.GetOrganizationMembers(GetUser(), orgId);
                 m.ExistingUser = new List<string>();
 

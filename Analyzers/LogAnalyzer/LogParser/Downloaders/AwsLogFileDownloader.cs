@@ -6,6 +6,7 @@ using Amazon.S3.Model;
 using LogParser.Models;
 using ParserUtilities;
 using ParserUtilities.Utilities.CacheFile;
+using ParserUtilities.Utilities.DataTypes;
 using ParserUtilities.Utilities.LogFile;
 using ParserUtilities.Utilities.OutputFile;
 using System;

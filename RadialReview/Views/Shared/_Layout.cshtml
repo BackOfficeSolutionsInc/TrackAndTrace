@@ -3,96 +3,96 @@
 @using RadialReview
 
 @{
-	var limitFiveState = ViewBag.LimitFiveState ?? true;
-	var l10Enabled = false;
-	var reviewEnabled = false;
-	var acEnabled = false;
-	var surveyEnabled = false;
-	var peopleEnabled = false;
-	var coreProcessEnabled = false;
-	if (((int?)ViewBag.Organizations ?? 0) > 0) {
-		if (ViewBag.ShowL10) {
-			l10Enabled = true;
-		}
-		if (ViewBag.ShowReview) {
-			reviewEnabled = true;
-		}
-		if (ViewBag.ShowAC) {
-			acEnabled = true;
-		}
-		if (ViewBag.ShowSurvey) {
-			surveyEnabled = true;
-		}
-		if (ViewBag.ShowPeople) {
-			peopleEnabled = true;
-		}
-		if (ViewBag.ShowCoreProcess) {
-			coreProcessEnabled = true;
-		}
-	}
+    var limitFiveState = ViewBag.LimitFiveState ?? true;
+    var l10Enabled = false;
+    var reviewEnabled = false;
+    var acEnabled = false;
+    var surveyEnabled = false;
+    var peopleEnabled = false;
+    var coreProcessEnabled = false;
+    if (((int?)ViewBag.Organizations ?? 0) > 0) {
+        if (ViewBag.ShowL10) {
+            l10Enabled = true;
+        }
+        if (ViewBag.ShowReview) {
+            reviewEnabled = true;
+        }
+        if (ViewBag.ShowAC) {
+            acEnabled = true;
+        }
+        if (ViewBag.ShowSurvey) {
+            surveyEnabled = true;
+        }
+        if (ViewBag.ShowPeople) {
+            peopleEnabled = true;
+        }
+        if (ViewBag.ShowCoreProcess) {
+            coreProcessEnabled = true;
+        }
+    }
 }
 
 <!DOCTYPE html>
 <html class="@(ViewBag.FullHeight ?? false ? "body-full-height" : "body-normal-height")  @(ViewBag.NoTitleBar?? false?"body-notitlebar":"")">
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<meta http-equiv="X-UA-Compatible" content="IE=9">
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
 
-	<link rel="apple-touch-icon" sizes="180x180" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/apple-touch-icon.png?v=BGArkdlq8m">
-	<link rel="icon" type="image/png" sizes="32x32" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/favicon-32x32.png?v=BGArkdlq8m">
-	<link rel="icon" type="image/png" sizes="16x16" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/favicon-16x16.png?v=BGArkdlq8m">
-	<link rel="manifest" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/site.webmanifest?v=BGArkdlq8m">
-	<link rel="mask-icon" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/safari-pinned-tab.svg?v=BGArkdlq8m" color="#ef7622">
-	<meta name="apple-mobile-web-app-title" content="Traction Tools">
-	<meta name="application-name" content="Traction Tools">
-	<meta name="msapplication-TileColor" content="#da532c">
-	<meta name="msapplication-TileImage" content="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/mstile-144x144.png?v=BGArkdlq8m">
-	<meta name="msapplication-config" content="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/browserconfig.xml?v=BGArkdlq8m">
-	<meta name="theme-color" content="#f1f1f1">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/apple-touch-icon.png?v=BGArkdlq8m">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/favicon-32x32.png?v=BGArkdlq8m">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/favicon-16x16.png?v=BGArkdlq8m">
+    <link rel="manifest" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/site.webmanifest?v=BGArkdlq8m">
+    <link rel="mask-icon" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/safari-pinned-tab.svg?v=BGArkdlq8m" color="#ef7622">
+    <meta name="apple-mobile-web-app-title" content="Traction Tools">
+    <meta name="application-name" content="Traction Tools">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/mstile-144x144.png?v=BGArkdlq8m">
+    <meta name="msapplication-config" content="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/browserconfig.xml?v=BGArkdlq8m">
+    <meta name="theme-color" content="#f1f1f1">
 
-	@if (ViewBag.IsLocal ?? false) {
-		<link rel="SHORTCUT ICON" href="/content/favicon-local.ico?v=4" />
-	} else {
-		<link rel="SHORTCUT ICON" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/favicon.ico?v=BGArkdlq8m" />
-	}
+    @if (ViewBag.IsLocal ?? false) {
+        <link rel="SHORTCUT ICON" href="/content/favicon-local.ico?v=4" />
+    } else {
+        <link rel="SHORTCUT ICON" href="https://s3.amazonaws.com/Radial/icons/TractionTools/resources/favicon.ico?v=BGArkdlq8m" />
+    }
 
-	<style>
-		[ng\:cloak], [ng-cloak], .ng-cloak {
-			display: none !important;
-		}
+    <style>
+        [ng\:cloak], [ng-cloak], .ng-cloak {
+            display: none !important;
+        }
 
-		.debuginfo, .debug-info {
-			display: none;
-			color: gray;
-			border-left: 2px solid red;
-			padding: 4px;
-			margin: 4px;
-			white-space: pre;
-			background-color: #ff000014;
-		}
+        .debuginfo, .debug-info {
+            display: none;
+            color: gray;
+            border-left: 2px solid red;
+            padding: 4px;
+            margin: 4px;
+            white-space: pre;
+            background-color: #ff000014;
+        }
 
-		.show-debug .debug-info, .show-debug .debuginfo, .showdebug .debug-info, .showdebug .debuginfo {
-			display: block;
-		}
-	</style>
+        .show-debug .debug-info, .show-debug .debuginfo, .showdebug .debug-info, .showdebug .debuginfo {
+            display: block;
+        }
+    </style>
 
 
-	<link href='https://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
-	@if (ViewBag.Title == null) {
-		<title>@Html.ProductName()</title>
-	} else {
-		<title>@ViewBag.Title - @Html.ProductName()</title>
-	}
-	@Styles.Render("~/Content/css")
-	@RenderSection("styles", required: false)
-	@Html.PageStyles()
-	@if (ViewBag.VideoChatRoom != null) {
-		<link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
-	}
-	<!--User Styles-->
-	<style>
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
+    @if (ViewBag.Title == null) {
+        <title>@Html.ProductName()</title>
+    } else {
+        <title>@ViewBag.Title - @Html.ProductName()</title>
+    }
+    @Styles.Render("~/Content/css")
+    @RenderSection("styles", required: false)
+    @Html.PageStyles()
+    @if (ViewBag.VideoChatRoom != null) {
+        <link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
+    }
+    <!--User Styles-->
+    <style>
 		@{
 			try {
 				Html.RenderAction("Styles", "User", new { area = "" });
@@ -100,265 +100,265 @@
 				@: .style-render-error{ /*@(e!=null?e.ToString():"null") */}
 			}
 		}
-	</style>
-	<!--End User Styles-->
+    </style>
+    <!--End User Styles-->
 </head>
 @if (ViewBag.HasBaseController == null) {
-	throw new Exception("You must extend from the base controller.");
+    throw new Exception("You must extend from the base controller.");
 }
 <body id="body" class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width")  @(ViewBag.LayoutClass??"")  @(limitFiveState?"fivestate-limit-true":"")">
-	@Scripts.Render("~/bundles/compatability")
-	<script>
-		window.UserId = @(ViewBag.UserId??-1);
-		window.OrgId = @(ViewBag.OrganizationId ?? -1);
-		window.Title = "@(ViewBag.Title ?? "")";
-		window.ServerTime = new Date(@DateTime.UtcNow.ToJavascriptMilliseconds());
-		window.ServerTimeDiff = window.ServerTime - new Date();
-		window.ConvertFromServerTime=function(serverTime){return serverTime -window.ServerTimeDiff;}
-		window.ConvertToServerTime = function (clientTime){return clientTime + window.ServerTimeDiff;}
-		window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
-		window.Config = {};
-		window.Products = {
-			L10 : @(l10Enabled?"true":"false"),
-			Review : @(reviewEnabled?"true":"false"),
-			AC : @(acEnabled?"true":"false"),
-			Survey : @(surveyEnabled?"true":"false"),
-			CoreProcess: @(coreProcessEnabled?"true":"false"),
-		};
+    @Scripts.Render("~/bundles/compatability")
+    <script>
+        window.UserId = @(ViewBag.UserId??-1);
+        window.OrgId = @(ViewBag.OrganizationId ?? -1);
+        window.Title = "@(ViewBag.Title ?? "")";
+        window.ServerTime = new Date(@DateTime.UtcNow.ToJavascriptMilliseconds());
+        window.ServerTimeDiff = window.ServerTime - new Date();
+        window.ConvertFromServerTime=function(serverTime){return serverTime -window.ServerTimeDiff;}
+        window.ConvertToServerTime = function (clientTime){return clientTime + window.ServerTimeDiff;}
+        window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
+        window.Config = {};
+        window.Products = {
+            L10 : @(l10Enabled?"true":"false"),
+            Review : @(reviewEnabled?"true":"false"),
+            AC : @(acEnabled?"true":"false"),
+            Survey : @(surveyEnabled?"true":"false"),
+            CoreProcess: @(coreProcessEnabled?"true":"false"),
+        };
 
-		window.LimitFiveState = @((""+limitFiveState).ToLower());
+        window.LimitFiveState = @((""+limitFiveState).ToLower());
 
-		function getParsedDate(date){
-			if (typeof (date) === "undefined") {date = new Date();}
-			else if (typeof (date) === "number") {date = new Date(date);}
-			else if (typeof (date) === "string") {
-				var test = "/Date(";
-				if (date.substring(0, test.length) === test){
-					date = new Date(+date.substring(test.length,date.length-2));
-				}else{
-					date = new Date(date);
-					console.warn("potentially unknown format: " + date)
-				}
-			}
-			return date;
-		}
+        function getParsedDate(date){
+            if (typeof (date) === "undefined") {date = new Date();}
+            else if (typeof (date) === "number") {date = new Date(date);}
+            else if (typeof (date) === "string") {
+                var test = "/Date(";
+                if (date.substring(0, test.length) === test){
+                    date = new Date(+date.substring(test.length,date.length-2));
+                }else{
+                    date = new Date(date);
+                    console.warn("potentially unknown format: " + date)
+                }
+            }
+            return date;
+        }
 
-		//Date Formatting
-		function getFormattedDate(date,format,onUnknown) {
-			date = getParsedDate(date,onUnknown);
+        //Date Formatting
+        function getFormattedDate(date,format,onUnknown) {
+            date = getParsedDate(date,onUnknown);
 
-			if (typeof(format)==="undefined" || format===null) { format = window.dateFormat; }
+            if (typeof(format)==="undefined" || format===null) { format = window.dateFormat; }
 
-			//Formats:
-			//dd-MM-yyyy	= 12-31-1999
-			//HH:mm:ss		= 23:59:59
-			//hh:mm:sst		= 12:59:59p
-			//hh:mm:sstt	= 12:59:59pm
-			var _d = date.getDate(),dd = _d > 9 ? _d : '0' + _d,_M = date.getMonth() + 1,MM = _M > 9 ? _M : '0' + _M,yyyy = date.getFullYear(),formatted = MM + '-' + dd + '-' + (yyyy),
+            //Formats:
+            //dd-MM-yyyy	= 12-31-1999
+            //HH:mm:ss		= 23:59:59
+            //hh:mm:sst		= 12:59:59p
+            //hh:mm:sstt	= 12:59:59pm
+            var _d = date.getDate(),dd = _d > 9 ? _d : '0' + _d,_M = date.getMonth() + 1,MM = _M > 9 ? _M : '0' + _M,yyyy = date.getFullYear(),formatted = MM + '-' + dd + '-' + (yyyy),
 				H = date.getHours(),HH =H > 9 ? H : '0' + H,  h = H%12||12; hh =h > 9 ? h : '0' + h,m = date.getMinutes(),mm =m > 9 ? m : '0' + m,s = date.getSeconds(),ss =s > 9 ? s : '0' + s, t = H>=12?"p":"a", tt = t+"m";
 
-			var _userFormat = format.replace(/MM/g, MM).replace(/M/g, _M).replace(/dd/g, dd).replace(/d/g, _d).replace(/yyyy/g, yyyy).replace(/yy/g, (yyyy - 2000))
+            var _userFormat = format.replace(/MM/g, MM).replace(/M/g, _M).replace(/dd/g, dd).replace(/d/g, _d).replace(/yyyy/g, yyyy).replace(/yy/g, (yyyy - 2000))
 				.replace(/HH/g, HH).replace(/H/g, H).replace(/hh/g, hh).replace(/h/g, h).replace(/mm/g, mm).replace(/m/g, m).replace(/ss/g, ss).replace(/s/g, s).replace(/tt/g, tt).replace(/t/g, t);
-			return _userFormat;
-		}
+            return _userFormat;
+        }
 
 
 
-	</script>
+    </script>
 
 
-	@RenderSection("topSection", required: false)
+    @RenderSection("topSection", required: false)
 
-	@if (ViewBag.IsLocal ?? false) {
-		<div id="local" onclick="showDebug()"></div>
-		<div class="debugger"></div>
-	}
-	<div class="statusContainer"><div id="status">No status</div></div>
-	<div id="wrap">
-		<div id="main">
-			@if (!(ViewBag.NoTitleBar ?? false)) {
-				<div class="navbar navbar-inverse navbar-fixed-top">
-					<div class="container body-navbar">
-						<div class="navbar-header">
-							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-							</button>
-							@if (ViewBag.FullLogo as bool? != true) {
-								<div id="logo">
-									<div class="link">
-										<a href="@Url.Action("Index", "Home",new {area=""})" class="navbar-brand">
-											<span style="z-index: 1000001; position: relative; top: -2px;">
-												<img src="/Content/img/TRACTION-TOOLS_large_icon_wh.png" height="54" width="54" style="opacity: .95;">
-											</span>
-										</a>
-									</div>
-								</div>
-							} else {
-								<div id="logo">
-									<div class="link">
-										<a href="@Url.Action("Index", "Home", new { area = "" })" class="navbar-brand">
-											<span style="z-index: 1000001; position: relative; top: -2px;">
-												<img src="/Content/img/TRACTION-TOOLS_small_horizontal_wh.png" height="54" style="opacity: .95;">
-											</span>
-										</a>
-									</div>
-								</div>
-							}
-							<span class="beta-only beta-label">beta</span>
-							<span class="pull-right navbar-icon-container visible-xs">
-								@if (((int?)ViewBag.Organizations ?? 0) > 0) {
-									if (ViewBag.ShowL10) {
-										<span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal" title="New People Headline"></span>
-										<span id="header-tab-new-issue" class="navbar-icon-button glyphicon1 glyphicon-pushpi1n icon fontastic-icon-pinboard issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
-									}
-									<span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
-								}
-							</span>
+    @if (ViewBag.IsLocal ?? false) {
+        <div id="local" onclick="showDebug()"></div>
+        <div class="debugger"></div>
+    }
+    <div class="statusContainer"><div id="status">No status</div></div>
+    <div id="wrap">
+        <div id="main">
+            @if (!(ViewBag.NoTitleBar ?? false)) {
+                <div class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="container body-navbar">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            @if (ViewBag.FullLogo as bool? != true) {
+                                <div id="logo">
+                                    <div class="link">
+                                        <a href="@Url.Action("Index", "Home",new {area=""})" class="navbar-brand">
+                                            <span style="z-index: 1000001; position: relative; top: -2px;">
+                                                <img src="/Content/img/TRACTION-TOOLS_large_icon_wh.png" height="54" width="54" style="opacity: .95;">
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            } else {
+                                <div id="logo">
+                                    <div class="link">
+                                        <a href="@Url.Action("Index", "Home", new { area = "" })" class="navbar-brand">
+                                            <span style="z-index: 1000001; position: relative; top: -2px;">
+                                                <img src="/Content/img/TRACTION-TOOLS_small_horizontal_wh.png" height="54" style="opacity: .95;">
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                            <span class="beta-only beta-label">beta</span>
+                            <span class="pull-right navbar-icon-container visible-xs">
+                                @if (((int?)ViewBag.Organizations ?? 0) > 0) {
+                                    if (ViewBag.ShowL10) {
+                                        <span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal" title="New People Headline"></span>
+                                        <span id="header-tab-new-issue" class="navbar-icon-button glyphicon1 glyphicon-pushpi1n icon fontastic-icon-pinboard issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+                                    }
+                                    <span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
+                                }
+                            </span>
 
-						</div>
-						<div class="navbar-collapse collapse">
-							<ul class="nav navbar-nav">
-								@if (Request.IsAuthenticated) {
-									if (((int?)ViewBag.Organizations ?? 0) == 0 && !(ViewBag.NoAccessCode ?? false)) {
-										<li>
-											<a href="@Url.Action("Index", "Home", new { area = "" })" class="@(ViewBag.TaskCount == 0?"":"flashing")">
-												Access Code
-												<span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
-											</a>
-										</li>
-									}
-									if (((int?)ViewBag.Organizations ?? 0) > 0) {
-										<li>
-											<a href="@Url.Action("Index", "Home",new { area = "" })" id="header-tab-workspace">
-												Workspace
-												<span id="DashboardNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-											</a>
-										</li>
-										if (ViewBag.ShowL10 ?? false) {
-											<li>
-												<a href="@Url.Action("Index", "L10",new { area = "" })" id="header-tab-l10">
-													L10
-													<span id="L10Notification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-												</a>
-											</li>
-										}
-										if (ViewBag.ShowReview ?? false) {
-											<li>
-												<a href="@Url.Action("Index", "Reviews",new { area = "" })" id="header-tab-reviews">
-													@(Html.ReviewName())s
-													<span id="ReviewsNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-												</a>
-											</li>
-										}
-										if ((ViewBag.ShowAC ?? false) && !(ViewBag.ShowPeople ?? false)) {
-											<li>
-												<a href="@Url.Action("Chart", "Accountability",new { area = "" })" id="header-tab-ac">
-													AC
-													<span id="AcNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-												</a>
-											</li>
-										}
-										if (ViewBag.ShowSurvey ?? false) {
-											<li>
-												<a href="@Url.Action("Index", "Surveys",new { area = "" })" id="header-tab-survey">
-													Surveys
-													<span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-												</a>
-											</li>
-										}
-										if (ViewBag.ShowPeople ?? false) {
-											<li>
-												<a href="@Url.Action("Index", "Main",new { area = "People" })" id="header-tab-survey">
-													People
-													<span id="PeopleNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-												</a>
-											</li>
-										}
-										if (ViewBag.ShowCoreProcess ?? false) {
-											<li>
-												<a href="@Url.Action("Index", "Process",new { area = "CoreProcess" })" id="header-tab-survey">
-													Core Process
-													<span id="CoreProcessNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-												</a>
-											</li>
-										}
-									}
-								} else {
-								}
-							</ul>
-							@if (!(ViewBag.IsLogin ?? false)) {
-								Html.RenderPartial("_LoginPartial", (string)ViewBag.ReturnUrl);
-							}
-							<div class="beta-only beta-feedback">
-								<a href="/redirect/feedback" target="_blank"><span class="feedback-smile" title="Send us feedback!"></span></a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<script>
-					//Test for IOS
-					if ((/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
-						document.getElementById("body").className += " is-ios";
-						var allowBack = document.referrer != "" && document.referrer.toLowerCase().lastIndexOf("/account/login") == -1;
+                        </div>
+                        <div class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav">
+                                @if (Request.IsAuthenticated) {
+                                    if (((int?)ViewBag.Organizations ?? 0) == 0 && !(ViewBag.NoAccessCode ?? false)) {
+                                        <li>
+                                            <a href="@Url.Action("Index", "Home", new { area = "" })" class="@(ViewBag.TaskCount == 0?"":"flashing")">
+                                                Access Code
+                                                <span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
+                                            </a>
+                                        </li>
+                                    }
+                                    if (((int?)ViewBag.Organizations ?? 0) > 0) {
+                                        <li>
+                                            <a href="@Url.Action("Index", "Home",new { area = "" })" id="header-tab-workspace">
+                                                Workspace
+                                                <span id="DashboardNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                            </a>
+                                        </li>
+                                        if (ViewBag.ShowL10 ?? false) {
+                                            <li>
+                                                <a href="@Url.Action("Index", "L10",new { area = "" })" id="header-tab-l10">
+                                                    L10
+                                                    <span id="L10Notification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                                </a>
+                                            </li>
+                                        }
+                                        if (ViewBag.ShowReview ?? false) {
+                                            <li>
+                                                <a href="@Url.Action("Index", "Reviews",new { area = "" })" id="header-tab-reviews">
+                                                    @(Html.ReviewName())s
+                                                    <span id="ReviewsNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                                </a>
+                                            </li>
+                                        }
+                                        if ((ViewBag.ShowAC ?? false) && !(ViewBag.ShowPeople ?? false)) {
+                                            <li>
+                                                <a href="@Url.Action("Chart", "Accountability",new { area = "" })" id="header-tab-ac">
+                                                    AC
+                                                    <span id="AcNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                                </a>
+                                            </li>
+                                        }
+                                        if (ViewBag.ShowSurvey ?? false) {
+                                            <li>
+                                                <a href="@Url.Action("Index", "Surveys",new { area = "" })" id="header-tab-survey">
+                                                    Surveys
+                                                    <span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                                </a>
+                                            </li>
+                                        }
+                                        if (ViewBag.ShowPeople ?? false) {
+                                            <li>
+                                                <a href="@Url.Action("Index", "Main",new { area = "People" })" id="header-tab-survey">
+                                                    People
+                                                    <span id="PeopleNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                                </a>
+                                            </li>
+                                        }
+                                        if (ViewBag.ShowCoreProcess ?? false) {
+                                            <li>
+                                                <a href="@Url.Action("Index", "Process",new { area = "CoreProcess" })" id="header-tab-survey">
+                                                    Core Process
+                                                    <span id="CoreProcessNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                } else {
+                                }
+                            </ul>
+                            @if (!(ViewBag.IsLogin ?? false)) {
+                                Html.RenderPartial("_LoginPartial", (string)ViewBag.ReturnUrl);
+                            }
+                            <div class="beta-only beta-feedback">
+                                <a href="/redirect/feedback" target="_blank"><span class="feedback-smile" title="Send us feedback!"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    //Test for IOS
+                    if ((/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
+                        document.getElementById("body").className += " is-ios";
+                        var allowBack = document.referrer != "" && document.referrer.toLowerCase().lastIndexOf("/account/login") == -1;
 
-						var link = allowBack ?"javascript:history.back()":"#";
-						var disabled = allowBack ?"":"disabled";
-						var newLogo = "<span class='link'><a class='"+disabled+"' href='"+link+"'>Back</a></span>";
-						document.getElementById("logo").innerHTML =newLogo
-					}
-				</script>
+                        var link = allowBack ?"javascript:history.back()":"#";
+                        var disabled = allowBack ?"":"disabled";
+                        var newLogo = "<span class='link'><a class='"+disabled+"' href='"+link+"'>Back</a></span>";
+                        document.getElementById("logo").innerHTML =newLogo
+                    }
+                </script>
 
-			}
-			@RenderSection("top", false)
-			<div class="container body-content">
-				@RenderSection("header", false)
-				<div class="clearfix subheading noPrint hidden-xs">@ViewBag.Subheading</div>
-				<div id="alerts"></div>
-				<div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
-					@RenderSection("hints", false)
-				</div>
-				@RenderBody()
-				<div class="footer-bar">@{ Html.RenderPartial("Partial/_VideoChat"); }</div>
-			</div>
-			<div id="animationContainer"></div>
-		</div>
-		@{Html.RenderPartial("Partial/_Modal");}
-		
-	</div>
-	@if (!(ViewBag.NoTitleBar ?? false)) {
-		<div id="footer">
-			<p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName &amp; EOS</p>
-			@{ Html.RenderPartial("Partial/Footer"); }
-		</div>
-				}
-	@RenderSection("bottomSection", required: false)
-	<div class="scripts-container">
-		<div class="main-script-container">
-			<script src="https://cdn.polyfill.io/v2/polyfill.js?features=CustomEvent"></script>
-			@Scripts.Render("~/bundles/jquery")
-			@if (RadialReview.Utilities.Config.GetEnv() == RadialReview.Models.Enums.Env.local_test_sqlite) {
-				<script type="text/javascript">
-					$(function(){
-						window.onerror=function(message, source, lineno, colno, error){
-							try{
-								$(".JSError").append($("<li><div class='error'>"+msg+"</div>"+
+            }
+            @RenderSection("top", false)
+            <div class="container body-content">
+                @RenderSection("header", false)
+                <div class="clearfix subheading noPrint hidden-xs">@ViewBag.Subheading</div>
+                <div id="alerts"></div>
+                <div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
+                    @RenderSection("hints", false)
+                </div>
+                @RenderBody()
+                <div class="footer-bar">@{ Html.RenderPartial("Partial/_VideoChat"); }</div>
+            </div>
+            <div id="animationContainer"></div>
+        </div>
+        @{Html.RenderPartial("Partial/_Modal");}
+
+    </div>
+    @if (!(ViewBag.NoTitleBar ?? false)) {
+        <div id="footer">
+            <p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName &amp; EOS</p>
+            @{ Html.RenderPartial("Partial/Footer"); }
+        </div>
+                }
+    @RenderSection("bottomSection", required: false)
+    <div class="scripts-container">
+        <div class="main-script-container">
+            <script src="https://cdn.polyfill.io/v2/polyfill.js?features=CustomEvent"></script>
+            @Scripts.Render("~/bundles/jquery")
+            @if (RadialReview.Utilities.Config.GetEnv() == RadialReview.Models.Enums.Env.local_test_sqlite) {
+                <script type="text/javascript">
+                    $(function(){
+                        window.onerror=function(message, source, lineno, colno, error){
+                            try{
+                                $(".JSError").append($("<li><div class='error'>"+msg+"</div>"+
 														"<div class='source'>"+source+"</div>"+
 														"<div class='lineno'>"+lineno+"</div>"+
 														"<div class='colno'>"+colno+"</div>"+
 														"<div class='error'>"+error+"</div></li>"));
-							}catch(e){
-								debugger;
-							}
-						}
-					});
-					(function(){
-						var oldError = console.error;
-						console.error = function (a1,a2,a3,a4,a5,a6) {
-							try{
-								// DO MESSAGE HERE.
-								$(".JSError").append($("<li class='console_error'>"+
+                            }catch(e){
+                                debugger;
+                            }
+                        }
+                    });
+                    (function(){
+                        var oldError = console.error;
+                        console.error = function (a1,a2,a3,a4,a5,a6) {
+                            try{
+                                // DO MESSAGE HERE.
+                                $(".JSError").append($("<li class='console_error'>"+
 														"<div class='a1'>"+a1+"</div>"+
 														"<div class='a2'>"+a2+"</div>"+
 														"<div class='a3'>"+a3+"</div>"+
@@ -366,63 +366,59 @@
 														"<div class='a5'>"+a5+"</div>"+
 														"<div class='a6'>"+a6+"</div></li>"));
 
-							}catch(e){
-								debugger;
-							}
-							oldError.apply(console, [a1,a2,a3,a4,a5,a6]);
-						};
-					})();
+                            }catch(e){
+                                debugger;
+                            }
+                            oldError.apply(console, [a1,a2,a3,a4,a5,a6]);
+                        };
+                    })();
 
-				</script>
-				<ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>
-			}
+                </script>
+                <ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>}
 
-			<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
-			@Scripts.Render("~/bundles/bootstrap")
-			@RenderSection("scripts", required: false) @RenderSection("modals", required: false)
-			<!--Begin Main Scripts-->
-			@Scripts.Render("~/bundles/main")
-			<script src="~/signalr/hubs"></script>
-			<!--End Main Scripts-->
-		</div>
-		<div class="page-script-container">
-			@Html.PageScripts()
-		</div>
-		<div class="legacy-scripts">
-			@if (ViewBag.Alert != null) {
-				<script>
-						$(function () { showAlert("@ViewBag.Alert"); });
-				</script>
-			}
-			@if (ViewBag.InfoAlert != null) {
-				<script>
-						$(function () { showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" , 6000); });
-				</script>
-			}
-			@if (ViewBag.Success != null) {
-				<script>
-						$(function () { showAlert("@ViewBag.Success", "alert-success" , "Success!" ); });
-				</script>
-			}
-			<script>
-					$(function () {
-						//qtip();
-						$('[data-toggle="tooltip"]').tooltip();
-						ForceUnhide();
-						UnstoreJsonAlert();
-						try{
-							if (typeof(window.meetingId)!=="undefined"){
-								$(".populateMeetingData").attr("data-meetingId",window.meetingId);
-							}
-							if (typeof(window.recurrenceId)!=="undefined"){
-								$(".populateMeetingData").attr("data-recurrenceId",window.recurrenceId);
-							}
-						}catch(e){
-							console.error(e);
-						}
+            <script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+            @Scripts.Render("~/bundles/bootstrap")
+            @RenderSection("scripts", required: false) @RenderSection("modals", required: false)
+            <!--Begin Main Scripts-->
+            @Scripts.Render("~/bundles/main")
+            <script src="~/signalr/hubs"></script>
+            <!--End Main Scripts-->
+        </div>
+        <div class="page-script-container">
+            @Html.PageScripts()
+        </div>
+        <div class="legacy-scripts">
+            @if (ViewBag.Alert != null) {
+                <script>
+                    $(function () { showAlert("@ViewBag.Alert"); });
+                </script>}
+            @if (ViewBag.InfoAlert != null) {
+                <script>
+                    $(function () { showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" , 6000); });
+                </script>}
+            @if (ViewBag.Success != null) {
+                <script>
+                    $(function () { showAlert("@ViewBag.Success", "alert-success" , "Success!" ); });
+                </script>}
+            <script>
+                $(function () {
+                    //qtip();
+                    $('[data-toggle="tooltip"]').tooltip();
+                    ForceUnhide();
+                    UnstoreJsonAlert();
+                    try{
+                        if (typeof(window.meetingId)!=="undefined"){
+                            $(".populateMeetingData").attr("data-meetingId",window.meetingId);
+                        }
+                        if (typeof(window.recurrenceId)!=="undefined"){
+                            $(".populateMeetingData").attr("data-recurrenceId",window.recurrenceId);
+                        }
+                    }catch(e){
+                        console.error(e);
+                    }
 
-					});  var statusTimeout;
-					@{
+                });  var statusTimeout;
+                @{
 						var tooltips = new MvcHtmlString("[]");
 						try {
 							tooltips = new MvcHtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Tooltips));
@@ -430,25 +426,27 @@
 
 						}
 					}
-					window.tooltips = @(tooltips);
+                window.tooltips = @(tooltips);
 
-			</script>
-		</div>
+            </script>
+        </div>
 
-		<div class="ga-script-container">
-			<!-- Google Analytics -->
-			<script>
-        window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-				ga('create', 'UA-68333423-1',{'userId':@(ViewBag.UserId??-1L)});
-				ga('set', 'dimension1', @(ViewBag.UserId??-1L));
-				try{
-					ga('set', 'dimension2', window.Config.ServerType);
-				}catch(e){
-					console.warn(e);
-				}
-
-
-              ga('send', 'pageview');
+        <div class="ga-script-container">
+            <!-- Google Analytics -->
+            <script>
+                try{
+                    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+                    ga('create', 'UA-68333423-1',{'userId':@(ViewBag.UserId??-1L)});
+                    ga('set', 'dimension1', @(ViewBag.UserId??-1L));
+                    try{
+                        ga('set', 'dimension2', window.Config.ServerType);
+                    }catch(e){
+                        console.warn(e);
+                    }
+                    ga('send', 'pageview');
+                }catch(e){
+                    log.warn(e);
+                }
             </script>
             <script async src='https://www.google-analytics.com/analytics.js'></script>
             <!-- End Google Analytics -->
@@ -456,37 +454,38 @@
         <div class="fb-script-container">
             <!-- Facebook Pixel Code -->
             @if (ViewBag.UserId != -1) {
-            <script async>
-				setTimeout(function(){
-
-					!function(f,b,e,v,n,t,s)
-					{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-					n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-						if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-						n.queue=[];t=b.createElement(e);t.async=!0;
-						t.src=v;s=b.getElementsByTagName(e)[0];
-						s.parentNode.insertBefore(t,s)}(window, document,'script',
-					'https://connect.facebook.net/en_US/fbevents.js');
-					fbq('init', '798215043695500');
-					fbq('track', 'PageView');
-
-				},1);
-            </script>
-            <noscript>
-                <img height="1" width="1" style="display:none"
-                     src="https://www.facebook.com/tr?id=798215043695500&ev=PageView&noscript=1" />
-            </noscript>
-            }else {
-                <script>/*not logged in*/</script>
+                <script async>
+                    setTimeout(function(){
+                        try{
+                            !function(f,b,e,v,n,t,s)
+                            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                                n.queue=[];t=b.createElement(e);t.async=!0;
+                                t.src=v;s=b.getElementsByTagName(e)[0];
+                                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                            'https://connect.facebook.net/en_US/fbevents.js');
+                            fbq('init', '798215043695500');
+                            fbq('track', 'PageView');
+                        }catch(e){
+                            log.warn(e);
+                        }
+                    },1);
+                </script>
+                <noscript>
+                    <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=798215043695500&ev=PageView&noscript=1" />
+                </noscript>
+            } else {
+                <script>                    /*not logged in*/</script>
             }
             <!-- End Facebook Pixel Code -->
         </div>
-		<div class="inject-script-container">@(new MvcHtmlString(ViewBag.InjectedScripts??""))</div>
-	</div>
-	<div class="copyrightPrintFooter">© 2003 - @DateTime.UtcNow.Year EOS and Traction® Tools. All Rights Reserved</div>
+        <div class="inject-script-container">@(new MvcHtmlString(ViewBag.InjectedScripts ?? ""))</div>
+    </div>
+    <div class="copyrightPrintFooter">© 2003 - @DateTime.UtcNow.Year EOS and Traction® Tools. All Rights Reserved</div>
 </body>
 </html>
 
 @{
-	RadialReview.Utilities.Productivity.ChromeExtensionComms.SendCommand("pageLoad");
+    RadialReview.Utilities.Productivity.ChromeExtensionComms.SendCommand("pageLoad");
 }

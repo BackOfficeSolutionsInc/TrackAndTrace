@@ -12,6 +12,7 @@ using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace RadialReview.App_Start {
@@ -25,17 +26,21 @@ namespace RadialReview.App_Start {
 				Authorization = new[] { new HangfireAuth() }
 			});
 
-			var myQueues = HangfireQueues.OrderedQueues;
+            
+            var awsEnv = "awsenv_"+(new Regex("[^a-zA-Z0-9]").Replace(Config.GetAwsEnv(), ""));
+            var myQueues = new List<string> { awsEnv , HangfireQueues.DEFAULT};
+            if (Config.IsHangfireWorker()) {
+			    myQueues = new[] { awsEnv }.Union(HangfireQueues.OrderedQueues).ToList();
+            }
+            if (Config.IsDefinitelyAlpha()) {
+                myQueues.Add(HangfireQueues.Immediate.ALPHA);
+            }
 
-			if (!Config.IsDefinitelyAlpha()) {
-				myQueues = myQueues.Where(x => x != HangfireQueues.Immediate.ALPHA).ToArray();
-			}
 
-
-			GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
 			app.UseHangfireServer(new BackgroundJobServerOptions() {
 				//WorkerCount = 1,
-				Queues = myQueues
+				Queues = myQueues.ToArray()
 			});
 
 			GlobalJobFilters.Filters.Add(new ProlongExpirationTimeAttribute());

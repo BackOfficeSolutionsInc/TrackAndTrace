@@ -121,6 +121,11 @@ namespace RadialReview.Controllers {
 		}
 		#endregion
 
+        [Access(AccessLevel.Radial)]
+        public async Task<string> Name() {
+            return HttpContext.Server.MachineName;
+        }
+
 		[Access(AccessLevel.Radial)]
 		[AsyncTimeout(5000)]
 		public async Task<ActionResult> Wait(CancellationToken ct, int seconds = 10, int timeout = 5) {
@@ -154,11 +159,17 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
-		public async Task<ActionResult> AccountsAtRisk(int days = 60, decimal growth = -.1m,AccountType type=AccountType.Paying) {
+		public async Task<ActionResult> AccountsAtRisk(int days = 60, decimal growth = -.1m,AccountType type=AccountType.Paying,
+            int lastLoginDays = 3, int lastScoreDays = 3) {
 			var start = DateTime.UtcNow.AddDays(-days);
 			var end = DateTime.UtcNow;
 			var stats = StatsAccessor.GetSuperAdminStatistics_Unsafe(start, end);
-			var range = stats.Where(x => x.Registrations.PercentageFromWindowMax.GetValue(2) < 1m + growth).ToList();
+
+			var range = stats.Where(x =>
+                (x.LastLogin!=null && x.LastLogin < DateTime.UtcNow.AddDays(-lastLoginDays)) ||
+                (x.LastScoreUpdate!=null && x.LastScoreUpdate < DateTime.UtcNow.AddDays(-lastScoreDays)) ||
+                (x.Registrations!=null && x.Registrations.PercentageFromWindowMax.GetValue(2) < 1m + growth)
+            ).ToList();
 
 			range = range.Where(x => x.AccountType == type).ToList();
 
@@ -794,7 +805,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Error(string id) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var errs = s.Get<ErrorLog>(id);
+					var errs = s.Get<ErrorLog>(Guid.Parse(id));
 
 					var res = new ErrorResult() {
 						Logs = errs.AsList(),
