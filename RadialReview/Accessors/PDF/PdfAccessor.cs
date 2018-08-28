@@ -1618,7 +1618,7 @@ namespace RadialReview.Accessors {
 
 			var getStatusText = new Func<RockState?, string>(x => {
 				
-				if (quarterlyPrintout)
+				if (quarterlyPrintout && !recur._Recurrence.Item.PrintOutRockStatus)
 					return (x == RockState.Complete) ? "Done" : "Not Done";
 				if (x == null)
 					return "Not set";
