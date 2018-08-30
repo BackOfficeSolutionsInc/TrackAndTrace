@@ -69,7 +69,7 @@ using Twilio.Types;
 using Twilio.Rest.Api.V2010.Account;
 using RadialReview.Accessors;
 using RadialReview.Models.UserModels;
-using Microsoft.VisualStudio.Profiler;
+//using Microsoft.VisualStudio.Profiler;
 
 namespace RadialReview.Accessors {
     public partial class L10Accessor : BaseAccessor {
