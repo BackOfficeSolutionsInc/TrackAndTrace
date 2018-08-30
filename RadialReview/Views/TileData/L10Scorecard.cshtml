@@ -3,7 +3,7 @@
     <div class="scorecard-heading heading" style="@(ViewBag.HeadingStyle)" data-style="@(ViewBag.HeadingStyle)">
         {{(model.L10Scorecards | filter:{KeyId:@(Model)})[0].Title}}<a href="/l10/details/@(Model)#Scorecard" class=""> (View all)</a>
 
-    </div><div class="l10-scorecard-tile"><div class="specialDiv tile hidden-width-1">@{
+    </div><div class="l10-scorecard-tile"><div class="specialDiv tile hidden-width-1" fix-head-scroller="top"  fix-head-parent>@{
         Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary(){
             {"AddHeaders", false},
             {"AddController", false},

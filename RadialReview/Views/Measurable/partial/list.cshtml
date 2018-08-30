@@ -16,16 +16,17 @@
 	var scorecardKey = "(" + selector + ").Key";
 }
 
-<div @(headers ? "ng-app=L10App" : "") class="scorecard meeting-page app scorecard-list-container angular-scorecard ng-cloak" style="clear: both;">
+<div @(headers ? "ng-app=L10App" : "") class="scorecard meeting-page app scorecard-list-container angular-scorecard ng-cloak" style="clear: both;" >
 	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
-		<div class="rowAA">
+		<div class="rowAA" >
 			<div class="col-md-12AA">
-				<div class="component">
+				<div class="component" >
 					<div class="clearfix"></div>
 					<div style="position: relative;" ng-show="(@(selector)).Measurables.length">
-						<div class="table-responsive scroller repeater-container-scorecard tile-height-resize fixOverlayScroll" style1="min-height: 200px;" ng-class="{'scroll-right':(@(selector)).ReverseScorecard==false}">
-							<table id="ScorecardTable"  class="scorecard-table ng-cloak">
-								<thead>
+						<div fix-head-location style="position:absolute;height: 37px;margin-right: 25px;"></div>
+						<div class="table-responsive scroller repeater-container-scorecard tile-height-resize fixOverlayScroll" style1="min-height: 200px;" ng-class="{'scroll-right':(@(selector)).ReverseScorecard==false}" fix-head-scroller="left">
+							<table id="ScorecardTable"  class="scorecard-table ng-cloak" @*ng-if="@(selector).Weeks.length>0"*@>
+								<thead fix-head-width>
 									<tr class="top-row">
 										@if (reorderable) {
 											<th class="button-column">&nbsp;</th>
@@ -39,8 +40,9 @@
 										<th class="goal-column data-column" colspan="2">&nbsp;</th>
                                         <th class="average-column"></th>
                                         <th class="cumulative-column"></th>
-										<th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date score-column data-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
+										<th fix-head fixed-header ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date score-column data-column test-ignore date-top" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
 											{{functions.topDate(week,@(selector))}}
+
 										</th>
 										<th class="delete-column"></th>
 									</tr>
@@ -58,8 +60,9 @@
 										<th class="target goal-column data-column" colspan="2">Goal</th>
                                         <th class="average-column"></th>
                                         <th class="cumulative-column"></th>
-										<th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  data-column score-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
+										<th fix-head fixed-header ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  date-bottom data-column score-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
 											{{functions.bottomDate(week,@(selector))}}
+
 										</th>
 										<th class="delete-column button-column"></th>
 									</tr>
@@ -148,6 +151,8 @@
 								</tbody>
 							</table>
 						</div>
+						
+
 						<table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm ng-cloak resizable background-color tile-height-resize"  data-tile-resize-diff="11">
 							<thead>
 								<tr class="top-row">
@@ -250,6 +255,8 @@
 								</tr>
 							</tbody>
 						</table>
+						
+
 					</div>
 					<div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
 					<div class="create-row create-new-btn" ng-click="functions.showMeasurableSearch($event)" data-toggle="tooltip" data-placement="left" title="Add Measurable"></div>

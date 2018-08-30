@@ -712,14 +712,6 @@ body.resizing .notes-tile:after,
 .dashboard .width_2 .l10-scorecard-tile .admin-column {
   display: none;
 }
-.dashboard .l10-scorecard-tile {
-  /*.direction,input{
-			pointer-events:none;
-		}
-		input{
-			pointer-events:none;
-		}*/
-}
 .dashboard .l10-scorecard-tile .admin-column {
   display: none;
 }
@@ -1078,6 +1070,9 @@ body.resizing .notes-tile:after,
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAAAWSURBVBhXY/j//z/DV0sHCPH//38GAGReCtWgJSmJAAAAAElFTkSuQmCC');
   background-repeat: repeat-x;
   background-position: 0% 100%;
+}
+.dashboard .scorecard-table .date {
+  min-width: 88px;
 }
 .dashboard .scorecard {
   min-height: 60px;

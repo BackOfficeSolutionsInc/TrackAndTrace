@@ -98,6 +98,7 @@ body.resizing .notes-tile,
 
 .dashboard {
 
+
     tbody {
         position: initial;
     }
@@ -187,17 +188,10 @@ body.resizing .notes-tile,
         }
     }
 
-    .l10-scorecard-tile {
-        //.button-column,
+    .l10-scorecard-tile {        
         .admin-column {
             display: none;
         }
-        /*.direction,input{
-			pointer-events:none;
-		}
-		input{
-			pointer-events:none;
-		}*/
     }
 
     .task-list-container {
@@ -208,7 +202,6 @@ body.resizing .notes-tile,
 
         td {
             height: 24px !important;
-
             .due-column {
                 padding-top: 10px;
             }
@@ -224,11 +217,9 @@ body.resizing .notes-tile,
             .ng-leave {
                 display: none !important;
             }
-
             .complete-box {
                 margin-left: 6px;
             }
-
             .assign-button {
                 background-color: #aaa;
                 color: white;
@@ -254,7 +245,6 @@ body.resizing .notes-tile,
                 height: 24px;
             }
         }
-
         tbody .due-column {
             padding: 6px 12px 0 0 !important;
             vertical-align: top;
@@ -366,6 +356,10 @@ body.resizing .notes-tile,
             .triangly-line();
         }
     }
+	
+	.scorecard-table .date{
+		min-width: 88px; 
+	}
 
     .scorecard {
         min-height: 60px;
