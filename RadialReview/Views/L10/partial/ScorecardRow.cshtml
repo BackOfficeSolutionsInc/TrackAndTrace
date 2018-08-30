@@ -32,6 +32,7 @@
 		<td class="target direction handle header-cell"></td>
 		<td class="target value handle header-cell"></td>
 		<td class="cumulative-column"></td>		
+		<td class="average-column"></td>		
 		<td class="header-cell chart"></td>
 		@if (showScorecardChart) {
 			<td class="handle header-cell"></td>
@@ -58,8 +59,7 @@
 		data-CumulativeRange="@Model.MeetingMeasurable.Measurable.CumulativeRange"
 		data-Target="@Model.MeetingMeasurable.Measurable.Goal"
 		data-AltTarget="@Model.MeetingMeasurable.Measurable.AlternateGoal"
-		data-editable="@isEditable"
-	>
+		data-editable="@isEditable">
 		<td class="header-cell">
 			@if (!auto) {
 				<div class="icon fontastic-icon-three-bars icon-rotate handle reorder-icon"></div>
@@ -89,10 +89,11 @@
 		</td>
 		<td class="target direction header-cell" data-measurable="@Model.MeetingMeasurable.Id"><span class="@inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" @*data-title="Select goal direction"*@ data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>
 		<td class="target value header-cell" data-measurable="@Model.MeetingMeasurable.Id">
-			<span class="@inlineEdit numeric target-value" data-type="text" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.#####")</span>
+			<span class="@inlineEdit numeric target-value" data-type="text" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.###")</span>
 			<span class="@inlineEdit gray unit" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable" data-value="@Model.MeetingMeasurable.Measurable.UnitType">@Model.MeetingMeasurable.Measurable.UnitType.ToTypeString()</span>
 		</td>
-		<td class="cumulative-column"><span onclick="showScorecardOptions(this)" class="@(@Model.MeetingMeasurable.Measurable.ShowCumulative?"":"hidden")">@Model.MeetingMeasurable.Measurable._Cumulative.NotNull(x => x.Value.ToString("0.#####"))</span></td>
+		<td class="cumulative-column"><span onclick="showScorecardOptions(this)" title="Cumulative" class="@(@Model.MeetingMeasurable.Measurable.ShowCumulative?"":"hidden")">@Model.MeetingMeasurable.Measurable._Cumulative.NotNull(x => x.Value.ToString("#,##0.###"))</span></td>
+		<td class="average-column"><span onclick="showScorecardOptions(this)" title="Average" class="@(@Model.MeetingMeasurable.Measurable.ShowAverage?"":"hidden")">@Model.MeetingMeasurable.Measurable._Average.NotNull(x => x.Value.ToString("#,##0.###"))</span></td>
 		<td class="header-cell chart"><span class="chart-btn icon fontastic-icon-graph-trend" onclick="onClickScChart(this)"></span></td>
 		@if (Model.ShowScorecardChart) {
 			<td class="header-cell" data-measurable="@Model.MeetingMeasurable.Measurable.Id"><span class="inlinesparkline"></span></td>
@@ -117,46 +118,46 @@
 					}
 					<form>
 						<input @(inlineEdit == "" ? "disabled" : "")
-								data-goal="@(found.NotNull(x => x.OriginalGoal) ?? Model.MeetingMeasurable.Measurable.Goal)"
-								data-alt-goal="@(found.NotNull(x => x.AlternateOriginalGoal) ?? Model.MeetingMeasurable.Measurable.AlternateGoal)"
-								data-goal-dir="@(found.NotNull(x => x.OriginalGoalDirection) ?? Model.MeetingMeasurable.Measurable.GoalDirection)"
-								data-row="@(ViewBag.Row)"
-								data-col="@(col)"
-								data-oldval="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
-								type="text"
-								placeholder="N/A"
-								@if (found != null && !found._Editable) { @: disabled
-								}
-								value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
-								class="grid rt score-value @(seenCurrent?"future-score":"")"
-								data-scoreid="@(found.NotNull(x => x.Id))"
-								data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-								data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
-								@*id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />*@
-								id="sc_@(found != null ? "" + found.Id : Model.MeetingMeasurable.Measurable.Id + "_" + r.ForWeek.ToJavascriptMilliseconds())" />
+							   data-goal="@(found.NotNull(x => x.OriginalGoal) ?? Model.MeetingMeasurable.Measurable.Goal)"
+							   data-alt-goal="@(found.NotNull(x => x.AlternateOriginalGoal) ?? Model.MeetingMeasurable.Measurable.AlternateGoal)"
+							   data-goal-dir="@(found.NotNull(x => x.OriginalGoalDirection) ?? Model.MeetingMeasurable.Measurable.GoalDirection)"
+							   data-row="@(ViewBag.Row)"
+							   data-col="@(col)"
+							   data-oldval="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+							   type="text"
+							   placeholder="N/A"
+							   @if (found != null && !found._Editable) { @: disabled
+							   								}
+							   value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+							   class="grid rt score-value @(seenCurrent?"future-score":"")"
+							   data-scoreid="@(found.NotNull(x => x.Id))"
+							   data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+							   data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
+							   @*id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />*@
+							   id="sc_@(found != null ? "" + found.Id : Model.MeetingMeasurable.Measurable.Id + "_" + r.ForWeek.ToJavascriptMilliseconds())" />
 					</form>
 
 				</td>
 				if (r.IsCurrentWeek) {
 					<td class="buttonHolder">
 						<span class="icon fontastic-icon-pinboard issuesButton issuesModal"
-								data-meeting="@Model.MeetingId"
-								data-recurrence="@Model.RecurrenceId"
-								data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-								data-score="@(found.NotNull(x => x.Id))"
-								data-userid="@(Model.MeetingMeasurable.Measurable.AccountableUserId)"
-								title="Create a Context-Aware Issue™"
-								@*data-message="@found.IssueMessage().EscapeHtml()"
+							  data-meeting="@Model.MeetingId"
+							  data-recurrence="@Model.RecurrenceId"
+							  data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+							  data-score="@(found.NotNull(x => x.Id))"
+							  data-userid="@(Model.MeetingMeasurable.Measurable.AccountableUserId)"
+							  title="Create a Context-Aware Issue™"
+							  @*data-message="@found.IssueMessage().EscapeHtml()"
 								data-details="@found.IssueDetails().EscapeHtml()"*@>
 						</span>
 						<span class="glyphicon glyphicon-unchecked todoButton todoModal"
-								data-method="CreateScorecardTodo"
-								data-meeting="@Model.MeetingId"
-								data-recurrence="@Model.RecurrenceId"
-								data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-								data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
-								title="Create a Context-Aware To-Do™"
-								data-score="@(found.NotNull(x => x.Id))">
+							  data-method="CreateScorecardTodo"
+							  data-meeting="@Model.MeetingId"
+							  data-recurrence="@Model.RecurrenceId"
+							  data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+							  data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
+							  title="Create a Context-Aware To-Do™"
+							  data-score="@(found.NotNull(x => x.Id))">
 						</span>
 					</td>	}
 				col += 1;

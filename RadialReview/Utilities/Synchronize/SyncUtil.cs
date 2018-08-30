@@ -322,22 +322,12 @@ namespace RadialReview.Utilities.Synchronize {
                     }
                     break;
                 } catch (GenericADOException e) {
-                    /*if (cancel != null) {
-                        using (var s = HibernateSession.GetCurrentSession()) {
-                            using (var tx = s.BeginTransaction()) {
-                                if (cancel(s)) {
-                                    throw new CancellationException();
-                                }
-                            }
-                        }
-                    }*/
-
-                    Console.WriteLine("Deadlock: " + key);
-                    //Try again.
-                    await Task.Delay(10);
-
-                    
-                } catch (Exception e) {
+					Console.WriteLine("Deadlock: " + key);
+					await Task.Delay(10);
+				} catch (StaleObjectStateException e) {
+					Console.WriteLine("Deadlock(stale): " + key);
+					await Task.Delay(10);
+				} catch (Exception e) {
                     throw;
                 }
             }

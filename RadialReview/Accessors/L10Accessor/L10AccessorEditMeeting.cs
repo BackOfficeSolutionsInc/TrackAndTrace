@@ -69,6 +69,7 @@ using Twilio.Types;
 using Twilio.Rest.Api.V2010.Account;
 using RadialReview.Accessors;
 using RadialReview.Models.UserModels;
+using static RadialReview.Models.L10.L10Recurrence;
 
 namespace RadialReview.Accessors {
 	public partial class L10Accessor : BaseAccessor {
@@ -320,13 +321,14 @@ namespace RadialReview.Accessors {
 			}
 
 		}
-		public static void UpdatePage(UserOrganizationModel caller, long forUserId, long recurrenceId, string pageName, string connection) {
+		public static string UpdatePage(UserOrganizationModel caller, long forUserId, long recurrenceId, string pageName, string connection) {
+			string pageType = null;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					var meeting = _GetCurrentL10Meeting(s, perms, recurrenceId, true, false, true);
 					if (meeting == null)
-						return;
+						return pageType;
 					//if (caller.Id != meeting.MeetingLeader.Id)	return;
 
 
@@ -401,12 +403,14 @@ namespace RadialReview.Accessors {
 
 					long pageId;
 					var friendlyPageName = p;
+					pageType = p;
 					if (long.TryParse(pageName.SubstringAfter("-"), out pageId)) {
 						try {
 #pragma warning disable CS0618 // Type or member is obsolete
 							var l10Page = GetPage(s, perms, pageId);
 #pragma warning restore CS0618 // Type or member is obsolete
 							friendlyPageName = l10Page.Title;
+							pageType = l10Page.PageTypeStr;
 						} catch (Exception) {
 
 						}
@@ -415,6 +419,7 @@ namespace RadialReview.Accessors {
 					Audit.L10Log(s, caller, recurrenceId, "UpdatePage", ForModel.Create(meeting), friendlyPageName);
 					tx.Commit();
 					s.Flush();
+					return pageType;
 				}
 			}
 		}

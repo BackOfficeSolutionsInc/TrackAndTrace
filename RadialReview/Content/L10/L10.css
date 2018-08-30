@@ -141,6 +141,7 @@ body {
 }
 .elapsed-time {
   font-size: 60px;
+  white-space: nowrap;
 }
 .elapsed-time .gray {
   font-size: 25px;

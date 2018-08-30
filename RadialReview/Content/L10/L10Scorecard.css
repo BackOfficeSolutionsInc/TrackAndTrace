@@ -591,6 +591,9 @@
   border-color: transparent;
   width: 0px;
 }
+#ScorecardTable .input-placeholder input {
+  background-color: #edeeed;
+}
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
   .dashboard .scorecard-table .score input {
     height: 32px !important;

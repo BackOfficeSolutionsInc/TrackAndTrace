@@ -21,29 +21,74 @@ using WebGrease.Css.Extensions;
 using RadialReview.Models.UserModels;
 using RadialReview.Areas.People.Accessors;
 using RadialReview.Areas.People.Models.Survey;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
 
+		public LoadMeeting GetLoader(string page) {
+			if (page != null)
+				page = page.ToLower();
+
+			var users = true;
+			var notes = false;
+			var pages = false;
+
+			var meas = true;
+			var rocks = true;
+			var videos = true;
+			
+			var knownPages = new[] {"segue","scorecard","rocks","headlines","todo", "ids" ,"conclude","empty","notesbox","externalpage"};
+			if (string.IsNullOrWhiteSpace(page) || knownPages.Contains(page)) {
+				meas = false;
+				notes = false;
+				pages = false;
+				rocks = false;
+				videos = false;
+			}
+
+			if ("scorecard" == page) {
+				meas = true;
+			}
+			if ("rocks" == page) {
+				rocks = true;
+			}
+
+			return new LoadMeeting() {
+				LoadMeasurables =meas,
+				LoadNotes = notes,
+				LoadPages =pages,
+				LoadRocks = rocks,
+				LoadUsers = users,
+				LoadVideos = videos,
+			};
+
+		}
+
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Load(long id, string connection, string page = null) {
+			
 			var recurrenceId = id;
 			page = page.NotNull(x => x.ToLower());
+			string pageType = page;
 			if (!String.IsNullOrEmpty(page) && page != "startmeeting")
-				L10Accessor.UpdatePage(GetUser(), GetUser().Id, recurrenceId, page, connection);
+				pageType = L10Accessor.UpdatePage(GetUser(), GetUser().Id, recurrenceId, page, connection);
 
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, GetLoader(pageType));
 			var model = new L10MeetingVM() {
 				Recurrence = recurrence,
 				EnableTranscript = recurrence.EnableTranscription,
 			};
-
-
-
+			
 			if (model != null && model.Recurrence != null) {
 				model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
-				model.MemberPictures = model.Recurrence._DefaultAttendees.Select(x => new ProfilePictureVM { Initials = x.User.GetInitials(), Name = x.User.GetName(), UserId = x.User.Id, Url = x.User.ImageUrl(true, ImageSize._32) }).ToList();
+				model.MemberPictures = model.Recurrence._DefaultAttendees.Select(x => new ProfilePictureVM {
+					Initials = x.User.GetInitials(),
+					Name = x.User.GetName(),
+					UserId = x.User.Id,
+					Url = x.User.ImageUrl(true, ImageSize._32)
+				}).ToList();
 				model.HeadlineType = recurrence.HeadlineType;
 
 				try {
@@ -70,12 +115,9 @@ namespace RadialReview.Controllers {
 
 			//Do need the meeting
 			try {
-				model.Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
-
-				
+				model.Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);				
 
 				long pageId;
-
 				if (long.TryParse(page.SubstringAfter("-"), out pageId)) {
 					try {
 						var l10Page = L10Accessor.GetPageInRecurrence(GetUser(), pageId, recurrenceId);
@@ -238,25 +280,28 @@ namespace RadialReview.Controllers {
 
 			ViewBag.Heading = ViewBag.Heading ?? "Scorecard";
 			ViewBag.Subheading = ViewBag.Subheading ?? "";
+			var scorecardType = GetUser().Organization.Settings.ScorecardPeriod;
+			model.ScorecardType = scorecardType;
+			var timeSettings = GetUser().GetTimeSettings();
+			timeSettings.WeekStart = model.Recurrence.StartOfWeekOverride ?? timeSettings.WeekStart;
+			timeSettings.Descending = model.Recurrence.ReverseScorecard;
+			DateTime? highlight = null;
+			if (model.MeetingStart != null)
+				highlight = model.MeetingStart.Value.AddDays(7 * model.Recurrence.NotNull(x => x.CurrentWeekHighlightShift));
 
-			var sm = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(GetUser(), model.Recurrence.Id, true, model.MeetingStart, getMeasurables: true);
+			var weeks = TimingUtility.GetPeriods(timeSettings, DateTime.UtcNow, highlight, /*model.Scores,*/ true);
+			var range = new DateRange(Math2.Min(weeks.Select(x=>x.ForWeek))??new DateTime(2010,1,1), Math2.Max(weeks.Select(x => x.ForWeek))??DateTime.UtcNow.AddDays(7));
+
+			var sm = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(GetUser(), model.Recurrence.Id, true, model.MeetingStart, range:range, getMeasurables: true);
 
 			model.Scores = sm.Scores;//L10Accessor.GetScoresForRecurrence(GetUser(), model.Recurrence.Id);
 
 			var sow = GetUser().Organization.Settings.WeekStart;
 			var offset = GetUser().Organization.GetTimezoneOffset();
 
-			var scorecardType = GetUser().Organization.Settings.ScorecardPeriod;
-			model.ScorecardType = scorecardType;
-			var timeSettings = GetUser().GetTimeSettings();
-			timeSettings.WeekStart = model.Recurrence.StartOfWeekOverride ?? timeSettings.WeekStart;
-			timeSettings.Descending = model.Recurrence.ReverseScorecard;
 
-			DateTime? highlight = null;
-			if (model.MeetingStart != null)
-				highlight = model.MeetingStart.Value.AddDays(7 * model.Recurrence.NotNull(x => x.CurrentWeekHighlightShift));
 
-			model.Weeks = TimingUtility.GetPeriods(timeSettings, DateTime.UtcNow, highlight, /*model.Scores,*/ true);
+			model.Weeks = weeks;
 			return PartialView("Scorecard", model);
 
 		}

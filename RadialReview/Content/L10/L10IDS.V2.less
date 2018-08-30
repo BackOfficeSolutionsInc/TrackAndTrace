@@ -229,7 +229,7 @@
 			content: "MOVED";
 			position: absolute;
 			font-weight: bold;
-			left: 40px;
+			left: 4px;
 			width: 60px;
 			height: 14px;
 			background-color: fade(@traction-orange,50%);
@@ -259,6 +259,7 @@
 
 		.issuesModal_move {
 			pointer-events: none !important;
+			display:none;
 		}
 	}
 }
@@ -390,7 +391,8 @@ ol.sortable li {
 		background: #F5F5F5;
 		margin-top: 0px;
 		transition: box-shadow .25s ease;
-		border-radius: 18px;
+		border-radius: 18px;    
+		position: relative;
 
 
 		&.selected {
@@ -987,7 +989,7 @@ body.dragging, body.dragging * {
 
 @media(max-width:1301px) {
 	.ids .l10-page-title small {
-		font-size: 14px;
+		font-size: 13px;
 	}
 }
 

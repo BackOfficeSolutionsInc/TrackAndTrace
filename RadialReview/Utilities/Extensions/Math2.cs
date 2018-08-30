@@ -24,6 +24,19 @@ namespace RadialReview
 		{
 			return Math.Max(Math.Min(high, val), low);
 		}
+
+		public static DateTime? Min(IEnumerable<DateTime> dates) {
+			if (dates.Any()) {
+				return Min(DateTime.MaxValue, dates.ToArray());
+			}
+			return null;
+		}
+		public static DateTime? Max(IEnumerable<DateTime> dates) {
+			if (dates.Any()) {
+				return Max(DateTime.MinValue, dates.ToArray());
+			}
+			return null;
+		}
 	}
 
 }

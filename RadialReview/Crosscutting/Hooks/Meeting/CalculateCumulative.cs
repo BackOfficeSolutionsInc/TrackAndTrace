@@ -53,9 +53,9 @@ namespace RadialReview.Hooks.Meeting {
             using (var rt = RealTimeUtility.Create()) {
                 L10Accessor._RecalculateCumulative_Unsafe(s, rt, measurable, recurrenceIds, updatedScore);
                 if (measurable.ShowCumulative)
-                    rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.updateCumulative(measurableId, measurable._Cumulative.NotNull(y => y.Value.ToString("0.#####"))));
+                    rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.updateCumulative(measurableId, measurable._Cumulative.NotNull(y => y.Value.ToString("#,##0.###"))));
                 if(measurable.ShowAverage)
-                    rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.updateAverage(measurableId, measurable._Average.NotNull(y => y.Value.ToString("0.#####"))));
+                    rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.updateAverage(measurableId, measurable._Average.NotNull(y => y.Value.ToString("#,##0.###"))));
             }
         }
     }

@@ -15,8 +15,10 @@ function dateFormatter(date) {
 
 function clientDateFormat(date) {
 	//console.info("using clientDateFormat");
-	if (date == false)
+	if (date == false || isNaN(date.getDate())) {
 		return "";
+	}
+
 	var _d = date.getDate(),
 		dd = _d > 9 ? _d : '0' + _d,
 		_m = date.getMonth() + 1,
