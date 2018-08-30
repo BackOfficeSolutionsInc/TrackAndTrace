@@ -1,2 +1,0 @@
-Chrome~Visual_L10_Archive_TestScorecard_2~_L10_meeting_{id}~BeforeConclude.png
-Chrome~Visual_L10_Archive_TestScorecard_2~_L10_meeting_{id}~Complete.png

@@ -239,43 +239,64 @@ namespace TractionTools.Tests.Utilities {
 		public object Expected_WhoCanEdit = null;
 		//Assert.AreEqual(ShowHeadlinesBox); obsolete
 
-		public long[] Expected_DefaultAttendeeIds = new long[] { };
+		public long[] Expected_DefaultAttendeeIds = null;
 		private int Expected_DefaultAttendeesCount { get { return Expected_DefaultAttendeeIds.Count(); } }
 		private void TestDefaultAttendees() {
-			Assert.IsNotNull(recur._DefaultAttendees);
-			Assert.AreEqual(Expected_DefaultAttendeesCount, recur._DefaultAttendees.Count());
-			foreach (var id in Expected_DefaultAttendeeIds) {
-				Assert.IsTrue(recur._DefaultAttendees.Any(x => x.User.Id == id));
+			if (Expected_DefaultAttendeeIds == null) {
+				Assert.IsNull(recur._DefaultAttendees);
+			} else {
+				Assert.IsNotNull(recur._DefaultAttendees);
+				Assert.AreEqual(Expected_DefaultAttendeesCount, recur._DefaultAttendees.Count());
+				foreach (var id in Expected_DefaultAttendeeIds) {
+					Assert.IsTrue(recur._DefaultAttendees.Any(x => x.User.Id == id));
+				}
 			}
 		}
 
-		public string[] Expected_DefaultMeasurableNames = new string[] { };
+		public string[] Expected_DefaultMeasurableNames = null;
 		private int Expected_DefaultMeasurablesCount { get { return Expected_DefaultMeasurableNames.Count(); } }
 		private void TestDefaultMeasurables() {
-			Assert.IsNotNull(recur._DefaultMeasurables);
-			Assert.AreEqual(Expected_DefaultMeasurablesCount, recur._DefaultMeasurables.Count());
-			foreach (var name in Expected_DefaultMeasurableNames) {
-				Assert.IsTrue(recur._DefaultMeasurables.Any(x => x.Measurable.Title == name));
+
+			if (Expected_DefaultMeasurableNames == null) {
+				Assert.IsNull(recur._DefaultMeasurables);
+			} else {
+				Assert.IsNotNull(recur._DefaultMeasurables);
+				Assert.AreEqual(Expected_DefaultMeasurablesCount, recur._DefaultMeasurables.Count());
+				foreach (var name in Expected_DefaultMeasurableNames) {
+					Assert.IsTrue(recur._DefaultMeasurables.Any(x => x.Measurable.Title == name));
+				}
 			}
 		}
 
-		public string[] Expected_DefaultRockNames = new string[] { };
+		public string[] Expected_DefaultRockNames = null;
 		private int Expected_DefaultRocksCount { get { return Expected_DefaultRockNames.Count(); } }
 		private void TestDefaultRocks() {
-			Assert.IsNotNull(recur._DefaultRocks);
-			Assert.AreEqual(Expected_DefaultRocksCount, recur._DefaultRocks.Count());
-			foreach (var name in Expected_DefaultRockNames) {
-				Assert.IsTrue(recur._DefaultRocks.Any(x => x.ForRock.Rock == name));
+			if (Expected_DefaultRockNames == null) {
+				Assert.IsNull(recur._DefaultRocks);
+			} else {
+				Assert.IsNotNull(recur._DefaultRocks);
+				Assert.AreEqual(Expected_DefaultRocksCount, recur._DefaultRocks.Count());
+				foreach (var name in Expected_DefaultRockNames) {
+					Assert.IsTrue(recur._DefaultRocks.Any(x => x.ForRock.Rock == name));
+				}
 			}
 		}
 
-		public string[] Expected_MeetingNotes = new string[] { };
+		public string[] Expected_MeetingNotes = null;
 		private int Expected_MeetingNotesCount { get { return Expected_MeetingNotes.Count(); } }
+
+		public bool ShouldHavePages { get; set; }
+		public bool ShouldHaveVideoConferenceProviders { get; set; }
+
 		private void TestMeetingNotes() {
-			Assert.IsNotNull(recur._MeetingNotes);
-			Assert.AreEqual(Expected_MeetingNotesCount, recur._MeetingNotes.Count());
-			foreach (var name in Expected_MeetingNotes) {
-				Assert.IsTrue(recur._MeetingNotes.Any(x => x.Name == name));
+			if (Expected_MeetingNotes == null) {
+				Assert.IsNull(recur._MeetingNotes);
+			} else {
+				Assert.IsNotNull(recur._MeetingNotes);
+				Assert.AreEqual(Expected_MeetingNotesCount, recur._MeetingNotes.Count());
+				foreach (var name in Expected_MeetingNotes) {
+					Assert.IsTrue(recur._MeetingNotes.Any(x => x.Name == name));
+				}
 			}
 		}
 
@@ -286,20 +307,29 @@ namespace TractionTools.Tests.Utilities {
 			Assert.IsNotNull(recur.VideoId);
 			Assert.IsNotNull(recur.VtoId);
 
-			Assert.IsNotNull(recur._VideoConferenceProviders);
-			Assert.AreEqual(0, recur._VideoConferenceProviders.Count());
+			if (ShouldHaveVideoConferenceProviders) {
+				Assert.IsNotNull(recur._VideoConferenceProviders);
+				Assert.AreEqual(0, recur._VideoConferenceProviders.Count());
+			} else {
+				Assert.IsNull(recur._VideoConferenceProviders);
+			}
 		}
 
 		private void TestPages() {
-			Assert.IsNotNull(recur._Pages);
-			Assert.AreEqual(7, recur._Pages.Count());
-			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Segue));
-			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Scorecard));
-			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Rocks));
-			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Headlines));
-			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Todo));
-			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.IDS));
-			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Conclude));
+
+			if (ShouldHavePages) {
+				Assert.IsNotNull(recur._Pages);
+				Assert.AreEqual(7, recur._Pages.Count());
+				Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Segue));
+				Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Scorecard));
+				Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Rocks));
+				Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Headlines));
+				Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Todo));
+				Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.IDS));
+				Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Conclude));
+			} else {
+				Assert.IsNull(recur._Pages);
+			}
 		}
 
 
@@ -345,6 +375,7 @@ namespace TractionTools.Tests.Utilities {
 			TestDefaultMeasurables();
 			TestDefaultRocks();
 			TestMeetingNotes();
+
 			TestPages();
 
 			TestAutogen();

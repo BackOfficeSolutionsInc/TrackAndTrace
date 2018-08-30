@@ -76,7 +76,6 @@ namespace RadialReview.Models {
 		public virtual bool NoChargeForClients { get; set; }
 		public virtual bool NoChargeForUnregisteredUsers { get; set; }
 
-
 		public virtual SchedulePeriodType? SchedulePeriod { get; set; }
 
 		public virtual decimal DurationMultiplier() {
@@ -137,8 +136,5 @@ namespace RadialReview.Models {
 		public override string TaskName() {
 			return ScheduledTask.MonthlyPaymentPlan;
 		}
-
 	}
-
-
 }

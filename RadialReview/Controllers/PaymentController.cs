@@ -39,6 +39,8 @@ namespace RadialReview.Controllers {
                 return View("LockoutNonadmin");
         }
 
+
+
 		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
 		public ActionResult SetCard(int nil = 0,bool noTitleBar=false) {
 			_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
@@ -54,7 +56,7 @@ namespace RadialReview.Controllers {
 		}
 
 
-		[Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.Radial)]
 		public ActionResult Plan() {
 			var plan = PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id);
 			return View(plan);
@@ -71,10 +73,12 @@ namespace RadialReview.Controllers {
 			var id = orgid ?? GetUser().Organization.Id;
 
 			AllowAdminsWithoutAudit();
-
+			
 			var plan = PaymentAccessor.GetPlan(GetUser(), id);
 			var org = _OrganizationAccessor.GetOrganization(GetUser(), id);
 			ViewBag.ShowPostMsg = msg;
+			ViewBag.AutoUpdate = org.Settings.AutoUpgradePayment;
+
 			if (plan is PaymentPlan_Monthly) {
 				var pr = (PaymentPlan_Monthly)plan;
 				pr._Org = org;
@@ -289,6 +293,25 @@ namespace RadialReview.Controllers {
 					return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
 				}
 			}
+		}
+
+
+		[HttpPost]
+		[Access(AccessLevel.Radial)]
+		public JsonResult AutoUpdate(long id, bool autoupdate) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var org = s.Get<OrganizationModel>(id);
+					org._Settings.AutoUpgradePayment = autoupdate;
+					s.Update(org);
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+			return Json(ResultObject.Success("updated"));
 		}
 
 		[HttpPost]

@@ -260,8 +260,11 @@ namespace TractionTools.Tests.Controllers {
 				//Test for the actual recurrence
 				L10Tester.Test(org, model.Recurrence, tester => {
 					tester.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					tester.Expected_DefaultMeasurableNames = new[] { "meas1" };
-					tester.Expected_DefaultRockNames = new[] { "rock1" };
+					tester.Expected_MeetingNotes = new string[] { };
+					tester.ShouldHavePages = true;
+					tester.ShouldHaveVideoConferenceProviders = true;
+					//tester.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//tester.Expected_DefaultRockNames = new[] { "rock1" };
 				});
 			}
 		}
@@ -291,8 +294,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 				});
 
 			}
@@ -335,8 +338,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 
@@ -382,7 +385,7 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
 					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
@@ -432,7 +435,7 @@ namespace TractionTools.Tests.Controllers {
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
 					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 
@@ -480,8 +483,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 
@@ -530,8 +533,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 
@@ -580,8 +583,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 
@@ -636,8 +639,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 

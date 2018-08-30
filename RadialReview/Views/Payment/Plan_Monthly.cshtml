@@ -26,36 +26,61 @@
 }
 
 
-@using (Html.BeginForm()) {
-	<div class="row">
-		<div class="col-sm-3">
-			<h3><b><u>Plan</u></b></h3>
-			@Html.EditorForModel()
-			<script>document.getElementById("SchedulePeriod").remove()</script>
-			<label>Period:</label>
-			@Html.EnumDropDownListFor(x => x.SchedulePeriod)
-			<br /><hr />
-			<label>Task Id (delete to create new)</label>@Html.TextBox("TaskId", Model.Task == null ? (long?)null : Model.Task.Id)
-			<hr />
-			@Html.TextBox("OldTaskId", Model.Task == null ? (long?)null : Model.Task.OriginalTaskId, new { type = "hidden" })
-		</div>
-		<div class="col-sm-4 alignRight @((Model._CurrentTask !=null && Model.Task.Id != Model._CurrentTask.Id)?"grayed":"")">
-			<h3><b><u>Task Info</u></b></h3>
+<div class="box">
+	@using (Html.BeginForm()) {
+		<div class="row">
+			<div class="col-sm-3">
+				<h3><b><u>Plan</u></b></h3>
+				@Html.EditorForModel()
+				<script>document.getElementById("SchedulePeriod").remove()</script>
+				<label>Period:</label>
+				@Html.EnumDropDownListFor(x => x.SchedulePeriod)
+				<br /><hr />
+				<label>Task Id (delete to create new)</label>@Html.TextBox("TaskId", Model.Task == null ? (long?)null : Model.Task.Id)
+				<hr />
+				@Html.TextBox("OldTaskId", Model.Task == null ? (long?)null : Model.Task.OriginalTaskId, new { type = "hidden" })
+			</div>
+			<div class="col-sm-4 alignRight @((Model._CurrentTask !=null && Model.Task.Id != Model._CurrentTask.Id)?"grayed":"")">
+				<h3><b><u>Task Info</u></b></h3>
 
-			@if (Model.Task != null) {
-				@Html.DisplayFor(x => x.Task)
-			}
+				@if (Model.Task != null) {
+					@Html.DisplayFor(x => x.Task)
+				}
+			</div>
+			<div class="col-sm-4 currTask">
+				<h3><b><u>Current Task Info</u></b></h3>
+				@Html.DisplayFor(x => x._CurrentTask)
+			</div>
 		</div>
-		<div class="col-sm-4 currTask">
-			<h3><b><u>Current Task Info</u></b></h3>
-			@Html.DisplayFor(x => x._CurrentTask)
-		</div>
-	</div>
-	<button type="submit">Submit</button>
-}
+		<button type="submit">Submit</button>
+	}
+</div>
+<br />
+<div class="autoupdate-box box" style="">
+	<h4>Auto-Update Payment </h4>
+	<h5><small>(to/from enterprise accounts)</small></h5>
+	@using (Ajax.BeginForm("autoupdate", new AjaxOptions() {
+		OnSuccess = "showAlert('update successful');",
+		OnFailure = "showAlert('failed');"
+	})) {
+		<input type="hidden" name="id" value="@Model._Org.Id" />
+		<label for="autoupdate">Should Auto-Update:</label>
+		@Html.CheckBox("autoupdate", (bool)ViewBag.AutoUpdate)
+		<br/>
+		<input type="submit" value="save" />
+	}
+</div>
 
 @using (Html.BeginStyles()) {
+	@Styles.Render("~/styles/snackbar")
 	<style>
+		.box {
+			border: 1px solid #ddd;
+			padding: 10px 20px 20px 20px;
+			margin: 10px;
+			background-color: white;
+		}
+
 		.alignRight .display-label {
 			padding-right: 0px;
 		}
@@ -73,9 +98,9 @@
 			color: #888;
 		}
 
-		.selectedCell{
-			background-color:blue;
-			color:white;   
+		.selectedCell {
+			background-color: blue;
+			color: white;
 			padding-left: 6px;
 		}
 	</style>
