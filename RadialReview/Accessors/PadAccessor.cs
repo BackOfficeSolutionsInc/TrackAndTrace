@@ -8,10 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
+using System.Web.Mvc;
 using RadialReview.Exceptions;
 using RadialReview.Models.Payments;
 using RadialReview.Models.FirePad;
 using RadialReview.Utilities;
+using RadialReview.Controllers;
 
 //install FireSharp.Serialization.JsonNet 1.1.0
 using FireSharp.Config;
@@ -20,10 +22,11 @@ using FireSharp.Response;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 
+
 namespace RadialReview.Accessors
 {
 	public class PadAccessor :BaseAccessor
-	{
+    {
         
 		public static async Task<bool> CreatePad(string padid, string text=null,bool firePad=true)
 		{
@@ -218,11 +221,13 @@ namespace RadialReview.Accessors
         }
         public static string GetNotesURL(string padId, bool showControls,string name){
             string url;
+            
+            UrlHelper Url = new UrlHelper();
             var firePadRef = GetFirePadRef(padId);
             if (firePadRef == null){
-                url=Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + name);
+                url=Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(name) );
             }else{
-                url = "~/FirePad/" + padId;
+                url = "~/FirePad/Index/" + padId;
             }
             return url;
         }

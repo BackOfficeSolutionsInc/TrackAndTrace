@@ -65,7 +65,7 @@ namespace RadialReview.Controllers {
 					padId = await PadAccessor.GetReadonlyPad(rock.PadId);
 				}
                 //this is to choose what to use between Noteserves or firepad
-                return Redirect(PadAccessor.GetNotesURL(padId, showControls, Url.Encode(GetUser().GetName())));
+                return Redirect(PadAccessor.GetNotesURL(padId, showControls,GetUser().GetName()));
 
             } catch (Exception) {
 				return RedirectToAction("Index", "Error");
