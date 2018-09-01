@@ -1085,6 +1085,41 @@ angular.module('L10App').directive('fixHeadWidth', ["$interval", function ($inte
 	};
 }]);
 
+(function (angular) {
+	var throttle = function (func, wait, options) {
+		options || (options = {});
+		var context, args, result;
+		var timeout = null;
+		var previous = 0;
+		var later = function () {
+			previous = options.leading === false ? 0 : (new Date().getTime());
+			timeout = null;
+			result = func.apply(context, args);
+			context = args = null;
+		};
+		return function () {
+			var now = (new Date().getTime());
+			if (!previous && options.leading === false) {
+				previous = now;
+			}
+			var remaining = wait - (now - previous);
+			context = this;
+			args = arguments;
+			if (remaining <= 0) {
+				clearTimeout(timeout);
+				timeout = null;
+				previous = now;
+				result = func.apply(context, args);
+				context = args = null;
+			} else if (!timeout && options.trailing !== false) {
+				timeout = setTimeout(later, remaining);
+			}
+			return result;
+		};
+	};
+	angular.extend(angular, {throttle: throttle});
+
+}(angular));
 
 
 angular.module('L10App').directive('fixHeadScroller', ["$timeout", function ($timeout) {
@@ -1092,44 +1127,45 @@ angular.module('L10App').directive('fixHeadScroller', ["$timeout", function ($ti
 		link: function (scope, element, attr) {
 			var firstGen = true;
 			var parent = element.closest("[fix-head-parent]");
-			parent.bind('scroll', function (evt) {
+			
+			var throttleScroll1 = angular.throttle(function (evt) {
 				var f = parent.find("[fix-head-location]");
 				if (f.length) {
 					var sTop = this.scrollTop;
 					var sLeft = this.scrollLeft;
 					var type = this.getAttribute("fix-head-scroller");
 
-					var throttle = function (func, limit) {
-						var lastFunc;
-						var lastRan;
-						return function () {
-							var context = this;
-							var args = arguments;
-							if (!lastRan) {
-								func.apply(context, args)
-								lastRan = Date.now()
-							} else {
-								$timeout.cancel(lastFunc);
-								lastFunc = $timeout(function () {
-									if ((Date.now() - lastRan) >= limit) {
-										func.apply(context, args);
-										lastRan = Date.now();
-									}
-								}, limit - (Date.now() - lastRan))
-							}
-						}
-					};
+					//var throttle = function (func, limit) {
+					//	var lastFunc;
+					//	var lastRan;
+					//	return function () {
+					//		var context = this;
+					//		var args = arguments;
+					//		if (!lastRan) {
+					//			func.apply(context, args)
+					//			lastRan = Date.now()
+					//		} else {
+					//			$timeout.cancel(lastFunc);
+					//			lastFunc = $timeout(function () {
+					//				if ((Date.now() - lastRan) >= limit) {
+					//					func.apply(context, args);
+					//					lastRan = Date.now();
+					//				}
+					//			}, limit - (Date.now() - lastRan))
+					//		}
+					//	}
+					//};
 
-					throttle(function () {
-						var g = {};
-						if (type == "left")
-							g.left = -sLeft;
-						if (type == "top")
-							g.top = sTop;
-						f.css(g);
-					}, 500)();
+					var g = {};
+					if (type == "left")
+						g.left = -sLeft;
+					if (type == "top")
+						g.top = sTop;
+					f.css(g);
 				}
-			});
+			}, 100);
+
+			parent.bind('scroll', throttleScroll1);
 
 			element.bind('scroll', function (evt) {
 				if (firstGen) {
@@ -1179,35 +1215,36 @@ angular.module('L10App').directive('fixHeadScroller', ["$timeout", function ($ti
 					var sLeft = this.scrollLeft;
 					var type = this.getAttribute("fix-head-scroller");
 
-					var throttle = function (func, limit) {
-						var lastFunc;
-						var lastRan;
-						return function () {
-							var context = this;
-							var args = arguments;
-							if (!lastRan) {
-								func.apply(context, args)
-								lastRan = Date.now()
-							} else {
-								$timeout.cancel(lastFunc);
-								lastFunc = $timeout(function () {
-									if ((Date.now() - lastRan) >= limit) {
-										func.apply(context, args);
-										lastRan = Date.now();
-									}
-								}, limit - (Date.now() - lastRan))
-							}
-						}
-					};
+					//var throttle = function (func, limit) {
+					//	var lastFunc;
+					//	var lastRan;
+					//	return function () {
+					//		var context = this;
+					//		var args = arguments;
+					//		if (!lastRan) {
+					//			func.apply(context, args)
+					//			lastRan = Date.now()
+					//		} else {
+					//			$timeout.cancel(lastFunc);
+					//			lastFunc = $timeout(function () {
+					//				if ((Date.now() - lastRan) >= limit) {
+					//					func.apply(context, args);
+					//					lastRan = Date.now();
+					//				}
+					//			}, limit - (Date.now() - lastRan))
+					//		}
+					//	}
+					//};
 
-					throttle(function () {
+					angular.throttle(function () {
 						var g = {};
 						if (type == "left")
 							g.left = -sLeft;
 						if (type == "top")
 							g.top = sTop;
 						f.css(g);
-					}, 500)();
+						//console.log("scroll 2 :" + (+new Date()))
+					}, 1500)();
 				}
 
 			});

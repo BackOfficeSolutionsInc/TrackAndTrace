@@ -176,6 +176,8 @@ namespace RadialReview.Accessors {
 					s.UpdateList(oldRecur.NotNull(x => x._DefaultRocks), l10Recurrence._DefaultRocks, now);
 
 
+					l10Recurrence.CreateTime = oldRecur.CreateTime;
+
 					/////////////
 					//Update rocks on the VTO also
 
