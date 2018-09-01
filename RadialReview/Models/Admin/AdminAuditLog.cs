@@ -57,6 +57,7 @@ namespace RadialReview.Models.Admin {
 				new SelectListItem() { Text = "10 minutes", Value = "10" },
 				new SelectListItem() { Text = "30 minutes", Value = "30" },
 				new SelectListItem() { Text = "1 hour", Value = "60" },
+				new SelectListItem() { Text = "2 hours", Value = "120" },
 				new SelectListItem() { Text = "4 hours", Value = "240" },
 				new SelectListItem() { Text = "8 hours", Value = "480" },
 				new SelectListItem() { Text = "1 days", Value = "1440" },

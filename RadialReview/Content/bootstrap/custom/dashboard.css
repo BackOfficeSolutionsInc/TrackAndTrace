@@ -1292,6 +1292,10 @@ body.resizing .notes-tile:after,
 .dashboard .scorecard .component {
   margin: 0px;
 }
+.dashboard .scorecard .measurable-column {
+  width: 112px;
+  /*width: -webkit-min-content;*/
+}
 .dashboard .scorecard .goal-column {
   padding-left: 3px;
 }
@@ -1458,6 +1462,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .scorecard-table {
   display: block !important;
+  padding-left: 9px;
 }
 .dashboard .scorecard-table tr:nth-child(1) th {
   border-bottom: 0;
@@ -2684,10 +2689,11 @@ body.resizing .notes-tile:after,
   background-color: #f5f4f4;
   text-align: left;
   padding: 0 5px;
-  color: #6d645d;
-  font-size: 13px;
-  border-top: 1px solid #D9D9D9;
-  border-bottom: 1px solid #D1D1D1;
+  color: #969696 !important;
+  /* text-shadow: 0px 0px 0px #bcb5b0; */
+  font-size: 11px;
+  border-top: 1px solid #d9d9d9;
+  /* border-bottom: 1px solid #d9d9d94f; */
   padding: 2px 6px;
   white-space: nowrap;
   overflow-x: hidden;
@@ -2696,13 +2702,14 @@ body.resizing .notes-tile:after,
   text-overflow: ellipsis;
   font-family: 'Roboto', sans-serif;
   text-transform: uppercase;
+  padding: 9px 10px;
 }
 .dashboard .tiny > .heading a {
   font-size: 10px;
   color: #6d645d k;
 }
 .dashboard .tiny > .heading .clickable {
-  color: #6d645d;
+  color: #9d9d9d;
 }
 .dashboard .tiny > .heading .new {
   font-weight: bold;
@@ -2968,8 +2975,8 @@ body.resizing .notes-tile:after,
   background-color: #f9f9f9 !important;
 }
 .dashboard .grid-tile .heading {
-  background-color: rgba(0, 0, 0, 0.1) !important;
-  border-bottom: 1px solid #dedede !important;
+  background-color: #f9f9f9 !important;
+  border-bottom: none;
 }
 .dashboard .software-updates {
   background: none;

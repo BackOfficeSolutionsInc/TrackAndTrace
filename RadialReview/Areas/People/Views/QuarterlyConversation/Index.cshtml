@@ -48,6 +48,11 @@
 			background-color: gray;
 			color: lightgray;
 		}
+
+		.emptyable:empty{
+			padding-left:0;
+			padding-right:0;
+		}
 	</style>
 }
 @using (Html.BeginScripts()) {
@@ -137,11 +142,11 @@
 				}
 			},{
 				remove: function(x){return (x.IssuedBy.Id == UserId);},
-				hideIfEmpty:true,
+				//hideIfEmpty:true,
 				classes:function(x){
 					//if (x.IssuedBy.Id != UserId)
 					//	return "hidden";
-					return"nowrap alignRight";
+					return"nowrap alignRight emptyable";
 				},
 				contents:function(x){
 					if (x.IssuedBy.Id == UserId)
@@ -151,11 +156,11 @@
 				}
 			},{
 				edit: function(x){return (x.IssuedBy.Id == UserId);},
-				hideIfEmpty:true,
+				//hideIfEmpty:true,
 				classes:function(x){
 					//if (x.IssuedBy.Id != UserId)
 					//	return "hidden";
-					return"nowrap alignRight";
+					return"nowrap alignRight emptyable";
 				},
 				contents:function(x){
 					if (x.IssuedBy.Id == UserId)
@@ -165,11 +170,11 @@
 				}
 			},{
 				name: "",
-				hideIfEmpty:true,
+				//hideIfEmpty:true,
 				classes:function(x){
 					//if (x.IssuedBy.Id != UserId)
 					//	return "hidden";
-					return"nowrap alignRight";
+					return"nowrap alignRight emptyable";
 				},
 				contents:function(x){
 					if (x.IssuedBy.Id == UserId)

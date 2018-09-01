@@ -31,8 +31,8 @@
 		<td class="measurable first1 handle header-cell"></td>
 		<td class="target direction handle header-cell"></td>
 		<td class="target value handle header-cell"></td>
-		<td class="cumulative-column"></td>		
 		<td class="average-column"></td>		
+		<td class="cumulative-column"></td>		
 		<td class="header-cell chart"></td>
 		@if (showScorecardChart) {
 			<td class="handle header-cell"></td>
@@ -92,8 +92,8 @@
 			<span class="@inlineEdit numeric target-value" data-type="text" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.###")</span>
 			<span class="@inlineEdit gray unit" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable" data-value="@Model.MeetingMeasurable.Measurable.UnitType">@Model.MeetingMeasurable.Measurable.UnitType.ToTypeString()</span>
 		</td>
-		<td class="cumulative-column"><span onclick="showScorecardOptions(this)" title="Cumulative" class="@(@Model.MeetingMeasurable.Measurable.ShowCumulative?"":"hidden")">@Model.MeetingMeasurable.Measurable._Cumulative.NotNull(x => x.Value.ToString("#,##0.###"))</span></td>
 		<td class="average-column"><span onclick="showScorecardOptions(this)" title="Average" class="@(@Model.MeetingMeasurable.Measurable.ShowAverage?"":"hidden")">@Model.MeetingMeasurable.Measurable._Average.NotNull(x => x.Value.ToString("#,##0.###"))</span></td>
+		<td class="cumulative-column"><span onclick="showScorecardOptions(this)" title="Cumulative" class="@(@Model.MeetingMeasurable.Measurable.ShowCumulative?"":"hidden")">@Model.MeetingMeasurable.Measurable._Cumulative.NotNull(x => x.Value.ToString("#,##0.###"))</span></td>
 		<td class="header-cell chart"><span class="chart-btn icon fontastic-icon-graph-trend" onclick="onClickScChart(this)"></span></td>
 		@if (Model.ShowScorecardChart) {
 			<td class="header-cell" data-measurable="@Model.MeetingMeasurable.Measurable.Id"><span class="inlinesparkline"></span></td>
