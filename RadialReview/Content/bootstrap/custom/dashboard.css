@@ -2496,6 +2496,7 @@ body.resizing .notes-tile:after,
   font-weight: bold;
   text-transform: uppercase;
   white-space: nowrap;
+  margin-left: -1px;
 }
 .dashboard .software-updates .head {
   color: #5d5d5d;
@@ -2520,14 +2521,37 @@ body.resizing .notes-tile:after,
   color: darkgray;
   margin-left: 6px;
 }
+.dashboard .software-updates .update {
+  background-color: #f1f1f1;
+  margin: 5px;
+  padding: 15px 15px 10px 23px;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  margin-bottom: 35px;
+  box-shadow: 0px 4px 4px -2px inset rgba(0, 0, 0, 0.1);
+  opacity: 0.8;
+}
+.dashboard .software-updates .update.update-current {
+  border: 1px solid #d9d9d9;
+  box-shadow: 0px 8px 18px -5px rgba(0, 0, 0, 0.5);
+  background-color: white;
+  opacity: 1;
+}
 .dashboard .software-updates .su-details {
   padding-left: 14px;
-  border-bottom: 2px dashed #c7c7c7;
+  /*border-bottom: 2px dashed #c7c7c7;*/
   margin-bottom: 14px;
 }
 .dashboard .software-updates .su-row {
   display: block;
   transition: ease-in-out 0.2s color;
+  /*&:hover {
+				color: @traction-orange;
+			}
+
+			&:hover:before {
+				color: @traction-orange;
+			}*/
 }
 .dashboard .software-updates .su-row:before {
   /*content: ".";*/
@@ -2539,22 +2563,16 @@ body.resizing .notes-tile:after,
   font-weight: bold;
   transition: ease-in-out 0.2s color;
 }
-.dashboard .software-updates .su-row:hover {
-  color: #EF7622;
-}
-.dashboard .software-updates .su-row:hover:before {
-  color: #EF7622;
-}
 .dashboard .software-updates ul {
   /*padding-left: 6px;
 			font-size: 9px;*/
-  font-size: 13px;
+  font-size: 12px;
   color: #A9A9A9;
   list-style: none;
   transition: ease-in-out 0.2s color;
-}
-.dashboard .software-updates ul:hover {
-  color: #333;
+  /*&:hover {
+				color: #333;
+			}*/
 }
 .dashboard .software-updates ul > li {
   padding-left: 1.1m;
@@ -2566,14 +2584,23 @@ body.resizing .notes-tile:after,
   /* or whatever color you prefer */
 }
 .dashboard .software-updates blockquote {
-  padding: 0px 10px;
+  padding: 0px 18px;
   margin-bottom: 20px;
   border-left: 4px solid #D0D0D0;
-  font-size: 14px;
+  font-size: 12px;
   margin-top: 10px;
 }
 .dashboard .width_1 .software-updates {
   padding: 5px;
+}
+.dashboard .width_1 .software-updates .update {
+  padding: 7px 0px !important;
+  box-shadow: none !important;
+  border: none !important;
+  margin: 0px !important;
+  background-color: white !important;
+  border-bottom: 1px solid #dddddd !important;
+  border-radius: 0px !important;
 }
 .dashboard .width_1 .software-updates blockquote {
   padding: 4px 4px;
@@ -2590,6 +2617,9 @@ body.resizing .notes-tile:after,
 }
 .dashboard .width_1 .software-updates p {
   font-size: 10px;
+}
+.dashboard .width_1 .software-updates * {
+  font-size: 12px !important;
 }
 .dashboard table.md-table {
   /*.checkbox-column {
@@ -2942,6 +2972,9 @@ body.resizing .notes-tile:after,
   pointer-events: none;
 }
 .dashboard {
+  /*.software-updates {
+		background: none;
+	}*/
   /*::-webkit-input-placeholder { /* WebKit, Blink, Edge *
         color: #909;
     }
@@ -2977,9 +3010,6 @@ body.resizing .notes-tile:after,
 .dashboard .grid-tile .heading {
   background-color: #f9f9f9 !important;
   border-bottom: none;
-}
-.dashboard .software-updates {
-  background: none;
 }
 .dashboard .gray {
   color: rgba(51, 51, 51, 0.5);
