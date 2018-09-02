@@ -353,6 +353,19 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attached please find the quarterly printout for {0}.
+        ///
+        ///Thank you,
+        ///
+        ///The {1} Team.
+        /// </summary>
+        public static string QuarterlyPrintout_Body {
+            get {
+                return ResourceManager.GetString("QuarterlyPrintout_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reminder, you still have a review to complete..
         /// </summary>
         public static string ReminderReview_Subject {

@@ -134,8 +134,10 @@
     <Compile Include="Accessors\PDF\DocumentPlacer.cs" />
     <Compile Include="Accessors\PDF\JS\Tree.js.cs" />
     <Compile Include="Accessors\PDF\PdfSettings.cs" />
+    <Compile Include="Accessors\PDF\QuarterlyPrintoutPdf.cs" />
     <Compile Include="Accessors\PDF\VTO\PdfAccessor_VTO.cs" />
     <Compile Include="Accessors\PDF\VTO\VtoPdfSettings.cs" />
+    <Compile Include="Accessors\QuarterlyAccessor.cs" />
     <Compile Include="Accessors\ReportAccessor.cs" />
     <Compile Include="Accessors\SearchAccessor.cs" />
     <Compile Include="Accessors\StatsAccessor.cs" />
@@ -270,6 +272,7 @@
     <Compile Include="Models\Frontend\EditorModels.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
     <Compile Include="Models\Notifications\NotificationModel.cs" />
+    <Compile Include="Models\Quarterly\QuarterlyEmail.cs" />
     <Compile Include="Models\UserModels\ConsentModel.cs" />
     <Compile Include="Models\Payments\PaymentCredit.cs" />
     <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
@@ -1149,6 +1152,9 @@
       <DependentUpon>GettingStarted.less</DependentUpon>
     </Content>
     <Content Include="Content\img\TRACTION-TOOLS_large_stacked_2c.png" />
+    <Content Include="Content\Inputs\IOSwitch.css">
+      <DependentUpon>IOSwitch.less</DependentUpon>
+    </Content>
     <Content Include="Content\L10\L10Scorecard.css">
       <DependentUpon>L10Scorecard.less</DependentUpon>
     </Content>
@@ -1302,6 +1308,7 @@
     <Content Include="Content\L10\L10Wizard.less" />
     <Content Include="Content\Angular\Rocks.less" />
     <Content Include="Content\Angular\Issues.less" />
+    <Content Include="Content\Inputs\IOSwitch.less" />
     <None Include="Data\APS.cert" />
     <Content Include="IIS\install.zip" />
     <Content Include="Content\bootstrap\custom\modal.less" />
@@ -1908,6 +1915,7 @@
     <Content Include="Views\Admin\Errors.cshtml" />
     <Content Include="Views\Payment\Lockout.cshtml" />
     <Content Include="Views\Payment\LockoutNonadmin.cshtml" />
+    <Content Include="Views\Quarterly\Send.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

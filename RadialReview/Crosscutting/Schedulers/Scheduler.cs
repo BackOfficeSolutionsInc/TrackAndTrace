@@ -99,6 +99,109 @@ namespace RadialReview.Crosscutting.Schedulers {
 			return GetSingleton().Enqueue(methodCall);
 		}
 
+		/// <summary>
+		/// Creates a new background job based on a specified method
+		/// call expression and schedules it to be enqueued after a given delay.
+		/// </summary>
+		/// 
+		/// <param name="methodCall">Instance method call expression that will be marshalled to the Server.</param>
+		/// <param name="delay">Delay, after which the job will be enqueued.</param>
+		/// <returns>Unique identifier of the created job.</returns>
+		public static string Schedule([NotNull, InstantHandle] Expression<Action> methodCall,TimeSpan delay) {
+			return GetSingleton().Schedule(methodCall, delay);
+		}
+
+		/// <summary>
+		/// Creates a new background job based on a specified method
+		/// call expression and schedules it to be enqueued after a given delay.
+		/// </summary>
+		/// 
+		/// <param name="methodCall">Instance method call expression that will be marshalled to the Server.</param>
+		/// <param name="delay">Delay, after which the job will be enqueued.</param>
+		/// <returns>Unique identifier of the created job.</returns>
+		public static string Schedule([NotNull, InstantHandle] Expression<Func<Task>> methodCall,TimeSpan delay) {
+			return GetSingleton().Schedule(methodCall, delay);
+		}
+
+		/// <summary>
+		/// Creates a new background job based on a specified method call expression
+		/// and schedules it to be enqueued at the given moment of time.
+		/// </summary>
+		/// 
+		/// <param name="methodCall">Method call expression that will be marshalled to the Server.</param>
+		/// <param name="enqueueAt">The moment of time at which the job will be enqueued.</param>
+		/// <returns>Unique identifier of a created job.</returns>
+		public static string Schedule([NotNull, InstantHandle] Expression<Action> methodCall,DateTimeOffset enqueueAt) {			
+			return GetSingleton().Schedule(methodCall, enqueueAt);
+		}
+
+		/// <summary>
+		/// Creates a new background job based on a specified method call expression
+		/// and schedules it to be enqueued at the given moment of time.
+		/// </summary>
+		/// 
+		/// <param name="methodCall">Method call expression that will be marshalled to the Server.</param>
+		/// <param name="enqueueAt">The moment of time at which the job will be enqueued.</param>
+		/// <returns>Unique identifier of a created job.</returns>
+		public static string Schedule(
+			[NotNull, InstantHandle] Expression<Func<Task>> methodCall,DateTimeOffset enqueueAt) {
+			return GetSingleton().Schedule(methodCall, enqueueAt);
+		}
+
+		/// <summary>
+		/// Creates a new background job based on a specified instance method
+		/// call expression and schedules it to be enqueued after a given delay.
+		/// </summary>
+		/// 
+		/// <typeparam name="T">Type whose method will be invoked during job processing.</typeparam>
+		/// <param name="methodCall">Instance method call expression that will be marshalled to the Server.</param>
+		/// <param name="delay">Delay, after which the job will be enqueued.</param>
+		/// <returns>Unique identifier of the created job.</returns>
+		public static string Schedule<T>([NotNull, InstantHandle] Expression<Action<T>> methodCall,TimeSpan delay) {
+			return GetSingleton().Schedule(methodCall, delay);
+		}
+
+		/// <summary>
+		/// Creates a new background job based on a specified instance method
+		/// call expression and schedules it to be enqueued after a given delay.
+		/// </summary>
+		/// 
+		/// <typeparam name="T">Type whose method will be invoked during job processing.</typeparam>
+		/// <param name="methodCall">Instance method call expression that will be marshalled to the Server.</param>
+		/// <param name="delay">Delay, after which the job will be enqueued.</param>
+		/// <returns>Unique identifier of the created job.</returns>
+		public static string Schedule<T>([NotNull, InstantHandle] Expression<Func<T, Task>> methodCall,TimeSpan delay) {
+			return GetSingleton().Schedule(methodCall, delay);
+		}
+
+		/// <summary>
+		/// Creates a new background job based on a specified method call expression
+		/// and schedules it to be enqueued at the given moment of time.
+		/// </summary>
+		/// 
+		/// <typeparam name="T">The type whose method will be invoked during the job processing.</typeparam>
+		/// <param name="methodCall">Method call expression that will be marshalled to the Server.</param>
+		/// <param name="enqueueAt">The moment of time at which the job will be enqueued.</param>
+		/// <returns>Unique identifier of a created job.</returns>
+		public static string Schedule<T>([NotNull, InstantHandle] Expression<Action<T>> methodCall,DateTimeOffset enqueueAt) {
+			return GetSingleton().Schedule(methodCall, enqueueAt);
+		}
+
+		/// <summary>
+		/// Creates a new background job based on a specified method call expression
+		/// and schedules it to be enqueued at the given moment of time.
+		/// </summary>
+		/// 
+		/// <typeparam name="T">The type whose method will be invoked during the job processing.</typeparam>
+		/// <param name="methodCall">Method call expression that will be marshalled to the Server.</param>
+		/// <param name="enqueueAt">The moment of time at which the job will be enqueued.</param>
+		/// <returns>Unique identifier of a created job.</returns>
+		public static string Schedule<T>([NotNull, InstantHandle] Expression<Func<T, Task>> methodCall,DateTimeOffset enqueueAt) {
+			return GetSingleton().Schedule(methodCall, enqueueAt);
+		}
+
+
+
 
 		private static IBackgroundJobClient SingletonClient { get; set; }
 		private static IBackgroundJobClient PrevSingletonClient { get; set; }

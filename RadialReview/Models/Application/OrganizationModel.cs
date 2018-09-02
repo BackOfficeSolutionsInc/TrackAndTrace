@@ -423,6 +423,7 @@ namespace RadialReview.Models {
 		}
 
 		public virtual bool ManagersCanEditPositions { get; set; }
+		public virtual string ImplementerEmail { get; set; }
 
 		public OrganizationModel() {
 			Groups = new List<GroupModel>();
@@ -491,6 +492,9 @@ namespace RadialReview.Models {
 
 				//Map(x => x.ImageUrl);
 				Map(x => x.SendEmailImmediately);
+
+				Map(x => x.ImplementerEmail);
+
 				Component(x => x._Settings).ColumnPrefix("Settings_");
 
 				References(x => x.Image)

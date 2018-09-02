@@ -29,7 +29,12 @@ namespace RadialReview.Models
 
         public virtual string _ReplyToEmail { get; set; }
         public virtual string _ReplyToName { get; set; }
-    }
+		public virtual List<EmailAttachment> _Attachments { get; set; }
+
+		public EmailModel() {
+
+		}
+	}
 
     public class EmailModelMap:ClassMap<EmailModel>
     {

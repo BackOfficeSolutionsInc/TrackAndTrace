@@ -1,0 +1,37 @@
+﻿@model RadialReview.Controllers.QuarterlyController.SendQuarterlyVM
+@{ 
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+}
+
+<link href="~/Content/Inputs/IOSwitch.css" rel="stylesheet" />
+@Html.HiddenFor(x => x.RecurrenceId)
+
+<div class="@(guid)">
+	<div class="row smallBreak2">
+		<div class="col-md-6">
+			<label for="ImplementerEmail" class="control-label alignLeft">Your implementer's e-mail:</label>
+			@Html.TextBoxFor(x => x.ImplementerEmail, new { @class = "form-control" })
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6">
+			<div>
+				<label>Send later:</label>
+				<label class="io-switch" style="margin-bottom: -2px;" title="">
+					<input type="checkbox" @(Model.Later ? "checked" : "")>
+					<span class="slider round"></span>
+				</label>
+			</div>
+			<div class="now-box @(Model.Later?"":"hidden")">
+				<label for="SendDate" class="control-label alignLeft">Schedule to be sent:</label>
+				@Html.EditorFor(x => x.SendDate, new { @class = "form-control", startDate=DateTime.UtcNow })
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(".@(guid) .io-switch input").change(function () {
+		$(".@guid .now-box").toggleClass("hidden",!$(this).is(":checked"));
+	});
+</script>

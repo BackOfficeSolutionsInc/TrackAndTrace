@@ -138,5 +138,9 @@
   {
     "outputFile": "Content/Angular/angular-material.css",
     "inputFile": "Content/Angular/angular-material.less"
+  },
+  {
+    "outputFile": "Content/Inputs/IOSwitch.css",
+    "inputFile": "Content/Inputs/IOSwitch.less"
   }
 ]

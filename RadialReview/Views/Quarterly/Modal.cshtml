@@ -3,70 +3,64 @@
 
     <input type="hidden" id="meetingId" value="@Model" />
 
-    <div class="form-group">
-        <div class="col-sm-1  ">
-            <input type="checkbox" class="checkbox  pull-right" id="vto" name="vto" checked />
-        </div>
-        <label for="vto" class="col-sm-9 control-label alignLeft">Include Vision/Traction Organizer™</label>
-    </div>
+	<div class="row">
+		<div class="col-md-6 col-md-offset-1">
+			<div class="form-group">
+				<div class="col-sm-1  ">
+					<input type="checkbox" class="checkbox  pull-right" id="vto" name="vto" checked />
+				</div>
+				<label for="vto" class="col-sm-9 control-label alignLeft">Include Vision/Traction Organizer™</label>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-1 ">
+					<input type="checkbox" class="checkbox  pull-right" id="l10" name="l10" checked />
+				</div>
+				<label for="l10" class="col-sm-9 control-label alignLeft">Include Level 10 Meeting™ (Issues &amp; Todos)</label>
 
-
-
-    <div class="form-group">
-        <div class="col-sm-1 ">
-            <input type="checkbox" class="checkbox  pull-right" id="l10" name="l10" checked />
-        </div>
-        <label for="l10" class="col-sm-9 control-label alignLeft">Include Level 10 Meeting™ (Issues &amp; Todos)</label>
-
-    </div>
-    <div class="form-group">
-        <div class="col-sm-1 ">
-            <input type="checkbox" class="checkbox  pull-right" id="acc" name="acc" checked @*onchange="updateAllowDone()"*@ />
-        </div>
-        <label for="acc" class="col-sm-9 control-label alignLeft">Include Accountability Chart <span style="top: -2px;left:2px;position: relative;" id="accLoadingContainer"></span></label>
-    </div>
-
-    <iframe id="accFrame" style="display:none;" src="about:blank"></iframe>
-    <input type="hidden" id="rootInput" name="root" />
-
-    <div class="form-group">
-        <div class="col-sm-1 ">
-            <input type="checkbox" class="checkbox  pull-right" id="scorecard" name="scorecard" checked />
-        </div>
-        <label for="scorecard" class="col-sm-9 control-label alignLeft">Include Scorecard</label>
-
-    </div>
-
-    <div class="form-group">
-        <div class="col-sm-1 ">
-            <input type="checkbox" class="checkbox  pull-right" id="rocks" name="rocks" checked />
-        </div>
-        <label for="rocks" class="col-sm-9 control-label alignLeft">Include Rocks</label>
-
-    </div>
-
-	<div class="form-group">
-		<div class="col-sm-1 ">
-			<input type="checkbox" class="checkbox  pull-right" id="headlines" name="headlines" checked />
+			</div>
+			<div class="form-group">
+				<div class="col-sm-1 ">
+					<input type="checkbox" class="checkbox  pull-right" id="acc" name="acc" checked @*onchange="updateAllowDone()"*@ />
+				</div>
+				<label for="acc" class="col-sm-9 control-label alignLeft">Include Accountability Chart <span style="top: -2px;left:2px;position: relative;" id="accLoadingContainer"></span></label>
+			</div>			
+			<div class="form-group">
+				<div class="col-sm-1 ">
+					<input type="checkbox" class="checkbox  pull-right" id="scorecard" name="scorecard" checked />
+				</div>
+				<label for="scorecard" class="col-sm-9 control-label alignLeft">Include Scorecard</label>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-1 ">
+					<input type="checkbox" class="checkbox  pull-right" id="rocks" name="rocks" checked />
+				</div>
+				<label for="rocks" class="col-sm-9 control-label alignLeft">Include Rocks</label>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-1 ">
+					<input type="checkbox" class="checkbox  pull-right" id="headlines" name="headlines" checked />
+				</div>
+				<label for="headlines" class="col-sm-9 control-label alignLeft">Include Headlines</label>
+			</div>
+			@if (ViewBag.IncludePeople == true) {
+				<div class="form-group">
+					<div class="col-sm-1 ">
+						<input type="checkbox" class="checkbox  pull-right" id="pa" name="pa" checked />
+					</div>
+					<label for="pa" class="col-sm-9 control-label alignLeft">Include People Analyzer</label>
+				</div>
+			}
+			<hr />
+			<div class="form-group">
+				<div class="col-sm-1 ">
+					<input type="checkbox" class="checkbox  pull-right" id="quarterly" name="quarterly" checked />
+				</div>
+				<label for="quarterly" class="col-sm-9 control-label alignLeft">Quarterly Printout</label>
+			</div>
 		</div>
-		<label for="headlines" class="col-sm-9 control-label alignLeft">Include Headlines</label>
+		<div class="col-md-6"></div>
 	</div>
-	@if (ViewBag.IncludePeople==true) {
-	<div class="form-group">
-		<div class="col-sm-1 ">
-			<input type="checkbox" class="checkbox  pull-right" id="pa" name="pa" checked />
-		</div>
-		<label for="pa" class="col-sm-9 control-label alignLeft">Include People Analyzer</label>
-	</div>
-	}
-
-    <hr />
-    <div class="form-group">
-        <div class="col-sm-1 ">
-            <input type="checkbox" class="checkbox  pull-right" id="quarterly" name="quarterly" checked />
-        </div>
-        <label for="quarterly" class="col-sm-9 control-label alignLeft">Quarterly Printout</label>
-    </div>
+  
 </div>
 <style>
 	.printout-modal .control-label {
@@ -78,9 +72,7 @@
     var doneLoadingAC = false;
     function createNodes() {
         doneLoadingAC = true;
-
         var nodes = $("#accFrame")[0].contentWindow.generateAccNodes();
-
         $("#rootInput").val(JSON.stringify(nodes));
         $("#modalOk").attr("disabled", false);
         $("#modalOk").attr("title", false);

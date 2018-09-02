@@ -37,6 +37,17 @@ namespace RadialReview
 			}
 			return null;
 		}
+
+
+		public static TimeSpan Min(TimeSpan d1, params TimeSpan[] dates) {
+			var min = dates.Select(d => d.Ticks).Concat(new[] { d1.Ticks }).Min();
+			return new TimeSpan(min);
+		}
+		public static TimeSpan Max(TimeSpan d1, params TimeSpan[] dates) {
+			var max = dates.Select(d => d.Ticks).Concat(new[] { d1.Ticks }).Max();
+			return new TimeSpan(max);
+		}
+
 	}
 
 }

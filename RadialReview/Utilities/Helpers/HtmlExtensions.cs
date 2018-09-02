@@ -127,6 +127,13 @@ namespace System.Web {
 			return new HtmlString(hexColor);
 		}
 
+		public static HtmlString ShowNew(this HtmlHelper html, DateTime showUntil) {
+			if (DateTime.UtcNow < showUntil) {
+				return new HtmlString("<span class='show-new-marker' style='color:red;font-size:70%;opacity:0.7;pointer-events:none;width:0px;display:inline-block;'>New!</span>");
+			}
+			return new HtmlString("");
+		}
+
 		public static HtmlString EditFirstButton(this HtmlHelper html, List<string> items, bool edit = true) {
 			var count = items.Count();
 			var name = "" + count;

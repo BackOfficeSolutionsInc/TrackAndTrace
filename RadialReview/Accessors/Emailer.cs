@@ -342,8 +342,7 @@ namespace RadialReview.Accessors {
 			}
 
 
-			var oEmail = new EmailMessage() {
-				
+			var oEmail = new EmailMessage() {				
 				FromEmail = MandrillStrings.FromAddress,
 				FromName = email._ReplyToName ?? MandrillStrings.FromName,
 				Html = email.Body,
@@ -351,8 +350,12 @@ namespace RadialReview.Accessors {
 				To  = toAddresses,
 				TrackOpens = true,
 				TrackClicks = true,
-				GoogleAnalyticsDomains = Config.GetMandrillGoogleAnalyticsDomain().NotNull(x => x.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList())
+				GoogleAnalyticsDomains = Config.GetMandrillGoogleAnalyticsDomain().NotNull(x => x.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList()),								
 			};
+
+			if (email._Attachments != null && email._Attachments.Any()) {
+				oEmail.Attachments = email._Attachments;
+			}
 
 			if (!string.IsNullOrWhiteSpace(email._ReplyToEmail)) {
 				oEmail.AddHeader("Reply-To", email._ReplyToEmail);
@@ -447,8 +450,15 @@ namespace RadialReview.Accessors {
 							EmailType = email.EmailType,
 							_ReplyToName = email.ReplyToName,
 							_ReplyToEmail = email.ReplyToAddress,
-
 						};
+
+						if (email.Attachment != null) {
+							unsent._Attachments = new List<EmailAttachment>() {
+								email.Attachment
+							};
+						}
+
+
 						s.Save(unsent);
 						unsentEmails.Add(unsent);
 					}

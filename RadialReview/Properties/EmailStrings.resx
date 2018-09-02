@@ -423,4 +423,12 @@ Traction® Tools is made better by hearing from you. Please send your thoughts t
 From all of us at Traction Tools, &lt;b&gt;thank you&lt;/b&gt;.
 &lt;/p&gt;</value>
   </data>
+  <data name="QuarterlyPrintout_Body" xml:space="preserve">
+    <value>Attached please find the quarterly printout for {0}.
+
+Thank you,
+
+The {1} Team</value>
+    <comment>[organizationName,productName]</comment>
+  </data>
 </root>
