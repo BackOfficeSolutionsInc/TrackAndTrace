@@ -248,7 +248,7 @@
 		Meetings <span class="caret"></span>
 	</button>
 	<ul class="dropdown-menu">
-		@foreach (var l10 in Model.L10s) {
+		@foreach (var l10 in Model.L10s.OrderBy(x=>x.StarDate)) {
 			<li>
 				<a href="#">
 					<span class="dashtitle" onclick="window.location='/Dashboard/Generate/@l10.Value?type=L10'">@l10.Text</span>

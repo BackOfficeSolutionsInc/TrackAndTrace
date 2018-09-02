@@ -1,6 +1,6 @@
 ﻿@model List<RadialReview.Controllers.DashboardController.DashboardVM.L10>
 
-@foreach (var i in Model) {
+@foreach (var i in Model.OrderBy(x=>x.StarDate)) {
 	<li class="dropdown-submenu">
 		<a tabindex="-1" href="#">@i.Text</a>
 		<ul class="dropdown-menu">

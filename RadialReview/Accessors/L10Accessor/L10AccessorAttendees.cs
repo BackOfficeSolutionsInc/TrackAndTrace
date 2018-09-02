@@ -240,15 +240,24 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task<List<long>> GetStarredRecurrences(UserOrganizationModel caller, long userId) {
+		public class L10StarDate {
+			public long RecurrenceId { get; set; }
+			public DateTime StarDate { get; set; }
+		}
+
+		public static async Task<List<L10StarDate>> GetStarredRecurrences(UserOrganizationModel caller, long userId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.Self(userId);
 					var starred = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
 						.Where(x => x.DeleteTime == null && x.StarDate != null)
-						.Select(x => x.L10Recurrence.Id)
-						.List<long>().ToList();
+						.Select(x => x.L10Recurrence.Id, x => x.StarDate)
+						.List<object[]>()
+						.Select(x => new L10StarDate {
+							StarDate = ((DateTime?)x[1]).Value,
+							RecurrenceId = (long)x[0]
+						}).ToList();
 					return starred;
 				}
 			}

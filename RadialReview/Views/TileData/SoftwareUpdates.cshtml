@@ -17,19 +17,60 @@
 
 }
 
+@*<div class="update update-current">
+	<div class="head">Version 2.3.1</div>
+	<div class="su-details">
+		<h1>Major Features</h1>
+		<blockquote>
+			<span class="su-row">HEADER</span>
+			<ul>
+				<li>SUBITEM</li>
+			</ul>
+		</blockquote>
+		<h1>Speed Improvements</h1>
+		<blockquote>
+			<span class="su-row">ITEM</span>
+		</blockquote>
+		<h1>Bugs/Minor Features</h1>
+		<blockquote>
+			<span class='su-row'>FEATURE_OR_BUG</span>
+			<ul>
+				<li>SUBITEM</li>
+
+			</ul>
+		</blockquote>
+	</div>
+</div>*@
+
 
 <div class="review smallBreak2 loading tiny" style2="min-height:30px;">
 	<div class="heading">Traction Tools Update:</div>
 	<div class="tile">
 		<div class="software-updates scroller">
-			@*@foreach (var g in Model.OrderByDescending(x => x.Date)) {
-					<h1 class="hidden-width-1">** Update for @lookupDate(g.Date, false)@(String.IsNullOrWhiteSpace(g.Title) ? "" : " - ")@g.Title **</h1>
-					<h1 class="visible-width-1">** Update @lookupDate(g.Date, true)@(String.IsNullOrWhiteSpace(g.Title) ? "" : " - ")@g.Title **</h1>
-					<blockquote>
-						@g.Markup
-					</blockquote>
-				}*@
 			<div class="update update-current">
+				<div class="head">Version 2.3.1</div>
+				<div class="su-details">
+					<h1>Major Features</h1>
+					<blockquote>
+						<span class="su-row">Forward quarterly printouts to your implementer</span>
+						<ul>
+							<li>Send immediately or schedule to be sent on your before your offsite</li>
+							<li>You receive the printout via BCC</li>
+						</ul>
+						<span class="su-row">Star meetings</span>
+						<ul>
+							<li>Most used meetings at the top of your L10 listing page</li>
+						</ul>
+						<span class="su-row">Sticky scorecard heading</span>
+					</blockquote>
+					<h1>Bugs/Minor Features</h1>
+					<blockquote>
+						<span class='su-row'>Fixed tile resize bug</span>
+					</blockquote>
+				</div>
+			</div>
+			@*=================*@
+			<div class="update update-old">
 				<div class="head">Version 2.2.1</div>
 				<div class="su-details">
 					<h1>Major Features</h1>
@@ -51,11 +92,11 @@
 							<li>Renaming Quarterly Conversations</li>
 							<li>Includes Rocks</li>
 						</ul>
-						<span class="su-row">Added cross-company rock status page to </span>						
+						<span class="su-row">Added cross-company rock status page to </span>
 					</blockquote>
-					<h1>Speed Improvments</h1>
+					<h1>Speed Improvements</h1>
 					<blockquote>
-						<span class='su-row'>Dramatic improvements to the speed of the website</span>
+						<span class='su-row'>Dramatic improvments to the speed of the website</span>
 						<span class='su-row'>Meeting summaries send more quickly</span>
 						<span class='su-row'>Page load times improved</span>
 						<span class='su-row'>Creating Quarterly Conversations is now non-blocking</span>
@@ -150,7 +191,7 @@
 			</div>
 
 			<div class="update update-old">
-				<div class="head">Version 2.0.3 - January 25, 2018</div>
+				<div class="head">Version 2.0.3</div>
 				<div class="su-details">
 					<h1>Major Experience Changes</h1>
 					<blockquote>

@@ -36,7 +36,7 @@ namespace TractionTools.Tests.Controllers {
 			using (var ctrl = new ControllerCtx<DashboardController>(org.Manager)) {
 				var json = ctrl.GetJson(x => x.CreateDashboard("title1", false, true));
 				Assert.AreEqual(dashNum + 1, json.GetModel<long>());
-				var dash = ctrl.GetView(x => x.Index(dashNum + 1));
+				var dash = await ctrl.GetView(x => x.Index(dashNum + 1));
 				dash.AssertModelType<DashboardVM>();
 				Assert.AreEqual("title1", dash.ViewBag.WorkspaceName);
 			}
@@ -44,9 +44,9 @@ namespace TractionTools.Tests.Controllers {
 			//Register 1 for employee
 			await org.RegisterUser(org.Employee);
 			using (var c = new ControllerCtx<DashboardController>(org.Employee)) {
-				var redirectDash = c.GetRedirect(x => x.Index());
+				var redirectDash = await  c.GetRedirect(x => x.Index());
 				Assert.AreEqual(dashNum + 2, redirectDash.RouteValues["id"]);
-				var view = c.GetView(x => x.Index());
+				var view = await c.GetView(x => x.Index());
 				view.AssertModelType<DashboardVM>();
 				Assert.AreEqual(null, view.ViewBag.WorkspaceName);
 			}
@@ -60,7 +60,7 @@ namespace TractionTools.Tests.Controllers {
 			using (var c = new ControllerCtx<DashboardController>(org.Manager)) {
 				var json = c.GetJson(x => x.CreateDashboard("title2", false, true));
 				Assert.AreEqual(dashNum + 3, json.GetModel<long>());
-				var view = c.GetView(x => x.Index(dashNum + 3L));
+				var view = await c.GetView(x => x.Index(dashNum + 3L));
 				view.AssertModelType<DashboardVM>();
 				Assert.AreEqual("title2", view.ViewBag.WorkspaceName);
 			}

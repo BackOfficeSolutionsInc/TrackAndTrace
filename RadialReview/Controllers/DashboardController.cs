@@ -428,6 +428,7 @@ namespace RadialReview.Controllers {
 			public List<SelectListItem> Dashboards { get; set; }
 
 			public class L10 {
+				public DateTime StarDate { get; set; }
 				public bool Selected { get; set; }
 				public string Text { get; set; }
 				public string Value { get; set; }
@@ -522,7 +523,7 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Index(long? id = null) {
+		public async Task<ActionResult> Index(long? id = null) {
 
 			var useDefault = id == null;
 
@@ -539,14 +540,16 @@ namespace RadialReview.Controllers {
 				if (item.DataUrl.Contains("L10Todos"))
 					item.ShowPrintButton = true;
 			}
-			DashboardVM dashboard = GenerateDashboardViewModel(id, useDefault, tiles);
+			DashboardVM dashboard = await GenerateDashboardViewModel(id, useDefault, tiles);
 
 			return View(dashboard);
 		}
 
-		private DashboardVM GenerateDashboardViewModel(long? id, bool useDefault, List<TileModel> tiles, string workspaceName = null) {
+		private async Task<DashboardVM> GenerateDashboardViewModel(long? id, bool useDefault, List<TileModel> tiles, string workspaceName = null) {
 			var l10s = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, onlyDashboardRecurrences: true);
 			var notes = L10Accessor.GetVisibleL10Notes_Unsafe(l10s.Select(x => x.Id).ToList());
+
+			var starred = (await L10Accessor.GetStarredRecurrences(GetUser(), GetUser().Id)).ToDefaultDictionary(x=>x.RecurrenceId,x=>x.StarDate,x=> DateTime.MaxValue);
 
 			var jsonTiles = Json(ResultObject.SilentSuccess(tiles), JsonRequestBehavior.AllowGet);
 			var jsonTilesStr = new JavaScriptSerializer().Serialize(jsonTiles.Data);
@@ -557,6 +560,7 @@ namespace RadialReview.Controllers {
 				DashboardId = id.Value,
 				TileJson = jsonTilesStr,
 				L10s = l10s.Select(x => new DashboardVM.L10() {
+					StarDate = starred[x.Id],
 					Value = "" + x.Id,
 					Text = x.Name,
 					Notes = notes.Where(y => y.Recurrence.Id == x.Id).Select(z => new SelectListItem() {
@@ -586,7 +590,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Generate(long id, DashboardType type) {
 			var o = DashboardAccessor.GenerateDashboard(GetUser(), id, type);
-			var dashboard = GenerateDashboardViewModel(o.Dashboard.Id, false, o.Tiles, o.Dashboard.Title);
+			var dashboard = await GenerateDashboardViewModel(o.Dashboard.Id, false, o.Tiles, o.Dashboard.Title);
 
 			var jsonTiles = Json(await DashboardDataController.GetTileData(GetUser(), o.Dashboard.Id, GetUser().Id, o.Tiles), JsonRequestBehavior.AllowGet);
 			var jsonTilesStr = new JavaScriptSerializer().Serialize(jsonTiles.Data);
