@@ -424,10 +424,10 @@ From all of us at Traction Tools, &lt;b&gt;thank you&lt;/b&gt;.
 &lt;/p&gt;</value>
   </data>
   <data name="QuarterlyPrintout_Body" xml:space="preserve">
-    <value>Attached please find the quarterly printout for {0}.
-
-Thank you,
-
+    <value>&lt;p&gt;Attached please find the quarterly printout for {0}.&lt;/p&gt;
+&lt;br /&gt;
+&lt;br /&gt;
+Thank you,&lt;br /&gt;
 The {1} Team</value>
     <comment>[organizationName,productName]</comment>
   </data>

@@ -240,6 +240,46 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		public static async Task<List<long>> GetStarredRecurrences(UserOrganizationModel caller, long userId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.Self(userId);
+					var starred = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+						.Where(x => x.DeleteTime == null && x.StarDate != null)
+						.Select(x => x.L10Recurrence.Id)
+						.List<long>().ToList();
+					return starred;
+				}
+			}
+		}
+
+		public static async Task AddStarToMeeting(UserOrganizationModel caller, long recurrenceId, long userid, bool starred) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.ViewL10Recurrence(recurrenceId);
+					perms.Self(userid);
+
+					var found = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+						.Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null && x.User.Id == userid)
+						.List().ToList();
+
+					if (!found.Any())
+						throw new PermissionsException("Not an attendee");
+
+					DateTime? now = DateTime.UtcNow;
+					foreach (var f in found) {
+						f.StarDate = starred?now:null;
+						s.Update(f);
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+
+		}
 		#endregion
 
 	}

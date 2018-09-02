@@ -305,6 +305,7 @@ namespace RadialReview.Accessors {
                                                           .Select(x => TinyUser.FromUserOrganization(x.User))
                                                           .ToList();
                         a.IsAttendee = attendee_recurrences.Any(y => y == a.Id);
+						a.StarDate = allAttendees.Where(x => x.L10Recurrence.Id == a.Id && x.User.Id == userId).FirstOrDefault().NotNull(x=>x.StarDate);
                     }
                     //.List().ToList();
                     //allRecurrences.AddRange(loadedL10);

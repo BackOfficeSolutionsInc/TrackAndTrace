@@ -370,6 +370,12 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> Star(long id, bool star = true) {
+			await L10Accessor.AddStarToMeeting(GetUser(), id, GetUser().Id, star);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
 		public ActionResult External(long id) {
 			var recurrence = id;
 			var links = L10Accessor.GetExternalLinksForRecurrence(GetUser(), id);

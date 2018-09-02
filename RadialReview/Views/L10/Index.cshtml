@@ -31,10 +31,11 @@
 		}
 		<div class="panel panel-primary" id="l10-meeting-list">
 			@if (Model.Recurrences.Any()) {
-				<table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter">
+				<table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter" >
 					<thead>
-						<tr>
+						<tr style="height: 21px;">
 							@*<th></th>*@
+							<th style="width:15px;padding:0 0 0 6px" class="star-cell"></th>
 							<th style="width:30px;padding:0" class=""></th>
 							<th class="" style="padding:0;width:42%;"></th>
 							<th class="alignRight hidden-xs" data-sorter="false" style="padding:0"></th>
@@ -43,18 +44,30 @@
 						</tr>
 					</thead>
 					<tbody>
-						@foreach (var meeting in Model.Recurrences.OrderByDescending(x => x.IsAttendee)) {
-							<tr class="startHidden2 clickable imageRow @(meeting.IsAttendee ?? false ? "" : "grayRow") l10-row">
+						@foreach (var meeting in Model.Recurrences.OrderByDescending(x => x.IsAttendee).ThenBy(x => x.Recurrence.StarDate ?? DateTime.MaxValue)) {
+							var starDate = long.MaxValue;
+							if (meeting.Recurrence.StarDate != null) {
+								starDate = meeting.Recurrence.StarDate.Value.ToJsMs();
+							}
+							<tr class="startHidden2 clickable imageRow @(meeting.IsAttendee ?? false ? "" : "grayRow") l10-row" data-id="@meeting.Recurrence.Id">
 								@*<td><span class='reorder-handle icon fontastic-icon-three-bars icon-rotate gray' style='margin-left: -5px;margin-right: -5px;cursor:move;'></span></td>*@
+								<td class="star-cell" onclick="addMeetingStar(@(meeting.Recurrence.Id))">
+									<span class="star-num hidden">@(starDate)</span>
+									<span class="star-indicator" data-starred="@(meeting.Recurrence.StarDate != null?"true":"false")">
+										<span class="star-icon glyphicon @(meeting.Recurrence.StarDate != null?"glyphicon-star":"glyphicon-star-empty")"></span>
+									</span>
+								</td>
 								<td style="vertical-align:top" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id, })';">
 									<span class="hidden">@(meeting.IsAttendee ?? false ? "1" : "2")@(meeting.Recurrence.MeetingInProgress != null ? "1" : "2")</span>
 									@if (meeting.Recurrence.MeetingInProgress != null) {
-										<div class="label label-success hoverable" style="height:16px; width: 80px;display: inline-block">in-progress</div>
+										<div class="label label-success hoverable started-indicator" style="height:16px; width: 55px;display: inline-block;text-align: left;">Started</div>
 									} else {
-										<div class="label label-primary hoverable" style="width: 80px;display: inline-block">Go!</div>
+										<div class="label label-default hoverable go-indicator" style="width: 55px;display: inline-block">Go!</div>
 									}
 								</td>
-								<td style="vertical-align:top" class="table-hover-underline test-ignore" onclick="gotoMeeting(@(meeting.Recurrence.Id))"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id, })">@meeting.Recurrence.Name</a></td>
+								<td style="vertical-align:top" class="table-hover-underline test-ignore" onclick="gotoMeeting(@(meeting.Recurrence.Id))">
+									<a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id, })">@meeting.Recurrence.Name</a>
+								</td>
 								<td class="alignRight hidden-xs test-ignore images" onclick="gotoMeeting(@(meeting.Recurrence.Id))">
 									@foreach (var a in meeting.Recurrence._DefaultAttendees) {
 										@Html.Partial("_ProfilePicture", a)
@@ -108,11 +121,77 @@
 	tr.l10-row > td.manage-btn-td {
 		padding-top: 10px;
 	}
+
+	.star-icon {
+		opacity: .25;
+		padding-top: 3px;
+	}
+
+	.l10-row:hover .star-icon {
+		opacity: 1;
+		color: gray;
+	}
+
+	.star-cell {
+		padding-right: 0px !important;
+		transition: opacity .1s ease-in-out;
+	}
+
+		.star-cell:hover .star-icon:before {
+			content: "\e006";
+		}
+
+	.star-icon.glyphicon-star {
+		color: goldenrod !important;
+		opacity: .7;
+	}
+
+	.tablesorter-header-inner {
+		opacity: .4;
+	}
+
+	
+	.l10-row .go-indicator {
+		transition: background .2s ease-in-out;
+	}
+
+	.l10-row:hover .go-indicator {
+		background-color: #ef7622;
+	}
 </style>
 
 @using (Html.BeginScripts()) {
 	<script src="/Scripts/jquery/jquery.ui.sortable.js"></script>
 	<script>
+
+		function addMeetingStar(id) {
+			var oldS = $(".l10-row[data-id=" + id + "] .star-indicator").attr("data-starred").toLowerCase() == "true";
+			var newS = !oldS;
+
+			$.ajax({
+				url: "/l10/star/" + id + "?star=" + newS,
+				success: function () {
+					$(".l10-row[data-id=" + id + "] .star-indicator").attr("data-starred", newS);
+					$(".l10-row[data-id=" + id + "] .star-indicator .star-icon").toggleClass("glyphicon-star", newS);
+					$(".l10-row[data-id=" + id + "] .star-indicator .star-icon").toggleClass("glyphicon-star-empty", !newS);
+					$(".l10-row[data-id=" + id + "] .star-cell .star-num").html(newS ? "1535921046000000" : "9223372036854775807");
+					$(".tablesorter").trigger("update");
+				}
+			});
+		}
+
+		var curStartedDots = 0;
+		setInterval(function () {
+			var dots = "";
+			for (var i = 0; i <= curStartedDots; i++) {
+				dots += ".";
+			}
+
+			$(".started-indicator").html("Started" + dots);
+			curStartedDots += 1;
+			curStartedDots = curStartedDots % 3;
+
+		}, 500);
 
 		function textingModal(data) {
 			if (!data.Error) {

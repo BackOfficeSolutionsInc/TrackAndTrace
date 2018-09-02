@@ -61,10 +61,18 @@ namespace RadialReview.Controllers {
 		}
 
 		public class SendQuarterlyVM {
+
+			public class ScheduledEmails {
+				public string Email { get; set; }
+				public string Date { get; set; }
+				public bool Sent { get; set; }
+			}
+
 			public string ImplementerEmail { get; set; }
 			public DateTime SendDate { get; set; }
 			public bool Later { get; set; }
 			public long RecurrenceId { get; set; }
+			public List<ScheduledEmails> Scheduled { get; set; }
 			public SendQuarterlyVM() {
 				SendDate = DateTime.UtcNow;
 			}
@@ -73,10 +81,19 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Send(long id) {
 			PermissionsAccessor.EnsurePermitted(GetUser(), x => x.ViewL10Recurrence(id));
+
+			var sched = QuarterlyAccessor.GetScheduledEmails(GetUser(), id);
+
 			var model = new SendQuarterlyVM() {
 				ImplementerEmail = GetUser().Organization.ImplementerEmail,
 				RecurrenceId = id,
+				Scheduled =  sched.Select(x=> new SendQuarterlyVM.ScheduledEmails() {
+					Date = x.ScheduledTime.ToString("MM/dd/yyyy"),
+					Email = x.Email,
+					Sent = x.SentTime!=null
+				}).ToList()
 			};
+
 			return PartialView(model);
 		}
 
@@ -85,7 +102,7 @@ namespace RadialReview.Controllers {
 		public JsonResult Send(SendQuarterlyVM model) {
 			QuarterlyAccessor.ScheduleQuarterlyEmail(GetUser(), model.RecurrenceId, model.ImplementerEmail,model.Later?model.SendDate:DateTime.UtcNow);
 			
-			return Json(ResultObject.Success((model.Later ? "Email Scheduled!":"Email Sent!")));
+			return Json(ResultObject.Success((model.Later ? "Email scheduled!":"Email sent!")));
 		}
 
 		[Access(AccessLevel.UserOrganization)]

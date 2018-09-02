@@ -353,10 +353,10 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attached please find the quarterly printout for {0}.
-        ///
-        ///Thank you,
-        ///
+        ///   Looks up a localized string similar to &lt;p&gt;Attached please find the quarterly printout for {0}.&lt;/p&gt;
+        ///&lt;br /&gt;
+        ///&lt;br /&gt;
+        ///Thank you,&lt;br /&gt;
         ///The {1} Team.
         /// </summary>
         public static string QuarterlyPrintout_Body {

@@ -15,12 +15,12 @@ using System.Web;
 namespace RadialReview.Accessors {
 	public class QuarterlyAccessor {
 
-		public static void ScheduleQuarterlyEmail(UserOrganizationModel caller, long recurrenceId, string email,DateTime sendTime) {
+		public static async Task ScheduleQuarterlyEmail(UserOrganizationModel caller, long recurrenceId, string email,DateTime sendTime) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.ViewL10Recurrence(recurrenceId);
-
+					email = email.ToLower();
 					var qe= new QuarterlyEmail() {
 						Email = email,
 						RecurrenceId = recurrenceId,
@@ -29,18 +29,32 @@ namespace RadialReview.Accessors {
 						SenderId = caller.Id,						
 					};
 
+					var org = s.Get<OrganizationModel>(caller.Organization.Id);
+					org.ImplementerEmail = email;
+					s.Update(org);
+
 					s.Save(qe);
 
-					Scheduler.Schedule(()=> ScheduledEmail(qe.Id), Math2.Max(TimeSpan.FromMinutes(0),sendTime-DateTime.UtcNow));
-
-
+					Scheduler.Schedule(()=> ScheduledEmail_HangFire(qe.Id), Math2.Max(TimeSpan.FromMinutes(0),sendTime-DateTime.UtcNow));
+					
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
 
-		public static async Task<string> ScheduledEmail(long quarterlyEmailId) {
+		public static List<QuarterlyEmail> GetScheduledEmails(UserOrganizationModel caller, long recurrenceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.ViewL10Recurrence(recurrenceId);
+					var scheduled = s.QueryOver<QuarterlyEmail>().Where(x => x.DeleteTime == null && x.ScheduledTime > DateTime.UtcNow.AddDays(-1)).List().ToList();
+					return scheduled;
+				}
+			}
+		}
+
+		public static async Task<string> ScheduledEmail_HangFire(long quarterlyEmailId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var qe = s.Get<QuarterlyEmail>(quarterlyEmailId);
