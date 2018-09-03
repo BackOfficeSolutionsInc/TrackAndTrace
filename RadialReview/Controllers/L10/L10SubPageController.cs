@@ -81,8 +81,8 @@ namespace RadialReview.Controllers {
 			};
 			
 			if (model != null && model.Recurrence != null) {
-				model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
-				model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+				model.CanAdmin = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+				model.CanEdit = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.MemberPictures = model.Recurrence._DefaultAttendees.Select(x => new ProfilePictureVM {
 					Initials = x.User.GetInitials(),
 					Name = x.User.GetName(),
@@ -218,6 +218,8 @@ namespace RadialReview.Controllers {
 				}
 			} catch (Exception e) {
 			}
+
+			L10Accessor.NotifyOthersOfMeeting(GetUser(), model.Recurrence.Id);
 
 			return PartialView("StartMeeting", model);
 		}

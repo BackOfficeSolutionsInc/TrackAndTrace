@@ -73,12 +73,12 @@ namespace RadialReview.Controllers {
 
 			}
 
-			ViewBag.CanEditCoreValues = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditCompanyValues(model.Organization.Id));
+			ViewBag.CanEditCoreValues = PermissionsAccessor.IsPermitted(GetUser(), x => x.EditCompanyValues(model.Organization.Id));
 
 			var editVision = false;
 			var editTraction = false;
 
-			if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditVTO(model.Id))) {
+			if (PermissionsAccessor.IsPermitted(GetUser(), x => x.EditVTO(model.Id))) {
 				editTraction = true;
 				if (visionPage == null) {
 					editVision = true;

@@ -20,18 +20,17 @@ namespace RadialReview.Accessors {
     public class PermissionsAccessor {
 
 		public static void EnsurePermitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
-			new PermissionsAccessor().Permitted(caller, ensurePermitted);
+			PermissionsAccessor.Permitted(caller, ensurePermitted);
 		}
 
-		public void Permitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
+		public static void Permitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					ensurePermitted(PermissionsUtility.Create(s, caller));
 				}
 			}
 		}
-		public bool IsPermitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted)
-        {
+		public static bool IsPermitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted){
             try {
                 Permitted(caller, ensurePermitted);
                 return true;

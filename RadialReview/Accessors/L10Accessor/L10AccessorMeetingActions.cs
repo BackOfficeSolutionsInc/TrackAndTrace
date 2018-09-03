@@ -984,7 +984,7 @@ namespace RadialReview.Accessors {
                         }
                         hub.Groups.Add(connectionId, MeetingHub.GenerateUserId(caller.Id));
                     } else {
-                        new PermissionsAccessor().Permitted(caller, x => x.ViewL10Recurrence(recurrenceId));
+						PermissionsAccessor.Permitted(caller, x => x.ViewL10Recurrence(recurrenceId));
                         hub.Groups.Add(connectionId, MeetingHub.GenerateMeetingGroupId(recurrenceId));
                         Audit.L10Log(s, caller, recurrenceId, "JoinL10Meeting", ForModel.Create(caller));
 

@@ -16,6 +16,9 @@ using NHibernate;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
+using RadialReview.Hubs;
+using Microsoft.AspNet.SignalR;
+using RadialReview.Crosscutting.Schedulers;
 
 namespace RadialReview.Accessors {
 	public partial class L10Accessor : BaseAccessor {
@@ -201,6 +204,8 @@ namespace RadialReview.Accessors {
 
 			await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.RemoveAttendee(ses, recurrenceId, userorgid));
 		}
+
+
 		public static async Task RemoveAttendee(UserOrganizationModel caller, long recurrenceId, long userorgid) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -279,7 +284,7 @@ namespace RadialReview.Accessors {
 
 					DateTime? now = DateTime.UtcNow;
 					foreach (var f in found) {
-						f.StarDate = starred?now:null;
+						f.StarDate = starred ? now : null;
 						s.Update(f);
 					}
 					tx.Commit();
@@ -291,5 +296,41 @@ namespace RadialReview.Accessors {
 		}
 		#endregion
 
+		public static async Task NotifyOthersOfMeeting(UserOrganizationModel caller, long recurrenceId) {
+			Scheduler.Enqueue(() => NotifyOthersOfMeeting_Hangfire(caller.Id, recurrenceId));			
+		}
+
+		public static async Task NotifyOthersOfMeeting_Hangfire(long callerId,long recurrenceId) {
+			try {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						var caller = s.Get<UserOrganizationModel>(callerId);
+						var perms = PermissionsUtility.Create(s, caller);
+						perms.ViewL10Recurrence(recurrenceId);
+
+						var recurName = s.Get<L10Recurrence>(recurrenceId).Name;
+
+						UserOrganizationModel uoAlias = null;
+						UserModel uAlias = null;
+						var attendees = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+							.JoinAlias(x => x.User, () => uoAlias)
+							.JoinAlias(x => uoAlias.User, () => uAlias)
+							.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
+							.Select(x => uoAlias.Id, x => uAlias.UserName)
+							.List<object[]>()
+							.Select(x => new {
+								UserId = (long)x[0],
+								Email = (string)x[1]
+							}).ToList();
+
+						var hub = GlobalHost.ConnectionManager.GetHubContext<MessageHub>();
+						var group = hub.Clients.Users(attendees.Select(x => x.Email).ToList());
+						group.NotifyOfMeetingStart(recurrenceId, recurName);
+					}
+				}
+			} catch (Exception e) {
+				int a = 0;
+			}
+		}
 	}
 }

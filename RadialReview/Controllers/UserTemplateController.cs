@@ -35,7 +35,7 @@ namespace RadialReview.Controllers
 		{
 			var ut = UserTemplateAccessor.GetUserTemplate(GetUser(), id,true,true,true);
 
-			var edit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTemplate(id));
+			var edit = PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTemplate(id));
 
 			var model = new UserTemplateVM(ut, edit);
 			return View(model);

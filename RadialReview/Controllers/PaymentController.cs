@@ -31,7 +31,7 @@ namespace RadialReview.Controllers {
         [Access(AccessLevel.UserOrganization,IgnorePaymentLockout =true)]        
         public ActionResult Lockout() {
             var orgId = GetUser().Organization.Id;
-            var canEditPayment = new PermissionsAccessor().IsPermitted(GetUser(), x => x.EditCompanyPayment(orgId));
+            var canEditPayment = PermissionsAccessor.IsPermitted(GetUser(), x => x.EditCompanyPayment(orgId));
                         
             if (canEditPayment)
                 return View("Lockout");
@@ -43,14 +43,14 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
 		public ActionResult SetCard(int nil = 0,bool noTitleBar=false) {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
             ViewBag.NoTitleBar = noTitleBar;
             return View();
 		}
 
 		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
 		public ActionResult SetACH() {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
 
 			return View();
 		}

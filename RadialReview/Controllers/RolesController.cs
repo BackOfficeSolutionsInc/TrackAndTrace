@@ -28,7 +28,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id)
 		{
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
 			var roles = _RoleAccessor.GetRoles(GetUser(), id);
 			return PartialView(new RoleVM { Roles = roles, UserId = id });
 		}
@@ -72,7 +72,7 @@ namespace RadialReview.Controllers
 		public PartialViewResult BlankTemplateEditorRow(long id)
 		{
 			var templateId = id;
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewTemplate(templateId));
+			PermissionsAccessor.Permitted(GetUser(), x => x.ViewTemplate(templateId));
 			return PartialView("_TemplateRoleRow", new UserTemplate.UT_Role()
 			{
 				TemplateId = templateId

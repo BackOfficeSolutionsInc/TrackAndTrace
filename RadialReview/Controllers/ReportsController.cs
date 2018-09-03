@@ -26,7 +26,7 @@ namespace RadialReview.Controllers
 			var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 
 			var acceptedReviews = new List<ReviewModel>();
-		    var managesTeam = new PermissionsAccessor().IsPermitted(GetUser(), x => x.ManagingTeam(reviewContainer.ForTeamId));
+		    var managesTeam = PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagingTeam(reviewContainer.ForTeamId));
 			foreach (var r in reviewContainer.Reviews)
 			{
 				var add = false;
@@ -55,7 +55,7 @@ namespace RadialReview.Controllers
 
 			
 
-			var viewSurvey = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.OrganizationId)
+			var viewSurvey = PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.OrganizationId)
 				.Or(
 					y => y.AdminReviewContainer(reviewContainerId),
 					y => y.ManagingTeam(reviewContainer.ForTeamId)

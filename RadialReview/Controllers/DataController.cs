@@ -221,7 +221,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public FileContentResult OrganizationReviewData(long id, long reviewsId) {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditUserOrganization(id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.EditUserOrganization(id));
 
 			var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
 

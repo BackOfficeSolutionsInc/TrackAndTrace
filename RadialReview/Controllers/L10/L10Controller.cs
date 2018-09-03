@@ -68,7 +68,7 @@ namespace RadialReview.Controllers {
 				Selected = recurrence.SelectedVideoProvider,
 			};
 
-			ViewBag.ViewAccountabilityChart = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanView(ResourceType.AccountabilityHierarchy, GetUser().Organization.AccountabilityChartId));
+			ViewBag.ViewAccountabilityChart = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanView(ResourceType.AccountabilityHierarchy, GetUser().Organization.AccountabilityChartId));
 			ViewBag.ViewPeopleAnalyzer = GetUser().Organization.Settings.EnablePeople;
 
 			if (PaymentAccessor.ShowDelinquent(GetUser(), GetUser().Organization.Id, 7)) {
@@ -104,8 +104,8 @@ namespace RadialReview.Controllers {
 			}
 
 			if (model != null && model.Recurrence != null) {
-				model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
-				model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+				model.CanAdmin = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+				model.CanEdit = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.VtoId = model.Recurrence.VtoId;
 
 				model.Connected = L10Accessor.GetConnected(GetUser(), id.Value, true);
@@ -236,7 +236,7 @@ namespace RadialReview.Controllers {
 
 			var recurrenceId = id.Value;
 
-			_PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
+			PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
 
 			var model = AddExtras(recurrenceId, new L10EditVM() { Return = @return });
 			//ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), id);
@@ -264,10 +264,10 @@ namespace RadialReview.Controllers {
 				return RedirectToAction("Wizard", new { id = l10.Id, tname = Request["tname"], tmethod = Request["tmethod"] });
 			} else {
 				//var recurrenceId = id.Value;
-				_PermissionsAccessor.Permitted(GetUser(), x => x.CanView(PermItem.ResourceType.L10Recurrence, id.Value));
+				PermissionsAccessor.Permitted(GetUser(), x => x.CanView(PermItem.ResourceType.L10Recurrence, id.Value));
 
-				ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, id.Value));
-				ViewBag.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, id.Value));
+				ViewBag.CanEdit = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, id.Value));
+				ViewBag.CanAdmin = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, id.Value));
 
 				var now = DateTime.UtcNow.ToJavascriptMilliseconds();
 				try {
@@ -320,7 +320,7 @@ namespace RadialReview.Controllers {
 				allRocks.AddRange(existing._DefaultRocks.Where(x => x.Id > 0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
 				allMeasurables.AddRange(existing._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y != null && y.Id != x.Measurable.NotNull(z => z.Id))).Select(x => x.Measurable));
 			} else {
-				_PermissionsAccessor.Permitted(GetUser(), x => x.CreateL10Recurrence(model.Recurrence.OrganizationId));
+				PermissionsAccessor.Permitted(GetUser(), x => x.CreateL10Recurrence(model.Recurrence.OrganizationId));
 				ViewBag.InfoAlert = "You only need to create one L10 meeting per weekly meeting. In other words, you don't need to create a new L10 each week.";
 			}
 			if (ModelState.IsValid) {

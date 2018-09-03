@@ -100,7 +100,7 @@
 			]};
 
 
-		var messageHub = $.connection.messageHub;
+		//var messageHub = $.connection.messageHub;
 
 
 		messageHub.client.addQC = function(message,row){
@@ -109,16 +109,13 @@
 			location.reload();
 			//showAlert(message,"success");
 		};
-		messageHub.client.showAlert = function(mObj){
-			showAlert(mObj);
-		};
 
 
-		$.connection.hub.start(Constants.StartHubSettings).done(function(){
+		/*$.connection.hub.start(Constants.StartHubSettings).done(function(){
 			messageHub.server.joinUser($.connection.hub.id).done(function () {
 				console.log("connected to messageHub")
 			});
-		});
+		});*/
 
 	</script>
 

@@ -124,8 +124,8 @@ namespace TractionTools.Tests.Permissions {
 				var myOrgUsers = Org.AllUsers.Where(x => trueFor.Any(y => y.Id == x.Id));
 				var otherOrgUsers = OtherOrg.AllUsers.Where(x => trueFor.Any(y => y.Id == x.Id));
 
-				Org.AssertAllUsers(user => Perms.IsPermitted(user, ensurePermitted), myOrgUsers);
-				OtherOrg.AssertAllUsers(user => Perms.IsPermitted(user, ensurePermitted), otherOrgUsers);
+				Org.AssertAllUsers(user => PermissionsAccessor.IsPermitted(user, ensurePermitted), myOrgUsers);
+				OtherOrg.AssertAllUsers(user => PermissionsAccessor.IsPermitted(user, ensurePermitted), otherOrgUsers);
 
 			}
 

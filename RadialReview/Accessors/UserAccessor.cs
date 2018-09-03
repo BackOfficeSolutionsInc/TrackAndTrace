@@ -1099,11 +1099,11 @@ namespace RadialReview.Accessors {
 			//var caller = GetUser().Hydrate().Organization().Execute();
 			//var positions = _OrganizationAccessor.GetOrganizationPositions(caller, caller.Organization.Id);
 			var e1 = sw.ElapsedMilliseconds;
-			var _PermissionsAccessor = new PermissionsAccessor();
+			//var _PermissionsAccessor = new PermissionsAccessor();
 			var _OrganizationAccessor = new OrganizationAccessor();
 			var _PositionAccessor = new PositionAccessor();
 
-			_PermissionsAccessor.Permitted(caller, x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, caller.Organization.Id));
+			PermissionsAccessor.Permitted(caller, x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, caller.Organization.Id));
 
 #pragma warning disable CS0618 // Type or member is obsolete
 			var orgPos = _OrganizationAccessor
@@ -1112,7 +1112,7 @@ namespace RadialReview.Accessors {
 						.OrderBy(x => x.CustomName)
 						.ToSelectList(x => x.CustomName, x => x.Id).ToList();
 #pragma warning restore CS0618 // Type or member is obsolete
-			if (_PermissionsAccessor.IsPermitted(caller, x => x.EditPositions(caller.Organization.Id))) {
+			if (PermissionsAccessor.IsPermitted(caller, x => x.EditPositions(caller.Organization.Id))) {
 				orgPos.Insert(0, new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
 			}
 			var e2 = sw.ElapsedMilliseconds;

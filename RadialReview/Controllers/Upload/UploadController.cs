@@ -65,7 +65,7 @@ namespace RadialReview.Controllers {
 				return View(recurs);
 			}
 
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Recurrence(recurrence));
+			PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Recurrence(recurrence));
 			ViewBag.RecurrenceId = recurrence;
 			var title = id.ToTitleCase();
 			ViewBag.Title = "Upload " + title.Replace("Todos", "To-dos");
@@ -98,7 +98,7 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 
 		public async Task<JsonResult> UploadRecurrenceFile(long recurrenceId, HttpPostedFileBase file, UploadType type, bool csv = false) {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrenceId));
+			PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrenceId));
 			// _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Recurrence(model.RecurrenceId));
 			try {
 				var upload = await UploadAccessor.UploadAndParse(GetUser(), type, file, ForModel.Create<L10Recurrence>(recurrenceId));
@@ -187,7 +187,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Org(string id = null, long? orgId = null) {
 			orgId = orgId ?? GetUser().Organization.Id;
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewOrganization(orgId.Value));
+			PermissionsAccessor.Permitted(GetUser(), x => x.ViewOrganization(orgId.Value));
 			//ViewBag.Org = recurrence;
 			var title = id.ToTitleCase();
 			ViewBag.Title = "Upload " + title.Replace("Todos", "To-dos");
@@ -207,7 +207,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		public async Task<JsonResult> UploadOrgFile(long orgId, HttpPostedFileBase file, UploadType type, bool csv = false) {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(orgId));
+			PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(orgId));
 			try {
 				var upload = await UploadAccessor.UploadAndParse(GetUser(), type, file, ForModel.Create<OrganizationModel>(orgId));
 
@@ -252,7 +252,7 @@ namespace RadialReview.Controllers {
 			using (var ms = new MemoryStream()) {
 				await file.InputStream.CopyToAsync(ms);
 				file.InputStream.Seek(0, SeekOrigin.Begin);
-				_PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrenceId));
+				PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrenceId));
 				var upload = await UploadAccessor.UploadFile(GetUser(), UploadType.VTO, file, ForModel.Create<L10Recurrence>(recurrenceId));
 				var doc = DocX.Load(ms);
 				var sections = doc.GetSections();

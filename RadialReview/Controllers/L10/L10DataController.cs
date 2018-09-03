@@ -722,7 +722,7 @@ namespace RadialReview.Controllers {
 			try {
 				var note = L10Accessor.GetNote(GetUser(), id);
 				var padId = note.PadId;
-				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditL10Note(id))) {
+				if (!PermissionsAccessor.IsPermitted(GetUser(), x => x.EditL10Note(id))) {
 					padId = await PadAccessor.GetReadonlyPad(note.PadId);
 				}
 				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
@@ -768,7 +768,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult DeleteNote(long id) {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Note(id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Note(id));
 			return PartialView(new DeleteNoteVM() { NoteId = id });
 		}
 

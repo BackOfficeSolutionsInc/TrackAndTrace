@@ -20,7 +20,7 @@ namespace RadialReview.Accessors.TodoIntegrations
 
 		public static String AuthUrl(UserOrganizationModel caller, long recurrence, long userId)
 		{
-			new PermissionsAccessor().Permitted(caller, x => x.EditL10Recurrence(recurrence).ViewUserOrganization(userId, false));
+			PermissionsAccessor.Permitted(caller, x => x.EditL10Recurrence(recurrence).ViewUserOrganization(userId, false));
 			return Config.Basecamp.GetService(caller.Organization).GetRequestAuthorizationURL() + "&state=" + userId + "_" + recurrence;
 		}
 		public class BasecampList

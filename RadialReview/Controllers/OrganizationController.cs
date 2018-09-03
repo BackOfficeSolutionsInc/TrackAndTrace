@@ -358,7 +358,7 @@ namespace RadialReview.Controllers {
 		[HttpGet]
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Products() {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 			return View(GetUser().Organization);
 		}
 
@@ -494,7 +494,7 @@ namespace RadialReview.Controllers {
 				throw new PermissionsException("User is already a part of the organization");
 
 			if (found.IsPlaceholder) {
-				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(found.Organization.Id)))
+				if (!PermissionsAccessor.IsPermitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(found.Organization.Id)))
 					return Content("You're not permitted to upgrade placeholders to paid accounts.");
 			}
 
@@ -509,7 +509,7 @@ namespace RadialReview.Controllers {
 				throw new PermissionsException("User is already a part of the organization");
 
 			if (found.IsPlaceholder) {
-				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(found.Organization.Id)))
+				if (!PermissionsAccessor.IsPermitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(found.Organization.Id)))
 					return Content("You're not permitted to upgrade placeholders to paid accounts.");
 			}
 
@@ -532,7 +532,7 @@ namespace RadialReview.Controllers {
 
 
 			if (found.IsPlaceholder) {
-				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(found.Organization.Id)))
+				if (!PermissionsAccessor.IsPermitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(found.Organization.Id)))
 					return Json(ResultObject.CreateError("You're not permitted to upgrade placeholders to paid accounts."));
 			}
 

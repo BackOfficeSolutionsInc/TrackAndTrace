@@ -31,7 +31,7 @@ namespace RadialReview.Areas.People.Controllers {
 		// GET: People/QuarterlyConversation
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Index() {
-			ViewBag.CanCreate = new PermissionsAccessor().IsPermitted(GetUser(), x => x.CreateQuarterlyConversation(GetUser().Organization.Id));
+			ViewBag.CanCreate = PermissionsAccessor.IsPermitted(GetUser(), x => x.CreateQuarterlyConversation(GetUser().Organization.Id));
 			var containers = SurveyAccessor.GetSurveyContainersBy(GetUser(), GetUser(), SurveyType.QuarterlyConversation).OrderByDescending(x => x.IssueDate);
 			return View(containers);
 		}

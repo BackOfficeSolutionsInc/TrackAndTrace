@@ -168,7 +168,7 @@ namespace RadialReview.Controllers {
 				if (!string.IsNullOrWhiteSpace(model["DateRange"]))
 					dateRect = new Rect(model["DateRange"].ToString().Split(',').Select(x => x.ToInt()).ToList());
 
-				_PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
+				PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
 				var ui = await UploadAccessor.DownloadAndParse(GetUser(), path);
 				var csvData = ui.Csv;
 

@@ -21,7 +21,7 @@ namespace RadialReview.Hubs {
         {
             log.Info("Organization.Join (" + Context.ConnectionId + ")");
 
-			new PermissionsAccessor().Permitted(GetUser(),x=>x.ViewOrganization(orgId));
+			PermissionsAccessor.Permitted(GetUser(),x=>x.ViewOrganization(orgId));
 
 			if (connectionId != Context.ConnectionId)
 				throw new PermissionsException("wrong connection id");

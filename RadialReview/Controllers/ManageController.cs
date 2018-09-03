@@ -57,7 +57,7 @@ namespace RadialReview.Controllers {
 			//DeepSubordianteAccessor.ManagesUser(GetUser(), GetUser().Id, id);
 			//details.User.PopulatePersonallyManaging(GetUser(), caller.AllSubordinates);
 
-			details.ForceEditable = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditQuestionForUser(id));
+			details.ForceEditable = PermissionsAccessor.IsPermitted(GetUser(), x => x.EditQuestionForUser(id));
 
 			var model = new ManageUserModel() {
 				Details = details
@@ -126,8 +126,8 @@ namespace RadialReview.Controllers {
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
 			var hasAdminDelete = _PermissionsAccessor.AnyTrue(GetUser(), PermissionType.DeleteEmployees, x => x.ManagingOrganization);
 			var messages = MessageAccessor.GetManageMembers_Messages(GetUser(), GetUser().Organization.Id);
-			var canUpgrade = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
-			var canEditUserDetails = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.EditDeleteUserDataForOrganization, GetUser().Organization.Id));
+			var canUpgrade = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
+			var canEditUserDetails = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.EditDeleteUserDataForOrganization, GetUser().Organization.Id));
 
 			for (int i = 0; i < members.Count(); i++) {
 				var u = members[i];
@@ -175,7 +175,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Organization() {
 			UpdateViewbag();
 			var user = GetUser().Hydrate().Organization().Execute();
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 
 			var companyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
 				//.Select(x => x.CompanyValue)
@@ -216,9 +216,9 @@ namespace RadialReview.Controllers {
 				throw new PermissionsException();
 
 			if (testManageOrg)
-				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
+				PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 			if (testManageFinance)
-				_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
+				PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
 
 			var model = new OrganizationViewModel() {
 				Id = user.Organization.Id,

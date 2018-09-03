@@ -105,7 +105,7 @@ namespace RadialReview.Controllers {
 				//var useAws = model["UseAWS"].ToBoolean();
 				var recurrence = model["recurrenceId"].ToLong();
 
-				_PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
+				PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
 
 				var now = DateTime.UtcNow;
 				var keys = model.Keys.OfType<string>();

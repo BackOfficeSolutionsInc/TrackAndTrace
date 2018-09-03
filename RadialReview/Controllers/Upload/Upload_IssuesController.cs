@@ -90,7 +90,7 @@ namespace RadialReview.Controllers {
                 //var useAws = model["UseAWS"].ToBoolean();
                 var recurrence = model["recurrenceId"].ToLong();
 
-                _PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
+                PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
 
                 var keys = model.Keys.OfType<string>();
                 var issues = keys.Where(x => x.StartsWith("m_issue_"))
