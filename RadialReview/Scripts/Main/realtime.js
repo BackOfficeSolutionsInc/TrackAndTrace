@@ -1,4 +1,4 @@
-﻿var statusTimeout;
+﻿
 
 var messageHub;
 $(function () {
@@ -21,12 +21,13 @@ $(function () {
 				showAlert("Attendees are waiting. <u><a href='/L10/Meeting/" + recurrenceId + "'>Join " + recurrenceName + "</a></u>", 60000);
 				Cookies.set(key, 'true', { expires: (1.0 / 96.0) });
 			} else {
-				console.log("Skipping meeting notification, already fired.")
+				console.log("Skipping meeting start notification, already fired.")
 			}
 		}
 	};
 });
 
+//var statusTimeout;
 //$(function () {
 //	//try {
 //	//	var messageHub = $.connection.messageHub;
@@ -46,7 +47,6 @@ messageHub.client.unhide = function (selector) {
     $(selector).show();
 };
 alertHub.client.status = function (text) {
-
     $(".statusContainer").css("bottom", "0px");
     $(".statusContainer").css("display", "block");
     $(".statusContainer").css("opacity", "1");

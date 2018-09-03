@@ -102,13 +102,14 @@
 
 		//var messageHub = $.connection.messageHub;
 
-
-		messageHub.client.addQC = function(message,row){
-			//table.addRow(row);
-			StoreJsonAlert({Message:message});
-			location.reload();
-			//showAlert(message,"success");
-		};
+		$(function(){
+			messageHub.client.addQC = function(message,row){
+				//table.addRow(row);
+				StoreJsonAlert({Message:message});
+				location.reload();
+				//showAlert(message,"success");
+			};
+		});
 
 
 		/*$.connection.hub.start(Constants.StartHubSettings).done(function(){

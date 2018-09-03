@@ -31,7 +31,7 @@
 		}
 		<div class="panel panel-primary" id="l10-meeting-list">
 			@if (Model.Recurrences.Any()) {
-				<table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter" >
+				<table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter">
 					<thead>
 						<tr style="height: 21px;">
 							@*<th></th>*@
@@ -94,22 +94,24 @@
 
 	</div>
 </div>
+@using (Html.BeginStyles()) {
+	@Styles.Render("~/styles/snackbar")
 
-<style>
-	.table .btn-default {
-		color: #5e5e5e !important;
-	}
+	<style>
+		.table .btn-default {
+			color: #5e5e5e !important;
+		}
 
-	.body-full-width #alerts:not(:empty) {
-		margin-top: 20px;
+		.body-full-width #alerts:not(:empty) {
+			margin-top: 20px;
 		margin-bottom: -15px;
 	}
 
 	html, body {
 		background-color: #eee;
-	}
+		}
 
-	.panel {
+		.panel {
 		border: none;
 	}
 
@@ -122,44 +124,44 @@
 		padding-top: 10px;
 	}
 
-	.star-icon {
+		.star-icon {
 		opacity: .25;
 		padding-top: 3px;
 	}
 
-	.l10-row:hover .star-icon {
+		.l10-row:hover .star-icon {
 		opacity: 1;
 		color: gray;
 	}
 
-	.star-cell {
+		.star-cell {
 		padding-right: 0px !important;
 		transition: opacity .1s ease-in-out;
 	}
 
-		.star-cell:hover .star-icon:before {
-			content: "\e006";
-		}
+			.star-cell:hover .star-icon:before {
+		content: "\e006";
+	}
 
-	.star-icon.glyphicon-star {
+		.star-icon.glyphicon-star {
 		color: goldenrod !important;
 		opacity: .7;
 	}
 
-	.tablesorter-header-inner {
+		.tablesorter-header-inner {
 		opacity: .4;
 	}
 
-	
-	.l10-row .go-indicator {
+
+		.l10-row .go-indicator {
 		transition: background .2s ease-in-out;
 	}
 
-	.l10-row:hover .go-indicator {
+		.l10-row:hover .go-indicator {
 		background-color: #ef7622;
-	}
-</style>
-
+		}
+	</style>
+}
 @using (Html.BeginScripts()) {
 	<script src="/Scripts/jquery/jquery.ui.sortable.js"></script>
 	<script>
