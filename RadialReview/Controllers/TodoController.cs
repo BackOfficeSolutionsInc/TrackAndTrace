@@ -69,7 +69,7 @@ namespace RadialReview.Controllers {
 					padId = await PadAccessor.GetReadonlyPad(todo.PadId);
 				}
                 //this is to choose what to use between Noteserves or firepad
-                return Redirect(PadAccessor.GetNotesURL(padId, showControls,GetUser().GetName()));
+                return Redirect(PadAccessor.GetNotesURL(padId, showControls,GetUser().GetName(),todo.Details));
             } catch (Exception e) {
 				return RedirectToAction("Index", "Error");
 			}
@@ -109,8 +109,8 @@ namespace RadialReview.Controllers {
 				ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
 
                 //start Creating firepad
-                var padId = todo.PadId;
-                ViewBag.firePadRef = PadAccessor.GetFirePadRef(padId);
+                //var padId = todo.PadId;
+                //ViewBag.firePadRef = PadAccessor.GetFirePadRef(padId);
                 //end creating firepad
                 return PartialView(todo);
 			} else {

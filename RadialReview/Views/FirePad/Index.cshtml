@@ -49,7 +49,7 @@
     </style>
 </head>
 <body onload="init()">
-    @Html.HiddenFor(x => x.firepadRef)
+    
     @Html.HiddenFor(x => x.text)
     @Html.HiddenFor(x => x.padID)
     
@@ -57,11 +57,10 @@
         <div id="firepad-container"></div>       
     </div>
     <script>
-        //let FireClass
+        
         function init() {
             
-            FireClass = new FireClass(document.getElementById("firepadRef"),
-                                            document.getElementById("text"),
+            FireClass = new FireClass(document.getElementById("text"),
                                             document.getElementById("padID"),
                                             document.getElementById('firepad-container'));
             FireClass.init();

@@ -17,9 +17,9 @@ namespace RadialReview.Controllers
     {
         // GET: FirePad
         [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> Index(string id)
+        public async Task<ActionResult> Index(string id,string text)
         {           
-            FirePadData firePadData = PadAccessor.GetFirePadData(id); 
+            FirePadData firePadData = PadAccessor.GetFirePadData(id,text); 
             return View(firePadData);
         }
 
