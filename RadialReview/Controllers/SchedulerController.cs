@@ -102,7 +102,7 @@ namespace RadialReview.Controllers {
 				Response.StatusCode = 500;
 				await PaymentAccessor.Unsafe.RecordUnknownPaymentException(unknownException, organizationId, taskId);
 				return Json(new ChargeAccountResult(false, false, unknownException.NotNull(x => x.Message) ?? "no-details", null), JsonRequestBehavior.AllowGet);
-			}		
+			}
 		}
 
 
@@ -180,7 +180,13 @@ namespace RadialReview.Controllers {
 		//DO NOT RENAME
 		[AsyncTimeout(60 * 60 * 1000)]
 		public async Task<bool> ExecuteEvents(EventFrequency frequency, long taskId) {
-			await EventAccessor.ExecuteAll(frequency, taskId, DateTime.UtcNow);
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					TaskAccessor.EnsureTaskIsExecuting(s, taskId);
+				}
+			}
+			Scheduler.Enqueue(()=>EventAccessor.ExecuteAll_Hangfire(frequency, DateTime.UtcNow));
 			return true;
 		}
 
@@ -188,9 +194,9 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Any)]
 		public async Task<JsonResult> Daily() {
-            Scheduler.Enqueue(() => TaskAccessor.DailyTask(DateTime.UtcNow));
-            return Json(true, JsonRequestBehavior.AllowGet);
-        }
+			Scheduler.Enqueue(() => TaskAccessor.DailyTask(DateTime.UtcNow));
+			return Json(true, JsonRequestBehavior.AllowGet);
+		}
 
 		[Access(AccessLevel.Any)]
 		[AsyncTimeout(60000 * 30)]//30 minutes..

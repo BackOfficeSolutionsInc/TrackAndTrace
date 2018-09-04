@@ -1,5 +1,7 @@
-﻿using NHibernate;
+﻿using Hangfire;
+using NHibernate;
 using RadialReview.Crosscutting.Schedulers;
+using RadialReview.Hangfire;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Quarterly;
@@ -54,6 +56,8 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		[Queue(HangfireQueues.Immediate.SCHEDULED_QUARTERLY_EMAIL)]
+		[AutomaticRetry(Attempts = 0)]
 		public static async Task<string> ScheduledEmail_HangFire(long quarterlyEmailId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {

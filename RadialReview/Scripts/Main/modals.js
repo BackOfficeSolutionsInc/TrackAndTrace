@@ -420,7 +420,7 @@ function FormFields(fields, options) {
                     input = ii.wrapAll('<div>').parent().html();
 
                     var after = function () {
-                        var onchange = function () {
+                    	onchange = function () {
                             var val = $(this).val();
                             var subfields = subforms[val];
 
@@ -459,7 +459,6 @@ function FormFields(fields, options) {
                 if (onchange) {
                     if (typeof (onchange) === "function") {
                         var after = function () {
-                            debugger;
                             var ocf = onchange;
                             var mname = name;
                             return function () {

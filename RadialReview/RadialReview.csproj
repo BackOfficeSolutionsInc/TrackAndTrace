@@ -2623,6 +2623,7 @@
     <Content Include="Views\TileData\L10Issues.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Accessors\Powerpoint\" />
     <Folder Include="App_Data\" />
     <Folder Include="Areas\CoreProcess\CamundaFiles\" />
     <Folder Include="Areas\People\Engines\Surveys\Abstract\" />

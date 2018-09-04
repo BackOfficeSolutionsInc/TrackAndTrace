@@ -19,6 +19,8 @@ using RadialReview.Utilities.Hooks;
 using RadialReview.Hubs;
 using Microsoft.AspNet.SignalR;
 using RadialReview.Crosscutting.Schedulers;
+using RadialReview.Hangfire;
+using Hangfire;
 
 namespace RadialReview.Accessors {
 	public partial class L10Accessor : BaseAccessor {
@@ -300,6 +302,9 @@ namespace RadialReview.Accessors {
 			Scheduler.Enqueue(() => NotifyOthersOfMeeting_Hangfire(caller.Id, recurrenceId));			
 		}
 
+
+		[Queue(HangfireQueues.Immediate.NOTIFY_MEETING_START)]
+		[AutomaticRetry(Attempts = 0)]
 		public static async Task NotifyOthersOfMeeting_Hangfire(long callerId,long recurrenceId) {
 			try {
 				using (var s = HibernateSession.GetCurrentSession()) {

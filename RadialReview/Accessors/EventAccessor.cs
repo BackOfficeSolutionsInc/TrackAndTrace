@@ -1,24 +1,28 @@
-﻿using Newtonsoft.Json;
+﻿using Hangfire;
+using Newtonsoft.Json;
 using NHibernate;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Crosscutting.EventAnalyzers.Models;
 using RadialReview.Crosscutting.Hooks.Interfaces;
 using RadialReview.Exceptions;
+using RadialReview.Hangfire;
 using RadialReview.Hooks;
 using RadialReview.Models;
+using RadialReview.Models.Charts;
 using RadialReview.Models.Frontend;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Accessors {
-	public class EventAccessor : BaseAccessor{
+	public class EventAccessor : BaseAccessor {
 
 		public static Type GetGeneratorTypeFromType(string eventType) {
-			foreach (var g in GetDefaultAvailableAnalyzers()){
+			foreach (var g in GetDefaultAvailableAnalyzers()) {
 				if (g.EventType == eventType)
 					return g.GetType();
 			}
@@ -61,7 +65,7 @@ namespace RadialReview.Accessors {
 
 					var settings = new BaseEventGeneratorSettings(caller, s, perms, caller.Organization.Id, visibleRecur);
 
-					var subform = new EditorSubForm("eventType","Event Type");
+					var subform = new EditorSubForm("eventType", "Event Type");
 
 					foreach (var generator in generators) {
 						var fields = (await generator.GetSettingsFields(settings)).ToList();
@@ -78,7 +82,7 @@ namespace RadialReview.Accessors {
 		}
 
 		public static IEnumerable<IEventAnalyzerGenerator> GetDefaultAvailableAnalyzers() {
-			var generators =  new IEventAnalyzerGenerator[] {
+			var generators = new IEventAnalyzerGenerator[] {
 				new Crosscutting.EventAnalyzers.Events.AverageMeetingRatingBelowForWeeksInARow(0),
 				new Crosscutting.EventAnalyzers.Events.ConsecutiveLateEnds(0),
 				new Crosscutting.EventAnalyzers.Events.ConsecutiveLateStarts(0),
@@ -91,11 +95,11 @@ namespace RadialReview.Accessors {
 			return generators;
 		}
 
-		public static async Task<EventSubscription> SubscribeToEvent(UserOrganizationModel caller,long subscriberUserId, IEventAnalyzerGenerator analyzer) {
+		public static async Task<EventSubscription> SubscribeToEvent(UserOrganizationModel caller, long subscriberUserId, IEventAnalyzerGenerator analyzer) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					perms.SubscribeToEvent(subscriberUserId,analyzer);
+					perms.SubscribeToEvent(subscriberUserId, analyzer);
 
 					var subscriber = s.Get<UserOrganizationModel>(subscriberUserId);
 					await analyzer.PreSaveOrUpdate(s);
@@ -122,7 +126,7 @@ namespace RadialReview.Accessors {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.ViewEvent(id, analyzer);
 
-					var evt  = s.Get<EventSubscription>(id);
+					var evt = s.Get<EventSubscription>(id);
 					await analyzer.PreSaveOrUpdate(s);
 					var settings = JsonConvert.SerializeObject(analyzer);
 
@@ -168,13 +172,66 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task ExecuteAll(EventFrequency frequency,long taskId, DateTime? now = null) {
+		public static async Task<MetricGraphic> GetEventChart(UserOrganizationModel caller, long eventId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var evtSub = s.Get<EventSubscription>(eventId);
+					perms.Self(evtSub.SubscriberId);
+
+					var orgSettings = new BaseEventSettings(s, evtSub.OrgId, DateTime.UtcNow);
+					var analyzers = await EventAccessor.BuildFromSubscription(evtSub).GenerateAnalyzers(orgSettings);
+
+					dynamic settings = JsonConvert.DeserializeObject<ExpandoObject>(evtSub.EventSettings);
+
+					var name = "chart";
+					try {
+						name = settings.Name;
+					} catch (Exception) {
+
+					}
+
+					var triggered = false;
+					var mg = new MetricGraphic(name);
+
+					foreach (var analyzer in analyzers) {
+						var events = await analyzer.GenerateEvents(orgSettings);
+						var dd = new List<MetricGraphic.DateData>();
+						dd.AddRange(events.Select(x => new MetricGraphic.DateData() {
+							date = x.Time,
+							value = x.Metric
+						}));
+						var ts = new MetricGraphicTimeseries(dd);
+						mg.AddTimeseries(ts);
+						var thresh = analyzer.GetFireThreshold(orgSettings);
+						mg.AddHorizontal(thresh.Threshold, thresh.Direction.ToSymbol() + " " + thresh.Threshold);
+						var shouldTrigger = await EventProcessor.ShouldTrigger(orgSettings, analyzer);
+						if (shouldTrigger)
+							triggered = true;
+					}
+
+					if (triggered) {
+						mg.description = "Would trigger";
+					}
+
+					return mg;
+				}
+			}
+		}
+
+
+
+		[Queue(HangfireQueues.Immediate.EXECUTE_EVENT_ANALYZERS)]
+		[AutomaticRetry(Attempts = 0)]
+		public static async Task ExecuteAll_Hangfire(EventFrequency frequency, DateTime? now = null) {
+			var action = new Func<IEventAnalyzer, IEventSettings, Task>((a, orgSettings) => HooksRegistry.Each<IEventHook>((ses, x) => x.HandleEventTriggered(ses, a, orgSettings)));
+			await ExecuteAll_Unsafe(frequency, now, action);
+		}
+
+		private static async Task ExecuteAll_Unsafe(EventFrequency frequency, DateTime? now, Func<IEventAnalyzer, IEventSettings, Task> executionAction) {
 			var start = DateTime.UtcNow;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-
-					TaskAccessor.EnsureTaskIsExecuting(s, taskId);
-
 					UserOrganizationModel subA = null;
 					OrganizationModel orgA = null;
 					var subs = s.QueryOver<EventSubscription>()
@@ -184,9 +241,7 @@ namespace RadialReview.Accessors {
 						.List().ToList();
 
 					var currentTime = now ?? DateTime.UtcNow;
-
 					var i = 0;
-
 					foreach (var orgSubs in subs.GroupBy(x => x.OrgId)) {
 						var orgSettings = new BaseEventSettings(s, orgSubs.Key, currentTime);
 						foreach (var o in orgSubs.ToList()) {
@@ -194,12 +249,11 @@ namespace RadialReview.Accessors {
 
 							foreach (var a in analyzers) {
 								var anyExecuted = false;
-
 								if (a.IsEnabled(orgSettings)) {
 									var shouldTrigger = await EventProcessor.ShouldTrigger(orgSettings, a);
 									if (shouldTrigger) {
 										anyExecuted = true;
-										await HooksRegistry.Each<IEventHook>((ses, x) => x.HandleEventTriggered(ses, a, orgSettings));
+										await executionAction(a, orgSettings);
 									}
 									o.LastExecution = currentTime;
 									s.Update(o);
@@ -207,6 +261,7 @@ namespace RadialReview.Accessors {
 								}
 							}
 						}
+
 						if (i % 150 == 0) {
 							s.Flush();
 						}
@@ -217,8 +272,6 @@ namespace RadialReview.Accessors {
 			}
 			var duration = DateTime.UtcNow - start;
 			log.Info("Executed " + frequency + " events. Duration:" + duration.TotalMilliseconds + "ms");
-
 		}
-
 	}
 }

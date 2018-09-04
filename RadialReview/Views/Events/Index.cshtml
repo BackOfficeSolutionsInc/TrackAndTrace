@@ -1,6 +1,6 @@
 ﻿@model List<RadialReview.Crosscutting.EventAnalyzers.Models.EventSubscription>
 @{
-    ViewBag.Title = "Index";
+	ViewBag.Title = "Index";
 }
 
 @section top{
@@ -13,49 +13,75 @@
 
 
 <div id="table"></div>
+<br /><br />
 
-<style>
-	.event-name {
-		font-weight:bold;
-		/*min-width:280px;
-		display: inline-block;
-		/*text-align:right;*
-		padding-right:5px;
-		word-break:keep-all ;*/
-	}
-	.event-description{
-		/*word-break:keep-all ;
-		display: inline-block;*/
-	}
-</style>
+<div id="chart"></div>
+
+@using (Html.BeginStyles()) {
+	<link href="~/Content/Chart/metric-graphics.css" rel="stylesheet" />
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,700" rel="stylesheet" type="text/css">
+
+	<style>
+		.event-name {
+			font-weight: bold;
+		}
+
+		.event-description {
+		}
+	</style>
+}
 
 @using (Html.BeginScripts()) {
-<script>
-	var data = @Html.ArrayToString(Model);
-	DataTable({
-		container: "#table",
-		data: data,
-		nodataText:"No subscriptions",
-		addButton:{text : "New Subscription"},
-		clickAdd:"/Events/Create",
-		clickEdit:"/Events/Edit/{0}",
-		postEdit:"/Events/Edit/{0}",
-		clickRemove: "/Events/Delete/{0}",
-		//cellId:function(d){ return JSON.parse(d.EventSettings).RecurrenceId;},
-		cells:[
-			//{contents:function(d){return JSON.parse(d.EventSettings).RecurrenceId; }},	
-			{contents:function(d){
-				var s =JSON.parse(d.EventSettings); 
-				return "<div class='row'><div class='col-md-4 event-name'>"+s.Name+"</div> <div class='col-md-8 event-description'>"+s.Description+"</div></div>"; 
-			},classes:"fullWidth"},	
-			//{contents:function(d){return JSON.parse(d.EventSettings).Description; },classes:"fullWidth"},	
-			//{contents:function(d){return d.EventType;}},			
-			{edit:true},
-			{remove:true},
-		],
-		nodata:"No subscriptions"
-	});
+	<script src="~/Scripts/d3/d3.v4.12.2.js"></script>
+	<script src="~/Scripts/Charts/metrics-graphics.js"></script>
+	<script>
+		var data = @Html.ArrayToString(Model);
+		DataTable({
+			container: "#table",
+			data: data,
+			nodataText:"No subscriptions",
+			addButton:{text : "New Subscription"},
+			clickAdd:"/Events/Create",
+			clickEdit:"/Events/Edit/{0}",
+			postEdit:"/Events/Edit/{0}",
+			clickRemove: "/Events/Delete/{0}",
+			//cellId:function(d){ return JSON.parse(d.EventSettings).RecurrenceId;},
+			cells:[
+				//{contents:function(d){return JSON.parse(d.EventSettings).RecurrenceId; }},
+				{contents:function(d){
+					var s =JSON.parse(d.EventSettings);
+					$("#chart").html("");
+					return "<div class='row'><div class='col-md-4 event-name'>"+s.Name+"</div> <div class='col-md-8 event-description'>"+s.Description+"</div></div>";
+				},classes:"fullWidth"},
+				//{contents:function(d){return JSON.parse(d.EventSettings).Description; },classes:"fullWidth"},
+				//{contents:function(d){return d.EventType;}},
+				{contents:function(d){
+					return "<span class='clickable' onclick='showChart("+d.Id+")'>chart</span>";}
+				},
+				{edit:true},
+				{remove:true},
+			],
+			nodata:"No subscriptions"
+		});
 
-</script>
+		function showChart(id){
+			$.ajax({
+				url: "/events/chart/"+id,
+				success: function (obj) {
+					try{
+						$("#chart").html("");
+						obj.brush='xy';
+						//obj.x_rug=true;
+						obj.chart_type='point';
+						$("#chart").appendGraph(obj);
+					}catch(e){
+						$("#chart").html("<div class='alignCenter'>--no chart--</div>");
+					}
+				}
+			});
+		}
+
+	</script>
 }
 

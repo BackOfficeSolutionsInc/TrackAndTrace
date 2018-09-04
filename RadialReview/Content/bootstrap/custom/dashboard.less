@@ -1324,7 +1324,7 @@ body.resizing .notes-tile,
 			white-space: nowrap;
 			font-family: 'Lato', sans-serif;
 			letter-spacing: 0.6px;
-			margin-bottom: 10px;
+			margin-bottom: 0px;
 		}
 
 		h2 {
@@ -1343,16 +1343,19 @@ body.resizing .notes-tile,
 		}
 
 		.update {
-			background-color: #f1f1f1;
-			margin: 5px;
-			padding: 15px 15px 10px 23px;
-			border: 1px solid #e8e8e8;
-			border-radius: 6px;
-			margin-bottom: 35px;
-			box-shadow: 0px 4px 4px -2px inset rgba(0, 0, 0, 0.1);
-			opacity: 0.8;
 
-			&.update-current {
+			.su-details{
+				background-color: #f1f1f1;
+				margin: 5px;
+				padding: 15px 15px 10px 23px;
+				border: 1px solid #e8e8e8;
+				border-radius: 6px;
+				margin-bottom: 35px;
+				box-shadow: 0px 4px 4px -2px inset rgba(0, 0, 0, 0.1);
+				opacity: 0.8;
+			}
+
+			&.update-current .su-details{
 				border: 1px solid #d9d9d9;
 				box-shadow: 0px 8px 18px -5px rgba(0,0,0,.5);
 				background-color: white;
@@ -1364,7 +1367,7 @@ body.resizing .notes-tile,
 		.su-details {
 			padding-left: 14px;
 			/*border-bottom: 2px dashed #c7c7c7;*/
-			margin-bottom: 14px;
+			//margin-bottom: 14px;
 		}
 
 		.su-row {

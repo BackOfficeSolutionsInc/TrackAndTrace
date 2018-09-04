@@ -2506,7 +2506,7 @@ body.resizing .notes-tile:after,
   white-space: nowrap;
   font-family: 'Lato', sans-serif;
   letter-spacing: 0.6px;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 .dashboard .software-updates h2 {
   margin: 0;
@@ -2521,7 +2521,7 @@ body.resizing .notes-tile:after,
   color: darkgray;
   margin-left: 6px;
 }
-.dashboard .software-updates .update {
+.dashboard .software-updates .update .su-details {
   background-color: #f1f1f1;
   margin: 5px;
   padding: 15px 15px 10px 23px;
@@ -2531,7 +2531,7 @@ body.resizing .notes-tile:after,
   box-shadow: 0px 4px 4px -2px inset rgba(0, 0, 0, 0.1);
   opacity: 0.8;
 }
-.dashboard .software-updates .update.update-current {
+.dashboard .software-updates .update.update-current .su-details {
   border: 1px solid #d9d9d9;
   box-shadow: 0px 8px 18px -5px rgba(0, 0, 0, 0.5);
   background-color: white;
@@ -2540,7 +2540,6 @@ body.resizing .notes-tile:after,
 .dashboard .software-updates .su-details {
   padding-left: 14px;
   /*border-bottom: 2px dashed #c7c7c7;*/
-  margin-bottom: 14px;
 }
 .dashboard .software-updates .su-row {
   display: block;
