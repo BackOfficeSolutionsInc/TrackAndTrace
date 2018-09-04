@@ -176,7 +176,9 @@
 							</div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label">Rocks Printout Format:</label>
-                                <div class="col-sm-5">@Html.DropDownList(Html.NameFor(x => x.Recurrence.PrintOutRockStatus).ToHtmlString(), new SelectList(new[] { new { Value = "false", Text = "Done/Not Done" }, new { Value = "true", Text = "Track On/Track Off/Done" } }, "Value", "Text", Model.Recurrence.PrintOutRockStatus), new { @class = "form-control" })</div>
+                                <div class="col-sm-5">@Html.DropDownListFor(x => x.Recurrence.PrintOutRockStatus,
+                                                     new[] { new SelectListItem(){ Value = "false", Text = "Done/Not Done" },
+                                                         new SelectListItem() { Value = "true", Text = "Track On/Track Off/Done" } }, new { @class = "form-control" })</div>
                             </div>
 						</div>
 					</div>
