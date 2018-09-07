@@ -65,7 +65,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 								var foundKey = $scope.ScoreLookup[value.ForWeek][value.Measurable.Id];
 								var newKey = value.Key;
 								if (typeof (foundKey) !== "undefined" && foundKey.localeCompare(value.Key) > 0) {
-									debugger;
+									//debugger;
 									newKey = foundKey;
 								}
 								$scope.ScoreLookup[value.ForWeek][value.Measurable.Id] = newKey;
@@ -339,7 +339,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 				}
 			}
 			return function (a) {
-				debugger;
+				//debugger;
 				if (a.Id in dict)
 					return dict[a.Id];
 				if (a.Ordering)
@@ -836,6 +836,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			var origArchive = self.Archived;
 			self.Archived = true;
 
+
 			$(".editable-wrap").remove();
 
 			var url = Time.addTimestamp("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
@@ -846,7 +847,8 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 				//self.Hide = false;
 			}).finally(function () {
 				// reload
-				$scope.functions.reload(true, $scope.model.dataDateRange, false);
+                if (self.Type != "AngularRock") 
+                $scope.functions.reload(true, $scope.model.dataDateRange, false);
 			});
 		};
 
@@ -857,7 +859,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			self.Archived = false;
 			//self.Hide = true;
 
-			$(".editable-wrap").remove();
+            $(".editable-wrap").remove();
 
 			var url = Time.addTimestamp("/L10/Unarchive" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
 
@@ -867,7 +869,8 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 				self.Archived = origArchive;
 			}).finally(function () {
 				// reload
-				$scope.functions.reload(true, $scope.model.dataDateRange, false);
+                if (self.Type != "AngularRock") 
+                $scope.functions.reload(true, $scope.model.dataDateRange, false);
 			});
 		};
 
