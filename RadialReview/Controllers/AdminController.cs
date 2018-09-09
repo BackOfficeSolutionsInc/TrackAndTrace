@@ -47,6 +47,7 @@ using RadialReview.Crosscutting.Schedulers;
 using RadialReview.Variables;
 using RadialReview.Utilities.Encrypt;
 using RadialReview.Utilities.Pdf;
+using RadialReview.Utilities.Constants;
 
 namespace RadialReview.Controllers {
 
@@ -1075,6 +1076,10 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+		[Access(AccessLevel.Radial)]
+		public ActionResult DbIdentifier() {
+			return Content(KeyManager.ProductionDatabaseCredentials.DatabaseIdentifier);
+		}
 
 	}
 	public partial class AccountController : UserManagementController {
@@ -1706,7 +1711,6 @@ namespace RadialReview.Controllers {
 				}
 			}
 		}
-
 		[Access(AccessLevel.Radial)]
 		public ActionResult XLS() {
 			return Xls(CsvUtility.ToXls((List<Csv>)null), "myxml");
