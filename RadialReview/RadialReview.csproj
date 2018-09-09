@@ -185,9 +185,11 @@
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
+    <Compile Include="Controllers\Integrations\AsanaIntegrationsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\Upload\Upload_OrgUsersController.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\SetPeopleToolsTrial.cs" />
+    <Compile Include="Crosscutting\Hooks\Integrations\AsanaTodoHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IMilestoneHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IPositionHooks.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IQuarterlyConversationHook.cs" />
@@ -195,6 +197,7 @@
     <Compile Include="Crosscutting\Hooks\Payment\UnlockOnCard.cs" />
     <Compile Include="Crosscutting\Hooks\QuarterlyConversation\QuarterlyConversationCreationNotifications.cs" />
     <Compile Include="Crosscutting\Hooks\Realtime\Position\RealTime_Positions.cs" />
+    <Compile Include="Crosscutting\Integrations\Asana\AsanaAccessor.cs" />
     <Compile Include="Crosscutting\Schedulers\HangfireConstants.cs" />
     <Compile Include="Crosscutting\Schedulers\Scheduler.cs" />
     <Compile Include="Crosscutting\Schedulers\TodoEmailsScheduler.cs" />
@@ -270,6 +273,9 @@
     <Compile Include="Models\Components\ColorComponent.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
     <Compile Include="Models\Frontend\EditorModels.cs" />
+    <Compile Include="Models\Integrations\Asana\AsanaDTOs.cs" />
+    <Compile Include="Models\Integrations\Asana\AsanaModels.cs" />
+    <Compile Include="Models\Integrations\TodoLink.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
     <Compile Include="Models\Notifications\NotificationModel.cs" />
     <Compile Include="Models\Quarterly\QuarterlyEmail.cs" />
@@ -421,7 +427,7 @@
     <Compile Include="Utilities\Pdf\BreakoutDuration.cs" />
     <Compile Include="Utilities\Pdf\DocumentMerger.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
-    <Compile Include="Controllers\IntegrationsController.cs" />
+    <Compile Include="Controllers\Integrations\ZoomIntegrationsController.cs" />
     <Compile Include="Crosscutting\Hooks\Integrations\BasecampTodoHook.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\CreateUserOrganization_UpdateHierarchy.cs" />
     <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
@@ -1916,6 +1922,9 @@
     <Content Include="Views\Payment\Lockout.cshtml" />
     <Content Include="Views\Payment\LockoutNonadmin.cshtml" />
     <Content Include="Views\Quarterly\Send.cshtml" />
+    <Content Include="Views\Integrations\Asana.cshtml" />
+    <Content Include="Views\Integrations\AsanaActionModal.cshtml" />
+    <Content Include="Views\Integrations\AsanaNoConnection.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

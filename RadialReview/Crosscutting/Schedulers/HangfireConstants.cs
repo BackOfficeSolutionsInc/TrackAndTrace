@@ -42,7 +42,9 @@ namespace RadialReview.Hangfire {
 			public const string NOTIFY_MEETING_START = "notifymeetingstart_w_v1";
 			public const string EXECUTE_EVENT_ANALYZERS = "executeeventanalyzers_w_v1";
 
-            public const string ALPHA = "alpha_w_v1";
+			public const string ASANA_EVENTS = "asana_w_v1";
+
+			public const string ALPHA = "alpha_w_v1";
 
 
 		}
@@ -59,6 +61,7 @@ namespace RadialReview.Hangfire {
 					HangfireQueues.Immediate.NOTIFY_MEETING_START,
 					HangfireQueues.Immediate.SCHEDULED_QUARTERLY_EMAIL,
 					HangfireQueues.Immediate.EXECUTE_EVENT_ANALYZERS,
+					HangfireQueues.Immediate.ASANA_EVENTS,
 					HangfireQueues.DEFAULT,
                     HangfireQueues.Immediate.ALPHA
         };

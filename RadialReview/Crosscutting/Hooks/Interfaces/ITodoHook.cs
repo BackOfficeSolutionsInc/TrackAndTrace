@@ -14,6 +14,7 @@ namespace RadialReview.Utilities.Hooks {
 		public bool DueDateChanged { get; set; }
 		public bool CompletionChanged { get; set; }
 		public bool AccountableUserChanged { get; set; }
+		public long PreviousAccountableUser { get; set; }
 	}
 
 	public interface ITodoHook : IHook {

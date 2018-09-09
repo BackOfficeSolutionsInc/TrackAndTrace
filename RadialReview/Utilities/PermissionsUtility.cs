@@ -43,6 +43,7 @@ using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Crosscutting.EventAnalyzers.Models;
 using RadialReview.Areas.People.Accessors;
 using RadialReview.Models.Admin;
+using RadialReview.Models.Integrations;
 
 namespace RadialReview.Utilities {
 	//[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -98,7 +99,7 @@ namespace RadialReview.Utilities {
 		}
 
 
-		protected static Boolean IsRadialAdmin(ISession session, UserOrganizationModel caller, bool allowSpecialOrgs = false,bool allowAdminsWithoutAudit = false) {
+		protected static Boolean IsRadialAdmin(ISession session, UserOrganizationModel caller, bool allowSpecialOrgs = false, bool allowAdminsWithoutAudit = false) {
 
 			if (caller.Id == UserOrganizationModel.ADMIN_ID)
 				return true;
@@ -141,7 +142,7 @@ namespace RadialReview.Utilities {
 			return caller != null && (
 						(caller.IsRadialAdmin) ||
 						(caller.User != null && caller.User.IsRadialAdmin) ||
-						(caller._PermissionsOverrides!=null && caller._PermissionsOverrides.Admin.IsRadialAdmin)
+						(caller._PermissionsOverrides != null && caller._PermissionsOverrides.Admin.IsRadialAdmin)
 					);
 		}
 
@@ -150,13 +151,13 @@ namespace RadialReview.Utilities {
 			if (TestIsAdmin(caller)) {
 				var any = s.QueryOver<AdminAccessModel>()
 					.Where(x => x.AccessId == callerId && x.AdminUserId == adminId)
-					.Where(x=> x.CreateTime <= DateTime.UtcNow && DateTime.UtcNow <= x.DeleteTime)
+					.Where(x => x.CreateTime <= DateTime.UtcNow && DateTime.UtcNow <= x.DeleteTime)
 					.RowCount();
 				return (any > 0);
 			}
 			return false;
 		}
-		
+
 
 
 		#region Construction
@@ -177,17 +178,17 @@ namespace RadialReview.Utilities {
 				attached._ClientTimestamp = caller._ClientTimestamp;
 				attached._PermissionsOverrides = caller._PermissionsOverrides;
 				attached._IsTestAdmin = caller._IsTestAdmin;
-            }
-            if (caller.DeleteTime != null && caller.DeleteTime < DateTime.UtcNow) {
-                throw new PermissionsException("User has been deleted") {
-                    NoErrorReport = true
-                };
-            }
-            if (caller.Organization !=null && caller.Organization.DeleteTime != null && caller.Organization.DeleteTime < DateTime.UtcNow) {
-                LockoutUtility.ProcessLockout(caller);
-            }
+			}
+			if (caller.DeleteTime != null && caller.DeleteTime < DateTime.UtcNow) {
+				throw new PermissionsException("User has been deleted") {
+					NoErrorReport = true
+				};
+			}
+			if (caller.Organization != null && caller.Organization.DeleteTime != null && caller.Organization.DeleteTime < DateTime.UtcNow) {
+				LockoutUtility.ProcessLockout(caller);
+			}
 
-            return new PermissionsUtility(session, attached);
+			return new PermissionsUtility(session, attached);
 		}
 
 		#endregion
@@ -2293,6 +2294,32 @@ namespace RadialReview.Utilities {
 			var evt = session.Get<EventSubscription>(eventId);
 			return SubscribeToEvent(evt.SubscriberId, analyzer);
 		}
+		#endregion
+
+		#region Integrations
+		#region Asana
+		public PermissionsUtility ViewAsanaToken(long tokenId) {
+			return EditAsanaToken(tokenId);
+		}
+		public PermissionsUtility EditAsanaAction(long actionId) {
+			var action = session.Get<AsanaAction>(actionId);
+			return EditAsanaToken(action.AsanaTokenId);
+		}
+		public PermissionsUtility ViewAsanaAction(long actionId) {
+			return EditAsanaAction(actionId);
+		}
+
+		public PermissionsUtility EditAsanaToken(long tokenId) {
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var token = session.Get<AsanaToken>(tokenId);
+			if (token.CreatorId == caller.Id) {
+				return this;
+			}
+			throw new PermissionsException("Token cannot be viewed");
+		}
+		#endregion
 		#endregion
 
 		public PermissionsUtility InValidPermission() {

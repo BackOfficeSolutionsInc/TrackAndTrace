@@ -217,6 +217,7 @@ namespace RadialReview.Accessors {
 			//Accountable User
 			if (accountableUser != null && todo.AccountableUserId != accountableUser) {
 				perms.AssignTodo(accountableUser.Value, todo.ForRecurrenceId);
+				updates.PreviousAccountableUser = todo.AccountableUserId;
 				todo.AccountableUserId = accountableUser.Value;
 				todo.AccountableUser = s.Load<UserOrganizationModel>(accountableUser.Value);
 				updates.AccountableUserChanged = true;
