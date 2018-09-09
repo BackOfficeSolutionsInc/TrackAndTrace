@@ -748,6 +748,8 @@ namespace RadialReview.Accessors {
             var unsent = new List<Mail>();
             long recurrenceId = 0;
 
+			var error = "";
+
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     try {
@@ -855,6 +857,7 @@ namespace RadialReview.Accessors {
 
                     } catch (Exception e) {
                         log.Error("Emailer issue(1):" + recurrenceId, e);
+						error += "(1)"+e.Message;
                     }
 
                     tx.Commit();
@@ -868,7 +871,12 @@ namespace RadialReview.Accessors {
                 }
             } catch (Exception e) {
                 log.Error("Emailer issue(2):" + recurrenceId, e);
-            }
+				error += "(2)" + e.Message;
+			}
+
+			if (!string.IsNullOrWhiteSpace(error)) {
+				throw new Exception(error);
+			}
 
         }
 
