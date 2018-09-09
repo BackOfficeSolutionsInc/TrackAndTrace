@@ -1197,6 +1197,7 @@
     field.setAttribute("autocorrect", "off");
     field.setAttribute("autocapitalize", "off");
     field.setAttribute("spellcheck", "false");
+    field.setAttribute("id", "firepadTextArea");
   }
 
   // TEXTAREA INPUT STYLE

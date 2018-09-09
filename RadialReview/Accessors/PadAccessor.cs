@@ -21,40 +21,42 @@ using FireSharp.Interfaces;
 using FireSharp.Response;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
-
+using RadialReview.Models;
 
 namespace RadialReview.Accessors
 {
 	public class PadAccessor :BaseAccessor
     {
         
-		public static async Task<bool> CreatePad(string padid, string text=null,bool firePad=true)
+		public static async Task<string> CreatePad(string padid, string text=null,bool firePad=true)
 		{
 			try{
+
                 //start firepad creation
-                //if (firePad)
-                //{
-                //    var FirePadClient = new FireSharp.FirebaseClient(Config.getFirePadConfig());
-                //    if (FirePadClient != null)
-                //    {
-                //        var data = new FirePadData
-                //        {
-                //            padID = padid,
-                //            text = text ?? ""
-                            
-                //        };
-                //        SetResponse FPResponse = await FirePadClient.SetTaskAsync("FirePad/" + padid, data);
-                //        FirePadData FPresult = FPResponse.ResultAs<FirePadData>();
-                //    }
-                //    else
-                //    {
-                //        throw new PermissionsException("Error connecting to firebase");
-                //    }
-                //    return true;
-                //    //end firepad creation
-                //}
-                //else
-                //{
+                if (firePad)
+                {
+                    string _padid = "-" + padid;
+                    IFirebaseClient FirePadClient = new FireSharp.FirebaseClient(Config.getFirePadConfig());
+                    if (FirePadClient != null)
+                    {
+                        var data = new FirePadData
+                        {
+
+                            initialText = text ?? ""
+
+                        };
+                        SetResponse FPResponse = await FirePadClient.SetTaskAsync(_padid, data);
+                        FirePadData FPresult = FPResponse.ResultAs<FirePadData>();
+                    }
+                    else
+                    {
+                        throw new PermissionsException("Error connecting to firebase");
+                    }
+                    return "-";
+                    //end firepad creation
+                }
+                else
+                {
                     var client = new HttpClient();
                     var urlText = "";
                     if (!String.IsNullOrWhiteSpace(text))
@@ -72,15 +74,15 @@ namespace RadialReview.Accessors
                         {
                             throw new PermissionsException("Error " + code + ": " + message);
                         }
-                        return true;
+                        return "";
                     }
 
-                //}
+                }
                 
             }
             catch (Exception e){
 				log.Error("Error PadAccessor.CreatePad",e);
-				return false;
+				return "";
 			}
 		}
 
@@ -183,27 +185,25 @@ namespace RadialReview.Accessors
 				return "";
 			}
 		}
-
         
-        public static FirePadData GetFirePadData(string padId, string text = "")
+        
+        public static string GetNotesURL(string padId, bool showControls, string name , bool readOnly=false)
         {
-            var firePadData = new FirePadData
-            {
-                padID = padId,
-                text = text
-            };
-            
-            return firePadData;
-        }
-        public static string GetNotesURL(string padId, bool showControls,string name,string text=""){
             string url;
-            
+
             UrlHelper Url = new UrlHelper();
-            
-            if (padId.Substring(0, 1) != "-")    {
-                url=Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(name) );
-            }else{
-                url = "~/FirePad/Index?id=" + padId + "&text=" + text;
+
+            if (padId.Substring(0, 1) != "-")
+            {
+                url = Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(name));
+            }
+            else if(readOnly)
+            {
+                url = "~/FirePad/Index?id=" + padId + "&readOnly=" + readOnly;
+            }
+            else
+            {
+                url = "~/FirePad/Index/" + padId;
             }
             return url;
         }

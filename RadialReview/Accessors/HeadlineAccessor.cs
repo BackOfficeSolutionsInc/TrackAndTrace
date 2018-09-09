@@ -67,10 +67,12 @@ namespace RadialReview.Accessors {
 			if (String.IsNullOrWhiteSpace(headline.HeadlinePadId))
 				headline.HeadlinePadId = Guid.NewGuid().ToString();
 
-            if (headline.HeadlinePadId.Substring(0, 1) != "-")
+            string firePadChar = "-";
+            if (!string.IsNullOrWhiteSpace(headline._Details))
                 await PadAccessor.CreatePad(headline.HeadlinePadId, headline._Details);
+            headline.HeadlinePadId = firePadChar + headline.HeadlinePadId;
 
-			s.Save(headline);
+            s.Save(headline);
 			headline.Ordering = -headline.Id;
 			//s.Update(headline);
 

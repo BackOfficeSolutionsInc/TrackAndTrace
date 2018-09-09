@@ -17,10 +17,11 @@ namespace RadialReview.Controllers
     {
         // GET: FirePad
         [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> Index(string id,string text)
-        {           
-            FirePadData firePadData = PadAccessor.GetFirePadData(id,text); 
-            return View(firePadData);
+        public async Task<ActionResult> Index(string id,bool readOnly=false)
+        {
+            ViewBag.readOnly= readOnly;
+            ViewBag.padID = id;
+            return View();
         }
 
     }

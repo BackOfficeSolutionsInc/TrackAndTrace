@@ -26,7 +26,7 @@ namespace RadialReview.Controllers {
 				}
 
                 //this is to choose what to use between Noteserves or firepad
-                return Redirect(PadAccessor.GetNotesURL(padId, showControls,GetUser().GetName(),issue.Description));
+                return Redirect(PadAccessor.GetNotesURL(padId, showControls,GetUser().GetName()));
             } catch (Exception) {
 				return RedirectToAction("Index", "Error");
 			}

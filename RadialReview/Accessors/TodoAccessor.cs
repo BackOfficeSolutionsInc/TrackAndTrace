@@ -166,11 +166,12 @@ namespace RadialReview.Accessors {
 		public static async Task<TodoModel> CreateTodo(ISession s, PermissionsUtility perms, TodoCreation creation) {
             var todo = creation.Generate(s, perms);
 
-                    
-            if (todo.PadId.Substring(0,1)!="-")
-				await PadAccessor.CreatePad(todo.PadId, todo.Details,false);
+            string firePadChar = "-";
+            if (!string.IsNullOrWhiteSpace(todo.Details))
+                firePadChar=await PadAccessor.CreatePad(todo.PadId, todo.Details);
 
-			s.Save(todo);
+            todo.PadId = firePadChar + todo.PadId;
+            s.Save(todo);
 			todo.Ordering = -todo.Id;
 			s.Update(todo);
 

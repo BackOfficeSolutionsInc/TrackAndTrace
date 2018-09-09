@@ -1,4 +1,4 @@
-﻿@model RadialReview.Models.FirePad.FirePadData
+﻿
 @{
     Layout = null;
 }
@@ -10,49 +10,16 @@
     
     @Scripts.Render("~/bundles/FirePad")
     @Styles.Render("~/Content/FirePad")
+    @Scripts.Render("~/bundles/jquery")
    
-    <style>
-        html {
-            height: 100%;
-        }
-
-        body {
-            margin: 0;
-            height: 100%;
-            position: relative;
-        }
-        /* Height / width / positioning can be customized for your use case.
-         For demo purposes, we make firepad fill the entire browser. */
-        #firepad-container {
-            width: 100%;
-            height: 100%;
-        }
-
-            #firepad-container .firepad-btn {
-                border-bottom-width: 1px;
-            }
-
-            #firepad-container .firepad-toolbar {
-                height: 35px;
-                line-height: 0px;
-                background: #eee;
-            }
-
-            #firepad-container .firepad-btn a, span {
-                font-size: 12px;
-            }
-
-        .firepad-with-toolbar .CodeMirror {
-            top: 27px;
-            position: relative;
-        }
-    </style>
 </head>
 <body onload="init()">
     
-    @Html.HiddenFor(x => x.text)
-    @Html.HiddenFor(x => x.padID)
-    
+
+    @Html.Hidden("padID", (String)ViewBag.padID)
+    @Html.Hidden("readOnly",(bool)ViewBag.readOnly)
+
+
     <div>
         <div id="firepad-container"></div>       
     </div>
@@ -60,10 +27,10 @@
         
         function init() {
             
-            FireClass = new FireClass(document.getElementById("text"),
-                                            document.getElementById("padID"),
-                                            document.getElementById('firepad-container'));
-            FireClass.init();
+           firePadClass = new FirePadClass(document.getElementById("padID"),
+                                            document.getElementById('firepad-container'), document.getElementById("readOnly"));
+            
+            firePadClass.init();
         }
     </script>
 </body>

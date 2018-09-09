@@ -234,7 +234,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 
 .CodeMirror-lines {
   cursor: text;
-  min-height: 1px; /* prevents collapsing before first draw */
+  min-height: 40px; /* prevents collapsing before first draw */
 }
 .CodeMirror pre {
   /* Reset some styles that the rest of the page might have set */
@@ -259,6 +259,9 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   word-wrap: break-word;
   white-space: pre-wrap;
   word-break: normal;
+}
+.CodeMirror-code-spacer {
+    margin-bottom: 50px;
 }
 
 .CodeMirror-linebackground {

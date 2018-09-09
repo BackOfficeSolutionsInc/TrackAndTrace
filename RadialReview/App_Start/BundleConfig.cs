@@ -547,7 +547,8 @@ namespace RadialReview {
                 "~/Scripts/FirePad/firebase.js",
                 "~/Scripts/FirePad/codemirror.js",
                 "~/Scripts/FirePad/firepad.js",
-                "~/Scripts/FirePad/firepad.min.js"
+                "~/Scripts/FirePad/fireClass.js"
+                
             )));
 
             bundles.Add(new StyleBundle("~/Content/FirePad")

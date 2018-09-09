@@ -1379,6 +1379,7 @@
     <Content Include="Scripts\Dashboard\dashboard.js" />
     <Content Include="Scripts\FirePad\codemirror.js" />
     <Content Include="Scripts\FirePad\firebase.js" />
+    <Content Include="Scripts\FirePad\fireClass.js" />
     <Content Include="Scripts\FirePad\firepad.js" />
     <Content Include="Scripts\FirePad\firepad.min.js" />
     <Content Include="Scripts\home\html2canvas.js" />
