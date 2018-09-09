@@ -1,12 +1,5 @@
-﻿using System.Drawing.Imaging;
-using System.Security.Cryptography.X509Certificates;
-using Amazon.SimpleDB.Model;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 using NHibernate;
-using NHibernate.Envers;
-using NHibernate.Linq;
-using RadialReview.Controllers;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
@@ -22,16 +15,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Helpers;
 using RadialReview.Utilities.Extensions;
 using RadialReview.Utilities.NHibernate;
-using TrelloNet;
 using System.Net;
-using System.Collections.Specialized;
-using NHibernate.Criterion;
 using static RadialReview.Utilities.PaymentSpringUtil;
-using RadialReview.Models.Components;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
@@ -216,7 +204,16 @@ namespace RadialReview.Accessors {
 								BankRouting = bankRouting,
 								BankFirstName = bankFirstName,
 								BankLastName = bankLastName,
-								BankAccountType = bankAccountType
+								BankAccountType = bankAccountType,
+
+								Address_1 = address_1,
+								Address_2 = address_2,
+								City = city,
+								State = state,
+								Zip = zip,
+								Phone = phone,
+								Website = website,
+								Country = country,
 
 							};
 							s.Save(token);
@@ -689,7 +686,7 @@ namespace RadialReview.Accessors {
 
 		#region Unsafe Methods
 		[Obsolete("Unsafe")]
-		public class Unsafe : IChargeViaHangfire{
+		public class Unsafe : IChargeViaHangfire {
 			public class ChargeResult {
 				public InvoiceModel Invoice { get; set; }
 				public PaymentResult Result { get; set; }
@@ -740,7 +737,7 @@ namespace RadialReview.Accessors {
 				await Emailer.SendEmail(toSend);
 				return true;
 			}
-			
+
 			public static async Task<PaymentResult> ExecuteInvoice(ISession s, InvoiceModel invoice, bool useTest = false) {
 
 				if (invoice.PaidTime != null)
@@ -807,7 +804,7 @@ namespace RadialReview.Accessors {
 
 				if (token == null) {
 					await EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "MissingToken", arg1: amount));
-					throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.MissingToken,"Token missing for "+ org2.GetName()+" ("+organizationId+")");
+					throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.MissingToken, "Token missing for " + org2.GetName() + " (" + organizationId + ")");
 				}
 				PaymentResult pr = null;
 				try {

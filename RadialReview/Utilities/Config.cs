@@ -472,12 +472,13 @@ namespace RadialReview.Utilities {
         }
 
         public static Env GetEnv() {
-
             Env result;
-            if (Enum.TryParse(GetAppSetting("Env").ToLower(), out result)) {
+			var env = GetAppSetting("Env");
+			if (env!=null && Enum.TryParse(env.ToLower(), out result)) {
                 return result;
             }
-            throw new Exception("Invalid Environment");
+			return Env.local_mysql;
+            //throw new Exception("Invalid Environment");
         }
 
 

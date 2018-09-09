@@ -1,29 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Web;
-
-using Amazon.S3.Model;
-using Amazon.SimpleDB.Model;
 using Microsoft.AspNet.SignalR;
 using NHibernate;
-using NHibernate.Hql.Ast.ANTLR.Tree;
 using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Angular.CompanyValue;
-using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.VTO;
 using RadialReview.Models.Askables;
-using RadialReview.Models.Enums;
-using RadialReview.Models.Periods;
 using RadialReview.Models.VTO;
 using RadialReview.Utilities;
-using TrelloNet;
-using Twilio;
 using RadialReview.Models.L10;
-using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
 using RadialReview.Exceptions;
 using Novacode;
@@ -31,9 +19,7 @@ using System.Globalization;
 using System.Threading;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Synchronize;
-using RadialReview.Models.Angular.Rocks;
 using System.Threading.Tasks;
-using static RadialReview.Controllers.L10Controller;
 
 namespace RadialReview.Accessors {
 	public class VtoAccessor : BaseAccessor {

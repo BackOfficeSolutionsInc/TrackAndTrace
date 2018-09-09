@@ -1238,6 +1238,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			.attr("placeholder", "Function")
 			.attr("tt-md-overflow", "14")
 			.attr("tt-md-clear-no-match", "true")
+			.attr("md-delay", "400")
 			.attr("md-input-name", function (d) {
 				return "searchPosName_" + d.Id;
 			}).attr("ng-disabled", function (d) {
@@ -1271,6 +1272,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			var autoComplete = owner.append("md-autocomplete")
 				.attr("tt-md-overflow", "14")
 				.attr("tt-md-clear-no-match", "true")
+				.attr("md-delay", "400")
 				.attr("md-blur", function (d) {
 					return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User,\"search.searchText_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
 				}).attr("md-selected-item", function (d) {

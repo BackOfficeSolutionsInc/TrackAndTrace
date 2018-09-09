@@ -797,6 +797,9 @@ html {
 .meeting-archive .scorecard-list-container table .goal-column.direction {
   text-align: center;
 }
+.meeting-archive .scorecard-list-container table .measurable-column {
+  width: 112px;
+}
 .meeting-archive .scorecard-list-container table .average-column,
 .meeting-archive .scorecard-list-container table .cumulative-column {
   text-align: center;
@@ -835,6 +838,17 @@ html {
 }
 .meeting-archive .scorecard-list-container .goal-column .blend {
   min-width: 50px !important;
+}
+.meeting-archive .scorecard-list-container .goal-column {
+  padding-left: 3px !important;
+  width: 1px !important;
+}
+.meeting-archive .scorecard-list-container .goal-column.direction {
+  padding-right: 10px !important;
+  width: 1px;
+}
+.meeting-archive .scorecard-list-container .goal-column.value {
+  padding-left: 0 !important;
 }
 .meeting-archive .todo-list-container .empty-cell,
 .meeting-archive .todo-list-container .delete-column,

@@ -30,7 +30,8 @@ namespace ParserUtilities.Utilities.LogFile {
 		protected bool FlagsToTop { get; private set; }
         protected List<TimeSlice> Slices { get; set; }
 
-
+		protected List<LINE> FilteredLineCache = null;
+		
 		public LogFile<LINE> Clone() {
             return new LogFile<LINE>() {
                 Path = Path,
@@ -46,8 +47,9 @@ namespace ParserUtilities.Utilities.LogFile {
                 Grouping = Grouping,
                 FlagsToTop = FlagsToTop,
                 ForEachs = ForEachs.ToList(),
-                Slices = Slices.ToList(),
-            };
+				Slices = Slices.ToList(),
+				FilteredLineCache = FilteredLineCache.ToList(),
+			};
 		}
 
 		public LogFile() {
@@ -63,20 +65,24 @@ namespace ParserUtilities.Utilities.LogFile {
 		}
 
 		public LINE AddLine(LINE line) {
+			ResetCache();
 			StartRange = new DateTime(Math.Min(line.StartTime.Ticks, StartRange.Ticks));
 			EndRange = new DateTime(Math.Max(line.EndTime.Ticks, EndRange.Ticks));
 			Lines.Add(line);
 			return line;
 		}
 		public void SetGrouping<T>(Func<LINE, T> groupBy) {
+			ResetCache();
 			Grouping = x => groupBy(x);
 		}
 
 		public void SetOrdering<T>(Func<LINE, T> order) {
+			ResetCache();
 			Ordering = x=>order(x);
 		}
 						
 		public void AddFilters(params IFilter<LINE>[] filters) {
+			ResetCache();
 			foreach (var filter in filters) {
 				TestFilterForConflits(filter);
 				Filters.Add(filter);
@@ -90,14 +96,16 @@ namespace ParserUtilities.Utilities.LogFile {
 		}
 
 		public void Skip(int lines) {
+			ResetCache();
 			SkipLines = lines;
 		}
 
 		public void Flag(Func<LINE, bool> condition,FlagType flagType = FlagType.UserFlag) {
+			ResetCache();
 			Flags.Add(Tuple.Create(condition, flagType));
 		}
 
-		internal void FilterExact(ILogLineField<LINE> field, params string[] exclude) {
+		public void FilterExact(ILogLineField<LINE> field, params string[] exclude) {
 			AddFilters(exclude.Select(x => new StringFilter<LINE>(x, FilterType.Exclude, field, true)).ToArray());
 		}
 
@@ -132,6 +140,7 @@ namespace ParserUtilities.Utilities.LogFile {
 
 		[Obsolete("Must be just before save")]
 		public LogFile<LINE> FilterRelativeRange(TimeSpan start, TimeSpan? end=null, DateRangeFilterType type = DateRangeFilterType.PartlyInRange) {
+			ResetCache();
 			var first = GetFilteredLines().First();
 			var s = new DateTime(Math.Min(first.StartTime.Ticks, first.EndTime.Ticks));
 			var d = first.EndTime - first.StartTime;
@@ -145,7 +154,14 @@ namespace ParserUtilities.Utilities.LogFile {
 			return GetFilteredLines().Count();
 		}
 
+
 		public IEnumerable<LINE> GetFilteredLines() {
+
+			if (FilteredLineCache != null) {
+				return FilteredLineCache;
+			}
+
+
 			//Apply filters
 			var f= Lines.Where(line => Filters.All(filter => filter.Include(line)));			
 			//apply orderings
@@ -210,7 +226,7 @@ namespace ParserUtilities.Utilities.LogFile {
                     each(line);
                 }
             }
-
+			FilteredLineCache = f.ToList();
 			return f;
 		}
 
@@ -219,7 +235,8 @@ namespace ParserUtilities.Utilities.LogFile {
         }
 
         public void ForEach(Action<LINE> action) {
-            ForEachs.Add(action);
+			ResetCache();
+			ForEachs.Add(action);
         }
 
         public IEnumerable<string> ToStringLines(string separator) {
@@ -266,6 +283,11 @@ namespace ParserUtilities.Utilities.LogFile {
         public void AddSlice(DateTime start, DateTime endTime, string name="") {
             Slices.Add(new TimeSlice(new TimeRange(start, endTime,start.Kind), name));
         }
+
+
+		protected void ResetCache() {
+			FilteredLineCache = null;
+		}
 
         /*public Matrix<XTYPE,YTYPE,LINE, RESULT> ToMatrix<XTYPE,YTYPE,RESULT>(Func<LINE, XTYPE> xs, Func<LINE, YTYPE> ys,Func<Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixInput, RESULT> cellSelector, Func<Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult, Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult, Matrix<XTYPE, YTYPE, LINE, RESULT>.MatrixResult> aggregator) {
 			return new Matrix<XTYPE, YTYPE, LINE, RESULT>(this, new XTYPE[0], new YTYPE[0], cellSelector, aggregator);

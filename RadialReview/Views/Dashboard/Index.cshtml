@@ -23,7 +23,7 @@
 	@Scripts.Render("~/bundles/DashboardGrid")
 	<script type="text/javascript">
 		dataDateRange = {
-			startDate : null,// new Date().setDate(new Date().getDate() - 1)
+			startDate : null,
 			endDate:null,
 			todoStart : new Date().setDate(new Date().getDate() - 1),
 			todoEnd:null
@@ -80,7 +80,6 @@
 		}
 
 		function renamePage(id,existingName,deflt){
-
 			var fields = [{
 				name:"title",
 				text:"Title",
@@ -116,8 +115,6 @@
 		function createTile(url,type,keyId) {
 			if(typeof(keyId)=="undefined")
 				keyId=null;
-
-
 			var dat = {
 				id: @(Model.DashboardId),
 				type:type,
@@ -135,33 +132,28 @@
 				}
 			});
 		}
-
 	</script>
 
 	if (ViewBag.DisableEditTiles ?? false) {
 		<script>
 			$(".add-tile").attr("title","This workspace cannot be edited.").css({"opacity":.5,"cursor":"not-allowed"})
 				.find("button").css({"pointer-events":"none"});
-
 			window.AllowDragDrop =false;
 		</script>
 		<style>
 			.settings-container, .resizer {
 				display: none !important;
 			}
-
 			.grid-container li .heading {
 				cursor: default;
 			}
 		</style>
 	}
-
 	if (ViewBag.InitialModel is String) {
 		<script>
 			window.InitialModel = @(new HtmlString(ViewBag.InitialModel));
 		</script>
 	}
-
 }
 @section topSection{
 	<div class="ng-cloak2" ng-app="L10App">
@@ -222,9 +214,7 @@
 			</ul>
 		</li>
 	</ul>
-
 </div>
-
 <div class="btn-group add-pages" style="position: fixed;top: 25px;left:90px;z-index: 1001;color:white">
 	<button type="button" class="btn btn-link clickable dropdown-toggle" style="color:white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		Pages <span class="caret"></span>
@@ -242,7 +232,6 @@
 		<li><a onclick="addPage()">Add Page</a></li>
 	</ul>
 </div>
-
 <div class="btn-group l10-pages">
 	<button type="button" class="btn btn-link clickable dropdown-toggle" style="color:white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		Meetings <span class="caret"></span>
@@ -261,7 +250,7 @@
 	<div ng-controller2="L10Controller">
 		@Html.Partial("~/Views/Angular/_L10App.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
 			{ "IncludeComplete", false},
-			{"PullUrl","/DashboardData/Data2/" + ViewBag.UserId + "?dashboardId="+ Model.DashboardId+"&"}
+			{ "PullUrl","/DashboardData/Data2/" + ViewBag.UserId + "?dashboardId="+ Model.DashboardId+"&"}
 		})
 		<ul id="grid" class="grid"></ul>
 	</div>

@@ -95,7 +95,7 @@ namespace ParserUtilities.Utilities.LogFile {
 			if (Exact) {
 				match = f == Substring;
 			} else {
-				match = f.ToLower().Contains(Substring);
+				match = f.IndexOf(Substring, StringComparison.OrdinalIgnoreCase) >= 0;
 			}
 			switch (Type) {
 				case FilterType.Exclude:

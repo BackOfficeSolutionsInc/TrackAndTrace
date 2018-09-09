@@ -23,17 +23,18 @@ using static LogParser.Downloaders.AwsCloudWatchDownloader;
 namespace LogParser {
 	public class Program {
 
-		public static string Session = "20180816";
+		public static string Session = "20180905";
         public static AwsEnvironment CurrentEnv = AwsConstants.Environments.Env4;
 
 		public static void Main(string[] args) {
 			Config.SetSession(Session);
 
+			#region Historical TimeRange
 			//RunAwsCharts();
 
 			//var end = new DateTime(2018, 8, 16, 8, 06, 0);
 
-
+			/*
 			var early = new TimeRange(new DateTime(2018, 8, 16, 6, 26, 0), new DateTime(2018, 8, 16, 6, 34, 0), DateTimeKind.Local);
 			var later = new TimeRange(20, new DateTime(2018, 8, 16, 8, 06, 0), DateTimeKind.Local);
 			var fivehundred2 = new TimeRange(new DateTime(2018, 8, 16, 7, 53, 0), new DateTime(2018, 8, 16, 7, 59, 0), DateTimeKind.Local);
@@ -58,8 +59,17 @@ namespace LogParser {
             // var today = new TimeRange(new DateTime(2018, 8, 21, 7, 53, 0), new DateTime(2018, 8, 21, 8, 10, 0), DateTimeKind.Local);
             //var today = new TimeRange(new DateTime(2018, 8, 21, 16, 18, 0), new DateTime(2018, 8, 21, 17, 17, 0), DateTimeKind.Local);
             var today = new TimeRange(new DateTime(2018, 8, 22, 16, 45, 0), new DateTime(2018, 8, 22, 18, 06, 0), DateTimeKind.Local);
-            /*HEY.. Checky our Env matches*/
-            RunRemoteLogFile(today, true);
+            */
+			#endregion
+
+			//var today = new TimeRange(new DateTime(2018, 9, 4, 6, 40, 0), 1536044594481.ToDateTime(), DateTimeKind.Local);
+			//			var today = new TimeRange(new DateTime(2018, 9, 4, 19, 55, 0), new DateTime(2018, 9, 4, 20, 10, 0), DateTimeKind.Local);
+			//var today = new TimeRange(new DateTime(2018, 9, 4, 3, 53, 0), new DateTime(2018, 9, 4, 4, 30, 0), DateTimeKind.Local);
+			//var today = TimeRange.Around(20, new DateTime(2018, 9, 5, 17, 00, 0), DateTimeKind.Local);
+			var today = TimeRange.Around(8, new DateTime(2018, 9, 7, 17, 02, 0), DateTimeKind.Local);
+
+			/*HEY.. Checky our Env matches*/
+			RunRemoteLogFile(today, true);
 
 			//RunLocalLogFile(Config.GetFile("combine.txt"));
 			//Process.Start(@"C:\Users\Clay\Desktop\Diagnosis\log.xlsx");
@@ -89,52 +99,59 @@ namespace LogParser {
             //logFile.Filter(line => line.csUriStem, "healthcheck");//system requests
 			//logFile.Filter(x => x.csUriStem, "healthcheck", "hangfire"); //system requests
 			logFile.Filter(line => line.csUriStem, "/styles/", "signalr", "bundle", "/content/"); //Irrelavent requests
-            //	logFile.Filter(x => x.csUriStem, "/TileData/", "/Image/TodoCompletion", "/styles/", "/bundle/", "/content/", "/dropdown/"); //Noisy requests
-         
-            //logFile.SetOrdering(x => -x.Duration);
-            //logFile.SetGrouping(x => x.StatusCode);
-            //logFile.SetGrouping(x => x.csUsername);
-            //logFile.Filter(line => line.csUriStem, "TileData");
-            //logFile.Filter(x => x.csUsername != "-");
+																								  //	logFile.Filter(x => x.csUriStem, "/TileData/", "/Image/TodoCompletion", "/styles/", "/bundle/", "/content/", "/dropdown/"); //Noisy requests
 
-			logFile.AutoFlag();
-			logFile.FlagsAtTop();
-            //logFile.RemoveInitialSignalR();
-            
-            logFile.Flag(x => x.StatusCode == 409);
+			//logFile.Filter(x => x.Duration < TimeSpan.FromSeconds(1));
 
-            //logFile.Filter(x => !x.csUriStem.Contains("healthcheck"));
-            //logFile.Filter(x => !x.csUserAgent.Contains("ELB-HealthChecker/1.0"));
+			//logFile.FilterRange(new TimeRange(0L.ToDateTime(), 1536044609485.ToDateTime(), DateTimeKind.Local));
+			//logFile.SetOrdering(x => -x.Duration);
+			//logFile.SetGrouping(x => x.StatusCode);
+			//logFile.SetGrouping(x => x.csUsername);
+			//logFile.Filter(line => line.csUriStem, "TileData");
+			//logFile.Filter(x => x.csUsername != "-");
 
-            logFile.SetOrdering(x => x.StartTime);
-            logFile.Filter(x => x.InstanceName == "app-tractiontools-env-3");
-            logFile.SetGrouping(x => x.sIp);
-            //logFile.SetGrouping(x => x.csUsername);
-            
+			//logFile.AutoFlag();
+			//logFile.FlagsAtTop();
+			//logFile.RemoveInitialSignalR();
 
-            logFile.Flag(x => x.csUserAgent == "Bluthund/1.4.1+Bluthund.Worker/1.4.0");
+			//logFile.Flag(x => x.StatusCode == 409);
 
-           // logFile.FilterRange(1534959848701.ToDateTime(DateTimeKind.Local), 1534960070191.ToDateTime(DateTimeKind.Local),6);
+			//logFile.FilterRange(new TimeRange(1536044143653.ToDateTime(), 1536044594481.ToDateTime(), DateTimeKind.Local));
 
-            logFile.ForEach(x=>x.InstanceName =  instances.GetByIp(x.sIp).NotNull(y=>y.Tags.FirstOrDefault(z=>z.Key=="Name").Value));
+			//logFile.Filter(x => !x.csUriStem.Contains("healthcheck"));
+			//logFile.Filter(x => !x.csUserAgent.Contains("ELB-HealthChecker/1.0"));
+			//logFile.Filter(x => !x.csUriStem.ToLower().Contains("/meeting/"));
+			logFile.SetOrdering(x => x.StartTime);
+			//logFile.Filter(x => x.InstanceName == "app-tractiontools-env-3");
+			//logFile.SetGrouping(x => x.sIp);
+			//logFile.SetGrouping(x => x.csUsername);
 
-            //logFile.AddSlice(new TimeRange(new DateTime(2018, 8, 22, 17, 03, 0), new DateTime(2018, 8, 22, 17, 17, 0), DateTimeKind.Local), "Before CPU");
 
-            logFile.AddSlice(1534959463431.ToDateTime(DateTimeKind.Local), 1534960128154.ToDateTime(DateTimeKind.Local));
-            logFile.FilterRange(new TimeRange(1534959341992.ToDateTime(), 1534960198461.ToDateTime(), DateTimeKind.Local));
-            //logFile.FilterRange(1534959405907.ToDateTime(DateTimeKind.Local), 1534960102588.ToDateTime(DateTimeKind.Local));
-            //logFile.FilterRange(new TimeRange(1534959763094.ToDateTime(), 1534959907754.ToDateTime(), DateTimeKind.Local));
-            #region flags
-            logFile.Flag(x => x.Guid == "73aff0657e2f5442b262c0064d1fda3558f13b4b324648c681f280036000eb43", FlagType.ByGuid);
-            logFile.Flag(x => x.Guid == "ef22e42204fabb5013cb05ac9a865039ca762a28b34ba6f15a40173beb8f0306", FlagType.Fixed);
-            logFile.Flag(x => x.Guid == "f62543ff758f7f18a52286b6e3ea8188ba8c023b3ba3290a5390166c5ea94a9e", FlagType.Fixed);
-            logFile.Flag(x => x.Guid == "70d77689dd7593d7826ddea423b598fe03c1aa34096637d15b72468f987a70ce", FlagType.Fixed);
-            logFile.Flag(x => x.Guid == "8cf7c9b8641a8afff477f8f7d644212789690438ef9d0fe9e2b829f63fe25dcc", FlagType.Fixed);
-            logFile.Flag(x => x.Guid == "f6eb024e1c1d7d8d7b3e408e93f42dd6fd94ac5e9ddeaca1631b29fff9ef9a67", FlagType.Fixed);
-            logFile.Flag(x => x.Guid == "d15dfdaf1c872c5cbe75506c1020ba531594f2835603110a5d3e838afd7efc91", FlagType.Fixed);
-            #endregion
-            logFile.Save(Config.GetBaseDirectory() + "log.txt", " ");
+			//logFile.Flag(x => x.csUserAgent == "Bluthund/1.4.1+Bluthund.Worker/1.4.0");
+
+			// logFile.FilterRange(1534959848701.ToDateTime(DateTimeKind.Local), 1534960070191.ToDateTime(DateTimeKind.Local),6);
+
+			//logFile.ForEach(x=>x.InstanceName =  instances.GetByIp(x.sIp).NotNull(y=>y.Tags.FirstOrDefault(z=>z.Key=="Name").Value));
+
+			//logFile.AddSlice(new TimeRange(new DateTime(2018, 8, 22, 17, 03, 0), new DateTime(2018, 8, 22, 17, 17, 0), DateTimeKind.Local), "Before CPU");
+
+			// logFile.AddSlice(1534959463431.ToDateTime(DateTimeKind.Local), 1534960128154.ToDateTime(DateTimeKind.Local));
+			//logFile.FilterRange(new TimeRange(1534959341992.ToDateTime(), 1534960198461.ToDateTime(), DateTimeKind.Local));
+			//logFile.FilterRange(1534959405907.ToDateTime(DateTimeKind.Local), 1534960102588.ToDateTime(DateTimeKind.Local));
+			//logFile.FilterRange(new TimeRange(1534959763094.ToDateTime(), 1534959907754.ToDateTime(), DateTimeKind.Local));
+			#region flags
+			//logFile.Flag(x => x.Guid == "73aff0657e2f5442b262c0064d1fda3558f13b4b324648c681f280036000eb43", FlagType.ByGuid);
+			//logFile.Flag(x => x.Guid == "ef22e42204fabb5013cb05ac9a865039ca762a28b34ba6f15a40173beb8f0306", FlagType.Fixed);
+			//logFile.Flag(x => x.Guid == "f62543ff758f7f18a52286b6e3ea8188ba8c023b3ba3290a5390166c5ea94a9e", FlagType.Fixed);
+			//logFile.Flag(x => x.Guid == "70d77689dd7593d7826ddea423b598fe03c1aa34096637d15b72468f987a70ce", FlagType.Fixed);
+			//logFile.Flag(x => x.Guid == "8cf7c9b8641a8afff477f8f7d644212789690438ef9d0fe9e2b829f63fe25dcc", FlagType.Fixed);
+			//logFile.Flag(x => x.Guid == "f6eb024e1c1d7d8d7b3e408e93f42dd6fd94ac5e9ddeaca1631b29fff9ef9a67", FlagType.Fixed);
+			//logFile.Flag(x => x.Guid == "d15dfdaf1c872c5cbe75506c1020ba531594f2835603110a5d3e838afd7efc91", FlagType.Fixed);
+			#endregion
+			logFile.Save(Config.GetBaseDirectory() + "log.txt", " ");
 			DurationChart.SaveDurationChart(Config.GetBaseDirectory() + "chart.html", logFile, x => x.sIp, Pallets.Stratified, charts);
+			
+			
 		}
 
 

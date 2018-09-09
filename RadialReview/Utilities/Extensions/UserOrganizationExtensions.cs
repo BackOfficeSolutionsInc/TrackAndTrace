@@ -1,10 +1,7 @@
-﻿using System.Dynamic;
-using Amazon.EC2.Model;
-using NHibernate;
+﻿using NHibernate;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
-using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using RadialReview.Properties;
 using RadialReview.Utilities.DataTypes;
@@ -12,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web;
 using RadialReview.Accessors;
 using RadialReview.Utilities;
 

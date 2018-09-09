@@ -1,13 +1,10 @@
-﻿using PdfSharp.Pdf;
-using RadialReview.Models;
+﻿using RadialReview.Models;
 using RadialReview.Models.Pdf;
 using RadialReview.Utilities;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using RadialReview.Controllers;
 using Amazon.S3;
 using Amazon.S3.Transfer;

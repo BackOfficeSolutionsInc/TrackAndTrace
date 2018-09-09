@@ -219,9 +219,9 @@ namespace RadialReview.Utilities {
 								break;
 							}
 						case Env.production: {
-								var connectionString = connectionStrings["DefaultConnectionProduction"].ConnectionString;
+								//var connectionString = connectionStrings["DefaultConnectionProduction"].ConnectionString;
 								var dbCred = KeyManager.ProductionDatabaseCredentials;
-								connectionString = string.Format(connectionString, dbCred.Username, dbCred.Password);
+								var connectionString = string.Format("Server={2};Port={3};Database={4};Uid={0};Pwd={1};", dbCred.Username, dbCred.Password,dbCred.Host,dbCred.Port,dbCred.Database);
 
 								c = new Configuration();
 								//SetupAudit(c);

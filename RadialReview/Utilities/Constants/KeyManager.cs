@@ -7,20 +7,26 @@ using Amazon;
 using Newtonsoft.Json;
 
 namespace RadialReview.Utilities.Constants {
-    public class KeyManager {
+	public class KeyManager {
 
         public class DatabaseCredentials {
             public string Username { get; set; }
             public string Password { get; set; }
-        }
+			public string Host { get; set; }
+			public string Port { get; set; }
+			public string Database { get; set; }
+		}
 
         public static DatabaseCredentials ProductionDatabaseCredentials {
             get {
                 var s=GetSecret("prod/db/radial-enc");
                 return new DatabaseCredentials {
                     Username = s.GetJsonValue("username"),
-                    Password = s.GetJsonValue("password")
-                };
+					Password = s.GetJsonValue("password"),
+					Host = s.GetJsonValue("host"),
+					Port = s.GetJsonValue("port"),
+					Database = s.GetJsonValue("dbname")
+				};
             }
         }
 
@@ -60,8 +66,8 @@ namespace RadialReview.Utilities.Constants {
         private static Key GetSecret_CacheMiss(string secretName) {
             var region = Amazon.RegionEndpoint.USWest2;
             string secret = "";
-            IAmazonSecretsManager client = new AmazonSecretsManagerClient();
 
+			IAmazonSecretsManager client = new AmazonSecretsManagerClient(region);
             GetSecretValueRequest request = new GetSecretValueRequest();
             request.SecretId = secretName;
 
