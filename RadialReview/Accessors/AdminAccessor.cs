@@ -47,6 +47,8 @@ namespace RadialReview.Accessors {
 			public bool EvalEnabled { get; internal set; }
 			public bool PeopleEnabled { get; internal set; }
 			public bool L10Enabled { get; internal set; }
+
+
 			//public bool Blacklist { get; set; }
 		}
 
@@ -123,13 +125,21 @@ namespace RadialReview.Accessors {
 
 					var paymentTokens = s.QueryOver<PaymentSpringsToken>()
 						.Where(x => x.Active == true && x.DeleteTime == null)
-						.Select(x => x.OrganizationId, x => x.MonthExpire, x => x.YearExpire, x => x.TokenType)
+						.Select(x => x.OrganizationId, x => x.MonthExpire, x => x.YearExpire, x => x.TokenType,
+								x => x.Address_1, x => x.Address_2, x => x.City, x => x.Country, x => x.Phone, x => x.State, x => x.Zip)
 						.Future<object[]>()
 						.Select(x => new {
 							OrgId = (long)x[0],
 							MonthExpire = (int)x[1],
 							YearExpire = (int)x[2],
 							TokenType = x[3] == null ? PaymentSpringTokenType.CreditCard : (PaymentSpringTokenType)x[3],
+							Address_1 = (string)x[4],
+							Address_2 = (string)x[5],
+							City = (string)x[6],
+							Country = (string)x[7],
+							Phone = (string)x[8],
+							State = (string)x[9],
+							Zip = (string)x[10],
 						});
 
 					var allUserNames = s.QueryOver<UserModel>()
@@ -250,6 +260,8 @@ namespace RadialReview.Accessors {
 					var paymentExpireLookupByCompany = paymentTokens.GroupBy(x => x.OrgId).ToDefaultDictionary(x => x.Key, x => "" + x.First().MonthExpire + "/" + x.First().YearExpire, x => "");
 					var allDeletedLookup = allDeletedQ.ToDefaultDictionary(x => x.Id, x => x.DeleteTime, x => null);
 
+					var lastPayment = paymentTokens.GroupBy(x => x.OrgId).ToDefaultDictionary(x => x.Key, x => x.Last(), x => null);
+
 
 					var csv = new Csv();
 					csv.Title = "UserId";
@@ -305,7 +317,16 @@ namespace RadialReview.Accessors {
 						csv.Add("" + o.UserId, "PeopleEnabled", "" + o.PeopleEnabled);
 						csv.Add("" + o.UserId, "L10Enabled", "" + o.L10Enabled);
 
-
+						var lp = lastPayment[o.OrgId];
+						if (lp != null) {
+							csv.Add("" + o.UserId, "Address_1", "" + lp.Address_1);
+							csv.Add("" + o.UserId, "Address_2", "" + lp.Address_2);
+							csv.Add("" + o.UserId, "City",		"" + lp.City);
+							csv.Add("" + o.UserId, "Country",	"" + lp.Country);
+							csv.Add("" + o.UserId, "Phone",		"" + lp.Phone);
+							csv.Add("" + o.UserId, "State",		"" + lp.State);
+							csv.Add("" + o.UserId, "Zip",		"" + lp.Zip);
+						}
 					}
 
 					var elapsed = DateTime.UtcNow - now;

@@ -636,9 +636,9 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]		
-		public async Task<JsonResult> UpdateTodoDate(long id, long date) {
+		public async Task<JsonResult> UpdateTodoDate(long id, DateTime date) {
             var todo = id;
-            var dateR = date.ToDateTime();
+			var dateR = date;//.ToDateTime();
 			await UpdateTodo(id, null, dateR, null);
             //await L10Accessor.UpdateTodo(GetUser(), id, dueDate: dateR);
             return Json(ResultObject.SilentSuccess(date.ToString()));

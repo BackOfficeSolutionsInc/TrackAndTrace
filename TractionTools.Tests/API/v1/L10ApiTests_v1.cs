@@ -301,7 +301,7 @@ namespace TractionTools.Tests.API.v1 {
 			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id, false);
 
 			//todo.ForRecurrenceId = _recurrence.Id;
-			var todo = TodoCreation.CreateL10Todo(_recurrence.Id, "GetUserTodo from Test Method", null, c.E1.Id, null);
+			var todo = TodoCreation.GenerateL10Todo(_recurrence.Id, "GetUserTodo from Test Method", null, c.E1.Id, null);
 			//			bool result = await TodoAccessor.CreateTodo(c.E1, _recurrence.Id, todo);
 			await L10Accessor.AddAttendee(c.E1, _recurrence.Id, c.E1.Id);
 			var result = await TodoAccessor.CreateTodo(c.E1,  todo);

@@ -1,4 +1,4 @@
-﻿@model RadialReview.Models.Todo.TodoModel
+﻿@model RadialReview.Controllers.TodoController.TodoModalVM
 
 @Html.HiddenFor(x => x.Id)
 @Html.HiddenFor(x => x.AccountableUserId)
@@ -18,38 +18,10 @@
 	</div>
 
 	<div class="row">
-		<div class="col-sm-1">
-			<div class="form-group">
-				<label>Complete:</label>
-				<input type="checkbox" @(Model.CompleteTime == null ? "" : "checked") name="completed" style="height: 20px;width: 20px;top: 5px;margin-left: 24px;" />
-			</div>
-		</div>
-
-		@*@if (ViewBag.PossibleUsers != null) {
-				<div class="col-sm-6">
-					<div class="form-group">
-						@Html.LabelFor(x => x.AccountableUser)
-						<select name="@Html.NameFor(x => x.AccountableUser)" class="select-user form-control" style="width: 100%;height:64px;" @(ViewBag.CanEdit == false ? "disable" : "")>
-							@foreach (var u in ViewBag.PossibleUsers) {
-								<option data-img="@u.imageUrl" value="@u.id" @(Model.AccountableUserId == u.Id ? "selected" : "")>@u.GetName()</option>
-						}
-						</select>
-					</div>
-				</div>
-			}*@
-		<div class="@(showDropDown?"col-sm-5":"col-sm-11")">
-			<div class="form-group">
-				<label>Due Date:</label>
-				@Html.Partial("~/Views/Shared/" + (ViewBag.CanEdit == false ? "DisplayTemplates" : "EditorTemplates") + "/DateTime.cshtml", Model.DueDate,
-				new ViewDataDictionary() { { "name", "DueDate" }, { "localize", true } })
-			</div>
-		</div>
 		@if (showDropDown) {
-			@*<div class="row">*@
 			<div class="col-sm-5">
 				<div class="form-group">
 					<label>From:</label>
-					@*<div style="font-size: 15px;padding-top: 6px;color: #333;">@ViewBag.Originating</div>*@
 					<select name="@Html.NameFor(x => x.ForRecurrenceId)" class="form-control" style="width: 100%;">
 						@foreach (var u in ViewBag.PossibleMeetings) {
 							<option value="@u.id" @(u.id == Model.ForRecurrenceId ? "selected" : "")>@u.name</option>
@@ -57,23 +29,29 @@
 					</select>
 				</div>
 			</div>
-			@*</div>*@
 		} else {
 			@Html.HiddenFor(x => x.ForRecurrenceId)
 		}
+		<div class="@(showDropDown?"col-sm-5":"col-sm-11")">
+			<div class="form-group">
+				<label>Due Date:</label>
+				@Html.ClientDateFor(x => x.DueDate, TimeOfDay.End)
+				@*@Html.Partial("~/Views/Shared/" + (ViewBag.CanEdit == false ? "DisplayTemplates" : "EditorTemplates") + "/DateTime.cshtml", Model.DueDate,
+				new ViewDataDictionary() { { "name", "DueDate" }, { "endOfDay", true } })*@
+			</div>
+		</div>
+		<div class="col-sm-1">
+			<div class="form-group">
+				<label>Complete:</label>
+				<input type="checkbox" @(Model.Completed ? "checked" : "") name="completed" style="height: 20px;width: 20px;top: 11px;margin-left: 24px;" />
+			</div>
+		</div>
 
 	</div>
 </div>
 
 
 <script>
-	//function formatState(state) {
-	//	if (!state.id) {
-	//		return state.text;
-	//	}
-	//	var $state = $('<span><img style="max-width:32;max-height:32px" src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
-	//	return $state;
-	//};
 
 	$(".modal-@guid .select-user").select2({
 		templateResult: imageListFormat,

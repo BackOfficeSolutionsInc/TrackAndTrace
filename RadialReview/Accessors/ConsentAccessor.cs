@@ -62,6 +62,12 @@ namespace RadialReview.Accessors {
 		}
 
 		public static bool HasConsented(UserOrganizationModel caller) {
+
+			if (caller.User == null) {
+				//hack for when the User is null
+				return true;
+			}
+
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var found = s.QueryOver<ConsentModel>().Where(x => x.UserId == caller.User.Id && x.ConsentTime!=null).Take(1).SingleOrDefault();

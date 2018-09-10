@@ -260,15 +260,16 @@ if (ViewBag.NoTitleBar ?? false) {
                         <div class="upload upload-todos" ng-click="functions.goto('/upload/l10/todos?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload To-dos"></div>
                         <div class="title-bar">To-do List</div>
                         @{Html.RenderPartial("~/Views/Todo/partial/list.cshtml", new ViewDataDictionary{
-                              {"AddHeaders",false},
-                              {"ShowDetails",false},
-                              {"SortBy","createtime-column"},
-                                 {"UsePopup",true},
-                              {"AddDatePicker",false},
-                              {"DefaultSort","CreateTime"},
-                              {"ShowMeeting",false},
-                              {"Order","| orderBy: ['Id','DateCreated']"}
-                          });
+							  {"AddHeaders",false},
+							  {"ShowDetails",false},
+							  {"SortBy","createtime-column"},
+								 {"UsePopup",true},
+							  {"AddDatePicker",false},
+							  {"DefaultSort","CreateTime"},
+							  {"ShowMeeting",false},
+							  {"Context","L10"},
+							  {"Order","| orderBy: ['Id','DateCreated']"}
+						  });
                         }
                     </div>
                     <div class="component wizard-page" data-page="Issues" id="l10-wizard-issues">

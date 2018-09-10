@@ -15,6 +15,16 @@ namespace RadialReview.Models.Integrations.Asana {
 	}
 
 
+	public class AsanaProjectDTO {
+		public class Datum {
+			public long id { get; set; }
+			public string gid { get; set; }
+			public string name { get; set; }
+		}
+		public List<Datum> data { get; set; }
+	}
+
+
 	public class AsanaTaskDTO {
 
 		public Data data { get; set; }
@@ -61,13 +71,14 @@ namespace RadialReview.Models.Integrations.Asana {
 		public string access_token { get; set; }
 		public int expires_in { get; set; }
 		public string token_type { get; set; }
-		public string data { get; set; }
+		public Data data { get; set; }
 		public string refresh_token { get; set; }
+
+		public class Data {
+			public long id { get; set; }
+			public string name { get; set; }
+			public string email { get; set; }
+		}
 	}
 
-	public class TokenExchangeEndpointResponseDataResponse {
-		public long id { get; set; }
-		public string name { get; set; }
-		public string email { get; set; }
-	}
 }

@@ -8,12 +8,14 @@
 		DataTable({
 			container:"#table",
 			data:data,
-			clickAdd:"/Integrations/AsanaAddAction",
+			clickAdd:"/Integrations/AsanaAddAction",			
+			postAdd:"/Integrations/AsanaEditAction/{0}",
 			clickRemove:"/Integrations/AsanaRemoveAction/{0}",
 			clickEdit:"/Integrations/AsanaEditAction/{0}",
 			cells: [
-				{contents:function(x){return x.Description}},
-				{remove:true}
+				{contents:function(x){return x.Description},classes:"fullWidth"},
+				{edit:true},
+				{remove:true},
 			],
 			nodataText:"No actions"
 		});

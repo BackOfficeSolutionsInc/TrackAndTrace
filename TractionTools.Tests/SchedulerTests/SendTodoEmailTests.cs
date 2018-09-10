@@ -81,7 +81,7 @@ namespace TractionTools.Tests.SchedulerTests {
                         if (i == 0) {
                             dupIndex = auid % (long)divisor;
                         }
-                        await TodoAccessor.CreateTodo(org.Manager, TodoCreation.CreatePersonalTodo("", accountableUserId: auid, dueDate: yesterday));
+                        await TodoAccessor.CreateTodo(org.Manager, TodoCreation.GeneratePersonalTodo("", accountableUserId: auid, dueDate: yesterday));
 
                     }
                     tx.Commit();

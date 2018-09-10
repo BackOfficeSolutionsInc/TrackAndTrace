@@ -15,6 +15,12 @@ using System.Linq.Expressions;
 using RadialReview.Reflection;
 
 namespace System.Web {
+
+	public enum TimeOfDay {
+		Beginning,
+		End
+	}
+
 	public static class HtmlExtensions {
 		public static string VideoConferenceUrl(this HtmlHelper html, string resource = null) {
 			return Config.VideoConferenceUrl(resource);
@@ -274,6 +280,36 @@ namespace System.Web {
 			return new MvcHtmlString(JsonConvert.SerializeObject(convert));
 			//Json.Encode());
 		}
+
+		public static string NewGuid(this HtmlHelper html) {
+			return "g"+Guid.NewGuid().ToString().Replace("-", "");
+		}
+
+
+		public static HtmlString ClientDateFor<T>(this HtmlHelper<T> html, Expression<Func<T, DateTime>> serverDateSelector,TimeOfDay timeOfDay) {
+			var guid = html.NewGuid();
+			var model = (T)html.ViewData.Model;
+			var serverDate = serverDateSelector.Compile();
+			var builder = $@"
+<div class='{guid} client-datepicker'></div>
+<script>
+	setTimeout(function(){{
+		var options = {{
+			selector : $("".{guid}.client-datepicker""),
+			serverTime : new Date(""{serverDate(model).ToString("yyyy-MM-dd HH:mm:ss")}""),
+			displayAsLocal : true,
+			name:""{html.NameFor(serverDateSelector)}"",
+			id:""{html.IdFor(serverDateSelector)}"",
+			datePickerOptions:undefined,
+			endOfDay: {(timeOfDay==TimeOfDay.End?"true":"false")}
+		}};
+		Time.createClientDatepicker(options);
+	}},1);
+ </script>
+";
+			return new HtmlString(builder);
+		}
+
 
 
 		//public class TableOptions {

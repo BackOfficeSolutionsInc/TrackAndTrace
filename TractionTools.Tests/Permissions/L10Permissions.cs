@@ -321,7 +321,7 @@ namespace TractionTools.Tests.Permissions {
 
 			//var todo = new TodoModel() { ForRecurrenceId = l101.Id };
 
-			var todoC = TodoCreation.CreateL10Todo(l101.Id, null, null, null, null);
+			var todoC = TodoCreation.GenerateL10Todo(l101.Id, null, null, null, null);
 			///Not yet an attendee..
 			await ThrowsAsync<PermissionsException>(async()=>await TodoAccessor.CreateTodo(c.Manager, todoC));
 			await L10Accessor.AddAttendee(c.Manager, l101.Id, c.Manager.Id);
@@ -332,7 +332,7 @@ namespace TractionTools.Tests.Permissions {
 			var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id, false);
 			await L10Accessor.AddAttendee(c.Middle, l102.Id, c.Middle.Id);
 			//var todo2 = new TodoModel() { ForRecurrenceId = l102.Id };
-			var todoC2 = TodoCreation.CreateL10Todo(l102.Id, null, null, null, null);
+			var todoC2 = TodoCreation.GenerateL10Todo(l102.Id, null, null, null, null);
 			var todo2 = await TodoAccessor.CreateTodo(c.Middle, todoC2);
 			var perm2 = new Action<PermissionsUtility>(p => p.ViewTodo(todo2.Id));
 			c.AssertAll(perm2, c.Middle, c.Manager);
@@ -344,7 +344,7 @@ namespace TractionTools.Tests.Permissions {
 			var c = await Ctx.Build();
 
 			//var todo = new TodoModel() { TodoType = TodoType.Personal, AccountableUser = c.Org.E5 };
-			var todoC = TodoCreation.CreatePersonalTodo(null, null, c.Org.E5.Id);
+			var todoC = TodoCreation.GeneratePersonalTodo(null, null, c.Org.E5.Id);
 			var todo = await TodoAccessor.CreateTodo(c.Manager, todoC);
 
 			var perm1 = new Action<PermissionsUtility>(p => p.ViewTodo(todo.Id));
@@ -362,7 +362,7 @@ namespace TractionTools.Tests.Permissions {
 
 				//var todo = new TodoModel() { ForRecurrenceId = l101.Id };
 				//await TodoAccessor.CreateTodo(c.Manager, l101.Id, todo);
-				var todoC = TodoCreation.CreateL10Todo(l101.Id, null, null, null, null);
+				var todoC = TodoCreation.GenerateL10Todo(l101.Id, null, null, null, null);
 				await ThrowsAsync<PermissionsException>(async () => await TodoAccessor.CreateTodo(c.Manager, todoC));
 				await L10Accessor.AddAttendee(c.Manager, l101.Id, c.Manager.Id);
 				var todo = await TodoAccessor.CreateTodo(c.Manager, todoC);
@@ -407,7 +407,7 @@ namespace TractionTools.Tests.Permissions {
 				await L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
 
 
-				var todoC = TodoCreation.CreateL10Todo(l101.Id, null, null, c.Org.E5.Id, null);
+				var todoC = TodoCreation.GenerateL10Todo(l101.Id, null, null, c.Org.E5.Id, null);
 				var todo = await TodoAccessor.CreateTodo(c.Manager, todoC);
 				var perm = new Action<PermissionsUtility>(p => p.EditTodo(todo.Id));
 				//var todo = new TodoModel() { ForRecurrenceId = l101.Id, AccountableUser = c.Org.E5 };
@@ -440,7 +440,7 @@ namespace TractionTools.Tests.Permissions {
 				var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id, false);
 				await L10Accessor.AddAttendee(c.Middle, l102.Id, c.E5.Id);
 				//var todo2 = new TodoModel() { ForRecurrenceId = l102.Id, AccountableUser = c.Org.E5 };
-				var todoC = TodoCreation.CreateL10Todo(l102.Id, null, null, c.Org.E5.Id, null);
+				var todoC = TodoCreation.GenerateL10Todo(l102.Id, null, null, c.Org.E5.Id, null);
 				var todo2 = await TodoAccessor.CreateTodo(c.Middle, todoC);//await TodoAccessor.CreateTodo(c.Middle, l102.Id, todo2);
 				var perm = new Action<PermissionsUtility>(p => p.EditTodo(todo2.Id));
 				c.AssertAll(perm, c.Middle, c.Manager, c.Org.E5);

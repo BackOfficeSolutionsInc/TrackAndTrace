@@ -25,6 +25,7 @@ namespace RadialReview.Models.Integrations {
 		public virtual string RedirectUri { get; set; }
 		public virtual long OrganizationId { get; set; }
 		public virtual long AsanaUserId { get; set; }
+		public virtual string AsanaEmail { get; set; }
 
 
 		public AsanaToken() {
@@ -43,6 +44,7 @@ namespace RadialReview.Models.Integrations {
 				Map(x => x.RedirectUri);
 				Map(x => x.OrganizationId);
 				Map(x => x.AsanaUserId);
+				Map(x => x.AsanaEmail);
 			}
 		}
 
@@ -52,18 +54,29 @@ namespace RadialReview.Models.Integrations {
 	public class AsanaAction : ILongIdentifiable, IHistorical {
 		public virtual long Id { get; set; }
 		public virtual long AsanaTokenId { get; set; }
-		public virtual long WorkspaceId { get; set; }		
+		public virtual long ProjectId { get; set; }
+		public virtual long WorkspaceId { get; set; }
 		public virtual ForModel Resource { get; set; }
 		public virtual AsanaActionType ActionType { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
+		public virtual string WorkspaceName { get; set; }
+		public virtual string ProjectName { get; set; }
+
 		private string _Description { get; set; }
+
+		public AsanaAction() {
+			CreateTime = DateTime.UtcNow;
+		}
 
 		public class Map : ClassMap<AsanaAction> {
 			public Map() {
 				Id(x => x.Id);
 				Map(x => x.AsanaTokenId);
-				Map(x => x.WorkspaceId);
+				Map(x => x.ProjectId);
+				Map(x => x.WorkspaceId);				
+				Map(x => x.WorkspaceName);
+				Map(x => x.ProjectName);
 				Component(x => x.Resource).ColumnPrefix("Resource_");
 				Map(x => x.ActionType).CustomType<AsanaActionType>();
 				Map(x => x.CreateTime);
@@ -82,7 +95,7 @@ namespace RadialReview.Models.Integrations {
 
 			switch (ActionType) {
 				case AsanaActionType.SyncMyTodos:
-					builder += "Sync All My Todos";
+					builder += "Sync all my to-dos"+ProjectName.NotNull(x=>" with "+x);
 					break;
 				case AsanaActionType.NoAction:
 					builder += "No action";
@@ -95,9 +108,11 @@ namespace RadialReview.Models.Integrations {
 		}
 
 	}
-
-	public class AsanaWorkspace {
+	 
+	public class AsanaProject {
 		public long Id { get; set; }
 		public string Name { get; set; }
+		public string Workspace { get; set; }
+		public long WorkspaceId { get; set; }
 	}
 }

@@ -30,10 +30,29 @@
 	//	new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
 	//}
 
+	this.serverDateFormat =function serverDateFormat(edate) {
+		if (edate == false)
+			return "";
+		var _d = edate.getDate(),
+		_m = edate.getMonth() + 1,
+		_mm = edate.getMinutes(),
+		_h = edate.getHours(),
+		_s = edate.getSeconds(),
+		d = _d > 9 ? _d : '0' + _d,
+		m = _m > 9 ? _m : '0' + _m,
+		h = _h > 9 ? _h : '0' + _h,
+		mm = _mm > 9 ? _mm : '0' + _mm,
+		s = _s > 9 ? _s : '0' + _s;
+		return m + '-' + d + '-' + (edate.getFullYear()) + " " + h + ":" + mm + ":" + s;
+	}
+
+
 	this.adjustToMidnight = function (date) {
 		var d = new Date(date);
 		//Adj for daylight savings time screws up the UI when outside DST (3-10-2018), selecting in DST (4-10-2018)
-		//d.setHours(this.dst(d) ? 24 : 23, 59, 59, 999);
+		//var isDst = this.dst(d);
+		//debugger;
+		//d.setHours( isDst? 22 : 23, 59, 59, 999);
 		d.setHours(23, 59, 59, 999);
 		return d;
 	}
@@ -113,6 +132,16 @@
 		return false;
 
 	}
+	this.shouldLocalize = function (date) {
+		var type = typeof (date);
+		if (type === "object") {
+			if (typeof (date.Local) === "boolean") {
+				return date.Local;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * parse json from the server.
 	 * @constructor
@@ -181,4 +210,100 @@
 	this.formatDate = function (date, format) {
 		return window.getFormattedDate(date, format);
 	};
+
+
+	this.createClientDatepicker = function (options) {
+
+		var selector = options.selector;
+		var serverTime = options.serverTime;
+		var displayAsLocal = options.displayAsLocal || true;
+		var name = options.name;
+		var id = options.id;
+		var datePickerOptions = options.datePickerOptions ;
+		var endOfDay = options.endOfDay || true;
+
+		if (typeof (selector) === "undefined") {
+			console.error("Client Datepicker cannot have an undefined selector");
+			return;
+		}
+
+
+		if (typeof (name) === "undefined" || name==null)
+			name = "Date";
+		if (typeof (id) === "undefined" || id ==null)
+			id = name;
+
+		//How should the date be displayed?
+		var displayTime = serverTime;
+		if (displayAsLocal) {
+			displayTime = Time.toLocalTime(serverTime);
+		}
+		
+		//Create Html
+		var guid = generateGuid();
+		var builder = '';
+		builder += '<div class="input-append date ' + guid + '">';
+		builder += '<input class="form-control client-date" type="text" value="' + clientDateFormat(displayTime) + '" placeholder="not set" data-val="true" data-val-date="The field must be a date.">';
+		builder +=	 '<span class="add-on"><i class="icon-th"></i></span>';
+		builder +=	 '<input type="hidden" class="server-date" id="' + id + '" name="' + name + '" value="' + Time.serverDateFormat(serverTime) + '" />';
+		builder += '</div>';
+		var dp = $(builder);
+		$(selector).append(dp);
+		//Datepicker Options
+		var dpOptions = { format: window.dateFormat.toLowerCase() };
+
+		//Copy options
+		if (datePickerOptions) {
+			for (var k in datePickerOptions) {
+				if (arrayHasOwnIndex(datePickerOptions, k)) {
+					dpOptions[k] = datePickerOptions[k];
+				}
+			}
+		}
+		//setup events
+		var eventHolder = $(dp).find("[name='" + name + "']");
+		$('.' + guid + ' .client-date').on("change", function () {
+			var v = $(this).val();
+			if (v == "") {
+				$('.' + guid + ' .server-date').val("");
+			}
+		});
+
+
+		$('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
+			var date = e.date;
+			if (endOfDay) {
+				debugger;
+				date = Time.adjustToMidnight(date);
+			}
+			var displayDate = date;//Should not change ever.. we selected this, it's what we want to see
+			
+			var serverDate = date;
+			if (displayAsLocal) {
+				/*===Display local time===*/
+				//Need to convert the selected time (which is local) into server time
+				serverDate = Time.toServerTime(date);
+			} else {
+				/*===Display server time===*/
+				//We'll send this data back as it was selected...
+				serverDate = serverDate;
+			}
+
+			var formattedServerDate = Time.serverDateFormat(serverDate);
+			
+			$('.' + guid + ' .server-date').val(formattedServerDate);
+
+			$(eventHolder).trigger("change", [{
+				clientDate: displayDate,
+				serverDate: formattedServerDate,
+				containerElement: $(selector),
+				clientDateElement: $(this),
+				serverDateElement: $(eventHolder)
+			}]);
+			$(this).datepickerX("hide");
+		}).on("hide", function () {
+			$(eventHolder).trigger("close");
+		});
+		return eventHolder;
+	}
 }

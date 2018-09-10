@@ -22,6 +22,7 @@ namespace RadialReview.Controllers {
 		private void UpdateViewbag() {
 			ViewBag.ManagingPayments = PermissionsAccessor.CanEdit(GetUser(), PermItem.ResourceType.UpdatePaymentForOrganization, GetUser().Organization.Id);
 			ViewBag.ShowAddClient = GetUser().Organization.Settings.AllowAddClient;
+			ViewBag.CanAddUsers = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
 		}
 
 

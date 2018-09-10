@@ -147,7 +147,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
 		$scope.functions.adjustToMidnight = function (date) {
 			//adjusts local time to end of day local time
-			return Time.adjustToMidnight(date);
+			return /*Time.toServerTime(*/Time.adjustToMidnight(date)/*)*/;
 		}
 
 		$scope.$watch('model.LoadUrls.length', function (newValue, oldValue) {
@@ -644,7 +644,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			var dat = angular.copy(self);
 			//var _clientTimestamp = new Date().getTime();
 			//Angular automatically converts dates to UTC from local time zone.
-			//r.updater.convertDatesForServer(dat, Time.tzoffset());
+			r.updater.convertDatesForServer(dat, Time.tzoffset());
 			console.warn("Dates were not converted for server, please confirm");
 			var builder = "";
 			args = args || {};

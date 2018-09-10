@@ -160,7 +160,7 @@ namespace RadialReview.Controllers {
             var selected = attendees.FirstOrDefault(x => x.Id == GetUser().Id);
             selected = selected ?? attendees.FirstOrDefault();
 
-			var todoModel = TodoCreation.CreateL10Todo(recurrenceId, null, null, selected.Id, null);
+			var todoModel = TodoCreation.GenerateL10Todo(recurrenceId, null, null, selected.Id, null);
 			await TodoAccessor.CreateTodo(GetUser(), todoModel);
 
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);

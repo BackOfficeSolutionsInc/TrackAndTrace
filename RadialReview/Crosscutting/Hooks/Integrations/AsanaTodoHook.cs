@@ -18,6 +18,7 @@ using RadialReview.Models.Integrations.Asana;
 using RadialReview.Hangfire;
 using Hangfire;
 using RadialReview.Crosscutting.Schedulers;
+using RestSharp;
 
 namespace RadialReview.Crosscutting.Hooks.Integrations {
 	public class AsanaTodoHook : ITodoHook {
@@ -33,6 +34,10 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 			await ExecuteCreate(s, todo);
 		}
 
+
+		public class TaskUpdate {
+			public Dictionary<string,object> data { get; set; }
+		}
 
 		public async Task UpdateTodo(ISession s, UserOrganizationModel caller, TodoModel todo, ITodoHookUpdates updates) {
 
@@ -54,35 +59,27 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 				//Update listening users
 				if (todoLinks.Any()) {
 					foreach (var link in todoLinks) {
-						var anyUpdates = false;
-						var update = new AsanaTaskDTO {
-							data = new AsanaTaskDTO.Data() {
-								id = link.ServiceTodoId
-							}
-						};
+						var todoUpdates = new List<KeyValuePair<string, string>>();
 
 						if (updates.CompletionChanged) {
-							anyUpdates = true;
-							update.data.completed = todo.CompleteTime != null;
+							todoUpdates.Add(new KeyValuePair<string, string>("completed",""+(todo.CompleteTime != null)));
 						}
 
 						if (updates.DueDateChanged) {
-							anyUpdates = true;
-							update.data.due_at = todo.DueDate.ToString("o");
+							todoUpdates.Add(new KeyValuePair<string, string>("due_at", "" + todo.DueDate.ToString("yyyy-MM-ddTHH:mm:ssZ")));
 						}
 
 						if (updates.MessageChanged) {
-							anyUpdates = true;
-							update.data.name = todo.Message;
+							todoUpdates.Add(new KeyValuePair<string, string>("name", todo.Message));
 						}
 
-						if (anyUpdates) {
+						if (todoUpdates.Any()) {
 							var token = await AsanaAccessor.GetUserToken_Unsafe(s, todo.AccountableUserId);
 							if (token != null) {
 								var actions = await AsanaAccessor.GetActionsForToken_Unsafe(s, token.Id);
 								foreach (var action in actions) {
 									if (action.ActionType == AsanaActionType.SyncMyTodos) {
-										Scheduler.Enqueue(() => UpdateTodoInAsana_Hangfire(token.AccessToken, update));
+										Scheduler.Enqueue(() => UpdateTodoInAsana_Hangfire(token.AccessToken, link.ServiceTodoId, todoUpdates));
 										//Exit After First One
 										break;
 									}
@@ -117,9 +114,9 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 				var actions = await AsanaAccessor.GetActionsForToken_Unsafe(s, token.Id);
 				foreach (var action in actions) {
 					if (action.ActionType == Models.Integrations.AsanaActionType.SyncMyTodos) {
-						Scheduler.Enqueue(() => CreateTodoInAsana_Hangfire(todo.Id, todo.Message, todo.Details, token.AsanaUserId, token.AccessToken, action.WorkspaceId));
+						Scheduler.Enqueue(() => CreateTodoInAsana_Hangfire(todo.Id,todo.DueDate, todo.Message, todo.Details, token.AsanaUserId, token.AccessToken, action.ProjectId,action.WorkspaceId));
 						//Exit After First One
-						break;
+						//break;
 					}
 				}
 			}
@@ -128,19 +125,30 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 
 		[Queue(HangfireQueues.Immediate.ASANA_EVENTS)]
 		[AutomaticRetry(Attempts = 3)]
-		public async Task UpdateTodoInAsana_Hangfire(string asanaToken, AsanaTaskDTO update) {			
+		public async Task UpdateTodoInAsana_Hangfire(string asanaToken,long asanaTodoId, List<KeyValuePair<string,string>> updates) {
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
 			using (var client = new WebClient()) {
 				client.Headers.Add("Authorization", "Bearer " + asanaToken);
-				var data = JsonConvert.SerializeObject(update);
-				await client.UploadStringTaskAsync(AsanaAccessor.AsanaUrl("tasks/" + update.data.id), "PUT", data);				
+
+				var param = new NameValueCollection();
+				foreach (var u in updates) {
+					param.Add(u.Key, u.Value);
+				}
+
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+				await client.UploadValuesTaskAsync(AsanaAccessor.AsanaUrl("tasks/" + asanaTodoId), "PUT", param);				
 			}			
 		}
 
 		[Queue(HangfireQueues.Immediate.ASANA_EVENTS)]
 		[AutomaticRetry(Attempts =3)]
 		public async static Task<long> DeleteTodoInAsana_Hangfire(long asanaTodoId, string asanaToken) {
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
 			using (var client = new WebClient()) {
 				client.Headers.Add("Authorization", "Bearer " + asanaToken);
+				client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
 				await client.UploadValuesTaskAsync(AsanaAccessor.AsanaUrl("tasks/" + asanaTodoId), "DELETE", new NameValueCollection());
 			}
 
@@ -162,19 +170,37 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 
 		[Queue(HangfireQueues.Immediate.ASANA_EVENTS)]
 		[AutomaticRetry(Attempts =3)]
-		public static async Task<TodoLink> CreateTodoInAsana_Hangfire(long todoId, string todoMessage, string todoDetails, long asanaUserId, string asanaToken, long workspaceId) {
+		public static async Task<TodoLink> CreateTodoInAsana_Hangfire(long todoId,DateTime due, string todoMessage, string todoDetails, long asanaUserId, string asanaToken, long projectId, long workspaceId) {
 			TodoLink link;
+
+			//var pclient = new RestClient("https://app.asana.com/api/1.0/tasks");
+			//var prequest = new RestRequest(Method.POST);
+			//prequest.AddHeader("postman-token", "98b69928-ad68-4fc6-ee7e-700c7e43cd88");
+			//prequest.AddHeader("cache-control", "no-cache");
+			//prequest.AddHeader("authorization", "Bearer " + asanaToken);
+			//prequest.AddHeader("accept", "application/json");
+			//prequest.Timeout = 4000;
+
+			//prequest.
+
+			//var response = pclient.Execute(prequest);
+
+
 			using (var client = new WebClient()) {
 				var param = new NameValueCollection();
 				param.Add("assignee", "" + asanaUserId);
-				param.Add("name", todoMessage);
-				param.Add("notes", todoDetails);
+				param.Add("name", todoMessage??"");
+				if (todoDetails != null) {
+					param.Add("notes", todoDetails);
+				}
+				param.Add("projects", "" + projectId);
 				param.Add("workspace", "" + workspaceId);
+				param.Add("due_at", "" + due.ToString("yyyy-MM-ddTHH:mm:ssZ"));
 
-				//if (refresh_token != null) {
-				//	param.Add("refresh_token", refresh_token);
-				//}
 				client.Headers.Add("Authorization", "Bearer " + asanaToken);
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+				
+
 
 				byte[] responsebytes = await client.UploadValuesTaskAsync(AsanaAccessor.AsanaUrl("tasks/"), "POST", param);
 				var responseBody = Encoding.UTF8.GetString(responsebytes);

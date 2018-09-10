@@ -149,7 +149,7 @@ namespace RadialReview.Controllers {
                             if (details.ContainsKey(ident))
                                 dued = due[ident];
 
-                            var todoC = TodoCreation.CreateL10Todo(recurrence, todos[ident], dets, owner ?? caller.Id, dued, now: now);
+                            var todoC = TodoCreation.GenerateL10Todo(recurrence, todos[ident], dets, owner ?? caller.Id, dued, now: now);
                             await TodoAccessor.CreateTodo(s, perms, todoC);
 
                             //await TodoAccessor.CreateTodo(s, perms, recurrence, new TodoModel() {
