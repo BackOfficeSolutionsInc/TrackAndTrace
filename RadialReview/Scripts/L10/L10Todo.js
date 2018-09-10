@@ -57,9 +57,9 @@ $(function () {
 			"</span>" +
 			"</span>" +
 			"</div>" +
-			"<div>" +
+			"<div style='padding-top: 3px;'>" +
 			"<span class='gray' style='width:78px;display:inline-block'>Create date:</span>" +
-			"<span style='width:250px;padding-left:21px;'>" + dateFormatter(new Date(createtime)) +
+			"<span style='width:250px;padding-left:21px;color:'>" + dateFormatter(new Date(createtime)) +
 			"</span>" +
 			"</span>" +
 			"</div>" +

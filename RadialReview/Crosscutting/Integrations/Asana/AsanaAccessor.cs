@@ -1,9 +1,12 @@
 ﻿using Newtonsoft.Json;
 using NHibernate;
+using RadialReview.Accessors;
 using RadialReview.Exceptions;
+using RadialReview.Hangfire;
 using RadialReview.Models;
 using RadialReview.Models.Integrations;
 using RadialReview.Models.Integrations.Asana;
+using RadialReview.Models.Todo;
 using RadialReview.Utilities;
 using RestSharp;
 using System;
@@ -16,12 +19,18 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-
+using Hangfire;
 namespace RadialReview.Crosscutting.Integrations.Asana {
-	public class AsanaAccessor {
+	public class AsanaAccessor : BaseAccessor {
+
+		public static string UPDATE_SOURCE = "ASANA";
 
 		public static string GetRedirectUrl() {
 			return Config.BaseUrl(null, "/Integrations/AsanaRedirect");
+		}
+
+		public static string GetWebhookUrl() {
+			return Config.BaseUrl(null, "/Webhook/Asana_305055482F9B4580B89BBFF3301363DF/");
 		}
 
 		public static string AsanaUrl(string append) {
@@ -143,15 +152,15 @@ namespace RadialReview.Crosscutting.Integrations.Asana {
 			request.AddHeader("cache-control", "no-cache");
 			request.AddHeader("authorization", "Bearer " + token.AccessToken);
 			request.AddHeader("accept", "application/json");
-			request.Timeout = 4000;			
+			request.Timeout = 4000;
 			IRestResponse response = client.Execute(request);
-			
+
 			var workspaces = JsonConvert.DeserializeObject<AsanaWorkspaceDTO>(response.Content);
 
 			var results = new List<AsanaProject>();
 
 			foreach (var workspace in workspaces.data) {
-				var pclient = new RestClient("https://app.asana.com/api/1.0/projects?workspace="+workspace.id);
+				var pclient = new RestClient("https://app.asana.com/api/1.0/projects?workspace=" + workspace.id);
 				var prequest = new RestRequest(Method.GET);
 				prequest.AddHeader("postman-token", "98b69928-ad68-4fc6-ee7e-700c7e43cd88");
 				prequest.AddHeader("cache-control", "no-cache");
@@ -173,7 +182,7 @@ namespace RadialReview.Crosscutting.Integrations.Asana {
 
 			return results;
 		}
-		public static async Task<AsanaAction> CreateAction(UserOrganizationModel caller, long tokenId, long projectId, bool syncMyTodos,string workspaceName, string projectName, long workspaceId) {
+		public static async Task<AsanaAction> CreateAction(UserOrganizationModel caller, long tokenId, long projectId, bool syncMyTodos, string workspaceName, string projectName, long workspaceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -201,7 +210,7 @@ namespace RadialReview.Crosscutting.Integrations.Asana {
 			}
 		}
 
-		public static async Task<AsanaAction> UpdateAction(UserOrganizationModel caller, long actionId, long projectId, bool syncMyTodos, string workspaceName, string projectName,long workspaceId) {
+		public static async Task<AsanaAction> UpdateAction(UserOrganizationModel caller, long actionId, long projectId, bool syncMyTodos, string workspaceName, string projectName, long workspaceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -257,6 +266,75 @@ namespace RadialReview.Crosscutting.Integrations.Asana {
 				.List().ToList();
 			var token = tokens.FirstOrDefault();
 			return await RefreshToken(s, token);
+		}
+
+
+		[Queue(HangfireQueues.Immediate.ASANA_EVENTS)]
+		[AutomaticRetry(Attempts = 0)]
+		public static async Task<List<string>> UpdateTaskFromRemote_Hangfire(List<long> asanaTaskIds) {
+			asanaTaskIds= asanaTaskIds.Distinct().ToList();
+
+
+			var ownerId_tokens = new Dictionary<long, AsanaToken>();
+			var externalTodo_internalTodo = new Dictionary<long, long>();
+			var internalTodo_ownerId = new Dictionary<long, long>();
+			var ownerId_owner = new Dictionary<long, UserOrganizationModel>();
+					
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var links = s.QueryOver<TodoLink>()
+						.Where(x => x.Service == TodoService.Asana)
+						.WhereRestrictionOn(x=>x.ServiceTodoId).IsIn(asanaTaskIds)
+						.List().ToList();
+
+					var todoIds = links.Select(x=>x.InternalTodoId).Distinct().ToArray();
+
+					var todos = s.QueryOver<TodoModel>()
+						.WhereRestrictionOn(x => x.Id)
+						.IsIn(todoIds)
+						.List().ToList();
+
+					externalTodo_internalTodo = links.ToDictionary(x => x.ServiceTodoId, x => x.InternalTodoId);
+					internalTodo_ownerId = todos.ToDictionary(x => x.Id, x => x.AccountableUserId);
+
+					var userIds = todos.Select(x=>x.AccountableUserId).Distinct().ToList();
+					foreach (var userId in userIds) {
+						var user = s.Get<UserOrganizationModel>(userId);
+						ownerId_tokens[userId] = await GetUserToken_Unsafe(s, userId);
+						ownerId_owner[userId] = user;
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			var errors = new List<string>();
+			foreach (var asanaTaskId in asanaTaskIds) {
+				try {
+					var todoId = externalTodo_internalTodo[asanaTaskId];
+					var userId = internalTodo_ownerId[todoId];
+					var caller = ownerId_owner[userId];
+					var token = ownerId_tokens[userId];
+
+					if (token != null && token.AccessToken!=null) {
+						ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+						var pclient = new RestClient("https://app.asana.com/api/1.0/tasks/" + asanaTaskId);
+						var prequest = new RestRequest(Method.GET);
+						prequest.AddHeader("postman-token", "98b69928-ad68-4fc6-ee7e-700c7e43cd88");
+						prequest.AddHeader("cache-control", "no-cache");
+						prequest.AddHeader("authorization", "Bearer " + token.AccessToken);
+						prequest.AddHeader("accept", "application/json");
+						prequest.Timeout = 4000;
+
+						IRestResponse rsp = pclient.Execute(prequest);
+						var asanaTask = JsonConvert.DeserializeObject<AsanaTask>(rsp.Content).data;
+						await TodoAccessor.UpdateTodo(caller, todoId, asanaTask.name, asanaTask.due_at, null, asanaTask.completed, updateSource: UPDATE_SOURCE);
+					}
+				} catch (Exception e) {
+					errors.Add(e.Message);
+				}
+			}
+			return errors;
+
 		}
 
 		//public static string LastResponse1;
@@ -336,24 +414,48 @@ namespace RadialReview.Crosscutting.Integrations.Asana {
 			var asanaData = Config.Asana();
 
 			if (token.Expires < now) {
-				string responseBody;
-				using (var client = new WebClient()) {
-					var param = new NameValueCollection();
-					param.Add("grant_type", "refresh_token");
-					param.Add("client_id", asanaData.ClientId);
-					param.Add("client_secret", asanaData.ClientSecret);
-					param.Add("redirect_uri", token.RedirectUri);
-					param.Add("refresh_token", token.RefreshToken);
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+				var client = new RestClient("https://app.asana.com/-/oauth_token");
+				var request = new RestRequest(Method.POST);
+				request.AddHeader("postman-token", "98b69928-ad68-4fc6-ee7e-700c7e43cd88");
+				request.AddHeader("cache-control", "no-cache");
+				request.AddHeader("accept", "application/json");
 
-					client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-					byte[] responsebytes = client.UploadValues("https://app.asana.com/-/oauth_token", "POST", param);
-					responseBody = Encoding.UTF8.GetString(responsebytes);
-				}
+				request.AddParameter("grant_type", "refresh_token");
+				request.AddParameter("client_id", asanaData.ClientId);
+				request.AddParameter("client_secret", asanaData.ClientSecret);
+				request.AddParameter("redirect_uri", token.RedirectUri);
+				request.AddParameter("refresh_token", token.RefreshToken);
+
+				request.Timeout = 4000;
+				IRestResponse rsp = client.Execute(request);
+				var responseBody = rsp.Content;
+
+				//string responseBody;
+				//using (var client = new WebClient()) {
+				//	var param = new NameValueCollection();
+				//	param.Add("grant_type", "refresh_token");
+				//	param.Add("client_id", asanaData.ClientId);
+				//	param.Add("client_secret", asanaData.ClientSecret);
+				//	param.Add("redirect_uri", token.RedirectUri);
+				//	param.Add("refresh_token", token.RefreshToken);
+
+				//	client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+				//	byte[] responsebytes = client.UploadValues("https://app.asana.com/-/oauth_token", "POST", param);
+				//	responseBody = Encoding.UTF8.GetString(responsebytes);
+				//}
 				var response = JsonConvert.DeserializeObject<TokenExchangeEndpointResponse>(responseBody);
 
-				token.Expires = CalculateExpiration(response.expires_in);
-				token.AccessToken = response.access_token;
-				token.RefreshToken = response.refresh_token;
+				if (response.expires_in > 0) {
+					token.Expires = CalculateExpiration(response.expires_in);
+				}
+
+				if (response.access_token != null) {
+					token.AccessToken = response.access_token;
+				}
+				if (response.refresh_token != null) {
+					token.RefreshToken = response.refresh_token;
+				}
 
 				s.Update(token);
 

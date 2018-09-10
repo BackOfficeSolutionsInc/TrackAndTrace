@@ -36,10 +36,26 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 
 
 		public class TaskUpdate {
-			public Dictionary<string,object> data { get; set; }
+			public Dictionary<string, string> data { get; set; }
 		}
 
+		public class KV {
+			public KV(string key, string value) {
+				Key = key;
+				Value = value;
+			}
+
+			public string Key { get; set; }
+			public string Value { get; set; }
+		}
+
+
 		public async Task UpdateTodo(ISession s, UserOrganizationModel caller, TodoModel todo, ITodoHookUpdates updates) {
+
+			if (updates.UpdateSource == AsanaAccessor.UPDATE_SOURCE) {
+				//Want to avoid infinite loops...
+				return;
+			}
 
 			var todoLinks = s.QueryOver<TodoLink>()
 							.Where(x => x.InternalTodoId == todo.Id)
@@ -59,18 +75,18 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 				//Update listening users
 				if (todoLinks.Any()) {
 					foreach (var link in todoLinks) {
-						var todoUpdates = new List<KeyValuePair<string, string>>();
+						var todoUpdates = new List<KV>();
 
 						if (updates.CompletionChanged) {
-							todoUpdates.Add(new KeyValuePair<string, string>("completed",""+(todo.CompleteTime != null)));
+							todoUpdates.Add(new KV("completed", "" + (todo.CompleteTime != null)));
 						}
 
 						if (updates.DueDateChanged) {
-							todoUpdates.Add(new KeyValuePair<string, string>("due_at", "" + todo.DueDate.ToString("yyyy-MM-ddTHH:mm:ssZ")));
+							todoUpdates.Add(new KV("due_at", "" + todo.DueDate.ToString("yyyy-MM-ddTHH:mm:ssZ")));
 						}
 
 						if (updates.MessageChanged) {
-							todoUpdates.Add(new KeyValuePair<string, string>("name", todo.Message));
+							todoUpdates.Add(new KV("name", todo.Message));
 						}
 
 						if (todoUpdates.Any()) {
@@ -114,7 +130,7 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 				var actions = await AsanaAccessor.GetActionsForToken_Unsafe(s, token.Id);
 				foreach (var action in actions) {
 					if (action.ActionType == Models.Integrations.AsanaActionType.SyncMyTodos) {
-						Scheduler.Enqueue(() => CreateTodoInAsana_Hangfire(todo.Id,todo.DueDate, todo.Message, todo.Details, token.AsanaUserId, token.AccessToken, action.ProjectId,action.WorkspaceId));
+						Scheduler.Enqueue(() => CreateTodoInAsana_Hangfire(todo.Id, todo.DueDate, todo.Message, todo.Details, token.AsanaUserId, token.AccessToken, action.ProjectId, action.WorkspaceId));
 						//Exit After First One
 						//break;
 					}
@@ -124,8 +140,8 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 
 
 		[Queue(HangfireQueues.Immediate.ASANA_EVENTS)]
-		[AutomaticRetry(Attempts = 3)]
-		public async Task UpdateTodoInAsana_Hangfire(string asanaToken,long asanaTodoId, List<KeyValuePair<string,string>> updates) {
+		[AutomaticRetry(Attempts = 0)]
+		public async Task UpdateTodoInAsana_Hangfire(string asanaToken, long asanaTodoId, List<KV> updates) {
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
 			using (var client = new WebClient()) {
@@ -137,12 +153,12 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 				}
 
 				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-				await client.UploadValuesTaskAsync(AsanaAccessor.AsanaUrl("tasks/" + asanaTodoId), "PUT", param);				
-			}			
+				await client.UploadValuesTaskAsync(AsanaAccessor.AsanaUrl("tasks/" + asanaTodoId), "PUT", param);
+			}
 		}
 
 		[Queue(HangfireQueues.Immediate.ASANA_EVENTS)]
-		[AutomaticRetry(Attempts =3)]
+		[AutomaticRetry(Attempts = 0)]
 		public async static Task<long> DeleteTodoInAsana_Hangfire(long asanaTodoId, string asanaToken) {
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
@@ -169,8 +185,8 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 
 
 		[Queue(HangfireQueues.Immediate.ASANA_EVENTS)]
-		[AutomaticRetry(Attempts =3)]
-		public static async Task<TodoLink> CreateTodoInAsana_Hangfire(long todoId,DateTime due, string todoMessage, string todoDetails, long asanaUserId, string asanaToken, long projectId, long workspaceId) {
+		[AutomaticRetry(Attempts = 0)]
+		public static async Task<object> CreateTodoInAsana_Hangfire(long todoId, DateTime due, string todoMessage, string todoDetails, long asanaUserId, string asanaToken, long projectId, long workspaceId) {
 			TodoLink link;
 
 			//var pclient = new RestClient("https://app.asana.com/api/1.0/tasks");
@@ -185,11 +201,12 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 
 			//var response = pclient.Execute(prequest);
 
+			var asanaTaskId = 0L;
 
 			using (var client = new WebClient()) {
 				var param = new NameValueCollection();
 				param.Add("assignee", "" + asanaUserId);
-				param.Add("name", todoMessage??"");
+				param.Add("name", todoMessage ?? "");
 				if (todoDetails != null) {
 					param.Add("notes", todoDetails);
 				}
@@ -199,7 +216,7 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 
 				client.Headers.Add("Authorization", "Bearer " + asanaToken);
 				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-				
+
 
 
 				byte[] responsebytes = await client.UploadValuesTaskAsync(AsanaAccessor.AsanaUrl("tasks/"), "POST", param);
@@ -211,15 +228,38 @@ namespace RadialReview.Crosscutting.Hooks.Integrations {
 					Service = TodoService.Asana,
 					ServiceTodoId = response.data.id
 				};
+				asanaTaskId = response.data.id;
 			}
+
+			//Save to db
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					s.Save(link);
 					tx.Commit();
 					s.Flush();
-					return link;
 				}
 			}
+			{
+				//Webhook subscription
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+				var client = new RestClient("https://app.asana.com/api/1.0/webhooks");
+				var request = new RestRequest(Method.POST);
+				request.AddHeader("postman-token", "98b69928-ad68-4fc6-ee7e-700c7e43cd88");
+				request.AddHeader("cache-control", "no-cache");
+				request.AddHeader("authorization", "Bearer " + asanaToken);
+				request.AddHeader("accept", "application/json");
+				request.AddParameter("resource", asanaTaskId);
+				request.AddParameter("target", AsanaAccessor.GetWebhookUrl());
+				request.Timeout = 4000;
+				IRestResponse response = client.Execute(request);
+				
+				return new {
+					link = link,
+					response_code = response.StatusCode,
+					response_content = response.Content
+				};
+			}
+
 		}
 	}
 }

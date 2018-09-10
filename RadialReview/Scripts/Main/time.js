@@ -273,7 +273,6 @@
 		$('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
 			var date = e.date;
 			if (endOfDay) {
-				debugger;
 				date = Time.adjustToMidnight(date);
 			}
 			var displayDate = date;//Should not change ever.. we selected this, it's what we want to see

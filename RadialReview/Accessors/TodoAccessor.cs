@@ -168,21 +168,21 @@ namespace RadialReview.Accessors {
 
 		}
 
-		public static async Task UpdateTodo(UserOrganizationModel caller, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, ForModel source = null) {
+		public static async Task UpdateTodo(UserOrganizationModel caller, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, ForModel source = null, string updateSource="TractionTools") {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-                    await UpdateTodo(s, perms, todoId, message, dueDate, accountableUser, complete, source: source);
+                    await UpdateTodo(s, perms, todoId, message, dueDate, accountableUser, complete, source: source,updateSource: updateSource);
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
 		
-        public static async Task UpdateTodo(ISession s, PermissionsUtility perms, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, bool duringMeeting = false, ForModel source = null /*, string connectionId = null, bool duringMeeting = false, bool? delete = null*/) {
+        public static async Task UpdateTodo(ISession s, PermissionsUtility perms, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, bool duringMeeting = false, ForModel source = null, string updateSource = "TractionTools" /*, string connectionId = null, bool duringMeeting = false, bool? delete = null*/) {
 			perms.EditTodo(todoId);
 			var todo = s.Get<TodoModel>(todoId);
-			var updates = new ITodoHookUpdates();
+			var updates = new ITodoHookUpdates(updateSource);
 			//Message
 			if (message != null && todo.Message != message) {
 				todo.Message = message;

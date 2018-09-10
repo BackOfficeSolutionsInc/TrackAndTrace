@@ -405,7 +405,7 @@
 										<div class="boxed content">
 											<div>
 												<span class="bold lbl">Future Date:</span> <span class="future-date input">
-													<input type="date" class="datepicker2" ng-model='(model.ThreeYearPicture).FutureDate' ng-model-options="{ debounce: 400 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTOVision ? "" : "disabled") />
+													<input type="date" class="datepicker2" ng-model='(model.ThreeYearPicture).FutureDate' ng-model-options="{ debounce: 400 }" ng-blur="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTOVision ? "" : "disabled") />
 												</span>
 											</div>
 											<div>
@@ -492,7 +492,7 @@
 									<div class="boxed content">
 										<div>
 											<span class="bold lbl">Future Date:</span> <span class="future-date input">
-												<input type="date" class="datepicker2" ng-model='(model.OneYearPlan).FutureDate' ng-model-options="{ debounce: 400 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTOTraction ? "" : "disabled") />
+												<input type="date" class="datepicker2" ng-model='(model.OneYearPlan).FutureDate' ng-model-options="{ debounce: 400 }" ng-blur="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTOTraction ? "" : "disabled") />
 											</span>
 										</div>
 										<div>
@@ -552,7 +552,7 @@
 									<div class="boxed content">
 										<div>
 											<span class="bold lbl">Future Date:</span><span class="future-date input">
-												<input type="date" class="datepicker2" ng-model='(model.QuarterlyRocks).FutureDate' ng-model-options="{ debounce: 400 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTOTraction ? "" : "disabled") />
+												<input type="date" class="datepicker2" ng-model='(model.QuarterlyRocks).FutureDate' ng-model-options="{ debounce: 400 }" ng-blur="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTOTraction ? "" : "disabled") />
 											</span>
 										</div>
 										<div>
