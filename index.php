@@ -14,6 +14,35 @@ $isSet=true;
 $search=NULL;
 $resultSet=NULL;
 $mysqli=NULL;
+?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+		<head>
+		<title>Logistikus-Express</title>
+		<link rel="stylesheet" type="text/css" href="././style/banner_style.css">
+		<link rel="stylesheet" type="text/css" href="././style/status_style.css">
+	
+		<meta name="description" content="apple juice addict" />
+		</head>
+		<body>
+	
+		<div class="sector-banner">
+			<div class="logo">
+			<a href="http://www.logistikus-express.com"><img src="images/Logistikuslogo.png" class="center"></a>
+			</div>
+			<form method="POST">
+				<div class="box">
+					<h1>Track Your Parcel</h1>
+						<div class="txt">Type your tracking number below</div>
+					<div class="form">
+						<div class="col1"><input type="text" name="search" class="iCode" placeholder="Enter your Tracking #" autocomplete="off" /></div>
+						<div class="col2"><input type="submit" name="submit" class="btn" value="Track" /></div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+<?php
+
 if(isset($_POST['submit'])) { 
 	$mysqli = NEW MySQLi("localhost","root","","logistikus");
 	$search = $mysqli->real_escape_string($_POST['search']);
@@ -27,35 +56,10 @@ if(isset($_POST['submit'])) {
 			$sender = $rows["sender"];
 			$consignee = $rows["consignee"];
 		}
-	}
-}
-?>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-	<title>Logistikus-Express</title>
-	<link rel="stylesheet" type="text/css" href="././style/banner_style.css">
-	<link rel="stylesheet" type="text/css" href="././style/status_style.css">
-	
-	<meta name="description" content="apple juice addict" />
-	<body>
-	
-	<div class="sector-banner">
-		<div class="logo">
-			<a href="http://www.logistikus-express.com"><img src="images/Logistikuslogo.png" class="center"></a>
-		</div>
-		<form method="POST">
-			<div class="box">
-				<h1>Track Your Parcel</h1>
-					<div class="txt">Type your tracking number below</div>
-				<div class="form">
-					<div class="col1"><input type="text" name="search" class="iCode" placeholder="Enter your Tracking #" autocomplete="off" /></div>
-					<div class="col2"><input type="submit" name="submit" class="btn" value="Track" /></div>
-				</div>
-			</div>
-		</form>
-	</div>
-<?php if(isset($_POST['submit'])) {  ?>
-	<div class="sector-frame">
+		?>
+		
+		<?php if(isset($_POST['submit'])) {  ?>
+		<div class="sector-frame">
 		<div class="warpper" id="trackArea">
 			<div class="sector-frame">
 				<div class="warpper">
@@ -79,7 +83,7 @@ if(isset($_POST['submit'])) {
 									</div>
 								</div>
 								<div class="col colStatus">							
-<?php	
+		<?php	
 		$resultSet = $mysqli->query("SELECT DISTINCT wbn, date, reference, sender, consignee, status, stamp, location, status_icon FROM trackandtrace WHERE wbn = '$search' ORDER BY `stamp` DESC");
 		if($resultSet->num_rows > 0 ) {
 			while($rows =$resultSet->fetch_assoc())
@@ -88,10 +92,11 @@ if(isset($_POST['submit'])) {
 					$status = $rows["status"];
 					$location = $rows["location"];
 					$status_icon = $rows["status_icon"];
-?>
+		?>
 									<div class="status piority-success">
 										<div class="date">
 											<div><?php echo $stamp; ?></div>
+											<div> </div>
 										</div>
 										<div class="desc">
 											<div class="d1">
@@ -104,10 +109,12 @@ if(isset($_POST['submit'])) {
 											<?php 
 										if ($status_icon == 1) { ?>
 											<img src="images/icon/status/package.png" alt=" ">
-											<?php	}elseif ($status_icon == 2) {
+											<?php	}
+											elseif ($status_icon == 2) {
 											?>
 											<img src="images/icon/status/warning.png" alt=" ">
-											<?php } elseif ($status_icon == 3) {
+											<?php } 
+											elseif ($status_icon == 3) {
 											?>
 											<img src="images/icon/status/complete.png" alt=" ">
 											<?php }
@@ -117,29 +124,37 @@ if(isset($_POST['submit'])) {
 										</div>
 									</div>
 									
-<?php
+		<?php
 				}
 		}
-?>							
-									
-									
-									
-									
+		?>							
+
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 			
 
+			</div>
 		</div>
-	</div>
-<?php }?>
+		<?php }?>
 
-<div class="footer">
-<p>&copy; Copy Right Logistikus-Express.com</p>
-</div>
-	</body>	
-</head>
-</html>
+
+		
+		<div class="nf"><?php		
+			}	
+			else {
+				echo "Tracking Number not found";
+			}
+				
+			}
+
+		?></div>
+		<div class="footer">
+		<p>&copy; Copy Right Logistikus-Express.com</p>
+		</div>
+			</body>	
+		
+		</html>
