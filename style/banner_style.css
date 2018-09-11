@@ -1,0 +1,77 @@
+body { background-color:#f1f1f1 }
+.sector-banner {
+	height:300px;
+	width:100%;
+	padding-top: 20px;
+	background:url(../images/banner.jpg) center no-repeat;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	-ms-background-size: cover;
+	background-size:cover;
+	text-align:center
+}
+
+.sector-banner .box {
+	display:inline-block;
+	text-align:left;
+	color:#ffffff;
+	text-shadow: 0 2px 0 rgba(0,0,0,0.5);
+	margin-top:5px;
+}
+.sector-banner .box > h1 { font-size:54px;margin:0px; }
+.sector-banner .box > .txt { font-size:24px;padding-left:4px;margin-top:-2px; }
+.sector-banner .box .form { margin-top:14px;display:table }
+.sector-banner .box .form > * { display:table-cell;vertical-align:middle }
+.sector-banner .box .iCode { border:0px;border-radius:10px;font-size:24px;height:50px;color:#000000;padding:0px 20px;width:440px; }
+.sector-banner .box .btn { height:50px;font-size:18px;margin:0px;margin-left:12px; }
+.sector-banner .box .btn { background-color: #09717f; /* Blue */ border-color: #0ea6bb; border: 2px; color: white; padding: 15px 32px; text-align: center; text-shadow: 0 2px 0 rgba(0,0,0,0.5); display: inline-block; font-size: 16px; }
+	input:focus { outline: none; }
+
+.sector-frame {  }
+
+
+@media only screen and (max-width: 1600px) {
+
+}
+
+@media only screen and (max-width: 1300px) {
+
+}
+
+@media only screen and (max-width: 1024px) {
+
+}
+
+@media only screen and (max-width: 1000px) {
+
+}
+
+@media only screen and (max-width: 700px) {
+
+	.sector-banner {	height:350px; }
+
+	.sector-banner .box { margin:0px 30px;display:block;padding-top:110px; }
+	.sector-banner .box .form { display:block; }
+	.sector-banner .box .form > * { display:block; }
+	.sector-banner .box .iCode { width:100%; }
+	.sector-banner .box .btn { margin:10px 0px;}
+}
+
+@media only screen and (max-width: 500px) {
+
+	.sector-banner .box  { text-align:center }
+	.sector-banner .box > h1 { font-size:36px; }
+	.sector-banner .box > .txt { font-size:20px; }
+	.sector-banner .box .btn { margin:10px 0px; }
+
+}
+.footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background-color: #09717f;
+	color: white;
+	text-align: center;
+}

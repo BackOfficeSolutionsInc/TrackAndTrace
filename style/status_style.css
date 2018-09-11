@@ -1,0 +1,126 @@
+@charset "utf-8";
+@font-face {
+	font-family: 'FamiliarPro';
+	src: url('../fonts/FamiliarPro.otf') format('truetype');
+
+}
+
+
+html , body {
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+	font-size:12px;
+}
+
+body {
+	font-size: 14px;
+	font-family: 'FamiliarPro',verdana,arial,sans-serif,"lucida grande";
+}
+
+
+.section-status  { padding:40px 20px; }
+.section-status > .wrapper { max-width:1100px;margin:0px auto; }
+.section-status .row { position:relative;display:table;min-height:300px;width:100%; }
+.section-status .row > .col { display:table-cell;vertical-align:top;width:40%;position:relative; }
+.section-status .row > .colStatus { border-left:1px #c8c8c8 solid;width:60%; }
+
+.info { color:#1c1c1c;line-height:1.4;padding:20px; }
+.info .line { }
+.info span { color:#09717f }
+
+.fb { position:absolute;bottom:0px;left:0px;right:0px;top:auto;padding:20px;border-top:1px #c8c8c8 solid;}
+.fb .logo { margin-right:15px;float:left }
+.fb .t1 { color:#09717f;font-weight:bold;  }
+.fb .t2 { color:#1c1c1c;font-size:14px;margin-top:5px;font-weight:normal }
+
+
+.status { font-size:16px;width:550px;position:relative;overflow:auto;padding-bottom:20px;  }
+.status > .date { color:#808080;text-align:right;width:120px;float:left;margin-top:4px;margin-right:90px;padding-left:5px;   }
+.status > .icon { width:45px;margin:0px 30px;background:url(../images/icon/status/bar.png) center repeat-y;height:100%;position:absolute;left:130px;top:0px;height:100%;overflow:hidden }
+.status > .icon > .img {
+	height:45px;
+	width:45px;
+	margin-left: 2px;
+	background-image: url(../images/icon/status/wait.png);
+	background-repeat: no-repeat;
+}.status > .desc { float:left;width:280px; }
+.status > .desc > .d1 { color:#09717f;margin-bottom:2px; }
+.status:last-child > .icon { background:none!important}
+
+
+/*.success > .icon {background-image:url(../img/page_track/status/line.png)}*/ 
+.normaly-success > .icon > .img {background:url(../images/icon/status/complete.png) no-repeat; }
+.normaly-process > .icon > .img {background:url(../images/icon/status/arrived.png) no-repeat; }
+.normaly-warning > .icon > .img {background:url(../images/icon/status/warning.png) no-repeat; }
+.normaly-waiting > .icon > .img {background:url(../images/icon/status/package.png) no-repeat; }
+.normaly-return > .icon > .img {background:url(../images/icon/status/return.png) no-repeat; }
+
+.piority-success > .icon > .img {background:url(../images/icon/status/complete.png) no-repeat; }
+.piority-process > .icon > .img {background:url(../images/icon/status/arrived.png) no-repeat; }
+.piority-warning > .icon > .img {background:url(../images/icon/status/warning.png) no-repeat; }
+.piority-waiting > .icon > .img {background:url(../images/icon/status/package.png) no-repeat; }
+.piority-return > .icon > .img {background:url(../images/icon/status/return.png) no-repeat; }
+
+
+
+
+@media only screen and (max-width: 1600px) {
+
+}
+
+@media only screen and (max-width: 1300px) {
+
+}
+
+@media only screen and (max-width: 1024px) {
+
+}
+
+@media only screen and (max-width: 900px) {
+	.section-status .row { display:block;min-height:auto; }
+	.section-status .row > .col  { display:block;width:auto }
+	.section-status .row > .colStatus { border:0px; border-top:1px #c8c8c8 solid;padding-top:20px; }
+	
+	.fb  { position:relative;top:auto;left:auto;right:auto;bottom:auto }
+	
+	.info { padding-top:0px; }
+	
+}
+
+@media only screen and (max-width: 768px) {
+
+}
+
+@media only screen and (max-width: 600px) {
+
+	.status { padding-left:90px;width:auto }
+	.status > .date { width:auto;float:none;text-align:left;padding-left:0px;margin-right:0px; }
+	.status > .date > div { display:inline-block ;font-size:14px;}
+	.status > .desc  { width:auto;float:none; }
+	.status > .icon { left:0px; }
+	
+}
+
+
+@media only screen and (max-width: 430px) {
+
+	.info {  padding:0px 0px 20px 0px; }
+	.fb { text-align:center;padding:20px 0px; }
+	.fb .logo { float:none;margin-bottom:10px; }
+	.status { padding-left:80px; }
+	.status > .icon { margin-left:10px; }
+}
+
+.link-signed {
+	color: #09717f;
+	text-decoration: underline;
+}
+.link-signed :hover{
+	color: #09717f;
+	text-decoration: underline;
+}
+
+.hidden-image{
+display:none;
+}
