@@ -50,7 +50,7 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.ViewL10Recurrence(recurrenceId);
-					var scheduled = s.QueryOver<QuarterlyEmail>().Where(x => x.DeleteTime == null && x.ScheduledTime > DateTime.UtcNow.AddDays(-1)).List().ToList();
+					var scheduled = s.QueryOver<QuarterlyEmail>().Where(x => x.DeleteTime == null && x.ScheduledTime > DateTime.UtcNow.AddDays(-1) && x.RecurrenceId == recurrenceId).List().ToList();
 					return scheduled;
 				}
 			}
@@ -65,6 +65,8 @@ namespace RadialReview.Accessors {
 
 					if (qe.SentTime != null)
 						throw new Exception("Already sent quarterly printout");
+					if (qe.DeleteTime != null)
+						throw new Exception("Request deleted");
 
 					var caller = s.Get<UserOrganizationModel>(qe.SenderId);
 					var perms = PermissionsUtility.Create(s, caller);

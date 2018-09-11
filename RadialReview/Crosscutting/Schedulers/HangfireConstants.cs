@@ -63,7 +63,7 @@ namespace RadialReview.Hangfire {
 					HangfireQueues.Immediate.EXECUTE_EVENT_ANALYZERS,
 					HangfireQueues.Immediate.ASANA_EVENTS,
 					HangfireQueues.DEFAULT,
-                    HangfireQueues.Immediate.ALPHA
+                    //HangfireQueues.Immediate.ALPHA 
         };
 
 

@@ -17,6 +17,10 @@ namespace RadialReview.Models.Quarterly {
 		public virtual DateTime ScheduledTime { get; set; }
 		public virtual DateTime? SentTime { get; set; }
 
+		public QuarterlyEmail() {
+			CreateTime = DateTime.UtcNow;
+		}
+
 		public class Map : ClassMap<QuarterlyEmail> {
 			public Map() {
 				Id(x => x.Id);

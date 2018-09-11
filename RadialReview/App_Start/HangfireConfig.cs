@@ -30,9 +30,9 @@ namespace RadialReview.App_Start {
             var awsEnv = "awsenv_"+(new Regex("[^a-zA-Z0-9]").Replace(Config.GetAwsEnv(), ""));
             var myQueues = new List<string> { awsEnv , HangfireQueues.DEFAULT};
             if (Config.IsHangfireWorker()) {
-			    myQueues = new[] { awsEnv }.Union(HangfireQueues.OrderedQueues).ToList();
+			    myQueues = new[] { awsEnv }.Union(HangfireQueues.OrderedQueues.Where(x=>x!= HangfireQueues.Immediate.ALPHA)).ToList();
             }
-            if (Config.IsDefinitelyAlpha()) {
+            if (Config.IsDefinitelyAlpha() || Config.IsLocal()) {
                 myQueues.Add(HangfireQueues.Immediate.ALPHA);
             }
 
