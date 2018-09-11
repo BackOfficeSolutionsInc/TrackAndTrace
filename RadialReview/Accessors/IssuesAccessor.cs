@@ -131,7 +131,7 @@ namespace RadialReview.Accessors {
 
             string firePadChar = "-";
             if (!string.IsNullOrWhiteSpace(io.IssueModel.Description))
-                await PadAccessor.CreatePad(io.IssueModel.PadId, io.IssueModel.Description);
+                firePadChar = await PadAccessor.CreatePad(io.IssueModel.PadId, io.IssueModel.Description);
             io.IssueModel.PadId = firePadChar + io.IssueModel.PadId;
             s.Save(io.IssueModel);
 			s.Save(io.IssueRecurrenceModel);

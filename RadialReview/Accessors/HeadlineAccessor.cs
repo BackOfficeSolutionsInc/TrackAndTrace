@@ -69,7 +69,7 @@ namespace RadialReview.Accessors {
 
             string firePadChar = "-";
             if (!string.IsNullOrWhiteSpace(headline._Details))
-                await PadAccessor.CreatePad(headline.HeadlinePadId, headline._Details);
+                firePadChar = await PadAccessor.CreatePad(headline.HeadlinePadId, headline._Details);
             headline.HeadlinePadId = firePadChar + headline.HeadlinePadId;
 
             s.Save(headline);
