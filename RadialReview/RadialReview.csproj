@@ -1428,6 +1428,7 @@
     <Content Include="Scripts\Inputs\token-editor.js" />
     <Content Include="Scripts\Inputs\underscore.min.js" />
     <Content Include="Scripts\Inputs\underscore.string.min.js" />
+    <Content Include="Scripts\jquery\jquery-ui.mi.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.min.js">
       <DependentUpon>jquery.autoresize.js</DependentUpon>
     </Content>

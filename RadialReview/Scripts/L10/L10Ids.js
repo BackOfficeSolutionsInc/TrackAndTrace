@@ -59,7 +59,7 @@ $(function () {
 						$(selector2).attr("data-checked", (!data.Error ? data.Object : !checked));
 						$(selector2).toggleClass("skipNumber", (!data.Error ? data.Object : !checked));
 						refreshCurrentIssueDetails();
-						refreshRanks();
+						//refreshRanks();
 						if (checked) {
 							setTimeout(function () {
 								var ele_click = 'Issue Completed. <a style="text-decoration:underline;" onclick="undoStack.canUndo() && undoStack.undo();">Undo?</a>';
@@ -113,7 +113,7 @@ $(function () {
 						that.revertId = data.Object;
 						$(row).remove();
 						refreshCurrentIssueDetails();
-						refreshRanks();
+						//refreshRanks();
 						setTimeout(function () {
 							var ele_click = 'Issue moved to V/TO. <a style="text-decoration:underline;" onclick="undoStack.canUndo() && undoStack.undo();">Undo?</a>';
 							showAlert(ele_click, 4000);
@@ -131,7 +131,7 @@ $(function () {
 					if (showJsonAlert(data)) {
 						$(row).removeClass("skipNumber");
 						refreshCurrentIssueDetails();
-						refreshRanks();
+						//refreshRanks();
 						clearAlerts();
 					}
 				}
@@ -833,12 +833,47 @@ function refreshRanks(last) {
 				return $(a).data("rank") - $(b).data("rank");
 			});
 
+		var minRank = 0;
+		if (ranks.length > 0) {
+			var r = ranks[0];
+			minRank = $(r).data("rank") -1;
+			minRank = Math.max(0, minRank);
+		}
+
+
+
+		//var start = 0;
+		//if (typeof (last) !== "undefined") {
+		//	start = last;
+		//}
+
+		if (typeof (last) === "undefined")
+			last = 100000;
+
+		//for (var i = 0; i < ranks.length; i++) {
+		//	last = Math.min($(ranks[i]).data("rank"), last);
+		//}
+		//if (last == 100000)
+		//	last = 0;
+		//else
+		//	last -= 1;
+
+		var l = last;
 
 		for (var i = 0; i < ranks.length; i++) {
 			var r = ranks[i];
 			var cur = $(r).data("rank");
+
 			var expected = i + 1;
+			if (typeof (last) !== "undefined") {
+				expected = cur;
+				if (cur > last) {
+					expected -= 1;
+				}
+			}
+
 			if (cur > expected) {
+				
 				$(r).attr("data-rank", expected);
 				$(r).data("rank", expected);
 
@@ -849,6 +884,7 @@ function refreshRanks(last) {
 				var d = { id: id, rank: (expected), time: new Date().getTime() };
 				refreshRankArr.push(d);
 			}
+
 		}
 
 
@@ -885,7 +921,7 @@ function refreshRanks(last) {
 		//	//last = cur;
 		//}
 
-		console.log("refreshDur:" + (+new Date() - s)+"ms");
+		console.log("refreshDur:" + (+new Date() - s) + "ms");
 		if (refreshRankArr.length > 0) {
 			$.ajax({
 				url: "/L10/UpdateIssuesRank/",
@@ -895,7 +931,7 @@ function refreshRanks(last) {
 				method: "POST",
 				success: function (d) {
 					showJsonAlert(d);
-					
+
 				}
 			});
 		}
