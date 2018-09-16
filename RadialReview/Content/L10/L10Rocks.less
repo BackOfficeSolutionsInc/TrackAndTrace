@@ -75,11 +75,9 @@
 		padding: 1px;
 		margin: 0px 6px;
 	}
-
 	/*tr:first-child {
 		border-bottom: 1px solid #f0f0f0;
 	}*/
-
 	tr:not(:last-child) td {
 		border-bottom: 1px solid #f0f0f0;
 	}
@@ -113,7 +111,7 @@
 
 	.rock-state-holder {
 		vertical-align: top;
-		line-height: 0.5;    
+		line-height: 0.5;
 		padding: 2px;
 	}
 
@@ -124,7 +122,7 @@
 		border: 1px solid rgb(208, 208, 208);
 		margin: 5px;
 	}
-    
+
 	.rock-row {
 		.rock-title {
 			cursor: pointer;
@@ -236,6 +234,15 @@
 		top: 4px;
 	}
 
+	.due-line {
+		height: 10px;
+		width: 2px;
+		background-color: #797979;
+		position: relative;
+		margin-left: -1px;
+		top: 0px;
+	}
+
 	.milestone-date-container, .milestone-date-marker {
 		position: absolute;
 		height: 5px;
@@ -304,14 +311,15 @@
 
 		&.past-due.status-NotDone,
 		&.past-due.status-0 {
-            &:not(.rock-is-done){
-			    background-color: #f1d9d8;
-			    border: 1px solid #D9534F;
-            }
+			&:not(.rock-is-done) {
+				background-color: #f1d9d8;
+				border: 1px solid #D9534F;
+			}
+
 			z-index: 2;
 
 			&:hover, &.mouseover {
-			    background-color: #f1d9d8;
+				background-color: #f1d9d8;
 				border: 1px solid #D9534F;
 				z-index: 4;
 			}
@@ -328,148 +336,148 @@
 .rock-details {
 
 
-    h4 {
-        margin-top: 0px;
-        /*margin-bottom: 10px;*/
-        min-height: 30px;
-        padding-bottom: 6px;
-        /*border-bottom: 1px solid #eee;*/
-    }
+	h4 {
+		margin-top: 0px;
+		/*margin-bottom: 10px;*/
+		min-height: 30px;
+		padding-bottom: 6px;
+		/*border-bottom: 1px solid #eee;*/
+	}
 
-    .component {
-        margin-bottom: 10px;
+	.component {
+		margin-bottom: 10px;
 
-        &:empty:after {
-            color: #ddd;
-            content: "Click a Rock to see its details.";
-        }
-    }
+		&:empty:after {
+			color: #ddd;
+			content: "Click a Rock to see its details.";
+		}
+	}
 
-    .details {
-        border: 1px solid #E8E8E8;
-        padding: 0 1px 0 0;
-        color: #666;
-        font-size: 12px;
-        background-color: #FcFcFc;
-        width: 100%;
-        resize: vertical;
-        height: 116px;
-        min-height: 116px;
-    }
+	.details {
+		border: 1px solid #E8E8E8;
+		padding: 0 1px 0 0;
+		color: #666;
+		font-size: 12px;
+		background-color: #FcFcFc;
+		width: 100%;
+		resize: vertical;
+		height: 116px;
+		min-height: 116px;
+	}
 
-    .button-bar .todoButton {
-        color: #5E5E5E;
-        top: 1px;
-        opacity: 1;
-        transition: all .4s ease;
-    }
+	.button-bar .todoButton {
+		color: #5E5E5E;
+		top: 1px;
+		opacity: 1;
+		transition: all .4s ease;
+	}
 
-    .milestone-heading {
-    }
+	.milestone-heading {
+	}
 
-    .milestone-table {
-        min-height: 40px;
-        width: 100%;
-        margin-left: 8px;
-        display: inline-block;
-        overflow-y: auto;
+	.milestone-table {
+		min-height: 40px;
+		width: 100%;
+		margin-left: 8px;
+		display: inline-block;
+		overflow-y: auto;
 
-        &:empty:after {
-            content: "No milestones.";
-            padding: 10px;
-            color: #ddd;
-        }
+		&:empty:after {
+			content: "No milestones.";
+			padding: 10px;
+			color: #ddd;
+		}
 
-        .milestone-status-cell {
-            width: 20px;
-        }
+		.milestone-status-cell {
+			width: 20px;
+		}
 
-        .milestone-duedate-cell .milestone-duedate.overdue input {
-            color: #D9534F;
-        }
+		.milestone-duedate-cell .milestone-duedate.overdue input {
+			color: #D9534F;
+		}
 
-        .milestone-delete-cell {
-            width: 20px;
-        }
+		.milestone-delete-cell {
+			width: 20px;
+		}
 
-        .milestone-name-cell {
-            width: 60%;
-        }
+		.milestone-name-cell {
+			width: 60%;
+		}
 
-        .milestone-name {
-            color: #666;
-            cursor: pointer;
-        }
+		.milestone-name {
+			color: #666;
+			cursor: pointer;
+		}
 
-        .milestone.mouseover .milestone-name {
-            text-decoration: underline;
-        }
+		.milestone.mouseover .milestone-name {
+			text-decoration: underline;
+		}
 
-        .milestone-duedate-cell {
-            width: 100px;
-            min-width: 100px;
+		.milestone-duedate-cell {
+			width: 100px;
+			min-width: 100px;
 
-            input {
-                text-align: right;
-                padding-right: 10px;
-            }
-        }
-    }
+			input {
+				text-align: right;
+				padding-right: 10px;
+			}
+		}
+	}
 
-    .add-milestone-button {
-        float: right;
-        //margin-top: 16px;
-    }
+	.add-milestone-button {
+		float: right;
+		//margin-top: 16px;
+	}
 
-    .add-on {
-        display: none;
-    }
+	.add-on {
+		display: none;
+	}
 
-    .rock-duedate .date {
-        width: 100px;
-        display: inline-block;
+	.rock-duedate .date {
+		width: 100px;
+		display: inline-block;
 
 
-        input {
-            text-align: left;
-            padding-left: 12px;
-            -webkit-box-shadow: none;
-            -box-shadow: none;
-            color: #767F99;
-            cursor: pointer;
-            border: 0px;
-        }
-    }
+		input {
+			text-align: left;
+			padding-left: 12px;
+			-webkit-box-shadow: none;
+			-box-shadow: none;
+			color: #767F99;
+			cursor: pointer;
+			border: 0px;
+		}
+	}
 
-    .client-date {
-        border: none;
-        padding: 0px;
-        box-shadow: none;
-        //text-align: right;
-        color: #767F99;
-        cursor: pointer;
-        height: inherit;
+	.client-date {
+		border: none;
+		padding: 0px;
+		box-shadow: none;
+		//text-align: right;
+		color: #767F99;
+		cursor: pointer;
+		height: inherit;
 
-        &:hover {
-            text-decoration: underline;
-        }
-    }
+		&:hover {
+			text-decoration: underline;
+		}
+	}
 
-    .message-input {
-        width: 100%;
-        outline: none;
-        border: none;
-        border-bottom: 2px solid #EF7622;
-        margin-top: -1px;
-        color: black !important;
-        resize: vertical;
-        overflow: auto;
-    }
+	.message-input {
+		width: 100%;
+		outline: none;
+		border: none;
+		border-bottom: 2px solid #EF7622;
+		margin-top: -1px;
+		color: black !important;
+		resize: vertical;
+		overflow: auto;
+	}
 
-    .message:hover {
-        border-top: 1px solid transparent;
-        border-bottom: 1px solid #EF7622;
-    }
+	.message:hover {
+		border-top: 1px solid transparent;
+		border-bottom: 1px solid #EF7622;
+	}
 }
 
 .rock-empty-holder:after {

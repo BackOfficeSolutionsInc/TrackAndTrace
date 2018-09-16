@@ -102,8 +102,8 @@ namespace RadialReview.Accessors {
                 using (var tx = s.BeginTransaction()) {
                     var perm = PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
                     var recur = s.Get<L10Recurrence>(recurrenceId);
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                    var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                    var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 
                     var now = DateTime.UtcNow;
 
@@ -510,8 +510,8 @@ namespace RadialReview.Accessors {
                 //tx.Commit();
                 //s.Flush();
 
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 
                 group.reorderMeasurables(orderedL10Meeting_Measurables);
 
@@ -565,8 +565,8 @@ namespace RadialReview.Accessors {
                     throw new PermissionsException("Not part of the specified L10");
                 var recurMeasurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
 
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 
                 var meeting = _GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false);
                 if (meeting != null) {
@@ -700,8 +700,8 @@ namespace RadialReview.Accessors {
                     var perm = PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
                     if (!divider.IsDivider)
                         throw new PermissionsException("Not a divider");
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                    var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                    var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 
                     var matchingMeasurable = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
                         .Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId && x.IsDivider && x._Ordering == divider._Ordering)

@@ -29,21 +29,21 @@ namespace RadialReview.Areas.People.Accessors {
 	public class SurveyAccessor {
 
 #pragma warning disable CS0618 // Type or member is obsolete
-		public static void JoinPeopleHub(UserOrganizationModel caller, long? surveyContainerId, long? surveyId, string connectionId) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<PeopleHub>();
+		public static void JoinSurveyHub(UserOrganizationModel caller, long? surveyContainerId, long? surveyId, string connectionId) {
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
 					var perms = PermissionsUtility.Create(s, caller);
 					if (surveyContainerId != null) {
 						perms.ViewSurveyContainer(surveyContainerId.Value);
-						hub.Groups.Add(connectionId, PeopleHub.GenerateSurveyContainerId(surveyContainerId.Value));
+						hub.Groups.Add(connectionId, RealTimeHub.Keys.GenerateSurveyContainerId(surveyContainerId.Value));
 					}
 					if (surveyId != null) {
 						perms.ViewSurvey(surveyId.Value);
-						hub.Groups.Add(connectionId, PeopleHub.GenerateSurveyId(surveyId.Value));
+						hub.Groups.Add(connectionId, RealTimeHub.Keys.GenerateSurveyId(surveyId.Value));
 					}
-					hub.Groups.Add(connectionId, MeetingHub.GenerateUserId(caller.Id));
+					hub.Groups.Add(connectionId, RealTimeHub.Keys.UserId(caller.Id));
 				}
 			}
 		}

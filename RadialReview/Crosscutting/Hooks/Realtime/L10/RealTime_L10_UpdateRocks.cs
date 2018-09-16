@@ -39,8 +39,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
                 var recur = s.Get<L10Recurrence>(recurrenceId);
 
                 var current = L10Accessor._GetCurrentL10Meeting_Unsafe(s, recurrenceId, true, false, false);
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 
 
                 if (current != null) {
@@ -88,7 +88,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
 
             if (RealTimeHelpers.GetConnectionString() != null) {
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
                 var me = hub.Clients.Client(RealTimeHelpers.GetConnectionString());
                 me.update(new AngularUpdate {new AngularRecurrence(recurrenceId) {
                     Focus = "[data-rock='" + rock.Id + "'] input:visible:first"
@@ -171,8 +171,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
             var recur = s.Get<L10Recurrence>(recurrenceId);
 
             var current = L10Accessor._GetCurrentL10Meeting_Unsafe(s, recurrenceId, true, false, false);
-            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-            var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), RealTimeHelpers.GetConnectionString());
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+            var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId), RealTimeHelpers.GetConnectionString());
 
 
             if (current != null) {

@@ -1190,10 +1190,10 @@ namespace RadialReview.Accessors {
 
 			}
 
-			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 			var vtoIds = s.QueryOver<VtoModel>().Where(x => x.Organization.Id == organizationId).Select(x => x.Id).List<long>();
 			foreach (var vtoId in vtoIds) {
-				var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId));
+				var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(vtoId));
 #pragma warning disable CS0618 // Type or member is obsolete
 				group.update(new AngularVTO(vtoId) {
 					Values = AngularList.Create(AngularListType.ReplaceAll, AngularCompanyValue.Create(companyValues))

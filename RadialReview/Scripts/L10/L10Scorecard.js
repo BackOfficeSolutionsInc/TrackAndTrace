@@ -56,7 +56,7 @@ function updateCumulative(measurableId, value) {
 }
 
 function updateAverage(measurableId, value) {
-	debugger;
+	//debugger;
 	if (value == null)
 		value = "";
 	$("[data-measurable='" + measurableId + "'] .average-column span").text(value);
@@ -713,15 +713,17 @@ function updateScoresGoals(startWeek, measurableId, s) {
 
 
 function receiveUpdateScore(newScore) {
-	//console.info(newScore);
-	debugger;
 	if (Array.isArray(newScore)) {
 		newScore.map(function (x) {
 			receiveUpdateScore(x);
 		});
 		return;
 	}
-	$("[data-scoreid='" + newScore.Id + "']").val(newScore.Measured);
+	var self = $("[data-scoreid='" + newScore.Id + "']");
+	self.val(newScore.Measured);
+	self.attr("data-value", newScore.Measured);
+	setScoreTransform(self, self.val());
+	updateScore(self);	
 }
 
 function reorderRecurrenceMeasurables(order) {

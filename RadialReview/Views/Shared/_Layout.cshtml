@@ -136,8 +136,11 @@
                 if (date.substring(0, test.length) === test){
                     date = new Date(+date.substring(test.length,date.length-2));
                 }else{
-                    date = new Date(date);
-                    console.warn("potentially unknown format: " + date)
+                	date = new Date(date);
+                	if (typeof(this.formatNotification)==="undefined"){
+                		console.warn("potentially unknown date format: "+date);
+                		this.formatNotification=true;
+                	}
                 }
             }
             return date;
@@ -380,8 +383,8 @@
             @Scripts.Render("~/bundles/bootstrap")
             @RenderSection("scripts", required: false) @RenderSection("modals", required: false)
             <!--Begin Main Scripts-->
-            @Scripts.Render("~/bundles/main")
             <script src="~/signalr/hubs"></script>
+            @Scripts.Render("~/bundles/main")
             <!--End Main Scripts-->
         </div>
         <div class="page-script-container">

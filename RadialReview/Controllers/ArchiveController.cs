@@ -48,6 +48,15 @@ namespace RadialReview.Controllers {
 						.Where(x => x.DeleteTime != null && x.Organization.Id == user.Organization.Id)
 						.List().ToList();
 
+					try {
+						foreach (var u in users) {
+							var a = u.Cache.LastLogin;
+						}
+					} catch (Exception e) {
+						//opps
+					}
+
+
 					return View(users);
 
 				}

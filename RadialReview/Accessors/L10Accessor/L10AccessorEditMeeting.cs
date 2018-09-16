@@ -329,8 +329,8 @@ namespace RadialReview.Accessors {
 									}
 								}
 							}
-							var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-							var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting));
+							var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+							var meetingHub = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(meeting));
 							var baseMins = meeting._MeetingLeaderPageDurations.SingleOrDefault(x => x.Item1 == pageName).NotNull(x => x.Item2);
 							meetingHub.setCurrentPage(pageName.ToLower(), now.ToJavascriptMilliseconds(), baseMins/*, pageType*/);
 

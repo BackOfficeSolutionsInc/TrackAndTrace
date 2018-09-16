@@ -67,7 +67,7 @@ function setFollowLeader(val) {
 }
 
 function resetClickables() {
-	console.log("resetClickables");
+	//console.log("resetClickables");
 	$(".agenda .agenda-items a").removeClass("clickable");
 	$(".agenda .agenda-items a").removeClass("lockedPointer");
 	$(".agenda .agenda-items a").prop("title", "");
@@ -234,7 +234,7 @@ function setPageTime(pageName, minutes) {
 
 }
 function setupMeeting(_startTime, leaderId) {
-	console.log("setupmeeting");
+	//console.log("setupmeeting");
 	$(".over").removeClass("over");
 	$(".page-item .page-time").each(function () {
 		var o = $(this).data("over");
@@ -421,7 +421,7 @@ function replaceMainWindow(html, callback) {
 	var a = $("#hiddenWindow").append(b);
 	$("#main-window").finish().fadeOut(200, function () {
 		$("#main-window").html("");
-		console.log($(b).children());
+		//console.log($(b).children());
 		$("#main-window").append($(b).children());
 		$(b).remove();
 		//callWhenReady("#main-window", function () {
@@ -467,7 +467,7 @@ $(".slider-container.level-10").resize(fixSidebar);
 $(document).on("scroll-to", ".arrowkey", function () {
 	var that = this;
 	setTimeout(function () {
-		console.log("scroll-to");
+		//console.log("scroll-to");
 		if ($(that).position().top < $(window).scrollTop() || $(that).position().top + $(that).height() > $(window).scrollTop() + (window.innerHeight || document.documentElement.clientHeight)) {
 			//scroll up
 			var scr = $(that).offset().top - (window.innerHeight || document.documentElement.clientHeight) / 2.0;

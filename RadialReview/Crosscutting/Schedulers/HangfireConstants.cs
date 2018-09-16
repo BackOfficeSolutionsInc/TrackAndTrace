@@ -41,6 +41,7 @@ namespace RadialReview.Hangfire {
 			public const string SCHEDULED_QUARTERLY_EMAIL = "scheduledquarterlyemail_w_v1";
 			public const string NOTIFY_MEETING_START = "notifymeetingstart_w_v1";
 			public const string EXECUTE_EVENT_ANALYZERS = "executeeventanalyzers_w_v1";
+			public const string GENERATE_ALL_DAILY_EVENTS = "generate_all_daily_events_w_v1";
 
 			public const string ASANA_EVENTS = "asana_w_v1";
 
@@ -50,20 +51,21 @@ namespace RadialReview.Hangfire {
 		}
 
 
-        public static readonly string[] OrderedQueues = new[]{
-                    HangfireQueues.Immediate.CRITICAL,
-                    HangfireQueues.Immediate.ETHERPAD,
-                    HangfireQueues.Immediate.CONCLUSION_EMAIL,
-                    HangfireQueues.Immediate.GENERATE_QC,
-                    HangfireQueues.Immediate.CHARGE_ACCOUNT_VIA_HANGFIRE,
-					HangfireQueues.Immediate.EXECUTE_TASKS,
-					HangfireQueues.Immediate.DAILY_TASKS,
-					HangfireQueues.Immediate.NOTIFY_MEETING_START,
-					HangfireQueues.Immediate.SCHEDULED_QUARTERLY_EMAIL,
-					HangfireQueues.Immediate.EXECUTE_EVENT_ANALYZERS,
-					HangfireQueues.Immediate.ASANA_EVENTS,
-					HangfireQueues.DEFAULT,
-                    HangfireQueues.Immediate.ALPHA 
+		public static readonly string[] OrderedQueues = new[]{
+			Immediate.CRITICAL,
+			Immediate.ETHERPAD,
+			Immediate.CONCLUSION_EMAIL,
+			Immediate.GENERATE_QC,
+			Immediate.CHARGE_ACCOUNT_VIA_HANGFIRE,
+			Immediate.EXECUTE_TASKS,
+			Immediate.DAILY_TASKS,
+			Immediate.NOTIFY_MEETING_START,
+			Immediate.SCHEDULED_QUARTERLY_EMAIL,
+			Immediate.EXECUTE_EVENT_ANALYZERS,
+			Immediate.ASANA_EVENTS,
+			Immediate.GENERATE_ALL_DAILY_EVENTS,
+			DEFAULT,
+            Immediate.ALPHA 
         };
 
 

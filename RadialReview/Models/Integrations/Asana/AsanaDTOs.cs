@@ -78,6 +78,7 @@ namespace RadialReview.Models.Integrations.Asana {
 			public long id { get; set; }
 			public string name { get; set; }
 			public string email { get; set; }
+			//public string gid { get; set; }
 		}
 	}
 

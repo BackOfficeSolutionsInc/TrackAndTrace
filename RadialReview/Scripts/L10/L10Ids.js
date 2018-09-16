@@ -696,7 +696,7 @@ function refreshPriority(priorityDom) {
 }
 
 function refreshCurrentIssueDetails() {
-	console.log("called refreshCurrentIssueDetails")
+	//console.log("called refreshCurrentIssueDetails")
 	if ($(window).width() > modalWidth) {
 		setTimeout(function () {
 			$(".issue-row[data-recurrence_issue=" + currentIssuesDetailsId + "]")
@@ -814,6 +814,7 @@ function updateIssueOwner(id, userId, name, image) {
 }
 
 function updateIssuePriority(id, priority) {
+	debugger;
 	var dom = $(".ids .issue-row[data-recurrence_issue=" + id + "] > .number-priority > .priority").data("priority", priority);
 	var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
 	$(row).data("priority", priority);

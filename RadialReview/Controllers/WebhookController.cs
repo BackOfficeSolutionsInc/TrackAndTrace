@@ -72,7 +72,11 @@ namespace RadialReview.Controllers {
 			AsanaRequestCount += 1;
 			LastAsanaRequest = model;
 
-			var asanaTaskIds = model.events.Where(evt => evt.action == "changed" && evt.type == "task").Select(x => x.resource).ToList();
+			var asanaTaskIds = model.events
+				.Where(evt => evt.action == "changed" && evt.type == "task")
+				.OrderBy(x=>x.created_at)
+				.Select(x => x.resource)
+				.ToList();
 
 			if (asanaTaskIds.Any()) {
 				Scheduler.Enqueue(() => AsanaAccessor.UpdateTaskFromRemote_Hangfire(asanaTaskIds));

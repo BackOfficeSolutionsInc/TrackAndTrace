@@ -194,7 +194,10 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Any)]
 		public async Task<JsonResult> Daily() {
-			Scheduler.Enqueue(() => TaskAccessor.DailyTask(DateTime.UtcNow));
+			Scheduler.Enqueue(() => TaskAccessor.CheckCardExpirations_Hangfire());
+			Scheduler.Enqueue(() => TaskAccessor.CleanupSyncs_Hangfire());
+			Scheduler.Enqueue(() => EventUtil.GenerateAllDailyEvents_Hangfire(DateTime.UtcNow));
+			Scheduler.Enqueue(() => TaskAccessor.GenerateRockPeriods_Hangfire(DateTime.UtcNow));
 			return Json(true, JsonRequestBehavior.AllowGet);
 		}
 

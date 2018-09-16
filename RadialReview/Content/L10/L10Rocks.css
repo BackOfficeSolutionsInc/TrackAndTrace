@@ -190,6 +190,14 @@
   background-color: #d6d6d6;
   top: 4px;
 }
+.milestone-marker-container .due-line {
+  height: 10px;
+  width: 2px;
+  background-color: #797979;
+  position: relative;
+  margin-left: -1px;
+  top: 0px;
+}
 .milestone-marker-container .milestone-date-container,
 .milestone-marker-container .milestone-date-marker {
   position: absolute;

@@ -783,8 +783,8 @@ namespace RadialReview.Controllers {
 
 					var notes = s.QueryOver<L10Note>().Where(x => x.DeleteTime == null && x.Recurrence.Id == n.Recurrence.Id).List().ToList();
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(n.Recurrence.Id)).update(new AngularRecurrence(n.Recurrence.Id) {
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(n.Recurrence.Id)).update(new AngularRecurrence(n.Recurrence.Id) {
 						Notes = AngularList.Create(
 							AngularListType.ReplaceAll,
 							notes.Select(x => new AngularMeetingNotes(x))
@@ -797,10 +797,6 @@ namespace RadialReview.Controllers {
 			}
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
-
-
-
-
 		#endregion
 
 		#region PeopleTools

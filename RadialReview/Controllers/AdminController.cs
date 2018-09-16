@@ -1663,8 +1663,8 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Radial)]
 		public String SendMessage(long id, string message) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(id)).status(message);
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(id)).status(message);
 			return "Sent: " + message;
 		}
 

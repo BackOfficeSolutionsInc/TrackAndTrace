@@ -1,11 +1,17 @@
 ﻿
 //Date stuff
 function parseJsonDate(value, allowNumbers) {
-	console.warn("obsolete. use Time.parseJsonDate(...) instead");
+	if (typeof (parseJsonDate.shownError) === "undefined") {
+		console.warn("obsolete. use Time.parseJsonDate(...) instead");
+		parseJsonDate.shownError = true;
+	}
 	return Time.parseJsonDate(value, allowNumbers);
 }
 function getWeekSinceEpoch(day) {
-	console.warn("obsolete. use Time.getWeekSinceEpoch(...) instead");
+	if (typeof (this.shownError) === "undefined") {
+		console.warn("obsolete. use Time.getWeekSinceEpoch(...) instead");
+		getWeekSinceEpoch.shownError = true;
+	}
 	return Time.getWeekSinceEpoch(day);
 }
 
@@ -50,7 +56,10 @@ function serverDateFormat(edate) {
 
 
 function createDatepicker(selector, date, name, id, options) {
-	console.warn("Time.createClientDatepicker might work better for displaying client dates");
+	if (typeof (createDatepicker.shownError) === "undefined") {
+		createDatepicker.shownError = true;
+		console.warn("Time.createClientDatepicker might work better for displaying client dates");
+	}
 	var localizeDate = false;
 	if (typeof (date) === "undefined") {
 		date = new Date();
@@ -150,7 +159,10 @@ function createDatepicker(selector, date, name, id, options) {
 }
 
 function generateDatepickerLocalize(selector, date, name, id, options) {
-	console.warn("obsolete: use createDatepicker");
+	if (typeof (generateDatepickerLocalize.shownError) === "undefined") {
+		generateDatepickerLocalize.shownError = true;
+		console.warn("obsolete: use createDatepicker");
+	}
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (date == false) {
@@ -177,7 +189,10 @@ function generateDatepickerLocalize(selector, date, name, id, options) {
 }
 
 function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
-	console.warn("obsolete: use createDatepicker");
+	if (typeof (generateDatepicker.shownError) === "undefined") {
+		generateDatepicker.shownError = true;
+		console.warn("obsolete: use createDatepicker");
+	}
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (date == false) {

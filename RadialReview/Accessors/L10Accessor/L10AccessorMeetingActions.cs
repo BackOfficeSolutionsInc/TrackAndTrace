@@ -391,8 +391,8 @@ namespace RadialReview.Accessors {
                     Audit.L10Log(s, caller, recurrenceId, "StartMeeting", ForModel.Create(meeting));
                     tx.Commit();
                     s.Flush();
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                    hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).setupMeeting(meeting.CreateTime.ToJavascriptMilliseconds(), meetingLeader.Id);
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                    hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(meeting)).setupMeeting(meeting.CreateTime.ToJavascriptMilliseconds(), meetingLeader.Id);
 
                 }
             }
@@ -502,8 +502,8 @@ namespace RadialReview.Accessors {
                     }
                 }
                 if (meeting != null) {
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                    hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting), connectionId).concludeMeeting();
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                    hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(meeting), connectionId).concludeMeeting();
                 }
 
                 Scheduler.Enqueue(() => SendConclusionEmail_Unsafe(meeting.Id, null));
@@ -934,7 +934,7 @@ namespace RadialReview.Accessors {
         }
 
         public static L10Meeting.L10Meeting_Connection JoinL10Meeting(UserOrganizationModel caller, long recurrenceId, string connectionId) {
-            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     //var perms = PermissionsUtility.
@@ -946,15 +946,14 @@ namespace RadialReview.Accessors {
                         //Hey.. this doesnt grab all visible meetings.. it should be adjusted when we know that GetVisibleL10Meetings_Tiny is optimized
                         //GetVisibleL10Meetings_Tiny(s, perms, caller.Id);
                         foreach (var r in recurs) {
-                            hub.Groups.Add(connectionId, MeetingHub.GenerateMeetingGroupId(r));
+                            hub.Groups.Add(connectionId, RealTimeHub.Keys.GenerateMeetingGroupId(r));
                         }
-                        hub.Groups.Add(connectionId, MeetingHub.GenerateUserId(caller.Id));
+                        hub.Groups.Add(connectionId, RealTimeHub.Keys.UserId(caller.Id));
                     } else {
 						PermissionsAccessor.Permitted(caller, x => x.ViewL10Recurrence(recurrenceId));
-                        hub.Groups.Add(connectionId, MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                        hub.Groups.Add(connectionId, RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
                         Audit.L10Log(s, caller, recurrenceId, "JoinL10Meeting", ForModel.Create(caller));
-
-                        //s.QueryOver<L10Recurrence.L10Recurrence_Connection>().where
+						
 #pragma warning disable CS0618 // Type or member is obsolete
                         var connection = new L10Recurrence.L10Recurrence_Connection() { Id = connectionId, RecurrenceId = recurrenceId, UserId = caller.Id };
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -981,7 +980,7 @@ namespace RadialReview.Accessors {
                         tx.Commit();
                         s.Flush();
 
-                        var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                        var meetingHub = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
                         meetingHub.userEnterMeeting(connection);
                         //?meetingHub.userEnterMeeting(caller.Id, connectionId, caller.GetName(), caller.ImageUrl(true));
                     }

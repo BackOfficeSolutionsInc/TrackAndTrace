@@ -121,8 +121,8 @@ namespace RadialReview.Utilities
 				audit.Notes = notes;
 				s.Save(audit);
 
-				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-				var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+				var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+				var meetingHub = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 				var type = forModel.FriendlyType();
 				var html = "<div><span class='log-action'>" + action + "</span><span class='log-notes'>" + notes + "</span></div>";
 				meetingHub.addOrEditLogRow(type + "_" + forModel.ModelId, html, type);

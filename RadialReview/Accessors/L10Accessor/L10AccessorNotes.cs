@@ -42,8 +42,8 @@ namespace RadialReview.Accessors {
 						Recurrence = s.Load<L10Recurrence>(recurrenceId)
 					};
 					s.Save(note);
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 					group.createNote(note.Id, name);
 					var rec = new AngularRecurrence(recurrenceId) {
 						Notes = new List<AngularMeetingNotes>(){
@@ -64,7 +64,7 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var note = s.Get<L10Note>(noteId);
 					PermissionsUtility.Create(s, caller).EditL10Recurrence(note.Recurrence.Id);
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 					var now = DateTime.UtcNow;
 					//if (contents != null) {
 					//    note.Contents = contents;
@@ -72,7 +72,7 @@ namespace RadialReview.Accessors {
 					//}
 					if (name != null) {
 						note.Name = name;
-						hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(note.Recurrence.Id), connectionId).updateNoteName(noteId, name);
+						hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(note.Recurrence.Id), connectionId).updateNoteName(noteId, name);
 					}
 					_ProcessDeleted(s, note, delete);
 					s.Update(note);

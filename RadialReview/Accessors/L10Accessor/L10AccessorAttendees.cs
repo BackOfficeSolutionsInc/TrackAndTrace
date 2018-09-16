@@ -328,7 +328,7 @@ namespace RadialReview.Accessors {
 								Email = (string)x[1]
 							}).ToList();
 
-						var hub = GlobalHost.ConnectionManager.GetHubContext<MessageHub>();
+						var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 						var group = hub.Clients.Users(attendees.Select(x => x.Email).ToList());
 						group.NotifyOfMeetingStart(recurrenceId, recurName);
 					}

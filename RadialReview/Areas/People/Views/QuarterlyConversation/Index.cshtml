@@ -102,21 +102,17 @@
 
 		//var messageHub = $.connection.messageHub;
 
-		$(function(){
-			messageHub.client.addQC = function(message,row){
+		//$(function(){
+			RealTime.client.addQC = function(message,row){
 				//table.addRow(row);
+				debugger;
 				StoreJsonAlert({Message:message});
 				location.reload();
 				//showAlert(message,"success");
 			};
-		});
+		//});
 
 
-		/*$.connection.hub.start(Constants.StartHubSettings).done(function(){
-			messageHub.server.joinUser($.connection.hub.id).done(function () {
-				console.log("connected to messageHub")
-			});
-		});*/
 
 	</script>
 

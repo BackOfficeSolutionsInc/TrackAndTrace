@@ -20,6 +20,9 @@
 	if (Model.IsPartial) {
 		ViewBag.NoTitleBar = true;
 	}
+
+	ViewBag.CompanyImageUrl = ViewBag.CompanyImageUrl ?? "/Content/img/EOS_Model.png";
+
 	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 }
 @using (Html.BeginStyles()) {
@@ -71,10 +74,11 @@
 	</style>
 }
 @using (Html.BeginScripts()) {
+	<!--VTO SCRIPTS-->
 	<script src="~/Scripts/VTO/vto.js"></script>
 
 	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
-	<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+	@*<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>*@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
 	@Scripts.Render("~/bundles/vto")
@@ -103,7 +107,7 @@
 				<div class="heading">
 					<div class="row">
 						<div class="col-sm-3 hidden-xs">
-							<img src="~/Content/img/EOS_Model.png" class="eos-model" />
+							<img src="@ViewBag.CompanyImageUrl" class="eos-model" />
 						</div>
 						<div class="col-sm-8">
 							<div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
@@ -576,7 +580,7 @@
 												<tr><th colspan="2">Rocks for the Quarter:</th><th class="alignRight hidden-xs">Who</th></tr>
 												<tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false,Rock:{VtoRock:true}}">
 													<td class="number">{{$index+1}}.</td>
-													<td class="fullWidth">
+													<td class="fullWidth rock-message">
 														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddRock?vto='+vtoId,'model.QuarterlyRocks.Rocks')"
 																  textarea-resize
 																  @(ViewBag.CanEditVTOTraction ? "" : "disabled")

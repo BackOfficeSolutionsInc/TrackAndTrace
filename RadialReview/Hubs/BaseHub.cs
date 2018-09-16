@@ -57,8 +57,7 @@ namespace RadialReview.Hubs
 			return _CurrentUser;
 		}
 
-		protected UserOrganizationModel GetUser()//long? organizationId, Boolean full = false)
-		{
+		protected UserOrganizationModel GetUser(){
 			if (_CurrentUser != null)
 				return _CurrentUser;
 
@@ -73,58 +72,15 @@ namespace RadialReview.Hubs
 					return ForceGetUser(s, userId);
 				}
 			}
-		}
+		}		
 
-		
-
-		protected UserOrganizationModel GetUser(ISession s)//long? organizationId, Boolean full = false)
-		{
+		protected UserOrganizationModel GetUser(ISession s){
 			if (_CurrentUser != null)
 				return _CurrentUser;
-
 			var userId = Context.User.Identity.GetUserId();
 			if (userId == null)
 				throw new LoginException("Not logged in.");
-
 			return ForceGetUser(s, userId);
-
-		}
-
-
-		/*public async override Task OnConnected()
-		{
-			var username = Context.User.Identity.Name;
-
-			var now = DateTime.UtcNow;
-			var httpContext = Context.Request.GetHttpContext();
-
-
-
-			if (!httpContext.CacheContains(REGISTERED_KEY + username))
-			{
-				var userId = _UserAccessor.GetUserIdByUsername(username);
-				var userOrgs = _UserAccessor.GetUserOrganizations(userId, "");
-				httpContext.CacheAdd(REGISTERED_KEY + username, userOrgs, now.AddDays(1));
-			}
-
-			var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-			foreach (var u in httpContext.CacheGet<List<UserOrganizationModel>>(REGISTERED_KEY + username))
-			{
-				try
-				{
-					await hub.Groups.Add(Context.ConnectionId, "organization_" + u.Organization.Id);
-					if (u.IsManager())
-					{
-						await hub.Groups.Add(Context.ConnectionId, "manager_" + u.Organization.Id);
-					}
-				}
-				catch (Exception e)
-				{
-					var a = 0;
-				}
-			}
-
-			await base.OnConnected();
-		}*/
+		}		
 	}
 }

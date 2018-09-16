@@ -812,28 +812,29 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
 		$scope.suspendUpdate = false;
 
-		function rejoin(connection, proxy, callback) {
-			try {
-				if (proxy) {
-					proxy.invoke("join", $scope.orgId, connection.id).done(function () {
-						console.log("rejoin");
-						//$(".rt").prop("disabled", false);
-						if (callback) {
-							callback();
-						}
-						if ($scope.disconnected) {
-							clearAlerts();
-							showAlert("Reconnected.", "alert-success", "Success", 1000);
-						}
-						$scope.disconnected = false;
-					});
-				}
-			} catch (e) {
-				console.error(e);
-			}
-		}
+		//function rejoin(connection, proxy, callback) {
+		//	try {
+		//		if (proxy) {
+		//			proxy.invoke("join", $scope.orgId, connection.id).done(function () {
+		//				console.log("rejoin");
+		//				//$(".rt").prop("disabled", false);
+		//				if (callback) {
+		//					callback();
+		//				}
+		//				if ($scope.disconnected) {
+		//					clearAlerts();
+		//					showAlert("Reconnected.", "alert-success", "Success", 1000);
+		//				}
+		//				$scope.disconnected = false;
+		//			});
+		//		}
+		//	} catch (e) {
+		//		console.error(e);
+		//	}
+		//}
 
-		var r = radial($scope, 'organizationHub', rejoin);
+		//var r = radial($scope, 'organizationHub', rejoin);
+		var r = radial($scope, {});
 		var tzoffset = Time.tzoffset();// r.updater.tzoffset;
 		$scope.functions.reload = function (clearData) {
 			if (typeof (clearData) === "undefined")

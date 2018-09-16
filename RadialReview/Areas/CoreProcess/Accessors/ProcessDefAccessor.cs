@@ -934,10 +934,10 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
             var lookup = await _GetTaskIdentityLinkLookup(allTasks);
 
-            var hub = GlobalHost.ConnectionManager.GetHubContext<CoreProcessHub>();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
             foreach (var t in allTasks) {
                 var rgms = lookup.GetOrDefault(t.Id, new List<IdentityLink>());
-                var assignee = rgms.Where(x => x.type == "assignee").Select(x => CoreProcessHub.GenerateRgm(x.userId.SubstringAfter("u_").ToLong())).ToList();
+                var assignee = rgms.Where(x => x.type == "assignee").Select(x => RealTimeHub.Keys.GenerateRgm(x.userId.SubstringAfter("u_").ToLong())).ToList();
                 if (assignee.Any()) {
                     var group = hub.Clients.Groups(assignee);
                     group.update(new AngularUpdate() {
@@ -947,7 +947,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     });
                     group.showMessage("assignee" + t.Id);
                 } else {
-                    var candidateGroups = rgms.Where(x => x.type == "candidate").Select(x => CoreProcessHub.GenerateRgm(x.groupId)).ToList();
+                    var candidateGroups = rgms.Where(x => x.type == "candidate").Select(x => RealTimeHub.Keys.GenerateRgm(x.groupId)).ToList();
                     var group = hub.Clients.Groups(candidateGroups);
                     group.update(new AngularUpdate() {
                         new AngularCoreProcessData() {
@@ -964,14 +964,14 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
         }
 
         public static void JoinCoreProcessHub(UserOrganizationModel caller, string connectionId) {
-            var hub = GlobalHost.ConnectionManager.GetHubContext<CoreProcessHub>();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
                     var groups = ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(s, perms, caller.Id);
 
                     foreach (var r in groups) {
-                        hub.Groups.Add(connectionId, CoreProcessHub.GenerateRgm(r));
+                        hub.Groups.Add(connectionId, RealTimeHub.Keys.GenerateRgm(r));
                     }
                 }
             }

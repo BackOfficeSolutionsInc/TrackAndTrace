@@ -258,7 +258,8 @@
     <Compile Include="Crosscutting\Hooks\Realtime\CoreProcess\RealTime_Tasks.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\UpdateUserCache.cs" />
     <Compile Include="Crosscutting\Hooks\UserRegistration\UpdatePlaceholder.cs" />
-    <Compile Include="Hubs\CoreProcessHub.cs" />
+    <Compile Include="Hubs\ToFix\CoreProcessHub.cs" />
+    <Compile Include="Hubs\RealTimeHub.cs" />
     <Compile Include="Models\Admin\AdminAuditLog.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
@@ -379,7 +380,7 @@
     <Compile Include="Crosscutting\Hooks\CrossCutting\UpdateUserModel_TeamNames.cs" />
     <Compile Include="Crosscutting\Hooks\Webhook\IssueWebhook.cs" />
     <Compile Include="Crosscutting\Hooks\Webhook\TodoWebhook.cs" />
-    <Compile Include="Hubs\PeopleHub.cs" />
+    <Compile Include="Hubs\ToFix\PeopleHub.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
     <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
     <Compile Include="Models\Angular\DataType\AngularString.cs" />
@@ -606,11 +607,10 @@
     <Compile Include="Crosscutting\Hooks\Integrations\Outlook_TodoHook.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
-    <Compile Include="Hubs\MessageHub.cs" />
-    <Compile Include="Hubs\MeetingHub.cs" />
-    <Compile Include="Hubs\OrganizationHub.cs" />
-    <Compile Include="Hubs\VtoHub.cs" />
-    <Compile Include="Hubs\WebRtcHub.cs" />
+    <Compile Include="Hubs\ToFix\MessageHub.cs" />
+    <Compile Include="Hubs\ToFix\MeetingHub.cs" />
+    <Compile Include="Hubs\ToFix\OrganizationHub.cs" />
+    <Compile Include="Hubs\ToFix\VtoHub.cs" />
     <Compile Include="Models\Accountability\AccountabilityModel.cs" />
     <Compile Include="Models\Angular\Accountability\AngularAccountability.cs" />
     <Compile Include="Models\Angular\DataType\AngularTree.cs" />
@@ -1428,7 +1428,7 @@
     <Content Include="Scripts\Inputs\token-editor.js" />
     <Content Include="Scripts\Inputs\underscore.min.js" />
     <Content Include="Scripts\Inputs\underscore.string.min.js" />
-    <Content Include="Scripts\jquery\jquery-ui.mi.js" />
+    <Content Include="Scripts\Dashboard\jquery-ui.min.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.min.js">
       <DependentUpon>jquery.autoresize.js</DependentUpon>
     </Content>
@@ -1463,6 +1463,7 @@
     <Content Include="Scripts\Main\linq.js" />
     <Content Include="Scripts\Main\log-helper.js" />
     <Content Include="Scripts\Main\modals.js" />
+    <Content Include="Scripts\Main\notifications.js" />
     <Content Include="Scripts\Main\profilepicture.js" />
     <Content Include="Scripts\Main\support.js" />
     <Content Include="Scripts\Main\time.js" />
@@ -1770,7 +1771,6 @@
     <Content Include="Scripts\Angular\Meetings\L10Controller.js" />
     <Content Include="Scripts\Angular\Helpers\signalR.js" />
     <Content Include="Scripts\Angular\Meetings\RockState.js" />
-    <Content Include="Scripts\Angular\SignalR\SignalR.js" />
     <Content Include="Scripts\Angular\VTO\VtoApp.js" />
     <Content Include="Scripts\Angular\VTO\VtoController.js" />
     <Content Include="Scripts\components\fivestate.js" />
@@ -2781,7 +2781,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\XmlComments.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591,1998</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>

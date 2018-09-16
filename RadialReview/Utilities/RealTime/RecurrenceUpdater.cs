@@ -26,7 +26,7 @@ namespace RadialReview.Utilities.RealTime {
 
             protected void UpdateAll(Func<long, IAngularId> itemGenerater,bool forceNoSkip =false) {
                 foreach (var r in _recurrenceIds) {
-                    var updater = rt.GetUpdater<MeetingHub>(MeetingHub.GenerateMeetingGroupId(r), !forceNoSkip);
+                    var updater = rt.GetUpdater<RealTimeHub>(RealTimeHub.Keys.GenerateMeetingGroupId(r), !forceNoSkip);
                     updater.Add(itemGenerater(r));
                 }
             }
@@ -34,7 +34,7 @@ namespace RadialReview.Utilities.RealTime {
             public RTRecurrenceUpdater AddLowLevelAction(Action<dynamic> action) {
                 rt.AddAction(() => {
                     foreach (var r in _recurrenceIds) {
-                        var g = rt.GetGroup<MeetingHub>(MeetingHub.GenerateMeetingGroupId(r));
+                        var g = rt.GetGroup<RealTimeHub>(RealTimeHub.Keys.GenerateMeetingGroupId(r));
                         action(g);
                     }
                 });

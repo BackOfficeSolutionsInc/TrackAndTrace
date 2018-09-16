@@ -25,7 +25,7 @@
 					<td>@(new MvcHtmlString(r._CompanyRock ? "<span class='label label-success'>Company Rock</span>" : ""))</td>
 					<td class="alignRight" style="padding-right:8px;">@(r.DeleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value).ToString("MMMM dd, yyyy")))</td>
 					<td class="alignCenter">@(r.Completion.ToString())</td>
-                    <td><a href="">Restore</a></td>
+                    <td><a href="/rocks/undelete/@r.Id">Restore</a></td>
 				</tr>
 				i += 1;
 			}

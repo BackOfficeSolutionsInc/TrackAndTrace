@@ -63,7 +63,7 @@ namespace RadialReview.Accessors.VideoConferenceProviders {
 					var perms = PermissionsUtility.Create(s, caller).ViewUserOrganization(vcp.OwnerId, false);
 					vcp = (AbstractVCProvider)s.GetSessionImplementation().PersistenceContext.Unproxy(vcp);
 					if (vcp is ZoomUserLink) {
-						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+						var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 						var group = hub.Clients.Client(connectionId).joinVideoConference((ZoomUserLink)vcp);
 					} else {
 						throw new PermissionsException("Unhandled video type");

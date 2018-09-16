@@ -149,8 +149,8 @@ namespace RadialReview.Accessors {
 
 					var json = Json.Encode(model);
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), model.connectionId);
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId), model.connectionId);
 
 					//group.deserializeIssues(".issues-list", model);
 					group.setIssueOrder(model.issues);

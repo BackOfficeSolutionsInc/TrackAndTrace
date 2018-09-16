@@ -32,8 +32,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
 		public async Task CreateMilestone(ISession s, Milestone milestone) {
 
 			var rock = s.Get<RockModel>(milestone.RockId);
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			var userMeetingHub = hub.Clients.Group(MeetingHub.GenerateUserId(rock.ForUserId));
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			var userMeetingHub = hub.Clients.Group(RealTimeHub.Keys.UserId(rock.ForUserId));
 			var updates = new AngularRecurrence(-2);
 			updates.Milestones = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(milestone, rock.AccountableUser,rock.Name));
 			userMeetingHub.update(updates);
@@ -43,8 +43,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
 		public async Task UpdateMilestone(ISession s, UserOrganizationModel caller, Milestone milestone, IMilestoneHookUpdates updates) {
 
 			var rock = s.Get<RockModel>(milestone.RockId);
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			var group = hub.Clients.Group(MeetingHub.GenerateUserId(rock.ForUserId), RealTimeHelpers.GetConnectionString());
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			var group = hub.Clients.Group(RealTimeHub.Keys.UserId(rock.ForUserId), RealTimeHelpers.GetConnectionString());
 			if (updates.IsDeleted) {
 				var update1 = new AngularRecurrence(-2);
 				update1.Milestones = AngularList.CreateFrom(AngularListType.Remove, new AngularTodo(milestone, rock.AccountableUser));

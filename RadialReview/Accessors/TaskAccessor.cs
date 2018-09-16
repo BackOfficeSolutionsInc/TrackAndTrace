@@ -3,6 +3,7 @@ using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Linq;
 using RadialReview.Controllers;
+using RadialReview.Crosscutting.Schedulers;
 using RadialReview.Exceptions;
 using RadialReview.Hangfire;
 using RadialReview.Hooks;
@@ -61,107 +62,113 @@ namespace RadialReview.Accessors {
 			public List<ScheduledTask> NewTasks { get; set; }
 		}
 
-        [Queue(HangfireQueues.Immediate.DAILY_TASKS)]
-        [AutomaticRetry(Attempts = 0)]
-        public static async Task<bool> DailyTask(DateTime now) {
-            var any = false;
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var orgs = s.QueryOver<OrganizationModel>().Where(x => x.DeleteTime == null).List().ToList();
+		[Queue(HangfireQueues.Immediate.DAILY_TASKS)]
+		[AutomaticRetry(Attempts = 0)]
+		public static async Task<bool> GenerateRockPeriods_Hangfire(DateTime now) {
+			var any = false;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var orgs = s.QueryOver<OrganizationModel>().Where(x => x.DeleteTime == null).List().ToList();
 
-                    var tomorrow = DateTime.UtcNow.Date.AddDays(7);
-                    foreach (var o in orgs) {
-                        var o1 = o;
-                        var period = s.QueryOver<PeriodModel>().Where(x => x.OrganizationId == o1.Id && x.DeleteTime == null && x.StartTime <= tomorrow && tomorrow < x.EndTime).List().ToList();
+					var tomorrow = DateTime.UtcNow.Date.AddDays(7);
+					foreach (var o in orgs) {
+						var o1 = o;
+						var period = s.QueryOver<PeriodModel>().Where(x => x.OrganizationId == o1.Id && x.DeleteTime == null && x.StartTime <= tomorrow && tomorrow < x.EndTime).List().ToList();
 
-                        if (!period.Any()) {
+						if (!period.Any()) {
 
-                            var startOfYear = (int)o.Settings.StartOfYearMonth;
+							var startOfYear = (int)o.Settings.StartOfYearMonth;
 
-                            if (startOfYear == 0)
-                                startOfYear = 1;
+							if (startOfYear == 0)
+								startOfYear = 1;
 
-                            var start = new DateTime(tomorrow.Year - 2, startOfYear, 1);
+							var start = new DateTime(tomorrow.Year - 2, startOfYear, 1);
 
-                            //var curM = (int)o.Settings.StartOfYearMonth;
-                            //var curY = tomorrow.Year;
-                            //var last = 
-                            var quarter = 0;
-                            var prev = start;
-                            while (true) {
-                                start = start.AddMonths(3);
-                                quarter += 1;
-                                var tick = start.AddDateOffset(o.Settings.StartOfYearOffset);
-                                if (tick > tomorrow) {
-                                    break;
-                                }
-                                prev = start;
-                            }
+							//var curM = (int)o.Settings.StartOfYearMonth;
+							//var curY = tomorrow.Year;
+							//var last = 
+							var quarter = 0;
+							var prev = start;
+							while (true) {
+								start = start.AddMonths(3);
+								quarter += 1;
+								var tick = start.AddDateOffset(o.Settings.StartOfYearOffset);
+								if (tick > tomorrow) {
+									break;
+								}
+								prev = start;
+							}
 
-                            var p = new PeriodModel() {
-                                StartTime = prev.AddDateOffset(o.Settings.StartOfYearOffset),
-                                EndTime = start.AddDateOffset(o.Settings.StartOfYearOffset).AddDays(-1),
-                                Name = prev.AddDateOffset(o.Settings.StartOfYearOffset).Year + " Q" + (((quarter + 3) % 4) + 1),// +3 same as -1
-                                Organization = o,
-                                OrganizationId = o.Id,
-                            };
+							var p = new PeriodModel() {
+								StartTime = prev.AddDateOffset(o.Settings.StartOfYearOffset),
+								EndTime = start.AddDateOffset(o.Settings.StartOfYearOffset).AddDays(-1),
+								Name = prev.AddDateOffset(o.Settings.StartOfYearOffset).Year + " Q" + (((quarter + 3) % 4) + 1),// +3 same as -1
+								Organization = o,
+								OrganizationId = o.Id,
+							};
 
-                            s.Save(p);
-                            any = true;
-                        }
-                    }
+							s.Save(p);
+							any = true;
+						}
+					}				
+					//await EventUtil.GenerateAllDailyEvents(s, DateTime.UtcNow);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return any;
+		}
 
+		public static async Task CleanupSyncs_Hangfire() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					try {
+						var syncTable = "Sync";
+						s.CreateSQLQuery("delete from " + syncTable + " where CreateTime < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"").ExecuteUpdate();
+						DeleteOldSyncLocks(s);
+						tx.Commit();
+						s.Flush();
 
-                    #region Cleanup Sync model
-                    try {
-                        {
-                            var syncTable = "Sync";
-                            s.CreateSQLQuery("delete from " + syncTable + " where CreateTime < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
-                             .ExecuteUpdate();
-                        }
-                        {
-                            DeleteOldSyncLocks(s);
-                        }
-                    } catch (Exception e) {
-                        log.Error(e);
-                    }
-                    #endregion
+					} catch (Exception e) {
+						log.Error(e);
+					}
+				}
+			}
+		}
 
-                    await EventUtil.GenerateAllDailyEvents(s, DateTime.UtcNow);
-
-                    await CheckCardExpirations(s);
-
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-            return any;
-        }
-
-        public static void DeleteOldSyncLocks(ISession s) {
-            var syncTable = "SyncLock";
-            s.CreateSQLQuery("delete from " + syncTable + " where LastClientUpdateTimeMs < \"" + DateTime.UtcNow.AddDays(-1).ToJavascriptMilliseconds() + "\"")
-             .ExecuteUpdate();
-        }
+		public static void DeleteOldSyncLocks(ISession s) {
+			var syncTable = "SyncLock";
+			s.CreateSQLQuery("delete from " + syncTable + " where LastClientUpdateTimeMs < \"" + DateTime.UtcNow.AddDays(-1).ToJavascriptMilliseconds() + "\"").ExecuteUpdate();
+		}
 
 
-        private static async Task CheckCardExpirations(ISession s) {
-            var date = DateTime.UtcNow.Date;
-            if (date == new DateTime(date.Year, date.Month, 1) || date == new DateTime(date.Year, date.Month, 15) || date == new DateTime(date.Year, date.Month, 21)) {
-                var expireMonth = date.AddMonths(1);
-                var tokens = s.QueryOver<PaymentSpringsToken>()
-                        .Where(x => x.Active && x.DeleteTime == null && x.TokenType == PaymentSpringTokenType.CreditCard && x.MonthExpire == expireMonth.Month && x.YearExpire == expireMonth.Year)
-                        .List().ToList();
 
-                var tt = tokens.GroupBy(x => x.OrganizationId).Select(x => x.OrderByDescending(y => y.CreateTime).First());
-                foreach (var t in tt)
-                    await HooksRegistry.Each<IPaymentHook>((ses, x) => x.CardExpiresSoon(ses, t));
+		[Queue(HangfireQueues.Immediate.EXECUTE_TASKS)]
+		[AutomaticRetry(Attempts = 0)]
+		public static async Task CheckCardExpirations_Hangfire() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 
-            }
-        }
+					var date = DateTime.UtcNow.Date;
+					if (date == new DateTime(date.Year, date.Month, 1) || date == new DateTime(date.Year, date.Month, 15) || date == new DateTime(date.Year, date.Month, 21)) {
+						var expireMonth = date.AddMonths(1);
+						var tokens = s.QueryOver<PaymentSpringsToken>()
+								.Where(x => x.Active && x.DeleteTime == null && x.TokenType == PaymentSpringTokenType.CreditCard && x.MonthExpire == expireMonth.Month && x.YearExpire == expireMonth.Year)
+								.List().ToList();
+
+						var tt = tokens.GroupBy(x => x.OrganizationId).Select(x => x.OrderByDescending(y => y.CreateTime).First());
+						foreach (var t in tt)
+							await HooksRegistry.Each<IPaymentHook>((ses, x) => x.CardExpiresSoon(ses, t));
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 
 
-        [Queue(HangfireQueues.Immediate.EXECUTE_TASKS)]
+		[Queue(HangfireQueues.Immediate.EXECUTE_TASKS)]
 		[AutomaticRetry(Attempts = 0)]
 		public static async Task<List<ExecutionResult>> ExecuteTasks(DateTime now) {
 			var nowV = now;

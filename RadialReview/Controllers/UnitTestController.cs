@@ -200,8 +200,8 @@ namespace RadialReview.Controllers
 
 			updates.Add(rock);
 
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 			group.update(updates);
 
 			return Json(updates, JsonRequestBehavior.AllowGet);
@@ -221,8 +221,8 @@ namespace RadialReview.Controllers
 	    public ActionResult UpdateName(long id = 1,string name="NEW_NAME",long user=604)
 	    {
 			var recurrenceId = id;
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 
 		    var updates = new AngularUpdate(){
 			    new AngularUser(user){Name = name}

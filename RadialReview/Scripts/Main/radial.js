@@ -5,7 +5,7 @@ function arrayHasOwnIndex(array, prop) {
 
 
 Constants = {
-	StartHubSettings: { transport: ['webSockets', 'longPolling'] }
+	StartHubSettings: { /*transport: ['webSockets', 'longPolling']*/ }
 };
 
 function showDebug(show) {

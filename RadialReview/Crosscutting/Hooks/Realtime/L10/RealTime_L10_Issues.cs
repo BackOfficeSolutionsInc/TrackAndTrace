@@ -32,8 +32,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
             var recurrenceId = issueRecurrenceModel.Recurrence.Id;
             var r = s.Get<L10Recurrence>(recurrenceId);
 
-            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-            var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+            var meetingHub = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 
             meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(issueRecurrenceModel), r.OrderIssueBy);
             var message = "Created issue.";
@@ -69,8 +69,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
             var issueRecurrenceId = issueRecurrence.Id;
             var now = DateTime.UtcNow;
 
-            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-            var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), RealTimeHelpers.GetConnectionString());
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+            var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId), RealTimeHelpers.GetConnectionString());
 
             if (updates.MessageChanged)
                 group.updateIssueMessage(issueRecurrenceId, issueRecurrence.Issue.Message);

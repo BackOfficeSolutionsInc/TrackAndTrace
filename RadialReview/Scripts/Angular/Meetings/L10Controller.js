@@ -11,7 +11,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		//$scope.window = $window;
 
 		$scope.dateFormat = window.dateFormat || "MM-dd-yyyy";
-
+		/*
 		function rejoin(connection, proxy, callback) {
 			try {
 				if (proxy) {
@@ -31,7 +31,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			} catch (e) {
 				console.error(e);
 			}
-		}
+		}*/
 
 		function updateScorecard(data) {
 			console.log("Updating Scorecard.");
@@ -74,11 +74,12 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			}
 		};
 
-		var r = radial($scope, 'meetingHub', rejoin);
+		//var r = radial($scope, 'meetingHub', rejoin);
+		var r = radial($scope,{hubs: { recurrenceIds : [recurrenceId] }});
 
-		var cpr = radial($scope, {
-			hubName: "coreProcessHub"
-		});
+		//var cpr = radial($scope, {
+		//	hubName: "messageHub" //CoreProcessHub moved into meeting hub
+		//});
 
 		r.updater.postResolve = updateScorecard;
 

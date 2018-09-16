@@ -78,7 +78,7 @@
 			"<div >" +
 				"<span class='gray' style='width:75px;display:inline-block'>Due date:</span>" +
 				"<span style='width:250px;padding-left:10px;' class='duedate rock-duedate on-edit-enabled' data-accountable='" + accountable + "' data-rockid='" + rockId + "' >" +
-					"<span class='date' style='display:inline-block' data-date='" + clientDateFormat(due) + "' data-date-format='m-d-yyyy'>" +
+					"<span class='date' style='display:inline-block' data-date='" + clientDateFormat(due) + "' >" +//data-date-format='mm-dd-yyyy'
 						"<input type='text' data-rockid='" + rockId + "' class='form-control datePicker' value='" + clientDateFormat(due) + "'  placeholder='not set'/>" +
 					"</span>" +
 				"</span>" +
@@ -188,7 +188,7 @@
             var rockId = $(this).data("rockid");
             
             $(this).datepickerX({
-                format: 'dd-mm-yyyy',
+                //format: 'dd-mm-yyyy',
                 todayBtn: true,
                 orientation: "top left"
             }).on('changeDate', function (ev) {
@@ -319,11 +319,11 @@ window.milestoneAccessor = new MilestoneAccessor(function () { return window.mil
 
 			var sliderPaddingLeft = .1;
 			var sliderPaddingRight = .1;
-			var sliderPaddingSkipRight = .05;
+			var sliderPaddingSkipRight = 0;// .05;
 
 			var startP = sliderPaddingLeft;
-			var nowP = rock.nowPercentage - sliderPaddingSkipRight;
-			var endP = 1 - sliderPaddingRight - sliderPaddingSkipRight; //Default dueP
+			var nowP = rock.nowPercentage;//- sliderPaddingSkipRight;
+			var endP = 1 - (sliderPaddingRight + sliderPaddingSkipRight); //Default dueP
 			var dueP = endP;
 
 			function shiftPercent(p) {
@@ -342,7 +342,7 @@ window.milestoneAccessor = new MilestoneAccessor(function () { return window.mil
 			container.find(".milestone-marker").remove();
 			container.find(".milestone-date-marker").remove();
 			container.find(".milestone-date-container").remove();
-			container.find(".pre-line,.post-line").remove();
+			container.find(".pre-line,.post-line,.due-line").remove();
 
 			var detailsBox = $(".milestone-table[data-rockid=" + rock.rockId + "]");
 
@@ -449,7 +449,10 @@ window.milestoneAccessor = new MilestoneAccessor(function () { return window.mil
 				
 
 				var dueMarkerW = (dueP - startP) * 100 + "%";
-				var ellapseMarkerW = (Math.min(dueP, nowP) - startP) * 100 + "%";
+				//var ellapseMarkerW = (Math.min(1, nowP) - (startP + sliderPaddingRight + sliderPaddingSkipRight)) * 100 + "%";//(Math.min(dueP, nowP) - startP) * 100 + "%";
+				var ellapseMarkerW = (Math.min(1, nowP) * (1 - (sliderPaddingLeft + sliderPaddingRight + sliderPaddingSkipRight))) * 100 + "%";;//+ sliderPaddingLeft) * 100 + "%";
+				//var temp = shiftPercent(Math.min(dueP, nowP)) ;
+				//debugger;
 
 				var preW = (startP) * 100 + "%";
 				var postW = (1 - dueP - sliderPaddingSkipRight) * 100 + "%";
@@ -469,9 +472,14 @@ window.milestoneAccessor = new MilestoneAccessor(function () { return window.mil
 				postline.css("width", postW);
 				postline.css("left", dueP * 100 + "%");
 
+				var dueLeft=(Math.min(1, rock.duePercentage) * (1 - (sliderPaddingLeft + sliderPaddingRight + sliderPaddingSkipRight))+startP) * 100 + "%";
+				var dueLine = $("<div class='due-line'></div>");
+				dueLine.css("left", dueLeft);
+
 
 				container.prepend(dateEllapseMarker);
 				container.prepend(dateRangeContainer);
+				container.append(dueLine);
 				container.prepend(preline);
 				container.append(postline);
 

@@ -18,6 +18,7 @@
 			@if (ViewBag.ShowPeople) {
 				<th>QCs</th>
 			}
+			<th>Last Login</th>
 			<th>Deleted</th>
 		</tr>
 	</thead>
@@ -33,6 +34,11 @@
 					<td><a href="/people/quarterlyconversation/surveys/@user.Id">QCs</a></td>
 				}
 				<td>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", user.DeleteTime.Value)</td>
+				@try {
+					<td>@user.Cache.LastLogin.NotNull(x=>x.Value.ToShortDateString())</td>
+				} catch (Exception e) {
+					<td>Err.</td>
+				}
 				<td><a href="#r_@user.Id" onclick="$.ajax({url:'/user/undelete/@(user.Id)',success:function(){$('#r_@(user.Id)').remove();}})">Undelete</a></td>
 			</tr>
 		}

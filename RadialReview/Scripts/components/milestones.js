@@ -119,8 +119,12 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 
 		var rockIds = [];
 		var ms = getMilestones();
+
+		function roundDate(date) {
+			return new Date(Math.floor(+date / 8.64e+7) * 8.64e+7);
+		}
 			
-		var now = new Date(Math.floor(+new Date() / 8.64e+7) * 8.64e+7);
+		var now = roundDate(new Date());
 
 		var minimumDate = now;
 		var maximumDate = now;
@@ -132,6 +136,7 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 				maximumDate = Math.max(parseJsonDate(mm.DueDate, true), maximumDate);
 			}
 		}
+
 
 		var rocks = _getRocks();
 
@@ -150,6 +155,9 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 		var extra = 0;
 		minimumDate = minimumDate - extra;
 
+		minimumDate = roundDate(minimumDate);
+		maximumDate = roundDate(maximumDate);
+
 		var sliderPaddingLeft = 0;		
 		var sliderPaddingRight = 0;		
 		var sliderPaddingSkipRight = 0;	
@@ -157,10 +165,10 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 		function calculateMarkerPercentage(date) {
 			var percentage = .5;
 			if (maximumDate != minimumDate) {
-				percentage = (date - minimumDate) / (maximumDate - minimumDate);
+				percentage = (roundDate(date) - minimumDate) / (maximumDate - minimumDate);
 			}
 			//percentage to pad
-			percentage += sliderPaddingLeft;
+			//percentage += sliderPaddingLeft;
 			return percentage;
 		}
 
@@ -254,8 +262,8 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 						dueP = calculateMarkerPercentage(dueDate);
 					}
 
-					rockModel.nowPercentage = (Math.min(dueP, nowP) - startP);
-					rockModel.duePercentage = dueP;					
+					rockModel.nowPercentage = ( nowP) /*- startP*/;
+					rockModel.duePercentage =(calculateMarkerPercentage(rr.DueDate));
 				}
 				rockModel.markers = markers;
 				rockModels.push(rockModel);

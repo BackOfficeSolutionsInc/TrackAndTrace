@@ -46,6 +46,10 @@ namespace RadialReview.Controllers {
 				model = VtoAccessor.GetVTO(GetUser(), id);
 			}
 
+			if (GetUser().Organization.Settings.HasImage()) {
+				ViewBag.CompanyImageUrl = GetUser().Organization.Settings.GetImageUrl(ImageSize._img);
+			}
+
 			var defaultVision = false;
 			var defaultTraction = true;
 			var defaultCompanyVision = true;

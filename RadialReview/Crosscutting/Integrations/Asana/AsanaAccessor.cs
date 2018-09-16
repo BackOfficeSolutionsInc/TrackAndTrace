@@ -453,9 +453,9 @@ namespace RadialReview.Crosscutting.Integrations.Asana {
 				if (response.access_token != null) {
 					token.AccessToken = response.access_token;
 				}
-				if (response.refresh_token != null) {
+				/*if (response.refresh_token != null) {
 					token.RefreshToken = response.refresh_token;
-				}
+				}*/
 
 				s.Update(token);
 
