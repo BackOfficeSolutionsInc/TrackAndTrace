@@ -80,7 +80,6 @@ namespace RadialReview.Models.Todo {
             CreateTime = DateTime.UtcNow;
             DueDate = CreateTime.AddDays(7);
             Ordering = -CreateTime.Ticks;
-            PadId = Guid.NewGuid().ToString();
             TodoType = TodoType.Recurrence;
         }
 

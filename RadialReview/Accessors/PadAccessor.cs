@@ -25,66 +25,80 @@ using RadialReview.Models;
 
 namespace RadialReview.Accessors
 {
-	public class PadAccessor :BaseAccessor
+    public enum PadType
     {
-        
-        public static async Task<string> CreatePad(string text=null)
+        firepad = 0,
+        etherpad = 1
+    }
+    public class PadAccessor :BaseAccessor
+    {
+       
+        public static async Task<string> CreatePad(string text=null,PadType? padType=PadType.firepad )
 		{
 			try{
                 
                 string padid = Guid.NewGuid().ToString();
 
-                if (NotesType.firePad)
+                switch (padType)
                 {
-                    padid = "-" + padid;
-                    IFirebaseClient FirePadClient = new FireSharp.FirebaseClient(Config.getFirePadConfig());
-                    if (FirePadClient != null)
-                    {
-                        var data = new FirePadData
-                        {
-                            initialText = text ?? ""
-
-                        };
-                        SetResponse FPResponse = await FirePadClient.SetTaskAsync(padid, data);
-                        FirePadData FPresult = FPResponse.ResultAs<FirePadData>();
-                    }
-                    else
-                    {
-                        throw new PermissionsException("Error connecting to firebase");
-                    }
-                    return padid;
-                   
+                    case PadType.firepad:
+                        padid = await Firepad(padid, text);
+                        break;
+                    case PadType.etherpad:
+                        padid = await Etherpad(padid, text);
+                        break;
                 }
-                else
-                {
-                    var client = new HttpClient();
-                    var urlText = "";
-                    if (!String.IsNullOrWhiteSpace(text))
-                        urlText = "&text=" + WebUtility.UrlEncode(text);
-
-                    var baseUrl = Config.NotesUrl() + "api/1/createPad?apikey=" + Config.NoteApiKey() + "&padID=" + padid + urlText;
-                    HttpResponseMessage response = await client.GetAsync(baseUrl);
-                    HttpContent responseContent = response.Content;
-                    using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
-                    {
-                        var result = await reader.ReadToEndAsync();
-                        int code = Json.Decode(result).code;
-                        string message = Json.Decode(result).message;
-                        if (code != 0)
-                        {
-                            throw new PermissionsException("Error " + code + ": " + message);
-                        }
-                        return padid;
-                    }
-
-                }
-                
+                return padid;
             }
             catch (Exception e){
 				log.Error("Error PadAccessor.CreatePad",e);
 				return "";
 			}
 		}
+
+        private static async Task<string> Etherpad(string padid,string text) {
+            var client = new HttpClient();
+            var urlText = "";
+            if (!String.IsNullOrWhiteSpace(text))
+                urlText = "&text=" + WebUtility.UrlEncode(text);
+
+            var baseUrl = Config.NotesUrl() + "api/1/createPad?apikey=" + Config.NoteApiKey() + "&padID=" + padid + urlText;
+            HttpResponseMessage response = await client.GetAsync(baseUrl);
+            HttpContent responseContent = response.Content;
+            using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
+            {
+                var result = await reader.ReadToEndAsync();
+                int code = Json.Decode(result).code;
+                string message = Json.Decode(result).message;
+                if (code != 0)
+                {
+                    throw new PermissionsException("Error " + code + ": " + message);
+                }
+                return padid;
+            }
+
+        }
+
+        private static async Task<string>  Firepad(string padid,string text)
+        {
+            padid = "-" + padid;
+            IFirebaseClient FirePadClient = new FireSharp.FirebaseClient(Config.getFirePadConfig());
+            if (FirePadClient != null)
+            {
+                var data = new FirePadData
+                {
+                    initialText = text ?? ""
+
+                };
+                SetResponse FPResponse = await FirePadClient.SetTaskAsync(padid, data);
+                FirePadData FPresult = FPResponse.ResultAs<FirePadData>();
+            }
+            else
+            {
+                throw new PermissionsException("Error connecting to firebase");
+            }
+            return padid;
+        }
 
 		public static async Task<string> GetReadonlyPad(string padid) {
 			try {
@@ -207,11 +221,7 @@ namespace RadialReview.Accessors
             }
             return url;
         }
-        public static class NotesType
-        {
-            public const bool firePad = true;
-
-        }
+        
     }
     
 }
