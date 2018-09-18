@@ -250,7 +250,7 @@ namespace RadialReview.Controllers {
 				Milestones = rockAndMs.Milestones.Select(x => new AngularMilestone(x)).ToList()
 			};
 
-			ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditRock(id));
+			ViewBag.CanEdit = PermissionsAccessor.IsPermitted(GetUser(), x => x.EditRock(id));
 			ViewBag.AnyL10sWithMilestones = rockAndMs.AnyMilestoneMeetings;
 
 			return PartialView(model);

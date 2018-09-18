@@ -27,6 +27,7 @@ using Newtonsoft.Json;
 using RadialReview.Variables;
 using RadialReview.Models.Application;
 using RadialReview.Accessors.PDF;
+using RadialReview.Utilities.Pdf;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
