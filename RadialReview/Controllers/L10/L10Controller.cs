@@ -406,12 +406,18 @@ namespace RadialReview.Controllers {
 			var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id);
 			var d = L10Accessor.GetLastMeetingEndTime(GetUser(), id);
 
+			var merger = new DocumentMerger();
+
 			var doc = PdfAccessor.CreateDoc(GetUser(), "THE LEVEL 10 MEETING");
 
 			PdfAccessor.AddL10(doc, recur, d);
 
+			merger.AddDoc(doc);
+
+			var doc1 = merger.Flatten("THE LEVEL 10 MEETING", true, true, GetUser().Organization.Settings.GetDateFormat(), recur._Recurrence.Item.Name);
+
 			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
-			return Pdf(doc, now + "_" + recur.Basics.Name + "_L10Meeting.pdf", true);
+			return Pdf(doc1, now + "_" + recur.Basics.Name + "_L10Meeting.pdf", true);
 		}
 
 
