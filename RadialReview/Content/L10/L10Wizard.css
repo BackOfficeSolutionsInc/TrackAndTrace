@@ -1022,6 +1022,9 @@ body,
 .wizard .checkbox-column {
   padding-right: 20px !important;
 }
+.wizard .checkbox-column .vto-status-inline {
+  display: none;
+}
 .wizard .delete-column {
   padding-right: 0px !important;
 }
