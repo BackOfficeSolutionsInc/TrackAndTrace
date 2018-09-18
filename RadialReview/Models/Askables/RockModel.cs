@@ -47,7 +47,7 @@ namespace RadialReview.Models.Askables {
 			CreateTime = DateTime.UtcNow;
 			OnlyAsk = AboutType.Self;
 			Completion = RockState.OnTrack;
-            PadId = Guid.NewGuid().ToString();
+            
 		}
 
 		public override string GetQuestion()

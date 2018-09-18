@@ -28,32 +28,32 @@ namespace RadialReview.Accessors
 	public class PadAccessor :BaseAccessor
     {
         
-		public static async Task<string> CreatePad(string padid, string text=null,bool firePad=true)
+        public static async Task<string> CreatePad(string text=null)
 		{
 			try{
+                
+                string padid = Guid.NewGuid().ToString();
 
-                //start firepad creation
-                if (firePad)
+                if (NotesType.firePad)
                 {
-                    string _padid = "-" + padid;
+                    padid = "-" + padid;
                     IFirebaseClient FirePadClient = new FireSharp.FirebaseClient(Config.getFirePadConfig());
                     if (FirePadClient != null)
                     {
                         var data = new FirePadData
                         {
-
                             initialText = text ?? ""
 
                         };
-                        SetResponse FPResponse = await FirePadClient.SetTaskAsync(_padid, data);
+                        SetResponse FPResponse = await FirePadClient.SetTaskAsync(padid, data);
                         FirePadData FPresult = FPResponse.ResultAs<FirePadData>();
                     }
                     else
                     {
                         throw new PermissionsException("Error connecting to firebase");
                     }
-                    return "-";
-                    //end firepad creation
+                    return padid;
+                   
                 }
                 else
                 {
@@ -74,7 +74,7 @@ namespace RadialReview.Accessors
                         {
                             throw new PermissionsException("Error " + code + ": " + message);
                         }
-                        return "";
+                        return padid;
                     }
 
                 }
@@ -99,7 +99,7 @@ namespace RadialReview.Accessors
 					string message = Json.Decode(result).message;
 					if (code != 0) {
 						if (message == "padID does not exist") {
-							var pad = await CreatePad(padid);
+							var pad = await CreatePad();
 							return await GetReadonlyPad(padid);
 						}
 
@@ -206,6 +206,11 @@ namespace RadialReview.Accessors
                 url = "~/FirePad/Index/" + padId;
             }
             return url;
+        }
+        public static class NotesType
+        {
+            public const bool firePad = true;
+
         }
     }
     

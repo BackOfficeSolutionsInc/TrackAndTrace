@@ -458,9 +458,9 @@ namespace RadialReview.Accessors {
 				Rock = message,
 				FromTemplateItemId = templateId
 			};
-            string firePadChar = "-";
-            firePadChar=await PadAccessor.CreatePad(rock.PadId);
-            rock.PadId = firePadChar + rock.PadId;
+            
+            rock.PadId = await PadAccessor.CreatePad();
+            
             s.Save(rock);
 
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.CreateRock(ss, rock));

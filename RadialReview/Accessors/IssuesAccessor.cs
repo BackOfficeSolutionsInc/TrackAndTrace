@@ -129,10 +129,8 @@ namespace RadialReview.Accessors {
 
 			var io = issueCreator.Generate(s, perms);
 
-            string firePadChar = "-";
-            if (!string.IsNullOrWhiteSpace(io.IssueModel.Description))
-                firePadChar = await PadAccessor.CreatePad(io.IssueModel.PadId, io.IssueModel.Description);
-            io.IssueModel.PadId = firePadChar + io.IssueModel.PadId;
+            io.IssueModel.PadId = await PadAccessor.CreatePad(io.IssueModel.Description);
+            
             s.Save(io.IssueModel);
 			s.Save(io.IssueRecurrenceModel);
 			

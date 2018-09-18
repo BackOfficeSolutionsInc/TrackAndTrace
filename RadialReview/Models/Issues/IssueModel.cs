@@ -54,7 +54,6 @@ namespace RadialReview.Models.Issues {
 		public IssueModel() {
 			CreateTime = DateTime.UtcNow;
 			_Order = -CreateTime.Ticks;
-			PadId = Guid.NewGuid().ToString();
 		}
 
 		public class IssueMap : ClassMap<IssueModel> {

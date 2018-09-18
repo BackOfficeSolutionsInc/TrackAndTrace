@@ -42,7 +42,6 @@ namespace RadialReview.Models.L10 {
 
 		public PeopleHeadline() {
 			CreateTime = DateTime.UtcNow;
-			HeadlinePadId = Guid.NewGuid().ToString();
 		}
 
 		public class Map : ClassMap<PeopleHeadline> {
