@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Amazon.IdentityManagement.Model;
 using RadialReview.Accessors;
 using RadialReview.Models.Angular.VTO;
 using PdfSharp.Pdf;
@@ -15,9 +14,12 @@ using System.Threading.Tasks;
 using static RadialReview.Accessors.PdfAccessor;
 using RadialReview.Areas.People.Accessors.PDF;
 using RadialReview.Areas.People.Accessors;
+using RadialReview.Utilities.Pdf;
+using PdfSharp.Drawing;
+using RadialReview.Models.Json;
 
 namespace RadialReview.Controllers {
-	public class QuarterlyController : BaseController {
+    public class QuarterlyController : BaseController {
 		// GET: Quarterly
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Index() {
@@ -47,10 +49,6 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public async Task<ActionResult> Printout(long id, FormCollection model/*, PdfAccessor.AccNodeJs root = null*/) {
-
-			//if (model["root"] != null && root == null)
-			//    root = Newtonsoft.Json.JsonConvert.DeserializeObject<PdfAccessor.AccNodeJs>(model["root"]);
-
 			return await Printout(id,
 				model["issues"].ToBooleanJS(),
 				model["todos"].ToBooleanJS(),
@@ -62,10 +60,53 @@ namespace RadialReview.Controllers {
 				model["acc"].ToBooleanJS(),
 				model["print"].ToBooleanJS(),
 				model["quarterly"].ToBooleanJS(),
-				model["pa"].ToBooleanJS()
-
-			// root:root
+				model["pa"].ToBooleanJS()				
 			);
+		}
+
+		public class SendQuarterlyVM {
+
+			public class ScheduledEmails {
+				public string Email { get; set; }
+				public string Date { get; set; }
+				public bool Sent { get; set; }
+			}
+
+			public string ImplementerEmail { get; set; }
+			public DateTime SendDate { get; set; }
+			public bool Later { get; set; }
+			public long RecurrenceId { get; set; }
+			public List<ScheduledEmails> Scheduled { get; set; }
+			public SendQuarterlyVM() {
+				SendDate = DateTime.UtcNow;
+			}
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult Send(long id) {
+			PermissionsAccessor.EnsurePermitted(GetUser(), x => x.ViewL10Recurrence(id));
+
+			var sched = QuarterlyAccessor.GetScheduledEmails(GetUser(), id);
+
+			var model = new SendQuarterlyVM() {
+				ImplementerEmail = GetUser().Organization.ImplementerEmail,
+				RecurrenceId = id,
+				Scheduled =  sched.Select(x=> new SendQuarterlyVM.ScheduledEmails() {
+					Date = x.ScheduledTime.ToString("MM/dd/yyyy"),
+					Email = x.Email,
+					Sent = x.SentTime!=null
+				}).ToList()
+			};
+
+			return PartialView(model);
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Send(SendQuarterlyVM model) {
+			QuarterlyAccessor.ScheduleQuarterlyEmail(GetUser(), model.RecurrenceId, model.ImplementerEmail,model.Later?model.SendDate:DateTime.UtcNow);
+			
+			return Json(ResultObject.Success((model.Later ? "Email scheduled!":"Email sent!")));
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -94,106 +135,9 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
-		public async Task<ActionResult> Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool headlines = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, bool quarterly = true/*, PdfAccessor.AccNodeJs root = null*/, bool pa = false) {
-
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
-
-			var angRecur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, forceIncludeTodoCompletion: recur.IncludeAggregateTodoCompletionOnPrintout);
-			var merger = new DocumentMerger();
-
-			//
-			var anyPages = false;
-			AngularVTO vtoModel = VtoAccessor.GetAngularVTO(GetUser(), angRecur.VtoId.Value);
-
-			if (rocks && (angRecur.Rocks.Any() || !vtoModel.QuarterlyRocks.IsEmpty())) {
-				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout6");
-				PdfAccessor.AddRocks(GetUser(), doc, quarterly, angRecur, vtoModel, addPageNumber: false);
-				merger.AddDoc(doc);
-				anyPages = true;
-			}
-			if (headlines && angRecur.Headlines.Any()) {
-				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout6");
-				PdfAccessor.AddHeadLines(GetUser(), doc, quarterly, angRecur, vtoModel, addPageNumber: false);
-				merger.AddDoc(doc);
-				anyPages = true;
-			}
-			if (vto && angRecur.VtoId.HasValue && angRecur.VtoId > 0) {
-				//vtoModel 
-				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout1");
-
-				var settings = new VtoPdfSettings();
-
-				await PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat(), settings);
-				anyPages = true;
-				merger.AddDoc(doc);
-			}
-			if (acc) {
-				try {
-					var tree = AccountabilityAccessor.GetTree(GetUser(), GetUser().Organization.AccountabilityChartId, expandAll: true);
-
-					var nodes = new List<AngularAccountabilityNode>();
-					var topNodes = tree.Root.GetDirectChildren();
-
-					//Add nodes from the tree.
-					tree.Dive(x => {
-						if (x.User != null && angRecur.Attendees.Any(a => a.Id == x.User.Id))
-							nodes.Add(x);
-					});
-
-					//Setup if has parents
-					foreach (var n in nodes) {
-						n._hasParent = topNodes.All(x => x.Id != n.Id);
-					}
-
-					merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, 11, 8.5, true));
-					anyPages = true;
-				} catch (Exception) {
-
-				}
-			}
-			if (l10) {
-				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printou2t");
-				PdfAccessor.AddL10(doc, angRecur, L10Accessor.GetLastMeetingEndTime(GetUser(), id), addPageNumber: false);
-				anyPages = true;
-				merger.AddDoc(doc);
-			}
-			if (scorecard) {
-				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printou5t");
-				var addedSC = PdfAccessor.AddScorecard(doc, angRecur, addPageNumber: false);
-				anyPages = anyPages || addedSC;
-				if (addedSC) {
-					merger.AddDoc(doc);
-				}
-			}
-			if (todos) {
-				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout3");
-				await PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false);
-				merger.AddDoc(doc);
-				anyPages = true;
-			}
-			if (issues) {
-				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout4");
-				PdfAccessor.AddIssues(GetUser(), doc, angRecur, todos, addPageNumber: false);
-				merger.AddDoc(doc);
-				anyPages = true;
-			}
-			if (pa) {
-				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout5");
-				var peopleAnalyzer = QuarterlyConversationAccessor.GetVisiblePeopleAnalyzers(GetUser(), GetUser().Id, id);
-				var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(GetUser(), doc, peopleAnalyzer, DateTime.MaxValue);
-				merger.AddDoc(renderer);
-				anyPages = true;
-			}
-
-
-			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
-			if (!anyPages)
-				return Content("No pages to print.");
-
-			var doc1 = merger.Flatten("Quarterly Printout", true, true, GetUser().Organization.Settings.GetDateFormat(), recur.Name);
-
-
-			return Pdf(doc1, now + "_" + angRecur.Basics.Name + "_QuarterlyPrintout.pdf", true);
+		public async Task<ActionResult> Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool headlines = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, bool quarterly = true/*, PdfAccessor.AccNodeJs root = null*/, bool pa = false,int? maxSec=null) {
+			var d = await PdfAccessor.QuarterlyPrintout(GetUser(),id,issues,todos,scorecard,rocks,headlines,vto,l10,acc,print,quarterly,pa,maxSec);
+			return Pdf(d.Document, d.CreateTime.ToJsMs() + "_" + d.RecurrenceName + "_QuarterlyPrintout.pdf", true);
 		}
 	}
 }

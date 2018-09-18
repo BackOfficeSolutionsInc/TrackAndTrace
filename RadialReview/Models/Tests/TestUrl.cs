@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Amazon.SimpleEmail.Model;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
 

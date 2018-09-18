@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MigraDoc.DocumentObjectModel;
 using RadialReview;
+using RadialReview.Accessors.PDF;
 using RadialReview.Areas.People.Accessors.PDF;
 using RadialReview.Areas.People.Angular;
 using RadialReview.Areas.People.Angular.Survey;
@@ -91,7 +92,8 @@ namespace TractionTools.Tests.PDF {
 			var o = await OrgUtil.CreateOrganization();
 			var doc = new Document();
 			var pa = Generate(11, 20);
-			var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(o.Manager, doc, pa);
+			var settings = new PdfSettings();
+			var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(o.Manager, doc, pa,settings);
 			renderer.Save(Path.Combine(GetCurrentPdfFolder(), "GeneratePeopleAnalyzerPdf_Landscape.pdf"));
 		}
 
@@ -101,7 +103,7 @@ namespace TractionTools.Tests.PDF {
 			var o = await OrgUtil.CreateOrganization();
 			var doc = new Document();
 			var pa = Generate(5, 20);
-			var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(o.Manager, doc, pa);
+			var renderer = PeopleAnalyzerPdf.AppendPeopleAnalyzer(o.Manager, doc, pa, new PdfSettings());
 			renderer.Save(Path.Combine(GetCurrentPdfFolder(), "GeneratePeopleAnalyzerPdf_Portrait.pdf"));
 		}
 

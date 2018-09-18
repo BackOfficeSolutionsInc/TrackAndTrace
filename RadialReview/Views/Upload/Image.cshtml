@@ -1,7 +1,7 @@
 ﻿@model RadialReview.Models.ViewModels.ImageUploadViewModel
 @{
 	var guid = Guid.NewGuid().ToString().Replace("-", "");
-
+	//DO NOT USE INSIDE OF A FORM... it will not work.
 }
 <script>
 	function imageUploadComplete(data) {
@@ -76,7 +76,7 @@
 <div id="uploaded">
 	<div style="margin-left:auto;margin-right:auto;">
 		<span style="display:inline-block;">
-			<span class="gray glyphicon glyphicon-trash deleteUploadedImage " title="Delete Image" onclick="_deleteImage()"></span>
+			@if (Model.DeleteUrl != null) {<span class="gray glyphicon glyphicon-trash deleteUploadedImage " title="Delete Image" onclick="_deleteImage()"></span> }			
 			<img id="uploadedImg" class="thumbnail"
 				 @if (Model.Width != 0) { @: width="@Model.Width"
 				 				 				 				 		 			 		 		 }

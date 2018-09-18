@@ -124,10 +124,12 @@ $(function () {
 		//meetingHub.client.setLeader = setLeader;
 		meetingHub.client.disableItem = disableItem;
 		meetingHub.client.updateCumulative = updateCumulative;
+		meetingHub.client.updateAverage = updateAverage;
 
 		meetingHub.client.updateIssueAwaitingSolve = updateIssueAwaitingSolve;
 		meetingHub.client.updateModedIssueSolve = updateModedIssueSolve;
 		meetingHub.client.removeIssueRow = removeIssueRow;
+		meetingHub.client.floatTopThreeIssues = floatTopThreeIssues;
 
 
 		meetingHub.client.setMilestone = setMilestone;

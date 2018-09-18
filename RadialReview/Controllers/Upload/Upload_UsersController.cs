@@ -39,7 +39,7 @@ namespace RadialReview.Controllers {
                 fnameRect.EnsureRowOrColumn();
 
                 var m = new UploadUsersSelectedDataVM() { };
-                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
+                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.False()).OrganizationId;
                 var allUsers = TinyUserAccessor.GetOrganizationMembers(GetUser(), orgId);
                 m.ExistingUser = new List<string>();
 
@@ -119,7 +119,7 @@ namespace RadialReview.Controllers {
                 //var useAws = model["UseAWS"].ToBoolean();
                 var recurrence = model["recurrenceId"].ToLong();
 
-                _PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
+				PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
 
                 var now = DateTime.UtcNow;
                 var keys = model.Keys.OfType<string>();
@@ -306,7 +306,7 @@ namespace RadialReview.Controllers {
                 //var useAws = model["UseAWS"].ToBoolean();
                 var orgId = model["orgId"].ToLong();
 
-                _PermissionsAccessor.Permitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(orgId));
+				PermissionsAccessor.Permitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(orgId));
 
                 var now = DateTime.UtcNow;
                 var keys = model.Keys.OfType<string>();

@@ -13,6 +13,10 @@ using System.Collections.Generic;
 using TractionTools.Tests.Utilities;
 using RadialReview.Models.Accountability;
 using RadialReview.Utilities;
+using RadialReview.Crosscutting.Schedulers;
+using RadialReview.Models.Tasks;
+using static RadialReview.Utilities.PaymentSpringUtil;
+using static RadialReview.Accessors.PaymentAccessor;
 
 namespace TractionTools.Tests.Accessors {
 	[TestClass]
@@ -22,6 +26,7 @@ namespace TractionTools.Tests.Accessors {
 
 #pragma warning disable CS0618 // Type or member is obsolete
 		[TestMethod]
+		[TestCategory("Charge")]
 		public void PaymentPlanTypesTests() {
 			var types = Enum.GetNames(typeof(PaymentPlanType));
 			Assert.AreEqual(5, types.Length, "Make sure to update PaymentAccessor switch-cases and add test cases below");
@@ -67,111 +72,120 @@ namespace TractionTools.Tests.Accessors {
 		private async Task TestPlan(UserModel userModel, PaymentPlanType plan, int baseCharge,
 			int chargeAnd19Users_L10, int chargeAnd19Users_L10_Review, int chargeAnd17Users_L10, int chargeAnd17Users_L10_Review,
 			int chargeAnd107Users_L10_Review) {
-			MockHttpContext();
-			//UserOrganizationModel user;
-			//AccountabilityNode userNode;
-			var now = DateTime.UtcNow;
+			using (var mock = Scheduler.Mock()) {
+				MockHttpContext();
+				//UserOrganizationModel user;
+				//AccountabilityNode userNode;
+				var now = DateTime.UtcNow;
 
 
-			var data = new OrgCreationData() {
-				Name = "PaymentPlanTest " + plan + " Org",
-				EnableL10 = true,
-				EnableReview = true,
-			};
+				var data = new OrgCreationData() {
+					Name = "PaymentPlanTest " + plan + " Org",
+					EnableL10 = true,
+					EnableReview = true,
+				};
 
-			var res = await new OrganizationAccessor().CreateOrganization(userModel, plan, now, data);
-			DbCommit(s => {
-				var o = s.Get<PaymentPlan_Monthly>(res.organization.PaymentPlan.Id);
-				o.NoChargeForUnregisteredUsers = false;
-				s.Update(o);
-			});
-
-
-			var token = await PaymentAccessor.GenerateFakeCard(plan + " " + DateTime.UtcNow.ToJavascriptMilliseconds());
-
-			await PaymentAccessor.SetCard(res.NewUser, res.organization.Id, token.id, token.@class, token.card_type,
-				token.card_owner_name, token.last_4, token.card_exp_month, token.card_exp_year,
-				"", "", "", "", "", "", "", "", "", true);
-
-			Assert.IsNotNull(res.organization.PaymentPlan);
-			Assert.IsNotNull(res.organization.PaymentPlan.Task);
-			Assert.IsNotNull(res.organization.PaymentPlan.Description);
+				var res = await new OrganizationAccessor().CreateOrganization(userModel, plan, now, data);
+				DbCommit(s => {
+					var o = s.Get<PaymentPlan_Monthly>(res.organization.PaymentPlan.Id);
+					o.NoChargeForUnregisteredUsers = false;
+					s.Update(o);
+				});
 
 
-			var result = await TaskAccessor.ExecuteTask_Test(res.organization.PaymentPlan.Task, now);
-			Assert.AreEqual(0, result.Response.amount_settled);
+				var token = await PaymentAccessor.Test.GenerateFakeCard(plan + " " + DateTime.UtcNow.ToJavascriptMilliseconds());
+				await PaymentAccessor.SetCard(res.NewUser, res.organization.Id, token.id, token.@class, token.card_type,
+					token.card_owner_name, token.last_4, token.card_exp_month, token.card_exp_year,
+					"", "", "", "", "", "", "", "", "", true);
 
-			var nextTask = result.NewTasks.Single();
-			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(28));
-			Assert.AreEqual(0, result.Response.amount_settled);
+				Assert.IsNotNull(res.organization.PaymentPlan);
+				Assert.IsNotNull(res.organization.PaymentPlan.Task);
+				Assert.IsNotNull(res.organization.PaymentPlan.Description);
 
-			nextTask = result.NewTasks.Single();
-			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(31));
-			Assert.AreEqual(baseCharge, result.Response.amount_settled);
-
-			var ids = new List<long>();
-			DbCommit(s => {
-				for (var i = 0; i < 9; i++) {
-					var u = new UserOrganizationModel() { Organization = res.organization, CreateTime = now.AddDays(32 + i) };
-					s.Save(u);
-					ids.Add(u.Id);
-				}
-			});
-
-			nextTask = result.NewTasks.Single();
-			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(62));
-			Assert.AreEqual(baseCharge, result.Response.amount_settled);
-
-			DbCommit(s => {
-				for (var i = 0; i < 9; i++) {
-					s.Save(new UserOrganizationModel() {
-						Organization = res.organization,
-						CreateTime = now.AddDays(62 + i)
+				ScheduledTask nextTask = null;
+				var ids = new List<long>();
+				{
+					var taskResult = await TaskAccessor.ExecuteTask_Test(res.organization.PaymentPlan.Task, now);
+					var result = mock.Perform<HangfireChargeResult>((string)taskResult.Response);
+					Assert.AreEqual(0, result.PaymentResult.amount_settled);
+					nextTask = taskResult.NewTasks.Single();
+				}{
+					var taskResult = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(28));
+					var result = mock.Perform<HangfireChargeResult>((string)taskResult.Response);
+					Assert.AreEqual(0, result.PaymentResult.amount_settled);
+					nextTask = taskResult.NewTasks.Single();
+				}{
+					var taskResult = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(31));
+					var result = mock.Perform<HangfireChargeResult>((string)taskResult.Response);
+					Assert.AreEqual(baseCharge, result.PaymentResult.amount_settled);
+					DbCommit(s => {
+						for (var i = 0; i < 9; i++) {
+							var u = new UserOrganizationModel() { Organization = res.organization, CreateTime = now.AddDays(32 + i) };
+							s.Save(u);
+							ids.Add(u.Id);
+						}
 					});
+					nextTask = taskResult.NewTasks.Single();
+				}{
+					var taskResult = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(62));
+					var result = mock.Perform<HangfireChargeResult>((string)taskResult.Response);
+					Assert.AreEqual(baseCharge, result.PaymentResult.amount_settled);
+					DbCommit(s => {
+						for (var i = 0; i < 9; i++) {
+							s.Save(new UserOrganizationModel() {
+								Organization = res.organization,
+								CreateTime = now.AddDays(62 + i)
+							});
+						}
+					});
+					nextTask = taskResult.NewTasks.Single();
+				}{
+					var taskResult = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(74));
+					var result = mock.Perform<HangfireChargeResult>((string)taskResult.Response);
+					Assert.AreEqual(chargeAnd19Users_L10, result.PaymentResult.amount_settled);
+					nextTask = taskResult.NewTasks.Single();
+				}{
+					var taskResult = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(93));
+					var result = mock.Perform<HangfireChargeResult>((string)taskResult.Response);
+					Assert.AreEqual(chargeAnd19Users_L10_Review, result.PaymentResult.amount_settled);
+					DbCommit(s => {
+						for (var i = 0; i < 2; i++) {
+							var u = s.Get<UserOrganizationModel>(ids[i]);
+							u.DeleteTime = now.AddDays(63);
+							s.Update(u);
+						}
+					});
+					nextTask = taskResult.NewTasks.Single();
+				}{
+					var taskResult = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(73));
+					var result = mock.Perform<HangfireChargeResult>((string)taskResult.Response);
+					Assert.AreEqual(chargeAnd19Users_L10, result.PaymentResult.amount_settled);
+					nextTask = taskResult.NewTasks.Single();
+				}{
+					var taskResult = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(94));
+					var result = mock.Perform<HangfireChargeResult>((string)taskResult.Response);
+					Assert.AreEqual(chargeAnd17Users_L10_Review, result.PaymentResult.amount_settled);
+					DbCommit(s => {
+						for (var i = 0; i < 90; i++) {
+							s.Save(new UserOrganizationModel() { Organization = res.organization, CreateTime = now.AddDays(62) });
+						}
+					});
+
+					nextTask = taskResult.NewTasks.Single();
+				}{
+					var taskResult = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(94));
+					var result = mock.Perform<HangfireChargeResult>((string)taskResult.Response);
+					Assert.AreEqual(chargeAnd107Users_L10_Review, result.PaymentResult.amount_settled);
 				}
-			});
-
-			nextTask = result.NewTasks.Single();
-			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(74));
-			Assert.AreEqual(chargeAnd19Users_L10, result.Response.amount_settled);
-
-
-			nextTask = result.NewTasks.Single();
-			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(93));
-			Assert.AreEqual(chargeAnd19Users_L10_Review, result.Response.amount_settled);
-
-
-			DbCommit(s => {
-				for (var i = 0; i < 2; i++) {
-					var u = s.Get<UserOrganizationModel>(ids[i]);
-					u.DeleteTime = now.AddDays(63);
-					s.Update(u);
-				}
-			});
-
-			nextTask = result.NewTasks.Single();
-			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(73));
-			Assert.AreEqual(chargeAnd19Users_L10, result.Response.amount_settled);
-
-			nextTask = result.NewTasks.Single();
-			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(94));
-			Assert.AreEqual(chargeAnd17Users_L10_Review, result.Response.amount_settled);
-
-			DbCommit(s => {
-				for (var i = 0; i < 90; i++) {
-					s.Save(new UserOrganizationModel() { Organization = res.organization, CreateTime = now.AddDays(62) });
-				}
-			});
-
-			nextTask = result.NewTasks.Single();
-			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(94));
-			Assert.AreEqual(chargeAnd107Users_L10_Review, result.Response.amount_settled);
-
+			}
 		}
 #pragma warning restore CS0618 // Type or member is obsolete
 
 		[TestMethod]
+		[TestCategory("Charge")]
 		public async Task ChargeOrgs() {
+
+
 			var types = Enum.GetNames(typeof(PaymentPlanType));
 			Assert.AreEqual(5, types.Length, "Make sure to update PaymentAccessor switch-cases and add test cases below");
 			MockApplication();

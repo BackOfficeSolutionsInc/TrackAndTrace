@@ -25,9 +25,9 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 
 		public LessGreater Direction { get; set; }
 		public decimal Percentage { get; set; }
-		public int WeeksInARow { get; private set; }
+		public int WeeksInARow { get; set; }
 
-		public override IEventAnalyzer EventAnalyzerConstructor(long recurrenceId, IHistoricalImpl attendee) {
+		public override IEventAnalyzer EventAnalyzerConstructor(long recurrenceId, L10Recurrence.L10Recurrence_Attendee attendee) {
 			return new MemberwiseTodoCompletion(recurrenceId, attendee, Direction, Percentage,WeeksInARow);
 		}
 		private string _MeetingName { get; set; }
@@ -66,14 +66,14 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 
 	public class MemberwiseTodoCompletion : IEventAnalyzer, IRecurrenceEventAnalyerGenerator {
 		public long RecurrenceId { get; set; }
-		public IHistoricalImpl AttendeeUser { get; set; }
+		public L10Recurrence.L10Recurrence_Attendee Attendee { get; set; }
 		public decimal Percentage { get; set; }
-		public int WeeksInARow { get; private set; }
+		public int WeeksInARow { get; set; }
 		public LessGreater Direction { get; set; }
 
-		public MemberwiseTodoCompletion(long recurrenceId, IHistoricalImpl attendeeUser, LessGreater direction,decimal percentage,int weeksInARow) {
+		public MemberwiseTodoCompletion(long recurrenceId, L10Recurrence.L10Recurrence_Attendee attendee, LessGreater direction,decimal percentage,int weeksInARow) {
 			RecurrenceId = recurrenceId;
-			AttendeeUser = attendeeUser;
+			Attendee = attendee;
 			Percentage = percentage;
 			WeeksInARow = weeksInARow;
 			Direction = direction;
@@ -87,7 +87,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 		/// <returns></returns>
 		public async Task<IEnumerable<IEvent>> GenerateEvents(IEventSettings settings) {
 			var todos = (await settings.Lookup(new SearchAllTodosForRecurrence(RecurrenceId)))
-								.Where(x => x.AccountableUserId == AttendeeUser.Id && x.DeleteTime == null)
+								.Where(x => x.AccountableUserId == Attendee.User.Id && x.DeleteTime == null)
 								.ToList();
 
 			var meetingCompleteTimes = (await settings.Lookup(new SearchRealL10Meeting(RecurrenceId)))
@@ -96,6 +96,8 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 								.Select(x => x.CompleteTime.Value)
 								.ToList();
 
+			meetingCompleteTimes.Insert(0, DateTime.MinValue);
+
 			var results = new List<IEvent>();
 			for (var i = 1; i < meetingCompleteTimes.Count; i++) {
 				var start = meetingCompleteTimes[i - 1];
@@ -103,7 +105,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 
 				var inRange = todos.Where(x => x.DueDate.IsBetween(start, end)).ToList();
 				if (inRange.Any()) {
-					results.Add(new BaseEvent(inRange.Count(x => x.CompleteTime != null) / inRange.Count(), end));
+					results.Add(new BaseEvent(inRange.Count(x => x.CompleteTime != null && x.CompleteTime.Value.IsBetween(start,end)) / inRange.Count(), end));
 				} else {
 					//add placeholder event, they were fine this week
 					results.Add(new BaseEvent(1, end));

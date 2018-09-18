@@ -68,7 +68,7 @@ namespace TractionTools.Tests.Hooks {
 				var org = s.Get<OrganizationModel>(ctx.Org.Id);
 				var calc = new UserCalculator(s, ctx.Org.Id, org.PaymentPlan, new DateRange(DateTime.MaxValue, DateTime.MaxValue));
 				Assert.AreEqual(46, calc.NumberL10Users);
-				Assert.AreEqual(500, calc.Plan.BaselinePrice);
+				Assert.AreEqual(499, calc.Plan.BaselinePrice);
 				Assert.AreEqual(2, calc.Plan.L10PricePerPerson);
 				Assert.AreEqual(45, calc.Plan.FirstN_Users_Free);
 			});
@@ -81,7 +81,7 @@ namespace TractionTools.Tests.Hooks {
 				var org = s.Get<OrganizationModel>(ctx.Org.Id);
 				var calc = new UserCalculator(s, ctx.Org.Id, org.PaymentPlan, new DateRange(DateTime.MaxValue, DateTime.MaxValue));
 				Assert.AreEqual(47, calc.NumberL10Users);
-				Assert.AreEqual(500, calc.Plan.BaselinePrice);
+				Assert.AreEqual(499, calc.Plan.BaselinePrice);
 				Assert.AreEqual(2, calc.Plan.L10PricePerPerson);
 				Assert.AreEqual(45, calc.Plan.FirstN_Users_Free);
 			});
@@ -93,7 +93,7 @@ namespace TractionTools.Tests.Hooks {
 				var org = s.Get<OrganizationModel>(ctx.Org.Id);
 				var calc = new UserCalculator(s, ctx.Org.Id, org.PaymentPlan, new DateRange(DateTime.MaxValue, DateTime.MaxValue));
 				Assert.AreEqual(46, calc.NumberL10Users);
-				Assert.AreEqual(500, calc.Plan.BaselinePrice);
+				Assert.AreEqual(499, calc.Plan.BaselinePrice);
 				Assert.AreEqual(2, calc.Plan.L10PricePerPerson);
 				Assert.AreEqual(45, calc.Plan.FirstN_Users_Free);
 			});

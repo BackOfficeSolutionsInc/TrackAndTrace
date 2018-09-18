@@ -1,6 +1,6 @@
 ﻿using System.Security;
-using Amazon.ElasticMapReduce.Model;
-using Amazon.ElasticTranscoder.Model;
+
+
 using FluentNHibernate.Utils;
 using Microsoft.AspNet.SignalR;
 using NHibernate.Linq;
@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 using RadialReview.Models.ViewModels;
 using RadialReview.Crosscutting.Flags;
 using RadialReview.Crosscutting.Hooks.Interfaces;
+using RadialReview.Models.Components;
 
 namespace RadialReview.Accessors {
 
@@ -852,7 +853,9 @@ namespace RadialReview.Accessors {
 				NumberFormat? numberFormat = null,
 				bool? limitFiveState = null,
 				int? defaultTodoSendTime = null,
-				bool? allowAddClient = null
+				bool? allowAddClient = null,
+				//string imageUrl = null,
+				string primaryColorHex = null
 			) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -943,6 +946,12 @@ namespace RadialReview.Accessors {
 
 					if (allowAddClient != null)
 						org.Settings.AllowAddClient = allowAddClient.Value;
+
+					if (primaryColorHex != null)
+						org.Settings.PrimaryColor = ColorComponent.FromHex(primaryColorHex);
+
+					//if (imageUrl != null)
+					//	org.Settings.ImageGuid= imageUrl;
 
 					s.Update(org);
 
@@ -1333,13 +1342,16 @@ namespace RadialReview.Accessors {
 			var caller = perms.GetCaller();
 			perms.ViewOrganization(organizationId);
 			var users = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
+			var isRadialAdmin = perms.IsPermitted(x => x.RadialAdmin());
+            if (!isRadialAdmin) {
+                users = users.Where(x => !x.Email.NotNull(y=>y.ToLower().EndsWith("@mytractiontools.com"))).ToList();
+            }
 			if (populatePersonallyManaging) {
 				var subs = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id, type);
 
 				var orgManager = PermissionsAccessor.AnyTrue(s, caller, type, x => x.ManagingOrganization);
 
 
-				var isRadialAdmin = perms.IsPermitted(x => x.RadialAdmin());
 				users.ForEach(u =>
 					u._PersonallyManaging = (isRadialAdmin || (orgManager && u.OrganizationId == organizationId) || subs.Contains(u.UserId)));
 			}

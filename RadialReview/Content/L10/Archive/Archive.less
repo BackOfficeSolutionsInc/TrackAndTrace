@@ -177,7 +177,14 @@ body, html {
 			.goal-column.direction {
 				text-align: center;
 			}
+					
 
+			.measurable-column {
+				width: 112px;
+			}
+
+
+			.average-column,
 			.cumulative-column {
 				text-align: center;
 				padding-right: 4px;
@@ -203,6 +210,34 @@ body, html {
 					}
 				}
 			}
+		}
+
+
+		#ScorecardTable_Over {
+			width: min-content;
+			display: -ms-grid;
+			-ms-grid-columns: min-content;
+			width: -moz-min-content;
+			width: -webkit-min-content;
+			padding-bottom: 1px;
+		}
+
+		.goal-column .blend {
+			min-width: 50px !important;
+		}
+		
+		.goal-column {
+			padding-left: 3px !important;
+			width: 1px !important;
+		}
+
+		.goal-column.direction {
+			padding-right: 10px !important;
+			width: 1px;
+		}
+
+		.goal-column.value {
+			padding-left: 0 !important;
 		}
 	}
 

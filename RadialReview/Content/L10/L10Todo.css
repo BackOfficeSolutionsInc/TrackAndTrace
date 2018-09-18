@@ -22,6 +22,21 @@
 	margin-bottom: 0px;
 }
 
+#todoDetails .date.input-append {
+	display: inline-block;
+	height: 0px;
+}
+
+	#todoDetails .date.input-append .form-control {
+		width: 130px;
+		padding: 0px 13px 10px;
+		color: #3E3935;
+	}
+
+#todoDetails .owner {
+	padding: 0 11px;
+}
+
 
 .todo-list > .todo-row {
 	border: 1px solid #ddd;
@@ -41,14 +56,7 @@
 		margin-right linear .15s,
 		margin-top 28.8035ms linear 12.7067ms,
 		margin-bottom 38.9ms linear 35.4982ms;*/
-	transition: background-color ease .15s,
-		color ease .15s,
-		padding-top  38ms linear 0ms,
-		padding-bottom  49.5277ms linear 14.5747ms,
-		margin-left linear .15s,
-		margin-right linear .15s,
-		margin-top 38ms linear,
-		margin-bottom 25ms linear;
+	transition: background-color ease .15s, color ease .15s, padding-top 38ms linear 0ms, padding-bottom 49.5277ms linear 14.5747ms, margin-left linear .15s, margin-right linear .15s, margin-top 38ms linear, margin-bottom 25ms linear;
 }
 
 	.todo-list > .todo-row.selected {
@@ -82,7 +90,6 @@
 
 .todo-list .todo-checkbox {
 	display: none;
-	
 }
 
 .todo-list > .todo-row > .todo-checkbox {
@@ -565,7 +572,7 @@ body.dragging, body.dragging * {
 		display: none;
 	}
 
-	.todo .todo-list .message{
+	.todo .todo-list .message {
 		width: calc(100% - 79px);
 	}
 }

@@ -32,6 +32,7 @@ using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Meeting;
 using PdfSharp.Pdf;
 using RadialReview.Models.Reviews;
+using RadialReview.Accessors.PDF;
 
 namespace RadialReview.Controllers {
 	public class ReviewController : BaseController {
@@ -446,7 +447,7 @@ namespace RadialReview.Controllers {
 		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
 		public async Task<ActionResult> ClientDetails(long id, bool print = false, bool reviewing = false) {
 			var review = _ReviewAccessor.GetReview(GetUser(), id);
-			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
+			var managesUser = PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
 			if (managesUser)
 				ViewBag.Reviewing = true;
 			ViewBag.ReviewId = id;
@@ -980,10 +981,11 @@ namespace RadialReview.Controllers {
 
 			PdfDocument document = new PdfDocument();
 
+			var settings = new PdfSettings(GetUser().Organization.Settings);
 			foreach (var id in idList) {
 				var review = _ReviewAccessor.GetReview(GetUser(), id);
 				var model = await GetReviewDetails(review, true);
-				PdfAccessor.AddReviewPrintout(GetUser(), document, model);
+				PdfAccessor.AddReviewPrintout(GetUser(), document, model, settings);
 			}
 			return Pdf(document);
 		}
@@ -1002,14 +1004,15 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Plot(long id) {
 			var review = _ReviewAccessor.GetReview(GetUser(), id);
-			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
+			var managesUser = PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
 			if (managesUser)
 				ViewBag.Reviewing = true;
 			ViewBag.ReviewId = id;
+			var settings = new PdfSettings(GetUser().Organization.Settings);
 
 			if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization) {
 				var model = await GetReviewDetails(review, true);
-				return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(), model));
+				return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(), model, settings));
 			} else {
 				throw new PermissionsException("This report has not been shared with you. If you feel this is in error, please contact your supervisor.");
 			}
@@ -1085,7 +1088,7 @@ namespace RadialReview.Controllers {
 			//Managers View
 			else {
 				ViewBag.RoleDetails = true;
-				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
+				PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
 				var model = await GetReviewDetails(review);
 				//model.Supervisors = model.AnswersAbout.Where(x => x.ByUserId == GetUser().Id).ToList();
 				return View(model);

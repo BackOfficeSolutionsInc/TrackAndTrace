@@ -61,7 +61,7 @@ namespace RadialReview.Controllers {
 			try {
 				var rock = RockAccessor.GetRock(GetUser(), id);
 				var padId = rock.PadId;
-				if (readOnly || !_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditRock(id))) {
+				if (readOnly || !PermissionsAccessor.IsPermitted(GetUser(), x => x.EditRock(id))) {
 					padId = await PadAccessor.GetReadonlyPad(rock.PadId);
 				}
 				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
@@ -88,7 +88,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult ModalSingle(long id, long userId, long? periodId) {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(userId));
+			PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(userId));
 			RockModel rock;
 			if (id == 0)
 				rock = new RockModel() {
@@ -169,7 +169,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id) {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
 			var userId = id;
 			var rocks = RockAccessor.GetAllRocks(GetUser(), userId);
 			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).OrderByDescending(x => x.EndTime).ToSelectList(x => x.Name, x => x.Id);
@@ -193,6 +193,17 @@ namespace RadialReview.Controllers {
 			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
 		}
 
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> All() {
+			var rocksAndMilestones = (await RockAccessor.AllVisibleRocksAndMilestonesAtOrganization(GetUser(), GetUser().Organization.Id))
+								.Select(x => new AngularRockAndMilestones(x.Rock, x.Milestones))
+								.ToList();
+			return View(rocksAndMilestones);
+		}
+
+
+
 		public class RockTable {
 			public List<RockModel> Rocks { get; set; }
 			public List<long> Editables { get; set; }
@@ -209,7 +220,7 @@ namespace RadialReview.Controllers {
 				rocks = rocks.Where(x => x.CompleteTime == null).ToList();
 
 
-			if (editor && _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(forUserId, false))) {
+			if (editor && PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(forUserId, false))) {
 				editables = rocks.Select(x => x.Id).ToList();
 			}
 
@@ -282,7 +293,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult BlankTemplateEditorRow(long id) {
 			var templateId = id;
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewTemplate(templateId));
+			PermissionsAccessor.Permitted(GetUser(), x => x.ViewTemplate(templateId));
 			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
 			return PartialView("_TemplateRockRow", new UserTemplate.UT_Rock() {
 				TemplateId = templateId

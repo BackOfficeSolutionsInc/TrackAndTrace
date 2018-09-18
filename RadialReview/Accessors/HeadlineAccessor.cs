@@ -69,6 +69,7 @@ namespace RadialReview.Accessors {
 
 			if (!string.IsNullOrWhiteSpace(headline._Details))
 				await PadAccessor.CreatePad(headline.HeadlinePadId, headline._Details);
+			
 
 			s.Save(headline);
 			headline.Ordering = -headline.Id;

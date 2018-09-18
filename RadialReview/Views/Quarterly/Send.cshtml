@@ -1,0 +1,71 @@
+﻿@model RadialReview.Controllers.QuarterlyController.SendQuarterlyVM
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+}
+
+<link href="~/Content/Inputs/IOSwitch.css" rel="stylesheet" />
+@Html.HiddenFor(x => x.RecurrenceId)
+
+
+<div class="@(guid)">
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="row smallBreak2">
+				<div class="col-md-12">
+					<label for="ImplementerEmail" class="control-label alignLeft">Your implementer's e-mail:</label>
+					@Html.TextBoxFor(x => x.ImplementerEmail, new { @class = "form-control" })
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div>
+						<label>Send later:</label>
+						<label class="io-switch" style="margin-bottom: -2px;" title="">
+							<input type="checkbox" @(Model.Later ? "checked" : "") name="@Html.NameFor(x=>x.Later)" value="@Model.Later">
+							<span class="slider round"></span>
+						</label>
+					</div>
+					<div class="now-box @(Model.Later?"":"hidden")">
+						<label for="SendDate" class="control-label alignLeft">Schedule to be sent:</label>
+						@Html.EditorFor(x => x.SendDate, new { @class = "form-control", startDate = DateTime.UtcNow })
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<label>Scheduled</label>
+			@if (Model.Scheduled != null && Model.Scheduled.Any()) {
+				<div class="well well-sm row">
+					<table class="table col-sm-6" style="margin-bottom:0px">
+						<thead>
+							<tr>
+								<th>Email</th>
+								<th>Date</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var sch in Model.Scheduled) {
+								<tr>
+									<td class="fullWidth">@sch.Email</td>
+									<td>@sch.Date</td>
+									<td>@(sch.Sent ? new HtmlString("<span class='label label-success'>sent!<span>") : new HtmlString("<span class='label label-default'>scheduled<span>"))</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</div>
+	</div>
+	
+</div>
+
+
+
+<script>
+	$(".@(guid) .io-switch input").change(function () {
+		$(this).val($(this).is(":checked"));
+		$(".@guid .now-box").toggleClass("hidden", !$(this).is(":checked"));
+	});
+</script>

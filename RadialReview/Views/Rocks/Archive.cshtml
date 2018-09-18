@@ -19,12 +19,13 @@
 		<tbody>
 			@{var i = 1;}
 			@foreach (var r in Model) {
-				<tr>
+				<tr data-id="@r.Id">
 					<td class="alignRight" style="padding-right:12px;">@i.</td>
 					<td >@r.Rock</td>
 					<td>@(new MvcHtmlString(r._CompanyRock ? "<span class='label label-success'>Company Rock</span>" : ""))</td>
 					<td class="alignRight" style="padding-right:8px;">@(r.DeleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value).ToString("MMMM dd, yyyy")))</td>
 					<td class="alignCenter">@(r.Completion.ToString())</td>
+                    <td><a href="">Restore</a></td>
 				</tr>
 				i += 1;
 			}

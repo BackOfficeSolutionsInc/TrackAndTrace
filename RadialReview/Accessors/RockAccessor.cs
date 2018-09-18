@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Amazon.ElasticTranscoder.Model;
+
 using FluentNHibernate.Utils;
 using Microsoft.AspNet.SignalR;
 using NHibernate;
@@ -375,7 +375,7 @@ namespace RadialReview.Accessors {
 					if (loadUsers)
 						rocks = rocks.Fetch(x => x.AccountableUser).Eager;
 
-					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, LoadMeeting.True())._DefaultAttendees.Select(x => x.User.Id).ToList();
 					if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
 						userIds = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
 					}
@@ -415,7 +415,7 @@ namespace RadialReview.Accessors {
 					csv.SetTitle(caller.Organization.Settings.RockName);
 
 					foreach (var r in rocks) {
-						csv.Add(r.Rock, "Owner", r.AccountableUser.GetName());
+						csv.Add(r.Rock, "Owner", r.AccountableUser.GetName()??"not specified");
 						//csv.Add(r.Rock, "Manager", string.Join(" & ", r.AccountableUser.ManagedBy.Select(x => x.Manager.GetName())));
 						csv.Add(r.Rock, "Status", "" + RockStateExtensions.GetCompletionVal(r.Completion));
 						csv.Add(r.Rock, "CreateTime", "" + r.CreateTime);
@@ -629,9 +629,7 @@ namespace RadialReview.Accessors {
 #pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.UnArchiveRock(s, rock, false));
 		}
-
-
-
+		
 		public static void UndeleteRock(UserOrganizationModel caller, long rockId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -641,6 +639,26 @@ namespace RadialReview.Accessors {
 					s.Update(rock);
 					tx.Commit();
 					s.Flush();
+				}
+			}
+		}
+
+
+		public static async Task<List<RockAndMilestones>> AllVisibleRocksAndMilestonesAtOrganization(UserOrganizationModel caller,long orgId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var rocks = GetAllVisibleRocksAtOrganization(s, perms, orgId, true);
+					var rockIds = rocks.Select(x => x.Id).Distinct().ToList();
+
+					var milestones = s.QueryOver<Milestone>().Where(x => x.DeleteTime == null)
+						.WhereRestrictionOn(x => x.RockId).IsIn(rockIds)
+						.List().GroupBy(x=>x.RockId).ToDefaultDictionary(x=>x.Key,x=>x.ToList(),x=> new List<Milestone>());
+
+					return rocks.Select(x => new RockAndMilestones() {
+						Rock = x,
+						Milestones = milestones[x.Id]
+					}).ToList();
 				}
 			}
 		}

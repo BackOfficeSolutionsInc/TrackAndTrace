@@ -37,6 +37,14 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess(form), JsonRequestBehavior.AllowGet);
 		}
 
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> Chart(long id) {
+			var data = await EventAccessor.GetEventChart(GetUser(), id);
+			data.animate_on_load = true;
+			return Json(data, JsonRequestBehavior.AllowGet);
+		}
+
+
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
@@ -50,7 +58,8 @@ namespace RadialReview.Controllers
 		public async Task<JsonResult> Edit(long id, string body) {
 			var evt = EventAccessor.BuildFromJson(ReadBody());
 			var r = await EventAccessor.EditEvent(GetUser(), id, evt);
-
+			r.Org = null;
+			r.Subscriber = null;
 			return Json(ResultObject.SilentSuccess(r));
 		}
 

@@ -4,6 +4,7 @@ using MigraDoc.Rendering;
 using Moq;
 using Newtonsoft.Json.Linq;
 using NHibernate;
+using PdfSharp.Pdf;
 using RadialReview;
 using RadialReview.Accessors;
 using RadialReview.Controllers;
@@ -66,6 +67,7 @@ namespace TractionTools.Tests.TestUtils {
 
 				AdminUsers[id] = new UserOrganizationModel() {
 					IsRadialAdmin = true,
+					_IsTestAdmin = true,
 					User = user,
 					Organization = AdminOrganizations[id],
 					Cache = new UserLookup()
@@ -158,6 +160,7 @@ namespace TractionTools.Tests.TestUtils {
 					s.Update(org);
 					var u = new UserOrganizationModel() {
 						IsRadialAdmin = true,
+						_IsTestAdmin=true,
 						User = user,
 						Organization = org,
 						Cache = new UserLookup()
@@ -250,16 +253,19 @@ namespace TractionTools.Tests.TestUtils {
 				throw new AssertFailedException(String.Format("An exception of type {0} was expected, but not thrown", typeof(T)));
 		}
 
-		public static void Throws<T>(Action func) where T : Exception {
+		public static T Throws<T>(Action func) where T : Exception {
 			var exceptionThrown = false;
+			T exception = null;
 			try {
 				func.Invoke();
-			} catch (T) {
+			} catch (T e) {
+				exception = e;
 				exceptionThrown = true;
 			}
 
 			if (!exceptionThrown)
 				throw new AssertFailedException(String.Format("An exception of type {0} was expected, but not thrown", typeof(T)));
+			return exception;
 
 		}
 
@@ -278,8 +284,9 @@ namespace TractionTools.Tests.TestUtils {
 			//RemoveIsTest();
 			using (var s = HibernateSession.GetCurrentSession(singleSession)) {
 				using (var tx = s.BeginTransaction()) {
-					if (s.Connection.ConnectionString != "Data Source=|DataDirectory|\\_testdb.db" && s.Connection.ConnectionString != "FullUri=file:memorydb.db?mode=memory&cache=shared")
-						throw new Exception("ConnectionString must be 'Data Source=|DataDirectory|\\_testdb.db' or 'FullUri=file:memorydb.db?mode=memory&cache=shared'");
+					if (s.Connection.ConnectionString != "Data Source=|DataDirectory|\\_testdb.db" && s.Connection.ConnectionString != "FullUri=file:memorydb.db?mode=memory&cache=shared;PRAGMA journal_mode=WAL;" && s.Connection.ConnectionString!= "server=localhost;port=3306;database=radial-test;user id=root;sslmode=None")
+
+                        throw new Exception("ConnectionString must be 'Data Source=|DataDirectory|\\_testdb.db' or 'FullUri=file:memorydb.db?mode=memory&cache=shared' or 'Server=localhost; Port=3306; Database=radial-test; Uid=root; Pwd=; SslMode=none;'");
 
 					sFunc(s);
 					if (commit) {
@@ -448,6 +455,10 @@ namespace TractionTools.Tests.TestUtils {
 			renderer.RenderDocument();
 			renderer.PdfDocument.Save(Path.Combine(GetCurrentPdfFolder(), name));
 			renderer.PdfDocument.Save(Path.Combine(GetPdfFolder(), name));
+		}
+		protected void Save(PdfDocument doc, string name) {
+			doc.Save(Path.Combine(GetCurrentPdfFolder(), name));
+			doc.Save(Path.Combine(GetPdfFolder(), name));
 		}
 
 	}

@@ -1,17 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Amazon.Redshift.Model;
 using FluentNHibernate.Mapping;
-using NHibernate.Mapping;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using RadialReview.Properties;
 
-namespace RadialReview.Models.Survey
-{
-	public enum SurveyQuestionType
+namespace RadialReview.Models.Survey {
+    public enum SurveyQuestionType
 	{
 		Invalid = 0,
 		//Scale,

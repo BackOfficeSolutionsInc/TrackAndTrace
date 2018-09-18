@@ -33,7 +33,7 @@ namespace TractionTools.Tests.Api {
 			RocksController rocksController = new RocksController();
 			rocksController.MockUser(c.E1);
 
-			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id, false);
 			await L10Accessor.AddAttendee(c.E1, _recurrence.Id, c.E1.Id);
 
 			//var rock = new RockModel() {
@@ -65,7 +65,7 @@ namespace TractionTools.Tests.Api {
 			RocksController rocksController = new RocksController();
 			rocksController.MockUser(c.E1);
 
-			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id, false);
 			await L10Accessor.AddAttendee(c.E1, _recurrence.Id, c.E1.Id);
 
 			//var rock = new RockModel() {

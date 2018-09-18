@@ -52,7 +52,7 @@ namespace RadialReview.Api.V1 {
 		[Route("L10/create")]
 		[HttpPost]
 		public async Task<CreatedMeeting> CreateL10([FromBody]CreateMeeting body) {
-			var _recurrence = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id);
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id, false);
 			await L10Accessor.UpdateRecurrence(GetUser(), _recurrence.Id, body.title);
 			if (body.addSelf) {
 				await L10Accessor.AddAttendee(GetUser(), _recurrence.Id, GetUser().Id);
@@ -176,7 +176,7 @@ namespace RadialReview.Api.V1 {
 			//	AccountableUserId = body.accountableUserId ?? GetUser().Id,
 			//	ForRecurrenceId = MEETING_ID
 			//};
-			var model = TodoCreation.CreateL10Todo(MEETING_ID, body.title, body.details, body.accountableUserId ?? GetUser().Id, body.dueDate.Value);			
+			var model = TodoCreation.GenerateL10Todo(MEETING_ID, body.title, body.details, body.accountableUserId ?? GetUser().Id, body.dueDate.Value);			
 
 			var todo = await TodoAccessor.CreateTodo(GetUser(), model);
 			return new AngularTodo(todo);

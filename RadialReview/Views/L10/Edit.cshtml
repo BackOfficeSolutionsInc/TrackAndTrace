@@ -405,7 +405,7 @@
 
 				<br />
 				@Html.HiddenFor(x => x.Recurrence.Id)					@*SecuredHiddenFor*@
-				@Html.HiddenFor(x => x.Recurrence.CreateTime)			@*SecuredHiddenFor*@
+				@*@Html.TextBox(Html.NameFor(x=>x.Recurrence.CreateTime).ToString(),Model.Recurrence.CreateTime.ToString("dd/MM/yyyy HH:mm:ss"))			@*SecuredHiddenFor*@
 				@Html.HiddenFor(x => x.Recurrence.OrganizationId)		@*SecuredHiddenFor*@
 				@Html.HiddenFor(x => x.Recurrence.MeetingInProgress)	@*SecuredHiddenFor*@
 				@Html.HiddenFor(x => x.Recurrence.CreatedById)			@*SecuredHiddenFor*@

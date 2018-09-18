@@ -55,14 +55,14 @@ namespace RadialReview.Models.Todo {
         public string ForModelType { get; set; }
 
         public TodoVM() {
-            DueDate = DateTime.UtcNow.AddDays(7);
+            DueDate = DateTime.UtcNow.AddDays(7).AddDays(1).AddSeconds(-1);
         }
 
         public TodoVM(long accountableUserId, TimeSettings timeSettings) : this() {
             AccountabilityId = new[] { accountableUserId };
 			if (timeSettings != null) {
 				var ts = timeSettings.GetTimeSettings();
-				DueDate = ts.ConvertToServerTime(ts.ConvertFromServerTime(DateTime.UtcNow).AddDays(7).Date);
+				DueDate = ts.ConvertToServerTime(ts.ConvertFromServerTime(DateTime.UtcNow).Date.AddDays(7).AddDays(1).AddSeconds(-1));
 			}
 
 

@@ -1,10 +1,4 @@
-﻿using Amazon.SimpleDB.Model;
-using FluentNHibernate.Utils;
-using log4net.Core;
-using Microsoft.Ajax.Utilities;
-using NHibernate;
-using NHibernate.Cfg.MappingSchema;
-using NHibernate.Hql.Ast.ANTLR.Tree;
+﻿using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
@@ -17,21 +11,20 @@ using System.Linq;
 using System.Web;
 
 namespace RadialReview.Accessors {
-    public class PermissionsAccessor {
+	public class PermissionsAccessor {
 
 		public static void EnsurePermitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
-			new PermissionsAccessor().Permitted(caller, ensurePermitted);
+			PermissionsAccessor.Permitted(caller, ensurePermitted);
 		}
 
-		public void Permitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
+		public static void Permitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					ensurePermitted(PermissionsUtility.Create(s, caller));
 				}
 			}
 		}
-		public bool IsPermitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted)
-        {
+		public static bool IsPermitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted){
             try {
                 Permitted(caller, ensurePermitted);
                 return true;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Amazon.ElasticTranscoder.Model;
+
 using ImageResizer.Configuration.Issues;
 using RadialReview.Models;
 using RadialReview.Models.Issues;
@@ -144,7 +144,7 @@ namespace RadialReview.Accessors {
 		}
 
 		public async static Task<List<Tuple<string, byte[]>>> Notes(UserOrganizationModel caller, long recurrenceId) {
-			var recur = L10Accessor.GetL10Recurrence(caller, recurrenceId, true);
+			var recur = L10Accessor.GetL10Recurrence(caller, recurrenceId, LoadMeeting.True());
 			var lists = new List<Tuple<string, byte[]>>();
 			var existing = new Dictionary<string, int>();
 			foreach (var note in recur._MeetingNotes) {

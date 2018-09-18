@@ -1,0 +1,14 @@
+﻿@model RadialReview.Controllers.IntegrationsController.AsanaActionVM
+
+
+@Html.HiddenFor(x => x.Id)
+@Html.HiddenFor(x => x.SyncMyTodos)
+@Html.HiddenFor(x => x.TokenId)
+@Html.HiddenFor(x => x.WorkspaceId)
+
+<div>
+	<div class="form-group">
+		<label>Sync your to-dos up with this Asana project:</label>
+		@Html.DropDownListFor(x => x.Project,(IEnumerable<SelectListItem>)ViewBag.Projects, new { @class = "form-control" })
+	</div>
+</div>

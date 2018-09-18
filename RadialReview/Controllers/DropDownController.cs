@@ -1,4 +1,4 @@
-﻿using Amazon.IdentityManagement.Model;
+﻿
 using RadialReview.Accessors;
 using RadialReview.Models.Enums;
 using System;
@@ -61,7 +61,7 @@ namespace RadialReview.Controllers {
         public JsonResult MeetingMembers(long id, bool userId = false)
         {
             var recurrenceId = id;
-            var attendees = L10Accessor.GetL10Recurrence(GetUser(), id, true)._DefaultAttendees;
+            var attendees = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.True())._DefaultAttendees;
 
             var result = attendees.Select(x => new {
                 text = x.User.GetName(),

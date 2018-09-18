@@ -26,6 +26,7 @@ using static RadialReview.Utilities.SelectExistingOrCreateUtility;
 using Newtonsoft.Json;
 using RadialReview.Variables;
 using RadialReview.Models.Application;
+using RadialReview.Accessors.PDF;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -52,7 +53,14 @@ namespace RadialReview.Controllers {
 			if (id == null)
 				return Content("Error: url requires a meeting Id");
 			var recurrenceId = id.Value;
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true, true);
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, new LoadMeeting {
+                LoadMeasurables = false,
+                LoadRocks = false,
+                LoadUsers = true,
+                LoadVideos = true,
+                LoadNotes = true,
+                LoadPages = true,
+            });
 
 			ViewBag.VideoChatRoom = new VideoConferenceVM() {
 				RoomId = recurrence.VideoId,
@@ -60,7 +68,7 @@ namespace RadialReview.Controllers {
 				Selected = recurrence.SelectedVideoProvider,
 			};
 
-			ViewBag.ViewAccountabilityChart = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanView(ResourceType.AccountabilityHierarchy, GetUser().Organization.AccountabilityChartId));
+			ViewBag.ViewAccountabilityChart = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanView(ResourceType.AccountabilityHierarchy, GetUser().Organization.AccountabilityChartId));
 			ViewBag.ViewPeopleAnalyzer = GetUser().Organization.Settings.EnablePeople;
 
 			if (PaymentAccessor.ShowDelinquent(GetUser(), GetUser().Organization.Id, 7)) {
@@ -96,8 +104,8 @@ namespace RadialReview.Controllers {
 			}
 
 			if (model != null && model.Recurrence != null) {
-				model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
-				model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+				model.CanAdmin = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+				model.CanEdit = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.VtoId = model.Recurrence.VtoId;
 
 				model.Connected = L10Accessor.GetConnected(GetUser(), id.Value, true);
@@ -196,7 +204,7 @@ namespace RadialReview.Controllers {
 			model.PossibleRocks = allRocks;
 
 			if (recurrenceId != 0) {
-				var r = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+				var r = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 				allRocks.AddRange(r._DefaultRocks.Where(x => x.Id > 0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
 				allMeasurables.AddRange(r._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y != null && y.Id != x.Measurable.NotNull(z => z.Id))).Select(x => x.Measurable));
 				model.Recurrence = r;
@@ -228,7 +236,7 @@ namespace RadialReview.Controllers {
 
 			var recurrenceId = id.Value;
 
-			_PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
+			PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
 
 			var model = AddExtras(recurrenceId, new L10EditVM() { Return = @return });
 			//ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), id);
@@ -239,7 +247,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Pages(long id) {
 			var now = DateTime.UtcNow.ToJavascriptMilliseconds();
-			var model = L10Accessor.GetL10Recurrence(GetUser(), id, true);
+			var model = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.True());
 			return View(model);
 		}
 
@@ -252,14 +260,14 @@ namespace RadialReview.Controllers {
 				//AddExtras(0, model);
 				//ViewBag.InfoAlert = "You can use the same L10 meeting each week. No need to create a new on each week.";
 
-				var l10 = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id, type ?? MeetingType.L10);
+				var l10 = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id,true, type ?? MeetingType.L10);
 				return RedirectToAction("Wizard", new { id = l10.Id, tname = Request["tname"], tmethod = Request["tmethod"] });
 			} else {
 				//var recurrenceId = id.Value;
-				_PermissionsAccessor.Permitted(GetUser(), x => x.CanView(PermItem.ResourceType.L10Recurrence, id.Value));
+				PermissionsAccessor.Permitted(GetUser(), x => x.CanView(PermItem.ResourceType.L10Recurrence, id.Value));
 
-				ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, id.Value));
-				ViewBag.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, id.Value));
+				ViewBag.CanEdit = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, id.Value));
+				ViewBag.CanAdmin = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, id.Value));
 
 				var now = DateTime.UtcNow.ToJavascriptMilliseconds();
 				try {
@@ -308,11 +316,11 @@ namespace RadialReview.Controllers {
 			model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
 
 			if (model.Recurrence.Id != 0) {
-				var existing = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
+				var existing = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, LoadMeeting.True());
 				allRocks.AddRange(existing._DefaultRocks.Where(x => x.Id > 0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
 				allMeasurables.AddRange(existing._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y != null && y.Id != x.Measurable.NotNull(z => z.Id))).Select(x => x.Measurable));
 			} else {
-				_PermissionsAccessor.Permitted(GetUser(), x => x.CreateL10Recurrence(model.Recurrence.OrganizationId));
+				PermissionsAccessor.Permitted(GetUser(), x => x.CreateL10Recurrence(model.Recurrence.OrganizationId));
 				ViewBag.InfoAlert = "You only need to create one L10 meeting per weekly meeting. In other words, you don't need to create a new L10 each week.";
 			}
 			if (ModelState.IsValid) {
@@ -359,6 +367,12 @@ namespace RadialReview.Controllers {
 			//model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
 
 			return View("Edit", model);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> Star(long id, bool star = true) {
+			await L10Accessor.AddStarToMeeting(GetUser(), id, GetUser().Id, star);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -409,8 +423,8 @@ namespace RadialReview.Controllers {
 			var merger = new DocumentMerger();
 
 			var doc = PdfAccessor.CreateDoc(GetUser(), "THE LEVEL 10 MEETING");
-
-			PdfAccessor.AddL10(doc, recur, d);
+			var settings = new PdfSettings(GetUser().Organization.Settings);
+			PdfAccessor.AddL10(doc, recur, settings, d);
 
 			merger.AddDoc(doc);
 

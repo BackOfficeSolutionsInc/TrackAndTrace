@@ -1,36 +1,25 @@
-﻿using System.EnterpriseServices;
-using System.Text;
-using log4net.Repository.Hierarchy;
-using RadialReview.Accessors;
+﻿using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Payments;
 using RadialReview.Models.Periods;
 using RadialReview.Models.Tasks;
-using RadialReview.Models.Todo;
-using RadialReview.Properties;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.Json;
-using RadialReview.Models.Components;
 using NHibernate;
-using NHibernate.Cfg;
-using RadialReview.Models.Synchronize;
-using NHibernate.Criterion;
-using System.Linq.Expressions;
-using NHibernate.Impl;
 using System.Threading;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
-using System.Configuration;
-using RadialReview.Crosscutting.EventAnalyzers;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
+using RadialReview.Crosscutting.ScheduledJobs;
+using Hangfire;
+using RadialReview.Crosscutting.Schedulers;
 
 namespace RadialReview.Controllers {
 
@@ -69,104 +58,60 @@ namespace RadialReview.Controllers {
 			return Content("reached " + DateTime.UtcNow.ToJsMs());
 		}
 
+
+		public class ChargeAccountResult {
+			public ChargeAccountResult(bool isRunning, bool? wasPayment_exception, string errorType, string statusMessage) {
+				running = isRunning;
+				error = errorType;
+				message = statusMessage;
+				payment_exception = wasPayment_exception;
+			}
+
+			public string job_id { get; set; }
+			public bool running { get; private set; }
+			public string error { get; private set; }
+			public string message { get; private set; }
+			public bool? payment_exception { get; private set; }
+		}
+
 		/// <summary>
-		/// Do not change controller. 
+		/// Do not change controller name. 
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="taskId"></param>
 		/// <returns></returns>
 		[Access(AccessLevel.Any)]
 		[AsyncTimeout(20 * 60 * 1000)]
-		public async Task<JsonResult> ChargeAccount(CancellationToken ct, long id, long taskId/*,long? executeTime=null*/) {
-			PaymentException capturedPaymentException = null;
-			Exception capturedException = null;
-			//DateTime? time = null;
-			//if (executeTime != null)
-			//	time = executeTime.Value.ToDateTime();
-			//decimal amt = 0;
+		public async Task<JsonResult> ChargeAccount(CancellationToken ct, long id, long taskId) {
+			var organizationId = id;
 			try {
-				var result = await PaymentAccessor.ChargeOrganization(id, taskId, false);
-				//amt = result.amount_settled;
-			} catch (PaymentException e) {
-				capturedPaymentException = e;
-			} catch (FallthroughException e) {
-				log.Error("FallthroughException", e);
-				Response.StatusCode = 501;
-				var type = PaymentExceptionType.Fallthrough;
-				if (capturedPaymentException != null)
-					type = capturedPaymentException.Type;
-				return Json(new {
-					charged = false,
-					payment_exception = true,
-					error = type,
-					message = e.NotNull(x => x.Message) ?? "Exception was null"
+
+				var jobId = await PaymentAccessor.EnqueueChargeOrganizationFromTask(organizationId, taskId, false);
+				log.Info("ChargingOrganizationEnqueued(" + organizationId + ")");
+				return Json(new ChargeAccountResult(true, null, null, null) {
+					job_id = jobId,
 				}, JsonRequestBehavior.AllowGet);
-			} catch (Exception e) {
-				capturedException = e;
-			}
-
-			if (capturedPaymentException != null) {
-
-				try {
-					using (var s = HibernateSession.GetCurrentSession()) {
-						using (var tx = s.BeginTransaction()) {
-							s.Save(PaymentErrorLog.Create(capturedPaymentException, taskId));
-							tx.Commit();
-							s.Flush();
-						}
-					}
-				} catch (Exception e) {
-					log.Error("FatalPaymentException", e);
-				}
-				log.Error("PaymentException", capturedPaymentException);
-				try {
-					var orgName = capturedPaymentException.OrganizationName + "(" + capturedPaymentException.OrganizationId + ")";
-					var trace = capturedPaymentException.StackTrace.NotNull(x => x.Replace("\n", "</br>"));
-					var email = Mail.To(EmailTypes.PaymentException, ProductStrings.PaymentExceptionEmail)
-						.Subject(EmailStrings.PaymentException_Subject, orgName)
-						.Body(EmailStrings.PaymentException_Body, capturedPaymentException.Message, "<b>" + capturedPaymentException.Type + "</b> for '" + orgName + "'  ($" + capturedPaymentException.ChargeAmount + ") at " + capturedPaymentException.OccurredAt + " [TaskId=" + taskId + "]", trace);
-
-					await Emailer.SendEmail(email, true);
-				} catch (Exception e) {
-					log.Error("FatalPaymentException1", e);
-				}
+			} catch (PaymentException paymentException) {
 				Response.StatusCode = 501;
-				return Json(new {
-					charged = false,
-					payment_exception = true,
-					error = capturedPaymentException.Type
-				}, JsonRequestBehavior.AllowGet);
-			}
-			if (capturedException != null) {
-				log.Error("Exception during Payment", capturedException);
-				try {
-					var trace = capturedException.StackTrace.NotNull(x => x.Replace("\n", "</br>"));
-					var email = Mail.To(EmailTypes.PaymentException, ProductStrings.ErrorEmail)
-						.Subject(EmailStrings.PaymentException_Subject, "{Non-payment exception}")
-						.Body(EmailStrings.PaymentException_Body, capturedException.NotNull(x => x.Message), "{Non-payment}", trace, "[Id=" + id + "] --  [TaskId=" + taskId + "]");
-
-					await Emailer.SendEmail(email, true);
-				} catch (Exception e) {
-					log.Error("FatalPaymentException2", e);
-				}
+				await PaymentAccessor.Unsafe.RecordCapturedPaymentException(paymentException, taskId);
+				return Json(new ChargeAccountResult(false, true, "" + paymentException.Type, null), JsonRequestBehavior.AllowGet);
+			} catch (FallthroughException fallthroughException) {
+				log.Error("FallthroughCaptured", fallthroughException);
+				return Json(new ChargeAccountResult(false, true, "" + PaymentExceptionType.Fallthrough, fallthroughException.NotNull(x => x.Message) ?? "no-details"), JsonRequestBehavior.AllowGet);
+			} catch (Exception unknownException) {
 				Response.StatusCode = 500;
-				return Json(new {
-					charged = false,
-					payment_exception = false,
-					error = capturedException.NotNull(x => x.Message)
-				}, JsonRequestBehavior.AllowGet);
+				await PaymentAccessor.Unsafe.RecordUnknownPaymentException(unknownException, organizationId, taskId);
+				return Json(new ChargeAccountResult(false, false, unknownException.NotNull(x => x.Message) ?? "no-details", null), JsonRequestBehavior.AllowGet);
 			}
-			return Json(new {
-				charged = true,
-				//amount = amt
-			}, JsonRequestBehavior.AllowGet);
 		}
+
+
 
 		[Access(AccessLevel.Any)]
 		[AsyncTimeout(60 * 60 * 1000)]
-		public async Task<ActionResult> EmailTodos(int currentTime, CancellationToken ct, int divisor = 13, int remainder = 0, int sent = 0, string error = null, double duration = 0) {
+		public async Task<ActionResult> EmailTodos(int currentTime, CancellationToken ct, int divisor = 13, int remainder = 0, int sent = 0, string error = null, double duration = 0, bool mockEmails = false) {
 			if (remainder >= divisor) {
-				return Content("Sent:" + sent + "<br/>Duration:" + duration + "s");
+				return Content("Sent:" + sent + "<br/>Duration:" + duration + "s" + (mockEmails ? "<br/>mocked" : ""));
 			}
 			var start = DateTime.UtcNow;
 
@@ -178,15 +123,15 @@ namespace RadialReview.Controllers {
 				using (var tx = s.BeginTransaction()) {
 
 					var nowUtc = DateTime.UtcNow;
-					if (nowUtc.DayOfWeek == DayOfWeek.Saturday || nowUtc.DayOfWeek == DayOfWeek.Sunday)
+					if (!mockEmails && (nowUtc.DayOfWeek == DayOfWeek.Saturday || nowUtc.DayOfWeek == DayOfWeek.Sunday))
 						return Content("No fire on weekend.");
 
 					var started = s.QueryOver<ScheduledTask>().Where(x => x.TaskName == ApplicationAccessor.DAILY_EMAIL_TODO_TASK && x.Started != null).List().ToList();
 					if (!started.Any())
-						if (!Config.IsLocal())
+						if (!mockEmails && !Config.IsLocal())
 							throw new PermissionsException("Task not started");
 
-					await TodoEmailHelpers._ConstructTodoEmails(currentTime, unsent, s, nowUtc, divisor, remainder);
+					await TodoEmailsScheduler.TodoEmailHelpers._ConstructTodoEmails(currentTime, unsent, s, nowUtc, divisor, remainder);
 
 					tx.Commit();
 					s.Flush();
@@ -194,8 +139,10 @@ namespace RadialReview.Controllers {
 			}
 			try {
 				log.Info("EmailTodos sending " + unsent.Count + " emails.");
-				if (Config.IsLocal()) {
+				if (!mockEmails && Config.IsLocal()) {
 					await Task.Delay(6000);// 100 * unsent.Count);
+				} else if (mockEmails) {
+					await Task.Delay(300 * unsent.Count);
 				} else {
 					await Emailer.SendEmails(unsent);
 				}
@@ -209,123 +156,19 @@ namespace RadialReview.Controllers {
 			duration += (DateTime.UtcNow - start).TotalSeconds;
 
 			//Give some other requests a chance to go.
-			await Task.Delay(1500);
+			//await Task.Delay(1500);
 
 			return RedirectToAction("EmailTodos", new {
 				currentTime = currentTime,
 				divisor = divisor,
 				remainder = remainder + 1,
 				sent = sent,
-				duration = duration
+				duration = duration,
+				mockEmails = mockEmails
 			});
 		}
 
-		public class TodoEmailHelpers {
-			/// <summary>
-			/// remainder < divisor
-			/// </summary>
-			/// <param name="currentTime"></param>
-			/// <param name="unsent"></param>
-			/// <param name="s"></param>
-			/// <param name="nowUtc"></param>
-			/// <param name="divisor"></param>
-			/// <param name="remainder"></param>
-			/// <returns></returns>
-			public static async Task _ConstructTodoEmails(int currentTime, List<Mail> unsent, ISession s, DateTime nowUtc, int divisor, int remainder) {
-				var tomorrow = nowUtc.Date.AddDays(2).AddTicks(-1);
-				var rangeLow = nowUtc.Date.AddDays(-1);
-				var rangeHigh = nowUtc.Date.AddDays(4).AddTicks(-1);
-				var nextWeek = nowUtc.Date.AddDays(7);
-				if (nowUtc.DayOfWeek == DayOfWeek.Friday)
-					rangeHigh = rangeHigh.AddDays(1);
 
-				List<TodoModel> todos = _QueryTodoModulo(s, divisor, remainder, rangeLow, rangeHigh, nextWeek);
-
-				var dictionary = new Dictionary<string, List<TodoModel>>();
-				foreach (var t in todos.GroupBy(x => x.AccountableUser.NotNull(y => y.User.NotNull(z => z.Email)))) {
-					if (t.Key != null) {
-						dictionary.GetOrAddDefault(t.Key, x => new List<TodoModel>()).AddRange(t);
-					}
-				}
-
-				foreach (var userTodos in dictionary) {
-					await _ConstructTodoEmail(currentTime, unsent, nowUtc, userTodos.Value);
-				}
-			}
-
-			public static List<TodoModel> _QueryTodoModulo(ISession s, long divisor, long remainder, DateTime rangeLow, DateTime rangeHigh, DateTime nextWeek) {
-				return s.QueryOver<TodoModel>()
-								.Where(x => ((rangeLow <= x.DueDate && x.DueDate <= rangeHigh) || (x.CompleteTime == null && x.DueDate <= nextWeek)) && x.DeleteTime == null)
-								.Where(Restrictions.Eq(Projections.SqlFunction("mod", NHibernateUtil.Int64, Projections.Property<TodoModel>(x => x.AccountableUserId), Projections.Constant(divisor)), remainder))
-								.List().ToList();
-			}
-
-			public static async Task _ConstructTodoEmail(int currentTime, List<Mail> unsent, DateTime nowUtc, List<TodoModel> userTodos) {
-				string subject = null;
-				var nowLocal = userTodos.First().Organization.ConvertFromUTC(nowUtc).Date;
-
-				var overDue = userTodos.Count(x => x.DueDate.Date <= nowLocal.Date.AddDays(-1) && x.CompleteTime == null);
-				if (overDue == 1)
-					subject = "You have an overdue to-do";
-				else if (overDue > 1)
-					subject = "You have " + overDue + " overdue to-dos";
-				else {
-					var dueToday = userTodos.Count(x => x.DueDate.Date == nowLocal.Date && x.CompleteTime == null);
-
-					if (dueToday == 1)
-						subject = "You have a to-do due today";
-					else if (dueToday > 1)
-						subject = "You have " + dueToday + " to-dos due today";
-					else {
-						var dueTomorrow = userTodos.Count(x => x.DueDate.Date == nowLocal.AddDays(1).Date && x.CompleteTime == null);
-						if (dueTomorrow == 1)
-							subject = "You have a to-do due tomorrow";
-						else if (dueTomorrow > 1)
-							subject = "You have " + dueTomorrow + " to-dos due tomorrow";
-						else {
-							var dueSoon = userTodos.Count(x => x.DueDate.Date > nowLocal.AddDays(1).Date && x.CompleteTime == null);
-							if (dueSoon == 1)
-								subject = "You have a to-do due soon";
-							else if (dueSoon > 1)
-								subject = "You have " + dueSoon + " to-dos due soon";
-						}
-					}
-				}
-
-				var shouldSend = userTodos.Count(x => x.DueDate.Date >= nowLocal.Date.AddDays(-1) && x.CompleteTime == null);
-
-				if (subject != null && shouldSend > 0) {
-
-					try {
-						var user = userTodos.First().AccountableUser;
-
-						if ((user.User.NotNull(x => x.SendTodoTime)) == currentTime) {
-							var email = user.GetEmail();
-
-							var builder = new StringBuilder();
-							foreach (var t in userTodos.Where(x => x.CompleteTime == null || x.DueDate.Date > nowUtc.Date).GroupBy(x => x.ForRecurrenceId)) {
-								var table = await TodoAccessor.BuildTodoTable(t.ToList(), t.First().ForRecurrence.NotNull(x => x.Name + " To-do"));
-								builder.Append(table);
-								builder.Append("<br/>");
-							}
-
-							var mail = Mail.To(EmailTypes.DailyTodo, email)
-								.Subject(EmailStrings.TodoReminder_Subject, subject)
-								.Body(EmailStrings.TodoReminder_Body,
-									user.GetName(),
-									builder.ToString(),
-									Config.ProductName(user.Organization),
-									Config.BaseUrl(user.Organization) + "Todo/List"
-								);
-
-							unsent.Add(mail);
-						}
-					} catch (Exception) {
-
-					}
-				}
-			}
-		}
 
 
 		/// <summary>
@@ -337,111 +180,31 @@ namespace RadialReview.Controllers {
 		//DO NOT RENAME
 		[AsyncTimeout(60 * 60 * 1000)]
 		public async Task<bool> ExecuteEvents(EventFrequency frequency, long taskId) {
-			await EventAccessor.ExecuteAll(frequency, taskId, DateTime.UtcNow);
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					TaskAccessor.EnsureTaskIsExecuting(s, taskId);
+				}
+			}
+			Scheduler.Enqueue(()=>EventAccessor.ExecuteAll_Hangfire(frequency, DateTime.UtcNow));
 			return true;
 		}
 
 
 
 		[Access(AccessLevel.Any)]
-		public async Task<bool> Daily() {
-			var any = false;
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var orgs = s.QueryOver<OrganizationModel>().Where(x => x.DeleteTime == null).List().ToList();
-
-					var tomorrow = DateTime.UtcNow.Date.AddDays(7);
-					foreach (var o in orgs) {
-						var o1 = o;
-						var period = s.QueryOver<PeriodModel>().Where(x => x.OrganizationId == o1.Id && x.DeleteTime == null && x.StartTime <= tomorrow && tomorrow < x.EndTime).List().ToList();
-
-						if (!period.Any()) {
-
-							var startOfYear = (int)o.Settings.StartOfYearMonth;
-
-							if (startOfYear == 0)
-								startOfYear = 1;
-
-							var start = new DateTime(tomorrow.Year - 2, startOfYear, 1);
-
-							//var curM = (int)o.Settings.StartOfYearMonth;
-							//var curY = tomorrow.Year;
-							//var last = 
-							var quarter = 0;
-							var prev = start;
-							while (true) {
-								start = start.AddMonths(3);
-								quarter += 1;
-								var tick = start.AddDateOffset(o.Settings.StartOfYearOffset);
-								if (tick > tomorrow) {
-									break;
-								}
-								prev = start;
-							}
-
-							var p = new PeriodModel() {
-								StartTime = prev.AddDateOffset(o.Settings.StartOfYearOffset),
-								EndTime = start.AddDateOffset(o.Settings.StartOfYearOffset).AddDays(-1),
-								Name = prev.AddDateOffset(o.Settings.StartOfYearOffset).Year + " Q" + (((quarter + 3) % 4) + 1),// +3 same as -1
-								Organization = o,
-								OrganizationId = o.Id,
-							};
-
-							s.Save(p);
-							any = true;
-						}
-					}
-
-
-					#region Cleanup Sync model
-					try {
-						{
-							var syncTable = "Sync";
-							s.CreateSQLQuery("delete from " + syncTable + " where CreateTime < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
-							 .ExecuteUpdate();
-						}
-						{
-							var syncTable = "SyncLock";
-							s.CreateSQLQuery("delete from " + syncTable + " where LastUpdateDb < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
-							 .ExecuteUpdate();
-						}
-					} catch (Exception e) {
-						log.Error(e);
-					}
-					#endregion
-
-					await EventUtil.GenerateAllDailyEvents(s, DateTime.UtcNow);
-
-					await CheckCardExpirations(s);
-
-					tx.Commit();
-					s.Flush();
-				}
-			}
-			return any;
-		}
-
-		private async Task CheckCardExpirations(ISession s) {
-			var date = DateTime.UtcNow.Date;
-			if (date == new DateTime(date.Year, date.Month, 1) || date == new DateTime(date.Year, date.Month, 15) || date == new DateTime(date.Year, date.Month, 21)) {
-				var expireMonth = date.AddMonths(1);
-				var tokens = s.QueryOver<PaymentSpringsToken>()
-						.Where(x => x.Active && x.DeleteTime == null && x.TokenType == PaymentSpringTokenType.CreditCard && x.MonthExpire == expireMonth.Month && x.YearExpire == expireMonth.Year)
-						.List().ToList();
-
-				var tt = tokens.GroupBy(x => x.OrganizationId).Select(x => x.OrderByDescending(y => y.CreateTime).First());
-				foreach (var t in tt)
-					await HooksRegistry.Each<IPaymentHook>((ses, x) => x.CardExpiresSoon(ses, t));
-
-			}
+		public async Task<JsonResult> Daily() {
+			Scheduler.Enqueue(() => TaskAccessor.DailyTask(DateTime.UtcNow));
+			return Json(true, JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Any)]
 		[AsyncTimeout(60000 * 30)]//30 minutes..
 		public async Task<JsonResult> Reschedule(CancellationToken ct) {
 			//HttpContext.Server.ScriptTimeout = 20*60; // Twenty minutes..
-			var res = await TaskAccessor.ExecuteTasks();
-			return Json(res, JsonRequestBehavior.AllowGet);
+			Scheduler.Enqueue(() => TaskAccessor.ExecuteTasks(DateTime.UtcNow));
+			//var res = await TaskAccessor.ExecuteTasks(DateTime.UtcNow);
+			return Json(true, JsonRequestBehavior.AllowGet);
 		}
 
 

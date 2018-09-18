@@ -129,34 +129,31 @@
 						<div class="col-md-4 alignCenter">
 							<div class="checkbox font-style" style="color:white;font-weight: bold;">
 								@Html.CheckBoxFor(m => m.RememberMe)
-								@Html.LabelFor(m => m.RememberMe)
+								@Html.LabelFor(m => m.RememberMe,new { style = "padding-left:0;" })
 							</div>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-offset-2 col-md-8 clickable">
+						<div class="col-md-offset-2 col-md-8 clickable alignCenter-md-max">
 							@Html.ActionLink("Forgot my password", "ResetPassword", new { returnUrl = ViewBag.ReturnUrl }, new { @class = "font-style" })
 						</div>
 					</div>
-					@*<p>
-							or @Html.ActionLink("Register", "Register", new { returnUrl = ViewBag.ReturnUrl }) if you don't have a Radial account.
-						</p>*@
 				}
 			</section>
 		</div>
 
-		@*
-			<!--div class="col-md-4">
+		
+			@*<div class="col-md-4">
 				<section id="socialLoginForm">
 					@Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
 				</section>
-			</div-->*@
+			</div>*@
 	</div>
 
 </div>
 
 
-<div class="alignCenter no-ios" style="padding-top: 90px;">
+<div class="alignCenter no-ios" style="padding-top: 115px;">
 	<a class="btn btn btn-primary btn-invert" id="learnMore" href="http://mytractiontools.com"> Learn more about Traction Tools</a>
 </div>
 

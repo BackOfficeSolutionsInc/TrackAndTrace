@@ -99,7 +99,7 @@ namespace RadialReview.Models {
 		public class UserModelMap : ClassMap<UserModel> {
 			public UserModelMap() {
 				Id(x => x.Id).CustomType(typeof(string)).GeneratedBy.Custom(typeof(GuidStringGenerator)).Length(36);
-				Map(x => x.UserName).Index("UserName_IDX");
+				Map(x => x.UserName).Index("UserName_IDX").Length(400);
 				Map(x => x.FirstName).Not.LazyLoad();
 				Map(x => x.LastName).Not.LazyLoad();
 				Map(x => x.SendTodoTime);
@@ -134,7 +134,7 @@ namespace RadialReview.Models {
 
 	public class IdentityUserLoginMap : ClassMap<IdentityUserLogin> {
 		public IdentityUserLoginMap() {
-			Id(x => x.UserId);
+			Id(x => x.UserId).Length(36);
 			Map(x => x.LoginProvider);
 			Map(x => x.ProviderKey);
 		}

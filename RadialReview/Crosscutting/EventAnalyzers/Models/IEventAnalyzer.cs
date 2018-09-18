@@ -357,13 +357,15 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Interfaces {
 
 			foreach (var e in ordered) {
 				var isPositive = IsPositive(e, threshold);
+				//This is correct, we don't want to trigger two times in a row.
 				trigger = false;
 
 				if (isPositive) {
 					negatives = 0;
 					positives += 1;
-					if (positives == consecutivePositivesToReset)
+					if (positives == consecutivePositivesToReset) {
 						reset = true;
+					}
 				} else {
 					positives = 0;
 					negatives += 1;

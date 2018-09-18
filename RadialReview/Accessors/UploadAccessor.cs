@@ -3,13 +3,11 @@ using Amazon.S3.Transfer;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
-using RadialReview.Models.Components;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -100,6 +98,12 @@ namespace RadialReview.Accessors {
 			return upload;
 		}
 
+        public static string MockUpload(string file) {
+            var guid = "noaws_" + Guid.NewGuid();
+            Backup[guid] = file;
+            return guid;
+        }
+
 		private static Dictionary<string, string> Backup = new Dictionary<string, string>();
 		public async static Task<UploadInfo> UploadAndParse(UserOrganizationModel caller, UploadType type, HttpPostedFileBase file, ForModel forModel) {
 			if (file != null && file.ContentLength > 0) {
@@ -177,9 +181,11 @@ namespace RadialReview.Accessors {
 					await Backup[path].ToStream().CopyToAsync(ms);
 					ui.UseAWS = false;
 				} else {
-					var data = await new WebClient().DownloadStringTaskAsync("https://s3.amazonaws.com/" + path);
-					await data.ToStream().CopyToAsync(ms);
-					ui.UseAWS = false;
+					using (var webClient = new WebClient()) {
+						var data = await webClient.DownloadStringTaskAsync("https://s3.amazonaws.com/" + path);
+						await data.ToStream().CopyToAsync(ms);
+						ui.UseAWS = false;
+					}
 				}
 				Parse(ms, ref ui);
 			}

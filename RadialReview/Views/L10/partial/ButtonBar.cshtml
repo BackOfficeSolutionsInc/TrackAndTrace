@@ -13,9 +13,10 @@
 			<span class="icon fontastic-icon-pinboard"></span> New Issue
 		</div>
 		<div class="btn btn-default btn-xs todoModal @(Model.CanEdit?"":"disabled") "
-			 data-method="createtodo"
+			 data-method="CreateTodoRecurrence"
 			 data-meeting="@Model.Meeting.Id"
-			 data-recurrence="@Model.Recurrence.Id">
+			 data-recurrence="@Model.Recurrence.Id"
+			 data-context="L10"		>
 			<span class="glyphicon glyphicon-unchecked"></span> New Todo
 		</div>
 	</div>

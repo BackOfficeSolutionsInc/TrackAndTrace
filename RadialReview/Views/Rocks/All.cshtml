@@ -1,0 +1,145 @@
+﻿@model List<RadialReview.Models.Angular.Rocks.AngularRockAndMilestones>
+@{
+	ViewBag.Title = "All";
+}
+
+<h2>View All Rocks</h2>
+
+<div id="table"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+
+		var rockStatusConverter = function(status){
+			if (status == 0) return "<span class='hidden'>"+status+"</span><span class='rockstatus rockstatus-"+status+"'>Off Track</span>";
+			if (status == 1) return "<span class='hidden'>"+status+"</span><span class='rockstatus rockstatus-"+status+"'>On Track</span>";
+			if (status == 2) return "<span class='hidden'>"+status+"</span><span class='rockstatus rockstatus-"+status+"'>Done</span>";
+			return "";
+		}
+
+		var processMilestone = function(ms,rock){
+			var overdue="";
+			if (getParsedDate(ms.DueDate)<new Date() && !rock.Complete)
+				overdue="overdue";
+
+			return "<tr>"+
+						"<td><span class='milestonestatus milestonestatus-"+ms.Status+" "+overdue+"'>"+ms.Status+"</span></td>"+
+						"<td class='nowrap milestonedate '>"+getFormattedDate(ms.DueDate)+"</td>"+
+						"<td class='fullWidth milestonename'>"+ms.Name+"</td>"+
+				   "</tr>";
+
+		}
+
+		var table = DataTable({
+			content:"#table",
+			data : @Html.ArrayToString(Model),
+			cells:[
+				{name:"Owner",contents:function(x){return x.Rock.Owner.Name;}},
+				{name:"Rock",contents:function(x){return x.Rock.Name;}},
+				{name:function(x){
+					var e = Enumerable.from(x.data);
+					return "Status ("+e.count(function(x){return x.Rock.Complete;})+"/"+e.count()+")";
+				},contents:function(x){return rockStatusConverter(x.Rock.Completion);}},
+				{name:"Milestones",contents:function(x){
+					try{
+						var builder = "<table class='milestone-table'>";
+						
+						Enumerable.from(x.Milestones)
+							.orderBy(function(y){
+								return getFormattedDate(y.DueDate);
+							}).forEach(function(ms){
+								builder+=processMilestone(ms,x.Rock);							
+							});
+						//for(var i =0;i<x.Milestones.length;i++){
+						//	var ms = x.Milestones[i];
+						//}
+						builder+="</table>"
+						return builder;
+					}catch(e){
+						return null;
+					}
+				}},
+			]
+		});
+		
+		setTimeout(function(){
+			$(".table").tablesorter({ sortList:[[2,0],[0,0],[1,0]] });
+		},1);
+
+	</script>
+}
+
+<style>
+
+
+	.table > tbody> tr > td{
+		border-bottom:1px solid #eee;
+		padding:4px;
+	}
+	.rockstatus {
+		padding: 2px;
+		border-radius: 4px;
+		min-width: 70px;
+		display: inline-block;
+		text-align: center;
+		color: white;
+	}
+	.milestonedate{
+		padding: 0px 6px;
+		border-radius: 2px;
+		min-width: 80px;
+		display: inline-block;
+		text-align: center;
+		color: #333;
+		border:1px solid #ccc !important;
+		margin:1px;
+		border-radius:4px;
+	}
+
+	.milestonestatus {
+		padding: 0px 2px;
+		border-radius: 2px;
+		min-width: 70px;
+		display: inline-block;
+		text-align: center;
+		color: white;
+		margin:1px;
+		color: #333;
+		background-color:#ccc;
+	}
+
+	.milestonename{
+		padding-left:2px;
+	}
+
+
+	.rockstatus-0 {
+		background-color: rgb( 217, 83, 79);
+	}
+
+	.rockstatus-1 {
+		background-color: rgb( 31, 104, 236);
+	}
+
+	.rockstatus-2 {
+		background-color: rgb( 68, 157, 68);
+	}
+
+	.milestonestatus-NotDone.overdue{
+		color: white;
+		background-color: rgb( 217, 83, 79);
+
+	}
+	.milestonestatus-Done{
+		color: white;
+		background-color: rgb( 68, 157, 68);
+	}
+
+	.milestone-table{
+		width:100%;
+		margin-top:-4px;
+		/*margin-bottom:-10px;*/
+	}
+	
+
+</style>

@@ -68,7 +68,6 @@
 				"</span>" +
 				"</div>" +
 			"</div>");
-
 		//Assignee / Due date
 		$(detailsContents).append(
 			"<span class='clearfix'></span>" +
@@ -79,8 +78,8 @@
 			"<div >" +
 				"<span class='gray' style='width:75px;display:inline-block'>Due date:</span>" +
 				"<span style='width:250px;padding-left:10px;' class='duedate rock-duedate on-edit-enabled' data-accountable='" + accountable + "' data-rockid='" + rockId + "' >" +
-            "<span class='date' style='display:inline-block' data-date='" + clientDateFormat(due) + "' data-date-format='m-d-yyyy'>" +
-            "<input type='text' data-rockid='" + rockId + "' class='form-control datePicker' value='" + clientDateFormat(due) + "'/>" +
+					"<span class='date' style='display:inline-block' data-date='" + clientDateFormat(due) + "' data-date-format='m-d-yyyy'>" +
+						"<input type='text' data-rockid='" + rockId + "' class='form-control datePicker' value='" + clientDateFormat(due) + "'  placeholder='not set'/>" +
 					"</span>" +
 				"</span>" +
 			"</div>"
@@ -96,8 +95,6 @@
 		var fullContents = $("<div class='rock-details abstract-details-panel'></div>");
 		fullContents.append(detailsContents);
 		fullContents.append(milestoneDetailsContents);
-
-
 
 		var w = $(window).width();
 		$("#rock-details").html("");
@@ -255,12 +252,12 @@ function fixRocksDetailsBoxSize() {
 		var pos = $(".details.rock-details").offset();
 		var st = $(window).scrollTop();
 		var footerH = wh;
-		var msHeight = $(".milestone-table").height();
+		var msHeight = Math.max( $(".milestone-table tbody").height(),$(".milestone-table").height());
 		try {
 			footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
 		} catch (e) { }
 
-		var rockDetailsHeight = Math.max(116, footerH - 20 - 140 - pos.top - (msHeight + 30) - 40);
+		var rockDetailsHeight = Math.max(116, footerH - 20 - (28+34+34+30+30) - pos.top - (msHeight + 30) - 40);
 		$(".details.rock-details").height(rockDetailsHeight);
         
 		var detailHeight = $(".detail-component").height();
@@ -325,7 +322,7 @@ window.milestoneAccessor = new MilestoneAccessor(function () { return window.mil
 			var sliderPaddingSkipRight = .05;
 
 			var startP = sliderPaddingLeft;
-			var nowP = rock.nowPercentage;
+			var nowP = rock.nowPercentage - sliderPaddingSkipRight;
 			var endP = 1 - sliderPaddingRight - sliderPaddingSkipRight; //Default dueP
 			var dueP = endP;
 
@@ -338,7 +335,7 @@ window.milestoneAccessor = new MilestoneAccessor(function () { return window.mil
 
 			var r = $(".rock-row[data-rockid=" + rock.rockId + "]");
 
-			var now = new Date();
+			var now = new Date(Math.floor(+new Date() / 8.64e+7) * 8.64e+7);
 
 			var container = $(r).find(".milestone-marker-container");
 

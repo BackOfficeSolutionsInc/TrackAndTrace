@@ -50,7 +50,7 @@ namespace RadialReview.Controllers
 		        };
 	        }else{
 		        container = OldSurveyAccessor.GetSurveyContainer(GetUser(), id);
-				_PermissionsAccessor.Permitted(GetUser(),x=>x.EditOldSurvey(id));
+				PermissionsAccessor.Permitted(GetUser(),x=>x.EditOldSurvey(id));
 	        }
 
 			return View(container);

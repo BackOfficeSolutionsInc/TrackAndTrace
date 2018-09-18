@@ -141,7 +141,7 @@ namespace RadialReview.Utilities {
 		}
 
 
-		private static List<L10MeetingVM.WeekVM> GetWeeks(TimeData settings, DateTime endDate, DateTime? highlightDate, bool includeNextWeek, bool useWeekstartForWeekNumber = false, DateRange range = null) {
+		private static List<L10MeetingVM.WeekVM> GetWeeks(ITimeData settings, DateTime endDate, DateTime? highlightDate, bool includeNextWeek, bool useWeekstartForWeekNumber = false, DateRange range = null) {
 			DateTime? serverTimeMeetingStart = null;
 			if (highlightDate != null) {
 				serverTimeMeetingStart = highlightDate.Value;
@@ -280,7 +280,7 @@ namespace RadialReview.Utilities {
 			return weeks;
 		}
 
-		private static List<L10MeetingVM.WeekVM> GetMonths(TimeData settings, DateTime endDate, DateTime? highlightDate, bool includeNextWeek, bool useWeekstartForWeekNumber = false, DateRange range = null) {
+		private static List<L10MeetingVM.WeekVM> GetMonths(ITimeData settings, DateTime endDate, DateTime? highlightDate, bool includeNextWeek, bool useWeekstartForWeekNumber = false, DateRange range = null) {
 
 			log.Info("Called GetMonths with " + settings.WeekStart + "," + settings.TimezoneOffset);
 
@@ -351,7 +351,7 @@ namespace RadialReview.Utilities {
 			}
 		}
 
-		private static List<L10MeetingVM.WeekVM> GetQuarters(TimeData settings, DateTime endDate, DateTime? hightlightDate, /*List<ScoreModel> scores,*/ bool includeNextWeek, bool useWeekstartForWeekNumber = false, DateRange range = null) {
+		private static List<L10MeetingVM.WeekVM> GetQuarters(ITimeData settings, DateTime endDate, DateTime? hightlightDate, /*List<ScoreModel> scores,*/ bool includeNextWeek, bool useWeekstartForWeekNumber = false, DateRange range = null) {
 
 			var weekNumber_StartOfWeek = DayOfWeek.Sunday;
 			if (useWeekstartForWeekNumber)

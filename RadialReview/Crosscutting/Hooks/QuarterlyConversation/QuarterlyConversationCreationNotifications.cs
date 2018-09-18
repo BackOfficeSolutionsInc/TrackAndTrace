@@ -30,7 +30,9 @@ namespace RadialReview.Crosscutting.Hooks.QuarterlyConversation {
 			if (sc.CreatedBy.ModelType == ForModel.GetModelType<UserOrganizationModel>()) {
 				var user = s.Get<UserOrganizationModel>(sc.CreatedBy.ModelId);
 				var hub = GlobalHost.ConnectionManager.GetHubContext<MessageHub>();
-				hub.Clients.Group(MessageHub.GenerateUserId(user.Id)).addQC("Quarterly Conversation issued!", new AngularSurveyContainer(sc, false, AngularUser.CreateUser(user)));
+				hub.Clients.Group(MessageHub.GenerateUserId(user.Id)).addQC("Quarterly Conversation issued!", new AngularSurveyContainer(sc, false, AngularUser.CreateUser(user)) {
+					Ordering = -1,
+				});
 			}
 		}
 

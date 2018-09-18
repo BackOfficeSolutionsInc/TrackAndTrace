@@ -81,7 +81,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id)
 		{
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
 			var measurables = ScorecardAccessor.GetUserMeasurables(GetUser(), id, includeAdmin:false);
 			ViewBag.AllMembers = _OrganizationAccessor
 				.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false)

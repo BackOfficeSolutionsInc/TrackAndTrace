@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Amazon.IdentityManagement.Model;
+
 using Microsoft.AspNet.SignalR;
 using NHibernate;
 using RadialReview.Accessors;

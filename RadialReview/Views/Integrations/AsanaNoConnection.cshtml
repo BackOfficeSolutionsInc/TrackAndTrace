@@ -1,0 +1,12 @@
+﻿@{
+	var requestUrl = string.Format(
+		"https://app.asana.com/-/oauth_authorize?client_id={0}&redirect_uri={1}&response_type=code&state={2}",
+		ViewBag.ClientId, ViewBag.RedirectUrl, ViewBag.UserId
+	);
+
+}
+
+<h3>Asana is not connected.</h3>
+<div class="well well-lg">
+	<span class='clickable' onclick="location.href='@(requestUrl)'"><u>Click here to connect to Asana</u></span>
+</div>

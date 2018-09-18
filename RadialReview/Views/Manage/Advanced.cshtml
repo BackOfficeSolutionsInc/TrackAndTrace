@@ -54,28 +54,39 @@
 </div>
 
 <div class="panel panel-primary">
-    <div class="panel-heading">Data</div>
-    <div class="panel-body">
-        <a class="btn btn-default" href="/rocks/listing">All rocks</a>
-        <a class="btn btn-default" href="/scorecard/listing">All scorecards</a>
-        <a class="btn btn-default" href="/todo/listing">All to-dos</a>
-        @*<a class="btn btn-default" href="/issues/listing">All issues</a>*@
-        <div class="btn-group">
-            <a type="button" class="btn btn-default" href="/issues/listing">All issues</a>
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a href="/issues/listing">All Issues</a></li>
-                <li class="shift-hidden"><a href="/issues/issuesandtodos">All Issues and their Context-Aware To-dos™</a></li>
-                <li class="shift-visible"><a href="/issues/issuesandtodos?details=true">All Issues and their Context-Aware To-dos™ <small class="gray"> (and notes)</small></a></li>
-            </ul>
-        </div>
-        <a class="btn btn-default" href="/user/ExportAll">All users</a>
+	<div class="panel-heading">Data</div>
+	<div class="panel-body">
 
-        <a class="btn btn-default pull-right" href="/data/dashboard">Account Statistics</a>
-    </div>
+		<div class="btn-group">
+			<a class="btn btn-default" href="/rocks/listing">All rocks</a>
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span class="caret"></span>
+				<span class="sr-only">Toggle Dropdown</span>
+			</button>
+			<ul class="dropdown-menu">
+				<li><a href="/rocks/listing">Export all rocks</a></li>
+				<li class=""><a href="/rocks/all">View current rocks</a></li>
+			</ul>
+		</div>
+
+		<a class="btn btn-default" href="/scorecard/listing">All scorecards</a>
+		<a class="btn btn-default" href="/todo/listing">All to-dos</a>
+		<div class="btn-group">
+			<a type="button" class="btn btn-default" href="/issues/listing">All issues</a>
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span class="caret"></span>
+				<span class="sr-only">Toggle Dropdown</span>
+			</button>
+			<ul class="dropdown-menu">
+				<li><a href="/issues/listing">All Issues</a></li>
+				<li class="shift-hidden"><a href="/issues/issuesandtodos">All Issues and their Context-Aware To-dos™</a></li>
+				<li class="shift-visible"><a href="/issues/issuesandtodos?details=true">All Issues and their Context-Aware To-dos™ <small class="gray"> (and notes)</small></a></li>
+			</ul>
+		</div>
+		<a class="btn btn-default" href="/user/ExportAll">All users</a>
+
+		<a class="btn btn-default pull-right" href="/data/dashboard">Account Statistics</a>
+	</div>
 </div>
 
 <div class="panel panel-primary">
@@ -84,6 +95,7 @@
 		<a class="btn btn-default" href="/archive/users">Deleted Users</a>
 	</div>
 </div>
+
 
 @using (var f = Html.BeginForm("Advanced", "Manage", FormMethod.Post)) {
 	@Html.HiddenFor(x => x.Id)
@@ -96,12 +108,18 @@
 		<div class="panel-body">
 
 			<div class="form-group">
-				<div class="row smallBreak2">
-					<label class="col-xs-5  ttt control-label">Organization name:</label>
-					<div class="col-xs-3">
-						@Html.TextBoxFor(x => x.OrganizationName, new { @class = "form-control", placeholder = "Organization name" })
+
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="row smallBreak2">
+							<label class="col-xs-5  ttt control-label">Organization name:</label>
+							<div class="col-xs-3">
+								@Html.TextBoxFor(x => x.OrganizationName, new { @class = "form-control", placeholder = "Organization name" })
+							</div>
+						</div>
 					</div>
 				</div>
+
 				<div class="row">
 					<div class="col-xs-5  ttt">
 						<label class="control-label">Edit Accountability Chart:</label>
@@ -216,38 +234,38 @@
 				</div>
 
 				@if (ViewBag.ShowReview) {
-					<div class="row">
-						<div class="col-xs-5  ttt">
-							<label class="control-label">Limited granularity on evals for GWC: </label>
-						</div>
-						<div class="col-xs-3">
-							@Html.CheckBoxFor(x => x.LimitFiveState, new { @class = "checkbox inlineBlock" })
-							<abbr style="top: -5px;position: relative;" class="info" title="When checked, users evaluate GWC with Yes and No. Unchecked, users evaluated with Always, Mostly, Rarely and Never"></abbr>
-						</div>
+				<div class="row">
+					<div class="col-xs-5  ttt">
+						<label class="control-label">Limited granularity on evals for GWC: </label>
 					</div>
+					<div class="col-xs-3">
+						@Html.CheckBoxFor(x => x.LimitFiveState, new { @class = "checkbox inlineBlock" })
+						<abbr style="top: -5px;position: relative;" class="info" title="When checked, users evaluate GWC with Yes and No. Unchecked, users evaluated with Always, Mostly, Rarely and Never"></abbr>
+					</div>
+				</div>
 
 				} else {
-					@Html.HiddenFor(x => x.LimitFiveState)
+				@Html.HiddenFor(x => x.LimitFiveState)
 				}
 
 				@if (ViewBag.ShowSurvey == true) {
-					<div class="row">
-						<div class="col-xs-5  ttt">
-							<label class="control-label">@RadialReview.Utilities.Config.ManagerName()s can create survey:</label>
-						</div>
-						<div class="col-xs-3">
-							@Html.CheckBoxFor(x => x.ManagersCanCreateSurvey, new { @class = "checkbox" })
-						</div>
+				<div class="row">
+					<div class="col-xs-5  ttt">
+						<label class="control-label">@RadialReview.Utilities.Config.ManagerName()s can create survey:</label>
 					</div>
+					<div class="col-xs-3">
+						@Html.CheckBoxFor(x => x.ManagersCanCreateSurvey, new { @class = "checkbox" })
+					</div>
+				</div>
 
-					<div class="row">
-						<div class="col-xs-5  ttt">
-							<label class="control-label">Employees can create survey:</label>
-						</div>
-						<div class="col-xs-3">
-							@Html.CheckBoxFor(x => x.EmployeesCanCreateSurvey, new { @class = "checkbox" })
-						</div>
+				<div class="row">
+					<div class="col-xs-5  ttt">
+						<label class="control-label">Employees can create survey:</label>
 					</div>
+					<div class="col-xs-3">
+						@Html.CheckBoxFor(x => x.EmployeesCanCreateSurvey, new { @class = "checkbox" })
+					</div>
+				</div>
 				}
 				<div class="row">
 					<div class="col-xs-5  ttt">
@@ -309,7 +327,7 @@
 						@Html.EnumDropDownListFor(x => x.StartOfYearOffset, new { @class = "form-control" })
 					</div>
 				</div>
-				<div class="row">
+				<div class="row ">
 					<div class="col-xs-5  ttt">
 						<label class="control-label">Scorecard Period:</label>
 					</div>
@@ -317,17 +335,35 @@
 						@Html.EnumDropDownListFor(x => x.ScorecardPeriod, new { @class = "form-control" })
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-xs-5  ttt">
+						<label class="control-label"> Branding Color (Print-out):</label>
+					</div>
+					<div class="col-xs-3">
+						<input type="color" class="form-control" style="height: 40px;width: 51px;" value="@Model.PrimaryColorHex" name="@Html.NameFor(x=>x.PrimaryColorHex)" />
+					</div>
+				</div>
 				<br />
 				<div class="form-group">
-					<div class="col-lg-offset-5 col-lg-3">
+					<div class="col-xs-offset-5 col-xs-3">
 						<button type="submit" class="btn btn-primary">Save</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-}
+								}
 
+<div class="panel panel-primary">
+	<div class="panel-heading">Upload Image</div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-xs-12 alignCenter">
+				@Html.Partial("~/Views/Upload/Image.cshtml", Model.LogoUrl)
+			</div>
+		</div>
+	</div>
+</div>
 
 
 @using (Html.BeginStyles()) {
@@ -355,6 +391,11 @@
 
 		.ttt {
 			text-align: right;
+		}
+
+		.image-upload {
+			position: absolute;
+			right: 0px;
 		}
 	</style>
 

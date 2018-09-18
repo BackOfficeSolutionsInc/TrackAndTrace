@@ -11,37 +11,77 @@ using System.Web.Helpers;
 using RadialReview.Exceptions;
 using RadialReview.Models.Payments;
 using RadialReview.Utilities;
+using Hangfire;
+using RadialReview.Hangfire;
+using RadialReview.Crosscutting.Schedulers;
 
 namespace RadialReview.Accessors
 {
 	public class PadAccessor :BaseAccessor
 	{
+		private static IEnumerable<string> WholeChunks(string str, int chunkSize) {
+			for (int i = 0; i < str.Length; i += chunkSize)
+				if (str.Length - i >= chunkSize)
+					yield return str.Substring(i, chunkSize);
+				else
+					yield return str.Substring(i);
+		}
 
-		public static async Task<bool> CreatePad(string padid, string text=null)
-		{
-			try{
+
+		[AutomaticRetry(Attempts = 0)]
+		[Queue(HangfireQueues.Immediate.ETHERPAD)]
+		public static async Task<string> HangfireCreatePad(string padId, string text = null) {
+			try {
 				var client = new HttpClient();
-				var urlText = "";
-				if (!String.IsNullOrWhiteSpace(text))
-					urlText = "&text=" + WebUtility.UrlEncode(text);
+				//if (!String.IsNullOrWhiteSpace(text))
+				//	urlText = "&text=" + WebUtility.UrlEncode(text);
 
-				var baseUrl = Config.NotesUrl() + "api/1/createPad?apikey=" + Config.NoteApiKey() + "&padID=" + padid + urlText;
-				HttpResponseMessage response = await client.GetAsync(baseUrl);
-				HttpContent responseContent = response.Content;
-				using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())){
-					var result = await reader.ReadToEndAsync();
-					int code = Json.Decode(result).code;
-					string message = Json.Decode(result).message;
-					if (code != 0){
-						throw new PermissionsException("Error " + code + ": " + message);
+				{
+					//Create pad
+					var baseUrl = Config.NotesUrl() + "api/1/createPad?apikey=" + Config.NoteApiKey() + "&padID=" + padId ;
+					HttpResponseMessage response = await client.GetAsync(baseUrl);
+					HttpContent responseContent = response.Content;
+					using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
+						var result = await reader.ReadToEndAsync();
+						int code = Json.Decode(result).code;
+						string message = Json.Decode(result).message;
+						if (code != 0) {
+							throw new PermissionsException("Error " + code + ": " + message);
+						}
 					}
-					return true;
 				}
+
+				if (!String.IsNullOrWhiteSpace(text)) {
+					var chunkSize = 100;
+					var subtexts = WholeChunks(text, chunkSize);//Enumerable.Range(0, text.Length / chunkSize).Select(i => text.Substring(i * chunkSize, chunkSize)).ToList();
+					//Append text to pad
+					foreach (var t in subtexts) {
+						var urlText = "&text=" + WebUtility.UrlEncode(t);
+						var baseUrl = Config.NotesUrl() + "api/1.2.13/appendText?apikey=" + Config.NoteApiKey() + "&padID=" + padId + urlText;
+						HttpResponseMessage response = await client.GetAsync(baseUrl);
+						HttpContent responseContent = response.Content;
+						using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
+							var result = await reader.ReadToEndAsync();
+							int code = Json.Decode(result).code;
+							string message = Json.Decode(result).message;
+							if (code != 0) {
+								throw new PermissionsException("Error " + code + ": " + message);
+							}
+						}
+					}
+				}
+
+				return padId;
+			} catch (Exception e) {
+				log.Error("Error PadAccessor.CreatePad", e);
+				return "err";
 			}
-			catch (Exception e){
-				log.Error("Error PadAccessor.CreatePad",e);
-				return false;
-			}
+		}
+
+
+		public static async Task<bool> CreatePad(string padid, string text=null){
+			Scheduler.Enqueue(() => HangfireCreatePad(padid, text));
+			return true;
 		}
 
 		public static async Task<string> GetReadonlyPad(string padid) {
@@ -89,8 +129,7 @@ namespace RadialReview.Accessors
 			return Tuple.Create(padid, result);
 		}
 
-		public static async Task<HtmlString> GetHtml(string padid)
-		{
+		public static async Task<HtmlString> GetHtml(string padid){
 			try{
 				var client = new HttpClient();
 				var baseUrl = Config.NotesUrl() + "api/1/getHTML?apikey=" + Config.NoteApiKey() + "&padID=" + padid;

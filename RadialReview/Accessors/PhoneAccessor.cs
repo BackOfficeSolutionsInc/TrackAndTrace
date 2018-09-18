@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Amazon.IdentityManagement.Model;
+
 using FluentNHibernate.Utils;
 using NHibernate;
 using NHibernate.Linq;
@@ -141,9 +141,9 @@ namespace RadialReview.Accessors {
 												 //todoModel.ForRecurrenceId = null;
 												 //todoModel.CreatedDuringMeetingId = null;
 												 //todoModel.TodoType = TodoType.Personal;
-							todoModel = TodoCreation.CreatePersonalTodo(body, "-sent from phone", found.Caller.Id, now.AddDays(7), now);
+							todoModel = TodoCreation.GeneratePersonalTodo(body, "-sent from phone", found.Caller.Id, now.AddDays(7), now);
 						} else {
-							todoModel = TodoCreation.CreateL10Todo(found.ForId, body, "-sent from phone", found.Caller.Id, now.AddDays(7), null, "TodoModel", -2, now);
+							todoModel = TodoCreation.GenerateL10Todo(found.ForId, body, "-sent from phone", found.Caller.Id, now.AddDays(7), null, "TodoModel", -2, now);
 						}
 
 

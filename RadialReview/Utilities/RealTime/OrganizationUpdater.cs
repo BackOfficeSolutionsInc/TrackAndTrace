@@ -74,6 +74,7 @@ namespace RadialReview.Utilities.RealTime {
 				});
 				return this;
 			}
-		}		
+		}
+
 	}
 }

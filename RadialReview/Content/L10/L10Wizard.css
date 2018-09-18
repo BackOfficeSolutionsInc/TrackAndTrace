@@ -529,11 +529,11 @@ input[type=checkbox].blend:before {
   position: absolute;
   margin-left: 14px;
   margin-top: 14px;
-  -moz-transform: scale(1.666);
-  -ms-transform: scale(1.666);
-  -o-transform: scale(1.666);
-  -webkit-transform: scale(1.666);
-  transform: scale(1.666);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  -webkit-transform: scale(1);
+  transform: scale(1);
 }
 input[type=checkbox].blend:hover:before {
   border: 2px solid rgba(62, 57, 53, 0.6);
@@ -587,11 +587,11 @@ input[type=checkbox].blend:checked:after {
   position: absolute;
   font-weight: bold;
   color: white;
-  -moz-transform: scale(1.666);
-  -ms-transform: scale(1.666);
-  -o-transform: scale(1.666);
-  -webkit-transform: scale(1.666);
-  transform: scale(1.666);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  -webkit-transform: scale(1);
+  transform: scale(1);
 }
 @-webkit-keyframes flash {
   0% {
@@ -967,6 +967,10 @@ body,
 [ng-controller] .loader-container .loader {
   width: 25px;
 }
+#modal .info {
+  top: -10px;
+  position: relative;
+}
 .wizard {
   /*input[type='text'] {
         border: none;
@@ -1081,7 +1085,7 @@ body,
   text-transform: uppercase;
 }
 .wizard .picture-container {
-  margin-right: 15px;
+  margin-right: 5px;
   height: 40px;
   width: 40px;
   margin-top: 4px;
@@ -1251,6 +1255,7 @@ body,
 .wizard .scorecard-list-container .top-row,
 .wizard .scorecard-list-container .delete-column-alt,
 .wizard .scorecard-list-container .cumulative-column,
+.wizard .scorecard-list-container .average-column,
 .wizard .scorecard-list-container thead {
   display: none;
 }
@@ -1478,6 +1483,12 @@ body,
 .wizard .rock-list-container table .rock-name {
   max-width: 100%;
 }
+.wizard .rock-list-container .message-column .rockModal {
+  padding-left: 10px;
+}
+.wizard .rock-list-container .picture-column .item-wrapper {
+  padding-left: 6px;
+}
 .wizard .rock-list-container .delete-row {
   margin: 0;
   margin-right: 10px;
@@ -1616,6 +1627,12 @@ body,
 .wizard .issues-list-container thead {
   display: none;
 }
+.wizard .issues-list-container .picture-column .item-wrapper {
+  padding-left: 6px;
+}
+.wizard .issues-list-container .message-column .issuesModal {
+  padding-left: 10px;
+}
 .wizard .issues-list-container .delete-row {
   position: relative;
   top: 1px;
@@ -1753,6 +1770,9 @@ body,
 .wizard .todo-list-container .message-column input {
   max-width: 100%;
 }
+.wizard .todo-list-container .message-column .todoModal {
+  padding-left: 10px;
+}
 .wizard .todo-list-container .todo-text div {
   min-height: 18px !important;
 }
@@ -1763,6 +1783,9 @@ body,
   min-width: 90px;
   max-width: 90px;
   text-align: center;
+}
+.wizard .todo-list-container .picture-column .item-wrapper {
+  padding-left: 6px;
 }
 .wizard .todo-list-container .delete-row {
   position: relative;
@@ -2328,6 +2351,9 @@ body,
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
   border-left: 5px solid #B2B2B2;
+}
+.wizard .user-list-container .picture-column profile-image {
+  padding-left: 6px;
 }
 .wizard .user-list-container .delete-row {
   position: relative;

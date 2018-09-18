@@ -1,0 +1,70 @@
+﻿@model List<RadialReview.Accessors.StatsAccessor.AdminOrgStats>
+@{
+	ViewBag.Title = "AccountsAtRisk";
+}
+
+<h2>Accounts At Risk</h2>
+<div>
+	<h3>Range:</h3>
+	<div> @ViewBag.Start </div>
+	<div> @ViewBag.End</div>
+	<div> @ViewBag.AccountType</div>
+
+</div>
+
+
+<div id="table"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+		DataTable({
+			container:"#table",
+			data: @Html.ArrayToString(Model),
+			cellId: function(x){return x.OrgId;},
+			cells:[
+				{contents:function(x){return x.OrgId;}, name:"Org Id"},
+				{contents:function(x){return "<a href='/organization/which/"+x.OrgId+"'>"+x.OrgName+"</a>";}, name:"Org Name", classes:"fullWidth"},
+				{contents:function(x){
+					var g= x.Registrations.GrowthPercentageFromBeginning;
+					if (g.Denominator==0)
+						return "-";
+					return Math.round((g.Numerator/g.Denominator-1)*100)+"%";
+				}, name:"Growth (begin)"},
+				{contents:function(x){
+					var g= x.Registrations.PercentageFromWindowMax;
+					return Math.round((g.Numerator/g.Denominator-1)*100)+"%";
+				}, name:"Growth (max)"},
+				//{contents:function(x){return x.AccountType;}, name:"Type"},
+				{contents:function(x){return x.Registrations.StartValue;}, name:"Begin"},
+				{contents:function(x){return x.Registrations.MaxValue;}, name:"Max"},
+				{contents:function(x){return x.Registrations.EndValue;}, name:"End"},
+				{contents:function(x){return colorDate(x.LastScoreUpdate);}, name:"Scorecard",classes:"date-column"},
+                {contents:function(x){return colorDate(x.LastL10);}, name:"L10",classes:"date-column"},
+                {contents:function(x){return colorDate(x.LastLogin);}, name:"Login",classes:"date-column"},
+			]
+		});
+
+        function colorDate(date){
+            var pd = getParsedDate(date);
+            var days =Math.floor(new Date()/8.64e7) - Math.floor(pd/8.64e7)        
+            
+            color = "red";
+            if (days<4)
+                var color ="lightgray";
+            else if (days<7)
+                color="pink";
+
+
+            return "<span style='color:"+color+"'>"+getFormattedDate(pd)+"</span>";
+        }
+
+		$(function(){
+			$("table").tablesorter({sortList: [[3,1]]});
+		});
+	</script>
+    <style>
+        .date-column{
+            min-width:94px;
+        }
+    </style>
+}

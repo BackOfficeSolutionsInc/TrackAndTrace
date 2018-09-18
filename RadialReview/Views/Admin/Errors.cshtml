@@ -1,0 +1,148 @@
+﻿@model RadialReview.Controllers.AdminController.ErrorResult
+@{
+	ViewBag.Title = "Errors";
+	ViewBag.FullWidth = true;
+}
+
+<div class="row">
+	<div class="col-lg-6">
+		<h2>By Type</h2>
+		<div id="CountByType"></div>
+	</div>
+	<div class="col-lg-6">
+		<h2>By User</h2>
+		<div id="CountByUser"></div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-6">
+		<h2>By Path</h2>
+		<div id="CountByPath"></div>
+	</div>
+	<div class="col-lg-6">
+		<h2>By Message</h2>
+		<div id="CountByMessage" class="table-responsive"></div>
+	</div>
+</div>
+
+<h2>Errors</h2>
+<div id="table" class="table-responsive"></div>
+
+
+
+@using (Html.BeginScripts()) {
+	<script>
+		DataTable({
+			container:"#table",
+			data: @Html.ArrayToString(Model.Logs),
+			cells:[
+				{contents:function(x){return x.UserId;}, name:"Key",classes:"nowrap"},
+				{contents:function(x){
+					return Time.formatDate(x.CreateTime,"MM-dd-yyyy HH:mm:ss");
+				}, name:"Time (UTC)",classes:"nowrap"},
+				{contents:function(x){
+					return "<div class='message' onclick='show(this)'><span class='m'>"+x.Message+
+							"</span><pre class='trace hidden'>"+x.StackTrace+"</pre></div>";
+				}, name:"Message"},
+				{contents:function(x){return "<b>"+x.HttpMethod+" </b> "+x.Path +x.QueryParams;}, name:"Path" , classes:"nowrap"},
+				{contents:function(x){return "<b>"+x.ExceptionType+" </b>";}, name:"Type" , classes:"nowrap"},
+			]
+		});
+		function escapeHTML(str) {
+			str=str||"";
+			return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace("<\/script>","<\\/script>").replace("\\\\","\\");
+		}
+		function replaceSpace(str) {
+			str=str||"";
+			return escapeHTML(str).replace(/ /g,'_');
+		}
+
+		function show(self){
+			showModal({
+				title:escapeHTML($(self).find(".m").html()),
+				fields:[{
+					type:"div",
+					value:"<pre>"+escapeHTML($(self).find(".trace").html())+"</pre>"
+				}]
+			});
+		}
+
+
+		DataTable({
+			container:"#CountByType",
+			data: @Html.ArrayToString(Model.CountByType),
+			cellId:function(x){return replaceSpace(x.Key);},
+			cells:[
+				{contents:function(x){return x.Value;}, name:"Count" , classes:"nowrap"},
+				{contents:function(x){return x.Key;}, name:"Key",classes:"ellipsis fullWidth"},
+			]
+		});
+
+		DataTable({
+			container:"#CountByUser",
+			data: @Html.ArrayToString(Model.CountByUser),
+			cellId:function(x){return replaceSpace(x.Key);},
+			cells:[
+				{contents:function(x){return x.Value;}, name:"Count" , classes:"nowrap"},
+				{contents:function(x){return x.Key;}, name:"Key",classes:"ellipsis fullWidth"},
+			]
+		});
+
+		DataTable({
+			container:"#CountByPath",
+			data: @Html.ArrayToString(Model.CountByPath),
+			cellId:function(x){return replaceSpace(x.Key);},
+			cells:[
+				{contents:function(x){return x.Value;}, name:"Count" , classes:"nowrap"},
+				{contents:function(x){return x.Key;}, name:"Key",classes:"ellipsis fullWidth"},
+			]
+		});
+
+		DataTable({
+			container:"#CountByMessage",
+			data: @Html.ArrayToString(Model.CountByMessage),
+			cellId:function(x){
+				debugger;
+				return replaceSpace(x.Key);
+			},cells:[
+				{contents:function(x){return x.Value;}, name:"Count" , classes:"nowrap"},
+				{contents:function(x){return x.Key;}, name:"Key",classes:"ellipsis fullWidth"},
+			]
+		});
+
+
+
+
+
+		$(function(){
+			$("table").tablesorter();
+		});
+
+
+
+
+
+	</script>
+
+}
+<style>
+	.message {
+		font-weight: bold;
+		position: relative;
+	}
+
+	.trace {
+		font-weight: normal;
+		overflow: scroll;
+		position: absolute;
+		left: 0px;
+		right: 0px;
+	}
+
+	.ellipsis {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		/*width: 100px;
+		max-width: 85vw;*/
+	}
+</style>

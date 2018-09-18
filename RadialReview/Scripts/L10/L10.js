@@ -62,6 +62,7 @@ function replaceAll(find, replace, str) {
 function setFollowLeader(val) {
 	followLeader = val;
 	resetClickables();
+	$(".timer-bar").show();
 	$(window).trigger("follow-leader");
 }
 
@@ -84,8 +85,8 @@ function resetClickables() {
 			$(".agenda .agenda-items a").addClass("lockedPointer");
 		}
 	}
-
-	$(".timer-bar").hide();
+    
+    $(".timer-bar").hide();
 }
 
 function ms2Time(ms) {

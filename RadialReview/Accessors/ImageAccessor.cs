@@ -185,7 +185,9 @@ namespace RadialReview.Accessors {
 			return img;
 		}
 
-		public async Task<String> UploadImage(UserModel user, string filename, Stream inputStream, UploadType type, bool huge = false) {
+
+
+		public async Task<String> UploadImage(UserModel user,UserOrganizationModel caller, string filename, Stream inputStream, UploadType type, bool huge = false) {
 			var img = await RawUploadImage(user, filename, inputStream, type, huge);
 
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -208,6 +210,12 @@ namespace RadialReview.Accessors {
 							break;
 						case UploadType.AppImage:
 							break;
+						case UploadType.Logo:
+							PermissionsUtility.Create(s, caller).ManagingOrganization(caller.Organization.Id);
+							var org = s.Get<OrganizationModel>(caller.Organization.Id);
+							org._Settings.ImageGuid = img.Id.ToString();
+							s.Update(org);
+							break;
 						default:
 							throw new PermissionsException();
 					}
@@ -218,10 +226,10 @@ namespace RadialReview.Accessors {
 			return ConstantStrings.AmazonS3Location + img.Url;
 		}
 
-		public async Task<String> UploadImage(UserModel user, HttpServerUtilityBase server, HttpPostedFileBase file, UploadType uploadType) {
+		public async Task<String> UploadImage(UserModel user,UserOrganizationModel caller, HttpServerUtilityBase server, HttpPostedFileBase file, UploadType uploadType) {
 			var filename = file.FileName;
 			var inputStream = file.InputStream;
-			return await UploadImage(user, filename, inputStream, uploadType);
+			return await UploadImage(user,caller, filename, inputStream, uploadType);
 			/*
 			TransferUtility utility = new TransferUtility("AKIAJYCO3OR34HOFIQTQ", "HKotVY6T302RWUcHbDu+zyQlwBILKcp+99on8bs9",);
 			utility.Upload(file.InputStream, "Radial", path);	

@@ -14,8 +14,10 @@ using RadialReview.Models.Synchronize;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
+using RadialReview.Utilities.Pdf;
 using RadialReview.Utilities.Productivity;
 using RadialReview.Utilities.Query;
+using RadialReview.Variables;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -295,6 +297,11 @@ namespace RadialReview.Accessors {
 						tx.Commit();
 						s.Flush();
 					}
+					using (var tx = s.BeginTransaction()) {
+						InitializeAppVariables(s);
+						tx.Commit();
+						s.Flush();
+					}
 					using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
 						for (var i = 0; i < SyncLock.MAX_SYNC_KEYS; i++) {
 							var found = s.Get<SyncLock>(SyncLock.CREATE_KEY(i), LockMode.Upgrade);
@@ -325,7 +332,10 @@ namespace RadialReview.Accessors {
 			return false;
 		}
 
-
+		public static void InitializeAppVariables(ISession s) {
+			LayoutTrialResult.Weighting = s.GetSettingOrDefault(Variable.Names.LAYOUT_WEIGHTS, new LayoutTrialResult.Weights());
+			MultipageLayoutOptimizer.OptimizationSettings = s.GetSettingOrDefault(Variable.Names.LAYOUT_SETTINGS, new MultipageLayoutOptimizer.OptimizerSettings());
+		}
 
 		public const string ACCOUNT_AGE = "ACCOUNT_AGE";
 		public const string DAILY_EMAIL_TODO_TASK = "DAILY_EMAIL_TODO_TASK";
@@ -636,7 +646,7 @@ namespace RadialReview.Accessors {
 					var customFeatureDevHoursTotal = devInteractions.Select(x => x.Duration).Sum() / 60m;
 
 #pragma warning disable CS0618 // Type or member is obsolete
-					var MRR = PaymentAccessor.CalculateTotalCharge(s, PaymentAccessor.GetPayingOrganizations(s));
+					var MRR = PaymentAccessor.Unsafe.CalculateTotalCharge(s, PaymentAccessor.Unsafe.GetPayingOrganizations(s));
 #pragma warning restore CS0618 // Type or member is obsolete
 
 

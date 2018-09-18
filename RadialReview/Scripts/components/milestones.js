@@ -119,7 +119,9 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 
 		var rockIds = [];
 		var ms = getMilestones();
-		var now = new Date();
+			
+		var now = new Date(Math.floor(+new Date() / 8.64e+7) * 8.64e+7);
+
 		var minimumDate = now;
 		var maximumDate = now;
 
@@ -250,7 +252,8 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 					if (typeof (dueDateStr) !== "undefined") {
 						var dueDate = parseJsonDate(dueDateStr, true);
 						dueP = calculateMarkerPercentage(dueDate);
-					}					
+					}
+
 					rockModel.nowPercentage = (Math.min(dueP, nowP) - startP);
 					rockModel.duePercentage = dueP;					
 				}

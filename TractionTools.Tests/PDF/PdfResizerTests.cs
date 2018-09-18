@@ -13,6 +13,9 @@ using System.Linq;
 using MigraDoc.DocumentObjectModel.Tables;
 using static RadialReview.Accessors.PdfAccessor;
 using System.Threading.Tasks;
+using RadialReview.Models.Angular.Rocks;
+using System.Diagnostics;
+using RadialReview.Utilities.Pdf;
 
 namespace TractionTools.Tests.PDF {
 	[TestClass]
@@ -397,7 +400,9 @@ namespace TractionTools.Tests.PDF {
 			var vars = new RangedVariables();
 			vars.Add("Space", Unit.FromInch(.2), Unit.FromInch(.0125), Unit.FromInch(6));
 
-			var result = LayoutOptimizer.Optimize(layoutGen, allHints, vars);
+
+            var timeout = new TimeoutCheck(TimeSpan.FromSeconds(5));
+			var result = LayoutOptimizer.Optimize(layoutGen, allHints, vars, timeout);
 
 			var doc = new Document();
 			doc.DefaultPageSetup.PageWidth = Unit.FromInch(11);
@@ -414,7 +419,7 @@ namespace TractionTools.Tests.PDF {
 
 		[TestMethod]
 		[TestCategory("PDF")]
-		public void TestSectionOptimzer_Vto() {
+		public void TestSectionOptimzer_Vto_Vision() {
 
 			var vto = new AngularVTO();
 			var j = 0;
@@ -473,8 +478,22 @@ namespace TractionTools.Tests.PDF {
 					ll.Add(new AngularVtoString() { Data = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", });
 				}
 
+
+
+
+
 				vto.ThreeYearPicture.LooksLike = ll.Take(pd.pic);
 				vto.Name = "Awesome VTO";
+
+				var issuesList = new List<AngularVtoString>();
+				for (var i = 0; i < 10; i++) {
+					issuesList.Add(new AngularVtoString() { Data = "It looks like a big company with lots of employees and benefits for the workers", });
+					issuesList.Add(new AngularVtoString() { Data = "There are lots of people", });
+					issuesList.Add(new AngularVtoString() { Data = "and customers", });
+					issuesList.Add(new AngularVtoString() { Data = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", });
+				}
+
+				vto.Issues = issuesList.Take(pd.pic); 
 
 				//PdfAccessor.AddVtoVision_Intermediate(doc, vto, null);
 
@@ -501,12 +520,220 @@ namespace TractionTools.Tests.PDF {
 				foreach (var s in settings) {
 					var doc = new Document();
 					PdfAccessor.AddVtoVision(doc, vto, null, s);
+					PdfAccessor.AddVtoTraction(doc, vto, null, s);
 					Save(doc, "TestSectionOptimzer_Vto_" + j + "+TYP"+pd.pic+"+Strat"+pd.strat+(pd.colors?"_colors":"")+".pdf");
+					j++;
+				}
+			}
+			
+
+		}
+		[TestMethod]
+		[TestCategory("PDF")]
+		public void TestSectionOptimzer_Vto_Traction() {
+
+			var vto = new AngularVTO();
+			var j = 0;
+
+			var pageDir = new[] {
+				new { cv = 4,   pic = 40, strat = 3, colors= true  , rocks =40 , goals=40 , includeLong = false},
+				new { cv = 4,	pic = 40, strat = 3, colors= false , rocks =40 , goals=10 , includeLong = true},
+				new { cv = 16,	pic = 40, strat = 3, colors= false , rocks =10 , goals=40 , includeLong = true},
+				new { cv = 4,	pic = 10, strat = 2, colors= false , rocks =10 , goals=10 , includeLong = true},
+				new { cv = 4,	pic = 10, strat = 2, colors= false , rocks =40 , goals=10 , includeLong = true},
+				new { cv = 4,   pic = 10, strat = 3, colors= true  , rocks =10 , goals=40 , includeLong = true},
+			};
+			foreach (var pd in pageDir) {
+				
+				vto.Name = "Awesome VTO";
+
+				var issuesList = new List<AngularVtoString>();
+				for (var i = 0; i < 10; i++) {
+					if (pd.includeLong)
+						issuesList.Add(new AngularVtoString() { Data = "It looks like a big company with lots of employees and benefits for the workers", });
+					issuesList.Add(new AngularVtoString() { Data = "There are lots of people", });
+					issuesList.Add(new AngularVtoString() { Data = "and customers", });
+					if (pd.includeLong)
+						issuesList.Add(new AngularVtoString() { Data = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", });
+				}
+
+				var rockList = new List<AngularVtoRock>();
+				for (var i = 0; i < 10; i++) {
+					if (pd.includeLong)
+						rockList.Add(new AngularVtoRock() {Rock = new AngularRock() { Name = "It looks like a big company with lots of employees and benefits for the workers", } });
+					rockList.Add(new AngularVtoRock() { Rock = new AngularRock() { Name = "There are lots of people", } });
+					rockList.Add(new AngularVtoRock() { Rock = new AngularRock() { Name = "and customers", } });
+					if (pd.includeLong)
+						rockList.Add(new AngularVtoRock() { Rock = new AngularRock() { Name = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", } });
+				}
+
+
+				var goalsList = new List<AngularVtoString>();
+				for (var i = 0; i < 10; i++) {
+					if (pd.includeLong)
+						goalsList.Add(new AngularVtoString() { Data = "It looks like a big company with lots of employees and benefits for the workers", });
+					goalsList.Add(new AngularVtoString() { Data = "There are lots of people", });
+					goalsList.Add(new AngularVtoString() { Data = "and customers", });
+					if (pd.includeLong)
+						goalsList.Add(new AngularVtoString() { Data = "i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i i ", });
+				}
+
+				vto.Issues = issuesList.Take(pd.pic);
+				vto.QuarterlyRocks = new AngularQuarterlyRocks() {
+					Rocks = rockList.Take(pd.rocks)
+				};
+				vto.OneYearPlan = new AngularOneYearPlan() {
+					GoalsForYear = goalsList.Take(pd.goals)
+				};
+
+				//PdfAccessor.AddVtoVision_Intermediate(doc, vto, null);
+
+				VtoPdfSettings[] settings = new VtoPdfSettings[] { null };
+
+				if (pd.colors) {
+					settings = new[] {
+						null,
+						new VtoPdfSettings() {
+							FillColor = Color.FromArgb(100, 239, 118, 34),
+							BorderColor = Color.FromArgb(255, 239, 118, 34),
+							ImageUrl = "https://s3.amazonaws.com/Radial/base/Logos/TRACTION-TOOLS_Signature.png"
+						}, new VtoPdfSettings() {
+							FillTextColor = Colors.Red,
+							FillColor = Color.FromArgb(255, 118, 239, 34),
+							ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/All.png"
+						}, new VtoPdfSettings() {
+							FillColor = Color.FromArgb(255, 34, 118, 239),
+							ImageUrl = "https://cataas.com/cat?height=150&width=100"
+						}
+					};
+				}
+
+				foreach (var s in settings) {
+					var doc = new Document();
+					PdfAccessor.AddVtoTraction(doc, vto, null, s);
+					Save(doc, "TestSectionOptimzer_Vto_Traction_" + j + "+TYP" + pd.pic + "+Strat" + pd.strat + (pd.colors ? "_colors" : "") + ".pdf");
 					j++;
 				}
 			}
 
 		}
+
+
+		[TestMethod]
+		[TestCategory("PDF")]
+		public async Task TestSlowVto() {
+			var vto = new AngularVTO();
+			vto.Values = new List<AngularCompanyValue>() {
+				new AngularCompanyValue() { CompanyValue = "Ownership Thinking" },
+				new AngularCompanyValue() { CompanyValue = "Passionate Problem Solver" },
+				new AngularCompanyValue() { CompanyValue = "Client Success Is Our Success" },
+			};
+
+			vto.CoreFocus = new AngularCoreFocus() {
+				Purpose = "Focus On Technology So Our Clients Can Focus On Business",
+				Niche = "Microsoft, FileMaker and Networking Technology"
+			};
+
+			vto.TenYearTarget = @"•	December 31, 2023  
+•	Revenue: $20M 
+•	Net Margin: 25% 
+•	90 Employees 
+•	Expand Office Space in Main Office 
+•	2nd Office Based on Client Geography  
+•	80/20 Revenue split between Managed Services and Development";
+
+			vto.Strategies = new List<AngularStrategy>() {
+				new AngularStrategy() {
+					Guarantee = @"Network Services: Evergreen contracts. Freedom to leave us every 90 days if not satisfied.  
+
+App Dev: All work has a 90-day warranty against defects. If defect is reported, we fix it for free.",
+					TargetMarket =@"Network Services
+•	Avoid large capital expenditures
+•	Can't hire skillset in one person
+•	Lack capacity for support in-house
+•	Unhappy with IT performance
+•	Cloud expertise
+•	Data center hosting and support
+•	Expertise in the prospect's vertical
+•	Compliance issues
+•	Security concerns
+
+Application Development
+•	Inside IT
+•	Product to resell
+•	Want to franchise
+•	Multi-location
+•	Build efficiency
+•	Can’t buy what they want off-shelf
+•	Systematize a unique process
+•	Bottomless pocket
+•	Integration of off-shelf products
+•	Inefficient paper processes
+•	Vision
+
+Based on interviews with us and competitive research, our new marketing agency, Creative MMS, put together a list of personas of the types of contacts we are targeting with our marketing efforts. They are also going to do further research of our existing “hero” clients through interviews to zero in on the ITS traits that they value most so we can incorporate this into our messaging and content.",
+					ProvenProcess = @"We are working with CreativeMMS to update and maintain the following to attract new prospects through the following:
+
+Website: Recommended UX/UI, site map changes to site for easier contact process and landing pages for proper recognition by prospects when they search for us
+
+Google AdWords: Revising our campaigns, ad copy, budgets, and corresponding landing pages
+
+Social: Daily output of messaging via LinkedIn, Twitter, Facebook that links back to our site and industry news.  
+
+Email: Starting with a series of quick hit weekly messaging (as opposed to once/monthly) to reset the list of contacts and try to zero in on what contacts are interested in via our automation tool (eTrigue) so we can target messaging going forward and get prospects to respond when they’re ready to talk to us.  Also, provide clients with more practical information so they see us as thought leaders and educators to add value to the partnership.
+
+SEO: Tight coordination with PPC, social campaigns, email, our site content to raise ranking of our profile. Will also recommend a backlink strategy with well-regarded sites to improve ranking.
+
+In addition to the marketing efforts, we are doing more targeted networking through the ALA and other organizations, as well as planning in person seminars for clients, and doing more client one-on-ones outside of the office to boost the personal relationships and encourage referrals.",
+					Uniques = new List<AngularVtoString>() {
+						new AngularVtoString() {Data="Employee Owned" },
+						new AngularVtoString() {Data="No Long Term Contracts" },
+						new AngularVtoString() {Data="White Glove/Boutique Client Service" },
+						new AngularVtoString() {Data="Employee-owned" },
+						new AngularVtoString() {Data="White glove/boutique service" },
+						new AngularVtoString() {Data="Comprehensive strategic planning with emphasis on security first" },
+					}
+				},
+				new AngularStrategy()
+			};
+
+			vto.ThreeYearPicture = new AngularThreeYearPicture() {
+				FutureDate = DateTime.UtcNow,
+				Revenue = "$17M",
+				Profit = "25% Net",
+				Measurables = "$ Revenue per Employee",
+				LooksLike = new List<AngularVtoString> {
+					new AngularVtoString() {Data= "85 Employees" },
+					new AngularVtoString() {Data= "Expanded main office" },
+					new AngularVtoString() {Data= "Possible 2nd office based on geography" },
+					new AngularVtoString() {Data= "80/20 revenue split between managed services and development" },
+					new AngularVtoString() {Data= "A strong seasoned acquisition team" },
+					new AngularVtoString() {Data= "Kaseya may have to be replaced" },
+					new AngularVtoString() {Data= "IT Solutions Stock Price is $29.50" },
+					new AngularVtoString() {Data= "Dedicated 3 person sales team" },
+					new AngularVtoString() {Data= "2 new Technical Account Managers" },
+					new AngularVtoString() {Data= "<4% yearly client attrition" },
+					new AngularVtoString() {Data= "•Well-honed Marketing Machine" },
+					new AngularVtoString() {Data= "Managed Services Team Pod Structures" },
+					new AngularVtoString() {Data= "•Trained Application Support Specialists" },
+				}
+			};
+			vto.IncludeVision = true;
+			var doc = PdfAccessor.CreateDoc(null, "Quarterly Printout1");
+			var settings = new VtoPdfSettings();
+			var sw = new Stopwatch();
+			sw.Start();
+			await PdfAccessor.AddVTO(doc, vto, "yyyy-MM-dd", settings);
+			var duration = sw.Elapsed;
+			Console.WriteLine(duration.TotalMilliseconds + "ms");
+
+			Save(doc, "TestSlowVto.pdf");
+
+			Assert.IsTrue(duration < TimeSpan.FromSeconds(30));
+
+		}
+
+
 
 
 		[TestMethod]

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Web;
-using Amazon.IdentityManagement.Model;
+
 using FluentNHibernate.Mapping;
 using NHibernate;
 using NHibernate.Linq;
@@ -22,6 +22,9 @@ using RadialReview.Models.Components;
 using System.Web.Script.Serialization;
 
 namespace RadialReview.Models {
+
+
+
 	[DebuggerDisplay("User: {EmailAtOrganization}")]
 	[DataContract]
 	public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IHistorical, TimeSettings, IForModel/*, IAngularizer<UserOrganizationModel>*/
@@ -57,8 +60,9 @@ namespace RadialReview.Models {
 			_ClientRequestId = id;
 		}
 
-		public virtual void SetClientTimeStamp(long timestamp) {
+		public virtual UserOrganizationModel SetClientTimeStamp(long timestamp) {
 			_ClientTimestamp = timestamp;
+            return this;
 		}
 		public virtual void IncrementClientTimestamp() {
 			_ClientTimestamp = (_ClientTimestamp ?? DateTime.UtcNow.ToJsMs()) + 1;
@@ -68,9 +72,27 @@ namespace RadialReview.Models {
 		public virtual long? _ClientTimestamp { get; set; }
 		public virtual int? _ClientOffset { get; set; }
 		protected virtual TimeData _timeData { get; set; }
-		public virtual bool _IsRadialAdmin { get; set; }
 
-		public virtual TimeData GetTimeSettings() {
+        public class PermissionsOverrides {
+            public AdminShortCircuit Admin { get; set; }
+            public bool IgnorePaymentLockout { get; set; }
+            public PermissionsOverrides() {
+                Admin = new AdminShortCircuit();
+            }
+
+        }
+		public class AdminShortCircuit{
+			public bool IsMocking { get; internal set; }
+			public bool IsRadialAdmin { get; set; }
+			public string ActualUserId { get; set; }
+			public bool AllowAdminWithoutAudit { get; set; }
+		}
+		public virtual PermissionsOverrides _PermissionsOverrides { get; set; }
+		public virtual bool _IsRadialAdmin { get; set; }
+		[Obsolete("For testing only")]
+		public virtual bool _IsTestAdmin { get; set; }
+
+		public virtual ITimeData GetTimeSettings() {
 			if (_timeData == null) {
 				var orgSettings = GetOrganizationSettings();
 				_timeData = new TimeData() {
@@ -78,7 +100,8 @@ namespace RadialReview.Models {
 					Period = orgSettings.ScorecardPeriod,
 					TimezoneOffset = _ClientOffset ?? orgSettings.GetTimezoneOffset(),
 					WeekStart = orgSettings.WeekStart,
-					YearStart = orgSettings.YearStart
+					YearStart = orgSettings.YearStart,
+					DateFormat = orgSettings.GetDateFormat()
 				};
 			}
 			return _timeData;
@@ -442,6 +465,8 @@ namespace RadialReview.Models {
 
 		public virtual long ModelId { get { return Id; } }
 		public virtual string ModelType { get { return ForModel.GetModelType<UserOrganizationModel>(); } }
+
+
 		public virtual bool Is<T>() {
 			return typeof(UserOrganizationModel).IsAssignableFrom(typeof(T));
 		}
@@ -472,7 +497,7 @@ namespace RadialReview.Models {
 		public virtual int GetTimezoneOffset() {
 			return _ClientOffset ?? GetOrganizationSettings().GetTimezoneOffset();
 		}
-
+        
 	}
 
 	public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel> {

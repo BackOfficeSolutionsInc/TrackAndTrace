@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using NHibernate.Mapping;
 using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Components;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;
@@ -64,6 +65,11 @@ namespace RadialReview.Models {
 		SystemAdmin = 6,
 		Other = 7,
 	}
+
+    public enum LockoutType {
+        NoLockout=0,
+        Payment
+    }
 
 	public class OrgCreationData : ILongIdentifiable {
 		public virtual long Id { get; set; }
@@ -142,7 +148,7 @@ namespace RadialReview.Models {
 
 	public class OrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable, TimeSettings {
 		[Obsolete("Use the user if possible.")]
-		public virtual TimeData GetTimeSettings() {
+		public virtual ITimeData GetTimeSettings() {
 			return Settings.GetTimeSettings();
 		}
 		public class OrganizationSettings : TimeSettings {
@@ -178,9 +184,7 @@ namespace RadialReview.Models {
 			public virtual String DateFormat { get; set; }
 
 			public virtual int GetTimezoneOffset() {
-				var zone = TimeZoneId ?? "Central Standard Time";
-				var ts = TimeZoneInfo.FindSystemTimeZoneById(zone);
-				return (int)ts.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
+				return TimeData.GetTimezoneOffset(TimeZoneId);
 			}
 			public virtual YearStart YearStart {
 				get {
@@ -192,34 +196,27 @@ namespace RadialReview.Models {
 				WeekStart = DayOfWeek.Sunday;
 
 				ScorecardPeriod = ScorecardPeriod.Weekly;
-
 				EmployeesCanViewScorecard = false;
 				ManagersCanViewScorecard = true;
-
 				EmployeeCanCreateL10 = false;
 				ManagersCanCreateL10 = true;
-
 				AutoUpgradePayment = true;
-
 				ManagersCanViewSubordinateL10 = true;
 				ManagersCanEditSubordinateL10 = false;
-
 				EmployeesCanCreateSurvey = false;
 				ManagersCanCreateSurvey = true;
-
 				DefaultSendTodoTime = -1;
-
 				OnlySeeRocksAndScorecardBelowYou = true;
-
 				EnableL10 = false;
 				EnableReview = false;
 				DisableAC = false;
-
 				LimitFiveState = true;
-
 				DateFormat = "MM-dd-yyyy";
-
 				RockName = "Rocks";
+
+				PrimaryColor = ColorComponent.TractionOrange();
+				TextColor = ColorComponent.TractionBlack();
+
 			}
 			public virtual string RockName { get; set; }
 
@@ -231,57 +228,50 @@ namespace RadialReview.Models {
 
 					Map(x => x.EmployeesCanViewScorecard);
 					Map(x => x.ManagersCanViewScorecard);
-
 					Map(x => x.AutoUpgradePayment);
-
 					Map(x => x.EmployeeCanCreateL10);
 					Map(x => x.ManagersCanCreateL10);
-
 					Map(x => x.ManagersCanViewSubordinateL10);
 					Map(x => x.ManagersCanEditSubordinateL10);
-
 					Map(x => x.ManagersCanEditSelf);
 					Map(x => x.EmployeesCanEditSelf);
-
 					Map(x => x.AllowAddClient);
-
 					Map(x => x.EmployeesCanCreateSurvey);
 					Map(x => x.ManagersCanCreateSurvey);
-
 					Map(x => x.DefaultSendTodoTime);
-
 					Map(x => x.OnlySeeRocksAndScorecardBelowYou);
-
 					Map(x => x.EnableCoreProcess);
 					Map(x => x.EnableL10);
 					Map(x => x.EnableReview);
 					Map(x => x.EnableSurvey);
 					Map(x => x.EnablePeople);
-
 					Map(x => x.DisableUpgradeUsers);
-
 					Map(x => x.LimitFiveState);
-
 					Map(x => x.RockName);
 					Map(x => x.DateFormat);
 					Map(x => x.NumberFormat);
-
 					Map(x => x.Branding).CustomType<BrandingType>();
 					Map(x => x.ScorecardPeriod).CustomType<ScorecardPeriod>();
 					Map(x => x.StartOfYearMonth).CustomType<Month>();
-					Map(x => x.StartOfYearOffset).CustomType<DateOffset>();
+                    Map(x => x.StartOfYearOffset).CustomType<DateOffset>();
+                    Map(x => x.ImageGuid);
+					Component(x => x._PrimaryColor).ColumnPrefix("PrimaryColor_");
+					Component(x => x._TextColor).ColumnPrefix("TextColor_");
 				}
 			}
 
 			public virtual bool EmployeesCanCreateSurvey { get; set; }
-
 			public virtual bool ManagersCanCreateSurvey { get; set; }
-
 			public virtual Month StartOfYearMonth { get; set; }
 			public virtual DateOffset StartOfYearOffset { get; set; }
 			public virtual NumberFormat NumberFormat { get; set; }
 			public virtual bool LimitFiveState { get; set; }
 			public virtual bool DisableUpgradeUsers { get; set; }
+			public virtual string ImageGuid { get; set; }
+			public virtual ColorComponent _PrimaryColor { get; set; }
+			public virtual ColorComponent _TextColor { get; set; }
+			public virtual ColorComponent TextColor { get { return _TextColor ?? ColorComponent.TractionBlack(); } set { _TextColor = value; } }
+			public virtual ColorComponent PrimaryColor { get { return _PrimaryColor ?? ColorComponent.TractionOrange(); } set { _PrimaryColor = value; } }
 
 			public virtual string GetAngularNumberFormat() {
 				return NumberFormat.Angular();
@@ -291,7 +281,7 @@ namespace RadialReview.Models {
 				return DateFormat ?? "MM-dd-yyyy";
 			}
 
-			public TimeData GetTimeSettings() {
+			public ITimeData GetTimeSettings() {
 				return new TimeData() {
 					Now = DateTime.UtcNow,
 					Period = ScorecardPeriod,
@@ -299,6 +289,21 @@ namespace RadialReview.Models {
 					WeekStart = WeekStart,
 					YearStart = YearStart,
 				};
+			}
+			public bool HasImage() {
+				return !string.IsNullOrWhiteSpace(ImageGuid);
+			}
+
+			public string GetImageUrl(ImageSize size = ImageSize._64) {
+				if (string.IsNullOrWhiteSpace(ImageGuid)) {
+					return ConstantStrings.AmazonS3Location + ConstantStrings.ImageOrganizationPlaceholder;
+				}
+
+				var suffix = "/" + ImageGuid + ".png";
+				if (size == ImageSize._suffix)
+					return suffix;
+				var s = size.ToString().Substring(1);
+				return ConstantStrings.AmazonS3Location + s + suffix;
 			}
 		}
 
@@ -367,7 +372,8 @@ namespace RadialReview.Models {
 		public virtual Boolean ManagersCanRemoveUsers { get; set; }
 		public virtual bool StrictHierarchy { get; set; }
 
-		protected virtual OrganizationSettings _Settings { get; set; }
+        [Obsolete("Use Settings instead.")]
+		public virtual OrganizationSettings _Settings { get; set; }
 		public virtual OrganizationSettings Settings {
 			get {
 				if (_Settings == null)
@@ -376,7 +382,9 @@ namespace RadialReview.Models {
 			}
 		}
 
-		public virtual AccountType AccountType { get; set; }
+        public virtual LockoutType Lockout { get; set; }
+
+        public virtual AccountType AccountType { get; set; }
 		[JsonIgnore]
 		public virtual IList<UserOrganizationModel> Members { get; set; }
 		[JsonIgnore]
@@ -395,7 +403,7 @@ namespace RadialReview.Models {
 #pragma warning restore CS0114 // Member hides inherited member; missing override keyword
 		public virtual DateTime CreationTime { get; set; }
 		public virtual bool SendEmailImmediately { get; set; }
-		public virtual String ImageUrl { get; set; }
+		//public virtual String ImageUrl { get; set; }
 		public virtual long AccountabilityChartId { get; set; }
 
 		[JsonIgnore]
@@ -415,6 +423,7 @@ namespace RadialReview.Models {
 		}
 
 		public virtual bool ManagersCanEditPositions { get; set; }
+		public virtual string ImplementerEmail { get; set; }
 
 		public OrganizationModel() {
 			Groups = new List<GroupModel>();
@@ -429,9 +438,10 @@ namespace RadialReview.Models {
 			ManagersCanEdit = false;
 			_Settings = new OrganizationSettings();
 			AccountType = AccountType.Demo;
+            Lockout = LockoutType.NoLockout;
 
-			//Lookup = new OrganizationLookup();
-		}
+            //Lookup = new OrganizationLookup();
+        }
 
 		public virtual List<IOrigin> OwnsOrigins() {
 			var owns = new List<IOrigin>();
@@ -453,7 +463,7 @@ namespace RadialReview.Models {
 			return Name.Translate();
 		}
 		public override string GetImageUrl() {
-			return ImageUrl ?? base.GetImageUrl();
+			return Settings.GetImageUrl() ?? base.GetImageUrl();
 		}
 
 		public override string GetGroupType() {
@@ -469,7 +479,7 @@ namespace RadialReview.Models {
 				Map(x => x.AccountType);
 				Map(x => x.ManagersCanEdit);
 				Map(x => x.DeleteTime);
-				Map(x => x.ImageUrl);
+				//Map(x => x.ImageUrl); //use Settings.ImageUrl
 				Map(x => x.CreationTime);
 				Map(x => x.StrictHierarchy);
 				Map(x => x.ManagersCanEditPositions);
@@ -477,11 +487,14 @@ namespace RadialReview.Models {
 				Map(x => x.AccountabilityChartId);
 
 				Map(x => x.PrimaryContactUserId);
-
+                Map(x => x.Lockout).CustomType<LockoutType>();
 				//References(x => x.Lookup).LazyLoad().Cascade.SaveUpdate();
 
 				//Map(x => x.ImageUrl);
 				Map(x => x.SendEmailImmediately);
+
+				Map(x => x.ImplementerEmail);
+
 				Component(x => x._Settings).ColumnPrefix("Settings_");
 
 				References(x => x.Image)

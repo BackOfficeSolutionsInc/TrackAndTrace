@@ -5,6 +5,7 @@ using PdfSharp.Drawing;
 using System.Text.RegularExpressions;
 using static RadialReview.Accessors.PdfAccessor;
 using MigraDoc.DocumentObjectModel;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Utilities.Pdf {
 	/// <summary>
@@ -56,11 +57,26 @@ namespace RadialReview.Utilities.Pdf {
 
 			this.graphics = graphics;
 			this.width = width;
+            if (this.width <= 0)
+                throw new Exception("Width was 0");
 		}
 
-		private void CreateBlocks(string text, XFont font, XBrush brush) {
-			Unit spaceWidth = Unit.FromPoint(graphics.MeasureString("X X", font).Width - graphics.MeasureString("XX", font).Width);
-			Unit lineHeight = font.GetHeight();
+        private static Dictionary<XFont, Unit> SpaceWidths = new Dictionary<XFont, Unit>();
+
+        private Unit GetSpaceWidth(XFont font) {
+            if (!SpaceWidths.ContainsKey(font)) {
+                SpaceWidths.Add(font, Unit.FromPoint(graphics.MeasureString("X X", font).Width - graphics.MeasureString("XX", font).Width));
+            }
+            return SpaceWidths[font];
+        }
+
+        private void CreateBlocks(string text, XFont font, XBrush brush) {
+
+            if (this.width <= 0)
+                throw new Exception("Width was 0");
+
+            Unit spaceWidth = GetSpaceWidth(font);
+            Unit lineHeight = font.GetHeight();
 			Unit descent = -(lineHeight * font.Metrics.Descent / font.Metrics.XHeight);
 
 			Regex regex = new Regex(@"(\s)|(\S+)");

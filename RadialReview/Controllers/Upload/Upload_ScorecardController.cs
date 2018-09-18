@@ -78,8 +78,14 @@ namespace RadialReview.Controllers {
 					dates1 = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
 				}
 
+                var future = DateTime.UtcNow.AddDays(120);
+                var invalidDates = dates1.Where(x => x < new DateTime(2005, 1, 1) || x > future);
+                if (invalidDates.Any())
+                     throw new Exception("Error uploading scorecard, "+invalidDates.Count()+" dates were invalid. Please make sure your scorecard dates are between January 1, 2005 and " + future.ToString("MMMM dd, yyyy"));
 
-				var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
+
+
+                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.False()).OrganizationId;
 				var allUsers = TinyUserAccessor.GetOrganizationMembers(GetUser(), orgId);
 				// var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id);
 				var userLookups = DistanceUtility.TryMatch(userStrings, allUsers);
@@ -162,7 +168,7 @@ namespace RadialReview.Controllers {
 				if (!string.IsNullOrWhiteSpace(model["DateRange"]))
 					dateRect = new Rect(model["DateRange"].ToString().Split(',').Select(x => x.ToInt()).ToList());
 
-				_PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
+				PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
 				var ui = await UploadAccessor.DownloadAndParse(GetUser(), path);
 				var csvData = ui.Csv;
 

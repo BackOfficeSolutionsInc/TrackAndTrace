@@ -1,5 +1,5 @@
-﻿using Amazon.ElasticTranscoder.Model;
-using Amazon.IdentityManagement.Model;
+﻿
+
 using FluentNHibernate.Utils;
 using NHibernate;
 using NHibernate.Criterion;
@@ -226,7 +226,7 @@ namespace RadialReview.Engines {
 			Dictionary<long, OrganizationTeamModel> teamLookup = null;
 			var teamMembers = TeamAccessor.GetTeamMembersAtOrganization(caller, orgId);
 			if (admin) {
-				_PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization(caller.Organization.Id).Or(y => y.AdminReviewContainer(reviewsId)));
+				PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization(caller.Organization.Id).Or(y => y.AdminReviewContainer(reviewsId)));
 			} else {
 				var subordinateIds = DeepAccessor.Users.GetSubordinatesAndSelf(caller, caller.Id);
 				teamMembers = teamMembers.Where(x => subordinateIds.Contains(x.UserId)).ToList();
@@ -451,7 +451,7 @@ namespace RadialReview.Engines {
 		public Scatter ReviewScatter2(UserOrganizationModel caller, long forUserId, long reviewsId, string groupBy, bool sensitive, bool includePrevious) {
 
 			if (sensitive) {
-				new PermissionsAccessor().Permitted(caller, x => x.ManagesUserOrganization(forUserId, true, PermissionType.ViewReviews));
+				PermissionsAccessor.Permitted(caller, x => x.ManagesUserOrganization(forUserId, true, PermissionType.ViewReviews));
 			} else {
 				using (var s = HibernateSession.GetCurrentSession()) {
 					using (var tx = s.BeginTransaction()) {
@@ -638,7 +638,7 @@ namespace RadialReview.Engines {
 
 		public ScatterPlot ReviewScatter(UserOrganizationModel caller, long forUserId, long reviewsId, bool sensitive) {
 			if (sensitive) {
-				new PermissionsAccessor().Permitted(caller, x => x.ManagesUserOrganization(forUserId, true));
+				PermissionsAccessor.Permitted(caller, x => x.ManagesUserOrganization(forUserId, true));
 			}
 
 			var categories = _OrganizationAccessor.GetOrganizationCategories(caller, caller.Organization.Id);

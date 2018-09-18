@@ -28,22 +28,35 @@ namespace RadialReview.Controllers {
 			return View();
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		public ActionResult SetCard() {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
+        [Access(AccessLevel.UserOrganization,IgnorePaymentLockout =true)]        
+        public ActionResult Lockout() {
+            var orgId = GetUser().Organization.Id;
+            var canEditPayment = PermissionsAccessor.IsPermitted(GetUser(), x => x.EditCompanyPayment(orgId));
+                        
+            if (canEditPayment)
+                return View("Lockout");
+            else
+                return View("LockoutNonadmin");
+        }
 
-			return View();
+
+
+		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
+		public ActionResult SetCard(int nil = 0,bool noTitleBar=false) {
+			PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
+            ViewBag.NoTitleBar = noTitleBar;
+            return View();
 		}
 
-		[Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
 		public ActionResult SetACH() {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
 
 			return View();
 		}
 
 
-		[Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.Radial)]
 		public ActionResult Plan() {
 			var plan = PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id);
 			return View(plan);
@@ -59,9 +72,13 @@ namespace RadialReview.Controllers {
 		public ActionResult Plan_Monthly(long? orgid = null, bool msg = false) {
 			var id = orgid ?? GetUser().Organization.Id;
 
+			AllowAdminsWithoutAudit();
+			
 			var plan = PaymentAccessor.GetPlan(GetUser(), id);
 			var org = _OrganizationAccessor.GetOrganization(GetUser(), id);
 			ViewBag.ShowPostMsg = msg;
+			ViewBag.AutoUpdate = org.Settings.AutoUpgradePayment;
+
 			if (plan is PaymentPlan_Monthly) {
 				var pr = (PaymentPlan_Monthly)plan;
 				pr._Org = org;
@@ -278,6 +295,25 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+
+		[HttpPost]
+		[Access(AccessLevel.Radial)]
+		public JsonResult AutoUpdate(long id, bool autoupdate) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var org = s.Get<OrganizationModel>(id);
+					org._Settings.AutoUpgradePayment = autoupdate;
+					s.Update(org);
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+			return Json(ResultObject.Success("updated"));
+		}
+
 		[HttpPost]
 		[Access(AccessLevel.Radial)]
 		public JsonResult ApplyCredit(PaymentCredit model) {
@@ -423,7 +459,23 @@ namespace RadialReview.Controllers {
 			return fireTime;
 		}
 
-		[Access(AccessLevel.UserOrganization)]
+
+        [Access(AccessLevel.Radial)]
+        public JsonResult LockoutOrganization(long id,bool lockout=true) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var org = s.Get<OrganizationModel>(id);
+                    org.Lockout = lockout ? LockoutType.Payment : LockoutType.NoLockout;
+                    org.DeleteTime = lockout ? (DateTime?)DateTime.UtcNow:null;
+                    s.Update(org);
+                    tx.Commit();
+                    s.Flush();
+                    return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
 		[HttpPost]
 		public async Task<ActionResult> SetCard(bool submit) {
 			await PaymentAccessor.SetCard(
@@ -450,7 +502,7 @@ namespace RadialReview.Controllers {
 			return RedirectToAction("Advanced", "Manage");
 		}
 
-		[Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization, IgnorePaymentLockout = true)]
 		[HttpPost]
 		public async Task<ActionResult> SetACH(bool submit) {
 			await PaymentAccessor.SetACH(

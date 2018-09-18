@@ -9,6 +9,7 @@ using System.Web;
 using RadialReview.Models.Frontend;
 using System.ComponentModel.DataAnnotations;
 using NHibernate;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
 	public abstract class BaseL10EventAnaylzerGenerators : IEventAnalyzerGenerator, IRecurrenceEventAnalyerGenerator {
@@ -36,12 +37,12 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Events.Base {
 			var rid = RecurrenceId;
 			var recurrenceAttendees = await settings.Lookup(new SearchHisoricalRecurrenceAttendees(rid));
 			foreach (var attendee in recurrenceAttendees.Where(x => IncludeHistoricalMembers || x.DeleteTime == null)) {
-				results.Add(EventAnalyzerConstructor(rid, IHistoricalImpl.From(attendee)));
+				results.Add(EventAnalyzerConstructor(rid, attendee));
 			}
 			//}
 			return results;
 		}
-		public abstract IEventAnalyzer EventAnalyzerConstructor(long recurrenceId, IHistoricalImpl attendee);
+		public abstract IEventAnalyzer EventAnalyzerConstructor(long recurrenceId, L10Recurrence.L10Recurrence_Attendee attendee);
 
 		public abstract Task<IEnumerable<EditorField>> GetSettingsFields(IEventGeneratorSettings settings);
 

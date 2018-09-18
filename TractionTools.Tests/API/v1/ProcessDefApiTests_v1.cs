@@ -128,7 +128,7 @@ namespace TractionTools.Tests.Api {
 		}
 
 		#endregion
-
+		/*
 		private ProcessDefAccessor pda;
 
 
@@ -446,7 +446,13 @@ namespace TractionTools.Tests.Api {
 
 			//Assert.IsTrue(string.IsNullOrEmpty(getTask.Id));
 		}
+		*/
 
+		[TestMethod]
+		[TestCategory("Scheduler")]
+		public void ReenableCoreProcessTests() {
+			Assert.Inconclusive("Tests were disabled");
+		}
 
 		[TestMethod]
 		[TestCategory("Scheduler")]

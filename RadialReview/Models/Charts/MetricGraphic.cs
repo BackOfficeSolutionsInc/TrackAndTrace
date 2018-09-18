@@ -16,6 +16,7 @@ namespace RadialReview.Models.Charts {
 		public List<string> legend { get; set; }
 
 		public List<MarkerData> markers { get; set; }
+		public List<BaselineData> baselines { get; set; }
 
 		public bool? missing_is_hidden { get; set; }
 
@@ -72,6 +73,14 @@ namespace RadialReview.Models.Charts {
 
 		}
 
+		public void AddHorizontal(decimal value, string label) {
+			baselines = baselines ?? new List<BaselineData>();
+			baselines.Add(new BaselineData() {
+				value = value,
+				label = label ??""
+			});
+		}
+
 		public void AddVertical(DateTime date, string label) {
 			markers = markers ?? new List<MarkerData>();
 			markers.Add(new MarkerData() {
@@ -101,6 +110,10 @@ namespace RadialReview.Models.Charts {
 		}
 		public class MarkerData {
 			public DateTime date { get; set; }
+			public string label { get; set; }
+		}
+		public class BaselineData {
+			public decimal value { get; set; }
 			public string label { get; set; }
 		}
 	}

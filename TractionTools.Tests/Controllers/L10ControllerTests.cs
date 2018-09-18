@@ -260,8 +260,11 @@ namespace TractionTools.Tests.Controllers {
 				//Test for the actual recurrence
 				L10Tester.Test(org, model.Recurrence, tester => {
 					tester.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					tester.Expected_DefaultMeasurableNames = new[] { "meas1" };
-					tester.Expected_DefaultRockNames = new[] { "rock1" };
+					tester.Expected_MeetingNotes = new string[] { };
+					tester.ShouldHavePages = true;
+					tester.ShouldHaveVideoConferenceProviders = true;
+					//tester.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//tester.Expected_DefaultRockNames = new[] { "rock1" };
 				});
 			}
 		}
@@ -291,8 +294,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 				});
 
 			}
@@ -311,7 +314,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddTodo("todo1");
 			await l10.AddIssue("issue1");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Segue).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -335,8 +338,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 
@@ -356,7 +359,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddTodo("todo1");
 			await l10.AddIssue("issue1");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Scorecard).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -382,7 +385,7 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
 					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
@@ -403,7 +406,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddTodo("todo1");
 			await l10.AddIssue("issue1");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Rocks).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -432,7 +435,7 @@ namespace TractionTools.Tests.Controllers {
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
 					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 
@@ -453,7 +456,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddIssue("issue1");
 			await l10.AddHeadline("headline");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Headlines).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -480,8 +483,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 
@@ -502,7 +505,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddIssue("issue1");
 			await l10.AddHeadline("headline");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Todo).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -530,8 +533,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 
@@ -552,7 +555,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddIssue("issue1");
 			await l10.AddHeadline("headline");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.IDS).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -580,8 +583,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 
@@ -602,7 +605,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10.AddIssue("issue1");
 			await l10.AddHeadline("headline");
 
-			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, LoadMeeting.True());
 			var pageId = recur._Pages.First(x => x.PageType == L10Recurrence.L10PageType.Conclude).Id;
 
 			//Shouldn't go to the page without starting the meeting
@@ -636,8 +639,8 @@ namespace TractionTools.Tests.Controllers {
 
 				L10Tester.Test(org, model.Recurrence, x => {
 					x.Expected_DefaultAttendeeIds = new[] { org.Employee.Id, org.Manager.Id };
-					x.Expected_DefaultRockNames = new[] { "rock1" };
-					x.Expected_DefaultMeasurableNames = new[] { "meas1" };
+					//x.Expected_DefaultRockNames = new[] { "rock1" };
+					//x.Expected_DefaultMeasurableNames = new[] { "meas1" };
 					x.ExpectedMeetingInProgress = meeting.Id;
 				});
 

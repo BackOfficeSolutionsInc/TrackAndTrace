@@ -24,7 +24,7 @@ namespace RadialReview.Accessors.TodoIntegrations
 		
 		public static String AuthUrl(UserOrganizationModel caller,long recurrence,long userId)
 		{
-			new PermissionsAccessor().Permitted(caller,x=>x.EditL10Recurrence(recurrence).ViewUserOrganization(userId,false));
+			PermissionsAccessor.Permitted(caller,x=>x.EditL10Recurrence(recurrence).ViewUserOrganization(userId,false));
 
 			return  new Trello(Config.GetTrelloKey()).GetAuthorizationUrl("Radial", Scope.ReadWrite,Expiration.Never).ToString()+
 				"&return_url=" + Config.BaseUrl(caller.Organization) + "CallBack/Trello?recurrence=" + recurrence + "%26user=" + userId;

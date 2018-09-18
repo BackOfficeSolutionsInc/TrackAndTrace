@@ -29,7 +29,12 @@ namespace RadialReview.Models
 
         public virtual string _ReplyToEmail { get; set; }
         public virtual string _ReplyToName { get; set; }
-    }
+		public virtual List<EmailAttachment> _Attachments { get; set; }
+
+		public EmailModel() {
+
+		}
+	}
 
     public class EmailModelMap:ClassMap<EmailModel>
     {
@@ -37,7 +42,7 @@ namespace RadialReview.Models
         {
 			Id(x => x.Id);
 			Map(x => x.ToAddress);
-			Map(x => x.MandrillId).Index("EmailModel_MandrillId");
+			Map(x => x.MandrillId).Index("EmailModel_MandrillId").Length(256);
 			Map(x => x.EmailType);
 			Map(x => x.Bcc);
             Map(x => x.Body).Length(3000).Not.Nullable();

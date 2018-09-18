@@ -23,23 +23,24 @@ namespace RadialReview.Hubs
 		private UserOrganizationModel ForceGetUser(ISession s, string userId)
 		{
 			var user = s.Get<UserModel>(userId);
-			if (user.IsRadialAdmin)
+			if (user.IsRadialAdmin) {
 				_CurrentUser = s.Get<UserOrganizationModel>(user.CurrentRole);
-			else
-			{
-                if (user.CurrentRole == 0)
-                {
-                    if (user.UserOrganizationIds!=null && user.UserOrganizationIds.Count()==1){
-                        user.CurrentRole = user.UserOrganizationIds[0];
-                        s.Update(user);
-                    }else{
-                        throw new OrganizationIdException();
-                    }
-                }
+				if (Config.IsTest()) {
+					_CurrentUser._IsTestAdmin = true;
+				}
+
+			} else {
+				if (user.CurrentRole == 0) {
+					if (user.UserOrganizationIds != null && user.UserOrganizationIds.Count() == 1) {
+						user.CurrentRole = user.UserOrganizationIds[0];
+						s.Update(user);
+					} else {
+						throw new OrganizationIdException();
+					}
+				}
 
 				var found = s.Get<UserOrganizationModel>(user.CurrentRole);
-				if (found.DeleteTime != null || found.User.Id == userId)
-				{
+				if (found.DeleteTime != null || found.User.Id == userId) {
 					//Expensive
 					var avail = user.UserOrganization.ToListAlive();
 					_CurrentUser = avail.FirstOrDefault(x => x.Id == user.CurrentRole);
@@ -47,9 +48,7 @@ namespace RadialReview.Hubs
 						_CurrentUser = avail.FirstOrDefault();
 					if (_CurrentUser == null)
 						throw new NoUserOrganizationException("No user exists.");
-				}
-				else
-				{
+				} else {
 					_CurrentUser = found;
 				}
 

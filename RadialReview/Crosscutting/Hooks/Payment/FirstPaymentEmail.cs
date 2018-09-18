@@ -29,7 +29,7 @@ namespace RadialReview.Hooks.CrossCutting.Payment {
 			if (creator != null) {
 				var mail = Mail
 					.To("FirstCharge", creator.GetEmail())
-					.SubjectPlainText("Welcome to Traction® Tools")
+					.SubjectPlainText("Traction® Tools: Next Steps")
 					.Body(EmailStrings.FirstCharge_Body, new string[] { });
 				mail.ReplyToAddress = s.GetSettingOrDefault("SupportEmail", "client-success@mytractiontools.com");
 				mail.ReplyToName = "Traction Tools Support";

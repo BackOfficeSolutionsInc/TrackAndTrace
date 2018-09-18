@@ -42,7 +42,7 @@ namespace RadialReview.Api.V1 {
 			//var todo = new TodoModel() { Message = body.title, DueDate = duedate, TodoType = TodoType.Personal };
 			//await TodoAccessor.CreateTodo(GetUser(), -2, todo);  // -2 for personal TODO
 
-			var todoModel = TodoCreation.CreatePersonalTodo(body.title, body.notes, GetUser().Id, duedate);
+			var todoModel = TodoCreation.GeneratePersonalTodo(body.title, body.notes, GetUser().Id, duedate);
 			var todo = await TodoAccessor.CreateTodo(GetUser(), todoModel); 
 
 			return new AngularTodo(todo);

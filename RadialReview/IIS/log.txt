@@ -398,3 +398,114 @@ Compressing  install\Scripts\UrlRewrite.bat
 
 Everything is Ok
 upload: .\install.zip to s3://Radial/Installer/install.zip
+ 
+'======================Sat 07-28-2018 22-07-18.60======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\resizeDisk.script
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+
+ 
+'======================Sun 07-29-2018  5-51-15.17======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\resizeDisk.script
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+
+
+
+
+ 
+'======================Sun 07-29-2018  6-01-39.94======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\resizeDisk.script
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+upload: .\install.zip to s3://Radial/Installer/install.zip
+ 
+'======================Sun 07-29-2018  6-03-12.47======================' 
+ 
+'======================Sun 07-29-2018  6-03-33.10======================' 
+ 
+'======================Sun 07-29-2018  6-03-59.23======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\resizeDisk.script
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+upload: .\install.zip to s3://Radial/Installer/install.zip

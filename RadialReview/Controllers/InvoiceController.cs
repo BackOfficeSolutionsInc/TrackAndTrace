@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using NHibernate;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Controllers {
 	public class InvoiceController : BaseController {
@@ -41,6 +42,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
 		public ActionResult List(long? id = null) {
+			AllowAdminsWithoutAudit();
 			var orgid = id ?? GetUser().Organization.Id;
 			var list = InvoiceAccessor.GetInvoicesForOrganization(GetUser(), orgid);
 			ViewBag.OrgId = id;
@@ -49,7 +51,8 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Details(long id) {
-			var invoice = InvoiceAccessor.GetInvoice(GetUser(), id).AsList();
+            AllowAdminsWithoutAudit();
+            var invoice = InvoiceAccessor.GetInvoice(GetUser(), id).AsList();
 			return View(invoice);
 		}
 
@@ -67,8 +70,12 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Radial)]
 		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
-		public ActionResult Outstanding() {
+		public ActionResult Outstanding(AccountType? type=null) {
 			var o = InvoiceAccessor.AllOutstanding_Unsafe(GetUser());
+			if (type != null) {
+				o = o.Where(x => x.Organization.AccountType == type.Value).ToList();
+			}
+
 			ViewBag.ShowOrganization = true;
 			return View("List", o);
 		}

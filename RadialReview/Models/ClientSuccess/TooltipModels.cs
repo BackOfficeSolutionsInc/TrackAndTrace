@@ -71,7 +71,7 @@ namespace RadialReview.Models.ClientSuccess {
                 Id(x => x.Id);
                 Map(x => x.TipId);
                 Map(x => x.SeenTime);
-                Map(x => x.UserId).Index("idx_TooltipSeen_UserId");
+                Map(x => x.UserId).Index("idx_TooltipSeen_UserId").Length(256);
             }
         }
     }

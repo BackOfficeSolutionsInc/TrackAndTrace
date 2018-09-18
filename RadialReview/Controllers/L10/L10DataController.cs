@@ -28,6 +28,8 @@ using RadialReview.Accessors.VideoConferenceProviders;
 using Ionic.Zip;
 using System.Text;
 using static RadialReview.Models.L10.L10Recurrence;
+using RadialReview.Utilities.Pdf;
+using RadialReview.Accessors.PDF;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -93,12 +95,12 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult AddRock(long id) {
 			var recurrenceId = id;
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 
 			var allRocks = RockAccessor.GetPotentialMeetingRocks(GetUser(), recurrenceId, true);
 			//var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
-			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True())._DefaultAttendees.Select(x => x.User.Id).ToList();
 			var already = recurrence._DefaultRocks.Select(x => x.ForRock.Id).ToList();
 
 			var addableRocks = allRocks
@@ -194,12 +196,12 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult AddMeasurable(long id) {
 			var recurrenceId = id;
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 
 			var allMeasurables = ScorecardAccessor.GetPotentialMeetingMeasurables(GetUser(), recurrenceId, true);
 			//var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
-			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True())._DefaultAttendees.Select(x => x.User.Id).ToList();
 			var already = recurrence._DefaultMeasurables.Where(x => x.Measurable != null).Select(x => x.Measurable.Id).ToList();
 
 			var addableMeasurables = allMeasurables
@@ -348,7 +350,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<FileContentResult> ExportScorecard(long id, string type = "csv") {
 			var csv = await ExportAccessor.Scorecard(GetUser(), id, type);
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.False());
 			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + recur.Name + "_Scorecard.csv");
 		}
 
@@ -405,7 +407,7 @@ namespace RadialReview.Controllers {
             Response.ContentType = "application/zip";
             Response.AddHeader("content-disposition", "filename=" + archiveName);*/
 
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.False());
 			var time = DateTime.UtcNow.ToJavascriptMilliseconds();
 
 			var memoryStream = new MemoryStream();
@@ -634,9 +636,9 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]		
-		public async Task<JsonResult> UpdateTodoDate(long id, long date) {
+		public async Task<JsonResult> UpdateTodoDate(long id, DateTime date) {
             var todo = id;
-            var dateR = date.ToDateTime();
+			var dateR = date;//.ToDateTime();
 			await UpdateTodo(id, null, dateR, null);
             //await L10Accessor.UpdateTodo(GetUser(), id, dueDate: dateR);
             return Json(ResultObject.SilentSuccess(date.ToString()));
@@ -661,7 +663,8 @@ namespace RadialReview.Controllers {
 			var anyPages = false;
 
 			var doc = PdfAccessor.CreateDoc(GetUser(), "To-do Printout");
-			await PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false, printTileTodo: true);
+			var settings = new PdfSettings(GetUser().Organization.Settings);
+			await PdfAccessor.AddTodos(GetUser(), doc, angRecur, settings, addPageNumber: false, printTileTodo: true);
 			merger.AddDoc(doc);
 			anyPages = true;
 
@@ -719,7 +722,7 @@ namespace RadialReview.Controllers {
 			try {
 				var note = L10Accessor.GetNote(GetUser(), id);
 				var padId = note.PadId;
-				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditL10Note(id))) {
+				if (!PermissionsAccessor.IsPermitted(GetUser(), x => x.EditL10Note(id))) {
 					padId = await PadAccessor.GetReadonlyPad(note.PadId);
 				}
 				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
@@ -765,7 +768,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult DeleteNote(long id) {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Note(id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Note(id));
 			return PartialView(new DeleteNoteVM() { NoteId = id });
 		}
 
@@ -813,7 +816,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult CreateL10Page(long id) {
 			var recurrenceId = id;
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 			var page = new L10Recurrence.L10Recurrence_Page() {
 				L10RecurrenceId = recurrenceId
 			};
@@ -852,7 +855,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Members(long id) {
 			var recurrenceId = id;
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.True());
 			var result = recur._DefaultAttendees.Select(x => new {
 				id = x.User.Id,
 				name = x.User.GetName(),

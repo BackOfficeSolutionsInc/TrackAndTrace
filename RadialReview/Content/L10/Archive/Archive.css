@@ -149,11 +149,11 @@ input[type=checkbox].blend:before {
   position: absolute;
   margin-left: 14px;
   margin-top: 14px;
-  -moz-transform: scale(1.666);
-  -ms-transform: scale(1.666);
-  -o-transform: scale(1.666);
-  -webkit-transform: scale(1.666);
-  transform: scale(1.666);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  -webkit-transform: scale(1);
+  transform: scale(1);
 }
 input[type=checkbox].blend:hover:before {
   border: 2px solid rgba(62, 57, 53, 0.6);
@@ -207,11 +207,11 @@ input[type=checkbox].blend:checked:after {
   position: absolute;
   font-weight: bold;
   color: white;
-  -moz-transform: scale(1.666);
-  -ms-transform: scale(1.666);
-  -o-transform: scale(1.666);
-  -webkit-transform: scale(1.666);
-  transform: scale(1.666);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  -webkit-transform: scale(1);
+  transform: scale(1);
 }
 @-webkit-keyframes flash {
   0% {
@@ -797,15 +797,22 @@ html {
 .meeting-archive .scorecard-list-container table .goal-column.direction {
   text-align: center;
 }
+.meeting-archive .scorecard-list-container table .measurable-column {
+  width: 112px;
+}
+.meeting-archive .scorecard-list-container table .average-column,
 .meeting-archive .scorecard-list-container table .cumulative-column {
   text-align: center;
   padding-right: 4px;
   cursor: pointer;
 }
+.meeting-archive .scorecard-list-container table .average-column:active,
 .meeting-archive .scorecard-list-container table .cumulative-column:active,
+.meeting-archive .scorecard-list-container table .average-column:focus,
 .meeting-archive .scorecard-list-container table .cumulative-column:focus {
   outline: none;
 }
+.meeting-archive .scorecard-list-container table .average-column input,
 .meeting-archive .scorecard-list-container table .cumulative-column input {
   padding-right: 0px !important;
   padding-left: 0px !important;
@@ -815,9 +822,33 @@ html {
   outline: none;
   cursor: pointer;
 }
+.meeting-archive .scorecard-list-container table .average-column input:active,
 .meeting-archive .scorecard-list-container table .cumulative-column input:active,
+.meeting-archive .scorecard-list-container table .average-column input:focus,
 .meeting-archive .scorecard-list-container table .cumulative-column input:focus {
   outline: none;
+}
+.meeting-archive .scorecard-list-container #ScorecardTable_Over {
+  width: min-content;
+  display: -ms-grid;
+  -ms-grid-columns: min-content;
+  width: -moz-min-content;
+  width: -webkit-min-content;
+  padding-bottom: 1px;
+}
+.meeting-archive .scorecard-list-container .goal-column .blend {
+  min-width: 50px !important;
+}
+.meeting-archive .scorecard-list-container .goal-column {
+  padding-left: 3px !important;
+  width: 1px !important;
+}
+.meeting-archive .scorecard-list-container .goal-column.direction {
+  padding-right: 10px !important;
+  width: 1px;
+}
+.meeting-archive .scorecard-list-container .goal-column.value {
+  padding-left: 0 !important;
 }
 .meeting-archive .todo-list-container .empty-cell,
 .meeting-archive .todo-list-container .delete-column,

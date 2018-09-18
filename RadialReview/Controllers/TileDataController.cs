@@ -127,7 +127,7 @@ namespace RadialReview.Controllers {
 		public PartialViewResult L10Stats(long id) {
 			ViewBag.Name = "L10 Stats";
 			try {
-				ViewBag.Name = L10Accessor.GetL10Recurrence(GetUser(), id, false).Name;
+				ViewBag.Name = L10Accessor.GetL10Recurrence(GetUser(), id, LoadMeeting.False()).Name;
 			} catch (Exception) {
 			}
 

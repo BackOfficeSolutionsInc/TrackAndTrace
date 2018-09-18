@@ -112,7 +112,8 @@ namespace RadialReview {
 				"~/Scripts/Main/clickableclass.js",
 				"~/Scripts/Main/profilepicture.js",
 				"~/Scripts/Main/libraries.js",
-				"~/Scripts/Main/chart.js"
+				"~/Scripts/Main/chart.js",
+				"~/Scripts/Main/realtime.js",
 			};
 
 

@@ -21,7 +21,7 @@ namespace TractionTools.Tests.API.v0 {
 
             {
 				// -2 for personal TODO
-				var todoC = TodoCreation.CreatePersonalTodo("Todo from Test Method", null, c.E1.Id);
+				var todoC = TodoCreation.GeneratePersonalTodo("Todo from Test Method", null, c.E1.Id);
 				var todo = await TodoAccessor.CreateTodo(c.E1, todoC);
 
                 TodosController cnt = new TodosController();
@@ -37,12 +37,12 @@ namespace TractionTools.Tests.API.v0 {
 
             {
                 //// attach meeting to TODO                
-                var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
+                var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id, false);
 
 				// todo.ForRecurrenceId = _recurrence.Id;
 
 				await L10Accessor.AddAttendee(c.E1, _recurrence.Id, c.E1.Id);
-				var todoC = TodoCreation.CreateL10Todo(_recurrence.Id, "GetMineTodo from Test Method", null, c.E1.Id, null);
+				var todoC = TodoCreation.GenerateL10Todo(_recurrence.Id, "GetMineTodo from Test Method", null, c.E1.Id, null);
 				var todo = await TodoAccessor.CreateTodo(c.E1, todoC);
 
                 TodosController cnt = new TodosController();
@@ -87,7 +87,7 @@ namespace TractionTools.Tests.API.v0 {
             //    TodoType = TodoType.Personal
             //};
 
-			var todoC = TodoCreation.CreatePersonalTodo("Todo from Test Method", null, c.E1.Id);
+			var todoC = TodoCreation.GeneratePersonalTodo("Todo from Test Method", null, c.E1.Id);
 			var todo = await TodoAccessor.CreateTodo(c.E1, todoC);
 
 			//bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
@@ -110,7 +110,7 @@ namespace TractionTools.Tests.API.v0 {
 			//    Message = "GetUserTodo from Test Method",
 			//    TodoType = TodoType.Personal
 			//};
-			var todoC = TodoCreation.CreatePersonalTodo("GetUserTodo from Test Method", null, c.E1.Id);
+			var todoC = TodoCreation.GeneratePersonalTodo("GetUserTodo from Test Method", null, c.E1.Id);
 			var todo = await TodoAccessor.CreateTodo(c.E1, todoC);
 			//bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
             TodosController cnt = new TodosController();
@@ -132,7 +132,7 @@ namespace TractionTools.Tests.API.v0 {
 			//    Message = "GetUserTodo from Test Method",
 			//    TodoType = TodoType.Personal
 			//};
-			var todoC = TodoCreation.CreatePersonalTodo("GetUserTodo from Test Method", null, c.E1.Id);
+			var todoC = TodoCreation.GeneratePersonalTodo("GetUserTodo from Test Method", null, c.E1.Id);
 			var todo = await TodoAccessor.CreateTodo(c.E1, todoC);
 			//bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
             TodosController cnt = new TodosController();
@@ -157,7 +157,7 @@ namespace TractionTools.Tests.API.v0 {
             //    TodoType = TodoType.Personal
             //};
 
-			var todoC = TodoCreation.CreatePersonalTodo("Todo message for Test Method.", null, c.E1.Id, new DateTime(2017, 04, 03));
+			var todoC = TodoCreation.GeneratePersonalTodo("Todo message for Test Method.", null, c.E1.Id, new DateTime(2017, 04, 03));
 			var todo = await TodoAccessor.CreateTodo(c.E1, todoC);
 			//bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
 

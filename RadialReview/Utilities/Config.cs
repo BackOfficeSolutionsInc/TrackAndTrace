@@ -6,6 +6,9 @@ using RadialReview.Models;
 using RadialReview.Models.Enums;
 using System.IO;
 using System.Threading;
+using System.Collections.Specialized;
+using System.Configuration;
+using NHibernate;
 
 namespace RadialReview.Utilities {
 	public class Config {
@@ -29,6 +32,10 @@ namespace RadialReview.Utilities {
 				Thread.Sleep(100);
 			}
 			File.WriteAllText(file, version);
+		}
+
+		public static bool IsTest() {
+			return GetEnv() == Env.local_test_sqlite;
 		}
 
 		public static bool RunChromeExt() {
@@ -144,7 +151,7 @@ namespace RadialReview.Utilities {
 				case Env.local_test_sqlite:
 					break;
 				case Env.production:
-					return System.Configuration.ConfigurationManager.ConnectionStrings["ProductionHangfireConnection"].ConnectionString;					
+					return System.Configuration.ConfigurationManager.ConnectionStrings["ProductionHangfireConnection"].ConnectionString;
 				default:
 					break;
 			}
@@ -293,6 +300,7 @@ namespace RadialReview.Utilities {
 							while (!File.Exists(file)) {
 								Thread.Sleep(100);
 							}
+							Thread.Sleep(100);
 						}
 						if (version == File.ReadAllText(file))
 							return false;
@@ -469,12 +477,35 @@ namespace RadialReview.Utilities {
 		}
 
 		public static Env GetEnv() {
-
 			Env result;
-			if (Enum.TryParse(GetAppSetting("Env").ToLower(), out result)) {
+			var env = GetAppSetting("Env");
+			if (env != null && Enum.TryParse(env.ToLower(), out result)) {
 				return result;
 			}
-			throw new Exception("Invalid Environment");
+			return Env.local_mysql;
+			//throw new Exception("Invalid Environment");
+		}
+
+
+		public static bool IsDefinitelyAlpha() {
+			return GetVersion() == ApplicationVersion.alpha;
+		}
+
+		public static bool IsHangfireWorker() {
+			if (Config.IsLocal())
+				return true;
+			return GetAppSetting("IsHangfireWorker", "false").ToBooleanJS();
+		}
+
+		public static string GetAwsEnv() {
+			return GetAppSetting("AwsEnv", "na");
+		}
+
+		public static ApplicationVersion GetVersion() {
+			ApplicationVersion version = ApplicationVersion.invalid;
+			if (Enum.TryParse(GetAppSetting("ApplicationVersion", "" + ApplicationVersion.invalid).ToLower(), out version)) {
+			}
+			return version;
 		}
 
 		public static string GetSecret() {
@@ -654,6 +685,14 @@ namespace RadialReview.Utilities {
 			return server;
 		}
 
+		public static long GetTractionToolsOrgId() {
+			return 1634;
+		}
+
+		public static long[] GetDisallowedOrgIds(ISession s) {
+			return new[] { GetTractionToolsOrgId(), 1795 /*EOSWW*/};
+		}
+
 		internal static string NoteApiKey() {
 			return GetAppSetting("NotesServer_ApiKey");
 		}
@@ -682,7 +721,7 @@ namespace RadialReview.Utilities {
 			public string ChannelName { get; set; }
 		}
 
-		public static RedisConfig Redis(string channel) {
+		public static RedisConfig RedisSignalR(string channel) {
 			string server;
 			switch (GetEnv()) {
 				case Env.local_mysql:
@@ -707,15 +746,34 @@ namespace RadialReview.Utilities {
 				Password = GetAppSetting("RedisSignalR_Password", null),
 				Port = GetAppSetting("RedisSignalR_Port", "6379").ToInt()
 			};
-			/*
-            switch (GetEnv())
-            {
-                case Env.local_mysql: return GetAppSetting("RedisSignalR-server",null);
-                case Env.local_sqlite: return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
-                case Env.production: return @"C:\inetpub\logs\LogFiles\W3SVC1\";
-                default: throw new ArgumentOutOfRangeException();
-            }*/
 		}
+
+		//public static RedisConfig RedisHangfire(string channel) {
+		//	string server;
+		//	switch (GetEnv()) {
+		//		case Env.local_mysql:
+		//			server = "127.0.0.1";
+		//			break;
+		//		case Env.local_sqlite:
+		//			server = "127.0.0.1";
+		//			break;
+		//		case Env.production:
+		//			server = GetAppSetting("RedisSignalR_Server", null);
+		//			break;
+		//		case Env.local_test_sqlite:
+		//			server = "127.0.0.1";
+		//			break;
+		//		default:
+		//			throw new ArgumentOutOfRangeException();
+		//	}
+
+		//	return new RedisConfig() {
+		//		Server = server,
+		//		ChannelName = channel,
+		//		Password = GetAppSetting("RedisSignalR_Password", null),
+		//		Port = GetAppSetting("RedisSignalR_Port", "6379").ToInt()
+		//	};
+		//}
 
 		public class TwilioData {
 			public string Sid { get; set; }
@@ -729,7 +787,18 @@ namespace RadialReview.Utilities {
 				AuthToken = Config.GetAppSetting("TwilioToken"),
 				ShouldSendText = !Config.IsLocal()
 			};
-
 		}
-	}
+
+		public class AsanaData {
+			public string ClientId { get; set; }
+			public string ClientSecret { get; set; }
+		}
+		public static AsanaData Asana() {
+			return new AsanaData() {
+				ClientId = Config.GetAppSetting("Asana_ClientId"),
+				ClientSecret = Config.GetAppSetting("Asana_ClientSecret"),
+			};
+		}
+
+    }
 }

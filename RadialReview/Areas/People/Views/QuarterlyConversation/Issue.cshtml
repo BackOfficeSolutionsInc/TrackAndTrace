@@ -384,7 +384,7 @@
 		$("body").on("click",".select-btn",function(){
 			var btn = $(this);
 			var all = btn.data("select")=="all";
-			$("#qc-issue table tr input[type='checkbox']").each(function(){
+			$("#qc-issue table tr input[type='checkbox']:not(.always-on)").each(function(){
 				$(this).prop('checked', all);
 			});
 		});
@@ -485,7 +485,7 @@
 				contents:function(x) {return "<span class='team-block team-color-"+teamColors[x.TeamId]+"'></span>";},
 				classes:function(x){return x.Hidden?"hidden":" nowrap team-block-cell";}
 			},{
-				contents:function(x){ return "&nbsp;<input type='checkbox' checked name='selected' value ='"+x.Id+"'/>"; },
+				contents:function(x){ return "&nbsp;<input type='checkbox' checked name='selected' value ='"+x.Id+"' class='"+(x.Hidden?"always-on":"")+"'/>"; },
 				classes:function(x){return x.Hidden?"hidden":" nowrap";}
 			},{
 				//name: "Add to Quarterly Conversation",

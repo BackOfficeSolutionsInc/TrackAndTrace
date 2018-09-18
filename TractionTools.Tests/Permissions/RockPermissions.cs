@@ -24,7 +24,7 @@ namespace TractionTools.Tests.Permissions {
 		public async Task ViewRock() {
 			var c = await Ctx.Build();
 			
-			var l10= await L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+			var l10= await L10Accessor.CreateBlankRecurrence(c.Manager, c.Id, false);
 
 			//var rock = new RockModel() {
 			//	ForUserId = c.Middle.Id,
@@ -44,7 +44,7 @@ namespace TractionTools.Tests.Permissions {
 		[TestCategory("Permissions")]
 		public async Task EditRock() {
 			var c = await Ctx.Build();
-			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id, false);
 			//var rock = new RockModel() {
 			//	ForUserId = c.E5.Id,
 			//	OrganizationId = c.Id,

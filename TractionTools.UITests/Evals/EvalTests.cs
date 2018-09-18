@@ -43,7 +43,7 @@ namespace TractionTools.UITests.Evals {
 
 			//Not visible for employee
 			TestView(await org.GetCredentials(org.Employee), "/", d => {
-				d.DefaultTimeout(TimeSpan.FromSeconds(2));
+				d.DefaultTimeout(TimeSpan.FromSeconds(4));
 				d.Find("#header-tab-reviews").Click();
 				d.NotFind("#issue-eval-btn");
 			});

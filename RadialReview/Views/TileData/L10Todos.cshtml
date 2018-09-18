@@ -1,9 +1,9 @@
 ﻿@model long
-    @{ 
-        string filter = null;
-        filter = "| filter:filters.byRange('CompleteTime', model.dataDateRange.todoStart,model.dataDateRange.todoEnd)";
+@{ 
+    string filter = null;
+    filter = "| filter:filters.byRange('CompleteTime', model.dataDateRange.todoStart,model.dataDateRange.todoEnd)";
       
-    }
+}
 <div class="review smallBreak2 loading tiny " style2="min-height:30px;">
     <div class="todo-heading heading" style="@(ViewBag.HeadingStyle)" data-style="@(ViewBag.HeadingStyle)">
         <span class="clickable pull-right new hidden-width-1" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence/"+Model, "/Todo/CreateTodoRecurrence")">Create New <span class='glyphicon glyphicon-unchecked'></span></span>

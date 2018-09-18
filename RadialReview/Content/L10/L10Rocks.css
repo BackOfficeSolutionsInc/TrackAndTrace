@@ -51,15 +51,17 @@
 .company-rock-container td.picture {
   width: 42px;
 }
+.rocks-container {
+  /*tr:first-child {
+		border-bottom: 1px solid #f0f0f0;
+	}*/
+}
 .rocks-container .picture-container {
   width: 30px;
   height: 30px;
   border: 1px solid #DDD;
   padding: 1px;
   margin: 0px 6px;
-}
-.rocks-container tr:first-child {
-  border-bottom: 1px solid #f0f0f0;
 }
 .rocks-container tr:not(:last-child) td {
   border-bottom: 1px solid #f0f0f0;
@@ -85,11 +87,12 @@
   min-width: 46px;
   padding: 6px;
   vertical-align: top;
-  padding-top: 3px;
+  padding-top: 5px;
 }
 .rocks-container .rock-state-holder {
   vertical-align: top;
   line-height: 0.5;
+  padding: 2px;
 }
 .rocks-container .component {
   margin-bottom: 12px;

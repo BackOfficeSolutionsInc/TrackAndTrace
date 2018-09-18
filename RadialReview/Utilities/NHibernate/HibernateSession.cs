@@ -53,6 +53,7 @@ using NHibernate.Impl;
 using System.Linq.Expressions;
 using log4net;
 using Mapping = NHibernate.Mapping;
+using RadialReview.Utilities.Constants;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -149,13 +150,13 @@ namespace RadialReview.Utilities {
 		}
 
 		public static ISessionFactory GetDatabaseSessionFactory(Env? environmentOverride_testOnly = null) {
-			lock (lck) {
-				Configuration c;
-				var env = environmentOverride_testOnly ?? CurrentEnv ?? Config.GetEnv();
-				CurrentEnv = env;
-				//if (factories == null)
-				//	factories = new Dictionary<Env, ISessionFactory>();
-				if (!factories.ContainsKey(env)) {
+			Configuration c;
+			var env = environmentOverride_testOnly ?? CurrentEnv ?? Config.GetEnv();
+			CurrentEnv = env;
+			//if (factories == null)
+			//	factories = new Dictionary<Env, ISessionFactory>();
+			if (!factories.ContainsKey(env)) {
+				lock (lck) {
 					ChromeExtensionComms.SendCommand("dbStart");
 					var config = System.Configuration.ConfigurationManager.AppSettings;
 					var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
@@ -194,7 +195,7 @@ namespace RadialReview.Utilities {
 									c.SetInterceptor(new NHSQLInterceptor());
 									//SetupAudit(c);
 									factories[env] = Fluently.Configure(c).Database(
-												MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
+												MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString)/*.ShowSql()*/)
 									   .Mappings(m => {
 										   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
 											   .Conventions.Add<StringColumnLengthConvention>();
@@ -218,10 +219,14 @@ namespace RadialReview.Utilities {
 								break;
 							}
 						case Env.production: {
+								//var connectionString = connectionStrings["DefaultConnectionProduction"].ConnectionString;
+								var dbCred = KeyManager.ProductionDatabaseCredentials;
+								var connectionString = string.Format("Server={2};Port={3};Database={4};Uid={0};Pwd={1};", dbCred.Username, dbCred.Password,dbCred.Host,dbCred.Port,dbCred.Database);
+
 								c = new Configuration();
 								//SetupAudit(c);
 								factories[env] = Fluently.Configure(c).Database(
-											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
+											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionString).ShowSql())
 								   .Mappings(m => {
 									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
 										   .Conventions.Add<StringColumnLengthConvention>();
@@ -251,24 +256,32 @@ namespace RadialReview.Utilities {
 								AppDomain.CurrentDomain.SetData("DataDirectory", Path);
 								var connectionString = "Data Source=|DataDirectory|\\_testdb.db";
 								var forceDbCreate = false;
-								if (Config.GetAppSetting("local_test_sqlite_memory", "false").ToBooleanJS()) {
-									connectionString = "FullUri=file:memorydb.db?mode=memory&cache=shared";
-									forceDbCreate = true;
-								}//"FullUri=file:memorydb.db?mode=memory&cache=shared";//"Data Source=:memory:;Version=3;cache=shared;";
+								var useSqliteInMemory = Config.GetAppSetting("local_test_sqlite_memory", "false").ToBooleanJS();
+								var useMysqlTest = Config.GetAppSetting("use_local_test_mysql", "false").ToBooleanJS();
 
-								//var connectionString = "Data Source =" + Path;
+
+								IPersistenceConfigurer dbConfig;
+								if (useMysqlTest && useSqliteInMemory) {
+									throw new Exception("Multiple database types selected. Choose either mysql test or sqliteInMemory");
+								} else if (useSqliteInMemory) {
+									connectionString = "FullUri=file:memorydb.db?mode=memory&cache=shared;PRAGMA journal_mode=WAL;";
+									forceDbCreate = true;
+									dbConfig = SQLiteConfiguration.Standard.ConnectionString(connectionString).IsolationLevel(System.Data.IsolationLevel.ReadCommitted);
+								} else if (useMysqlTest) {
+									connectionString = "Server=localhost; Port=3306; Database=radial-test; Uid=root; Pwd=; SslMode=none;";
+									forceDbCreate = false;
+									dbConfig = MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionString);
+								} else {
+									dbConfig = SQLiteConfiguration.Standard.ConnectionString(connectionString).IsolationLevel(System.Data.IsolationLevel.ReadCommitted);
+								}
+
 								try {
 									c = new Configuration();
 									c.SetInterceptor(new NHSQLInterceptor());
-									//SetupAudit(c);
-									factories[env] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString).IsolationLevel(System.Data.IsolationLevel.ReadCommitted))
+									factories[env] = Fluently.Configure(c).Database(dbConfig)
 									.Mappings(m => {
 										m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
 										   .Conventions.Add<StringColumnLengthConvention>();
-										// m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite\");
-										//m.AutoMappings.Add(CreateAutomappings);
-										//m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-
 									})
 									.CurrentSessionContext("web")
 								   .ExposeConfiguration(SetupAudit)
@@ -278,49 +291,16 @@ namespace RadialReview.Utilities {
 									throw e;
 								}
 								break;
-								//								try
-								//								{
-								//									var c = new Configuration();
-								//									c.SetProperty("connection.release_mode", "on_close")
-								//									.SetProperty("dialect", typeof(SQLiteDialect).AssemblyQualifiedName)
-								//									.SetProperty("connection.driver_class", typeof(SQLite20Driver).AssemblyQualifiedName)
-								//									;//.SetProperty("connection.connection_string", "data source=:memory:")
-								////									;//.SetProperty(Environment.ProxyFactoryFactoryClass, typeof(ProxyFactoryFactory).AssemblyQualifiedName);
-
-								//									//c.SetInterceptor(new NHSQLInterceptor());
-								//									factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString("Data Source=:memory:;Version=3;New=True;"))
-								//									.Mappings(m =>
-								//									{
-								//										m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-								//										   .Conventions.Add<StringColumnLengthConvention>();
-								//										m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite");
-								//										//m.AutoMappings.Add(CreateAutomappings);
-								//										//m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-
-								//									})
-								//								   .ExposeConfiguration(SetupAudit)
-								//								   .ExposeConfiguration(BuildSchema)
-								//								   .BuildSessionFactory();
-								//								}catch (Exception e){
-								//									throw e;
-								//								}
 							}
-						/*case "connectionString":
-							{
-								factory = Fluently.Configure().
-							}*/
 						default:
 							throw new Exception("No database type");
 					}
-
 					Names = new RuntimeNames(c);
-
 					ChromeExtensionComms.SendCommand("dbComplete");
-
 				}
-				return factories[env];
-				// DataCollection.MarkProfile(1);
 			}
+			return factories[env];
+
 		}
 
 
@@ -353,7 +333,7 @@ namespace RadialReview.Utilities {
 			return null;
 		}
 
-		public static async Task RunAfterSuccessfulDisposeOrNow(ISession waitUntilFinished,Func<ISession, ITransaction, Task> method) {
+		public static async Task RunAfterSuccessfulDisposeOrNow(ISession waitUntilFinished, Func<ISession, ITransaction, Task> method) {
 			var s = (waitUntilFinished as SingleRequestSession) ?? GetExistingSingleRequestSession();
 			if (s is SingleRequestSession) {
 				s.RunAfterDispose(new SingleRequestSession.OnDisposedModel(method, true));
@@ -585,7 +565,7 @@ namespace RadialReview.Utilities {
 				case Config.DbType.Sqlite:
 					var db = s.CreateSQLQuery("select CURRENT_TIMESTAMP;").List()[0];
 					if (db is DateTime)
-						return (DateTime)db ;
+						return (DateTime)db;
 					return DateTime.ParseExact((string)db, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-us"));
 				default:
 					throw new NotImplementedException("Db type unknown");

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Utilities;
+using RadialReview.Accessors.PDF;
 
 namespace RadialReview.Controllers
 {
@@ -25,7 +26,7 @@ namespace RadialReview.Controllers
 			var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 
 			var acceptedReviews = new List<ReviewModel>();
-		    var managesTeam = new PermissionsAccessor().IsPermitted(GetUser(), x => x.ManagingTeam(reviewContainer.ForTeamId));
+		    var managesTeam = PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagingTeam(reviewContainer.ForTeamId));
 			foreach (var r in reviewContainer.Reviews)
 			{
 				var add = false;
@@ -54,7 +55,7 @@ namespace RadialReview.Controllers
 
 			
 
-			var viewSurvey = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.OrganizationId)
+			var viewSurvey = PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.OrganizationId)
 				.Or(
 					y => y.AdminReviewContainer(reviewContainerId),
 					y => y.ManagingTeam(reviewContainer.ForTeamId)
@@ -151,8 +152,9 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult PeopleAnalyzer(long id) {
 
+			var settings = new PdfSettings(GetUser().Organization.Settings);
 			var pad = FastReviewQueries.PeopleAnalyzerData(GetUser(), id);
-			var pdf =PdfAccessor.GeneratePeopleAnalyzer(GetUser(), pad);
+			var pdf =PdfAccessor.GeneratePeopleAnalyzer(GetUser(), pad,settings);
 
 			return Pdf(pdf);
 		}

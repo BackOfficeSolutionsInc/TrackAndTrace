@@ -196,7 +196,7 @@
   content: "MOVED";
   position: absolute;
   font-weight: bold;
-  left: 40px;
+  left: 4px;
   width: 60px;
   height: 14px;
   background-color: rgba(239, 118, 34, 0.5);
@@ -226,6 +226,7 @@
 .ids [data-awaitingsolve='true'] .issuesModal_move,
 .ids [data-awaitingsolve='True'] .issuesModal_move {
   pointer-events: none !important;
+  display: none;
 }
 .sortable {
   margin: 0 0 9px 0;
@@ -333,6 +334,7 @@ ol.sortable li {
   margin-top: 0px;
   transition: box-shadow 0.25s ease;
   border-radius: 18px;
+  position: relative;
 }
 .issues-list > .issue-row.selected {
   border: 1px solid #A5ACB8;
@@ -807,7 +809,7 @@ body.dragging * {
 }
 @media (max-width: 1301px) {
   .ids .l10-page-title small {
-    font-size: 14px;
+    font-size: 13px;
   }
 }
 @media (max-width: 1201px) {

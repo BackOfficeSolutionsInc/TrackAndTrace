@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Amazon.IdentityManagement.Model;
+
 using Mandrill;
 using RadialReview.Models;
 using RadialReview.Models.UserModels;

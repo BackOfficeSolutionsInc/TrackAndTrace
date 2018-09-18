@@ -1,15 +1,12 @@
 ﻿using System.Web.UI.WebControls.Expressions;
-using Amazon.DynamoDBv2;
 using RadialReview.Exceptions;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using RadialReview.Utilities.DataTypes;
-using System.Collections;
 using static RadialReview.EnumerableExtensions;
 using RadialReview.AliveExtensions;
 
@@ -29,7 +26,7 @@ namespace RadialReview {
             return Wrapped.GetEnumerator();
         }
     }
-   
+
 
     public static class EnumerableExtensions {
 
@@ -38,6 +35,14 @@ namespace RadialReview {
                         .GroupBy(x => x.inx / maxItems)
                         .Select(g => g.Select(x => x.item));
         }
+
+        public static double Variance<T>(this IEnumerable<T> items, Func<T, double> selector) {
+            var values = items.Select(selector);
+            double avg = values.Average();
+            return values.Average(v => (v - avg) * (v - avg));
+        }
+
+
         public static double? Median<TColl, TValue>(this IEnumerable<TColl> source, Func<TColl, TValue> selector) {
             return source.Select(selector).Median();
         }
@@ -58,13 +63,15 @@ namespace RadialReview {
                 return Convert.ToDouble(source.ElementAt(midpoint));
         }
 
-		public static DefaultDictionary<TKey, TVal> ToDefaultDictionary<TSource,TKey,TVal>(this IEnumerable<TSource> items,Func<TSource,TKey> keySelector,Func<TSource,TVal> valueSelector, Func<TKey,TVal> defaultVal) {
-			var dict = new DefaultDictionary<TKey, TVal>(defaultVal);
-			foreach (var i in items) {
-				dict[keySelector(i)] = valueSelector(i);
-			}
-			return dict;
-		}
+        public static DefaultDictionary<TKey, TVal> ToDefaultDictionary<TSource, TKey, TVal>(this IEnumerable<TSource> items, Func<TSource, TKey> keySelector, Func<TSource, TVal> valueSelector, Func<TKey, TVal> defaultVal = null) {
+            defaultVal = defaultVal ?? (x => default(TVal));
+            var dict = new DefaultDictionary<TKey, TVal>(defaultVal);
+            foreach (var i in items) {
+                dict[keySelector(i)] = valueSelector(i);
+            }
+            return dict;
+        }
+
 
 
         public static ILazyCollection ToLazyCollection<T>(this IEnumerable<T> self) {
@@ -117,19 +124,19 @@ namespace RadialReview {
         }
         public static IEnumerable<TResult> SelectAlive<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector) where TSource : IDeletable {
             return source.Alive().Select(selector);
-		}
+        }
 
-		public static IEnumerable<T> Alive<T>(this IEnumerable<T> source) {
-			if (source == null)
-				return null;
+        public static IEnumerable<T> Alive<T>(this IEnumerable<T> source) {
+            if (source == null)
+                return null;
 
-			/*if (source is AliveEnumerable<T>)
+            /*if (source is AliveEnumerable<T>)
                 return source;*/
-			return source.Where(x => x.Alive());
-			//return new AliveEnumerable<T>(source.Where(x => x.Alive()));
-		}
+            return source.Where(x => x.Alive());
+            //return new AliveEnumerable<T>(source.Where(x => x.Alive()));
+        }
 
-		public static List<TSource> ToListAlive<TSource>(this IEnumerable<TSource> source) where TSource : IDeletable {
+        public static List<TSource> ToListAlive<TSource>(this IEnumerable<TSource> source) where TSource : IDeletable {
             return source.Alive().ToList();
         }
 
@@ -240,16 +247,17 @@ namespace RadialReview {
             }
         }
 
-        public static IEnumerable<OUT> SelectNoException<IN,OUT>(this IEnumerable<IN> self,Func<IN,OUT> lambda) {
+        public static IEnumerable<OUT> SelectNoException<IN, OUT>(this IEnumerable<IN> self, Func<IN, OUT> lambda) {
             return self.SelectMany(x => {
                 try {
                     return lambda(x).AsList();
-                }catch(Exception e) {
+                } catch (Exception e) {
                     //Eat it..
                 }
                 return new List<OUT>();
             });
         }
+
 
         /*public static Boolean Contains<T>(this IEnumerable<T> enumerable, Func<T, Boolean> contains)
         {

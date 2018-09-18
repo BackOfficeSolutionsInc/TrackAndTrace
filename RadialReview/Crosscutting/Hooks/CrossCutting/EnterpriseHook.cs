@@ -30,11 +30,12 @@ namespace RadialReview.Hooks {
 		public async Task CreateUserOrganization(ISession s, UserOrganizationModel user) {
 			var calcOrg = UserCount(s, user);
 			//Is null when autocalculate is off
+			
 			if (calcOrg != null) {
 				var calc = calcOrg.Item1;
 				var org = calcOrg.Item2;
 				if (calc.NumberL10Users >= EnterpriseGreaterThanUsers + 1) {
-					calc.Plan.BaselinePrice = 500.0m;
+					calc.Plan.BaselinePrice = 499m;
 					calc.Plan.FirstN_Users_Free = 45;
 					calc.Plan.L10PricePerPerson = 2m;
 					org.PaymentPlan = calc.Plan;
@@ -50,6 +51,7 @@ namespace RadialReview.Hooks {
 		public async Task DeleteUser(ISession s, UserOrganizationModel user) {
 			var calcOrg = UserCount(s, user);
 			//Is null when autocalculate is off
+			
 			if (calcOrg != null) {
 				var calc = calcOrg.Item1;
 				var org = calcOrg.Item2;

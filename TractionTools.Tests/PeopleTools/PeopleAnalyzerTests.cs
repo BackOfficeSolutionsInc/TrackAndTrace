@@ -10,6 +10,7 @@ using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Accessors;
 using RadialReview.Models.L10;
 using RadialReview.Exceptions;
+using RadialReview.Utilities.DataTypes;
 
 namespace TractionTools.Tests.PeopleTools {
 	[TestClass]
@@ -19,7 +20,8 @@ namespace TractionTools.Tests.PeopleTools {
 		private static async Task<long> GenQCAsync(string name, UserOrganizationModel user) {
 			var abouts = QuarterlyConversationAccessor.AvailableAboutsForMe(user);
 			var byAbouts = QuarterlyConversationAccessor.AvailableByAboutsFiltered(user, abouts, true, true);
-			var id= await QuarterlyConversationAccessor.GenerateQuarterlyConversation(user.Id, name, byAbouts, null, DateTime.UtcNow.AddDays(1), false);
+			var range = new DateRange(DateTime.UtcNow.AddDays(-90),DateTime.UtcNow.AddDays(1));
+			var id= await QuarterlyConversationAccessor.GenerateQuarterlyConversation(user.Id, name, byAbouts, range, DateTime.UtcNow.AddDays(1), false);
 			await AddResponses(id, user);
 			return id;
 		}

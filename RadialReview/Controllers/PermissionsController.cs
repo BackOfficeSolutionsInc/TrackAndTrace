@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Amazon.ElasticTranscoder.Model;
+
 using FluentNHibernate.Utils;
 using RadialReview.Accessors;
 using RadialReview.Models.Json;
@@ -40,7 +40,7 @@ namespace RadialReview.Controllers {
 
 				var rgm = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), num.Value);
 
-				var isAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(type, resource));
+				var isAdmin = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(type, resource));
 
 				ViewBag.CanEdit_View = isAdmin;
 				ViewBag.CanEdit_Edit = isAdmin;
@@ -62,7 +62,7 @@ namespace RadialReview.Controllers {
 				return PartialView("PermItemRow", vm);
 			} else if (q != null && Emailer.IsValid(q)) {
 				var tp = PermTiny.Email(q);
-				var isAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(type, resource));
+				var isAdmin = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(type, resource));
 
 				ViewBag.CanEdit_View = isAdmin;
 				ViewBag.CanEdit_Edit = isAdmin;

@@ -62,7 +62,7 @@
 	}
 
 	function _setChart(o) {
-		debugger;
+		//debugger;
 		_conditionOptions(o);
 		MG.data_graphic(o);
 		chart._options = o;

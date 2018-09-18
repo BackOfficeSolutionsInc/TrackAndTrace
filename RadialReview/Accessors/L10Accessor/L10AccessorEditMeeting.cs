@@ -1,74 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Helpers;
-using Amazon.EC2.Model;
-using Amazon.ElasticMapReduce.Model;
-using FluentNHibernate.Conventions;
-using ImageResizer.Configuration.Issues;
-using MathNet.Numerics;
 using Microsoft.AspNet.SignalR;
-using NHibernate.Criterion;
-using NHibernate.Linq;
-using NHibernate.Transform;
-using RadialReview.Accessors.TodoIntegrations;
-using RadialReview.Controllers;
 using RadialReview.Exceptions;
-using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
-using RadialReview.Models.Angular.Issues;
 using RadialReview.Models.Angular.Meeting;
-using RadialReview.Models.Angular.Scorecard;
-using RadialReview.Models.Angular.Todos;
-using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
-using RadialReview.Models.Audit;
-using RadialReview.Models.Components;
-using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
-using RadialReview.Models.L10.AV;
-using RadialReview.Models.L10.VM;
-using RadialReview.Models.Permissions;
-using RadialReview.Models.Scheduler;
 using RadialReview.Models.Scorecard;
-using RadialReview.Models.Todo;
-using RadialReview.Models.ViewModels;
-using RadialReview.Properties;
 using RadialReview.Utilities;
-using NHibernate;
-using RadialReview.Utilities.DataTypes;
-using RadialReview.Utilities.Synchronize;
 //using ListExtensions = WebGrease.Css.Extensions.ListExtensions;
-using RadialReview.Models.Enums;
-using RadialReview.Models.Angular.Users;
-using RadialReview.Models.Angular.Base;
 //using System.Web.WebPages.Html;
 using RadialReview.Models.VTO;
-using RadialReview.Models.Angular.VTO;
-using RadialReview.Utilities.RealTime;
-using RadialReview.Models.Periods;
-using RadialReview.Models.Interfaces;
-using System.Dynamic;
-using Newtonsoft.Json;
-using RadialReview.Models.Angular.Headlines;
-using RadialReview.Models.VideoConference;
-using System.Linq.Expressions;
-using NHibernate.SqlCommand;
-using RadialReview.Models.Rocks;
-using RadialReview.Models.Angular.Rocks;
-using System.Web.Mvc;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using static RadialReview.Utilities.EventUtil;
-using Twilio;
-using Twilio.Types;
-using Twilio.Rest.Api.V2010.Account;
-using RadialReview.Accessors;
-using RadialReview.Models.UserModels;
 
 namespace RadialReview.Accessors {
 	public partial class L10Accessor : BaseAccessor {
@@ -99,7 +46,11 @@ namespace RadialReview.Accessors {
                         //SetUtility.AddRemove(old.DefaultAttendees,l10Recurrence.DefaultAttendees,x=>x.)
                     }*/
 					var oldRecur = s.Get<L10Recurrence>(l10Recurrence.Id);
-					_LoadRecurrences(s, false, false, false, false, oldRecur);
+					_LoadRecurrences(s, new LoadMeeting() {
+                        LoadMeasurables = true,
+                        LoadRocks = true,
+                        LoadUsers  = true,                        
+                    }, oldRecur);
 
 					var oldMeeting = _GetCurrentL10Meeting(s, perm, l10Recurrence.Id, true, true);
 					SetUtility.AddedRemoved<MeasurableModel> updateMeasurables = null;
@@ -170,6 +121,8 @@ namespace RadialReview.Accessors {
 					s.UpdateList(oldRecur.NotNull(x => x._DefaultMeasurables.Where(y => !y.IsDivider)), l10Recurrence._DefaultMeasurables, now);
 					s.UpdateList(oldRecur.NotNull(x => x._DefaultRocks), l10Recurrence._DefaultRocks, now);
 
+
+					l10Recurrence.CreateTime = oldRecur.CreateTime;
 
 					/////////////
 					//Update rocks on the VTO also
@@ -316,13 +269,14 @@ namespace RadialReview.Accessors {
 			}
 
 		}
-		public static void UpdatePage(UserOrganizationModel caller, long forUserId, long recurrenceId, string pageName, string connection) {
+		public static string UpdatePage(UserOrganizationModel caller, long forUserId, long recurrenceId, string pageName, string connection) {
+			string pageType = null;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					var meeting = _GetCurrentL10Meeting(s, perms, recurrenceId, true, false, true);
 					if (meeting == null)
-						return;
+						return pageType;
 					//if (caller.Id != meeting.MeetingLeader.Id)	return;
 
 
@@ -397,12 +351,14 @@ namespace RadialReview.Accessors {
 
 					long pageId;
 					var friendlyPageName = p;
+					pageType = p;
 					if (long.TryParse(pageName.SubstringAfter("-"), out pageId)) {
 						try {
 #pragma warning disable CS0618 // Type or member is obsolete
 							var l10Page = GetPage(s, perms, pageId);
 #pragma warning restore CS0618 // Type or member is obsolete
 							friendlyPageName = l10Page.Title;
+							pageType = l10Page.PageTypeStr;
 						} catch (Exception) {
 
 						}
@@ -411,6 +367,7 @@ namespace RadialReview.Accessors {
 					Audit.L10Log(s, caller, recurrenceId, "UpdatePage", ForModel.Create(meeting), friendlyPageName);
 					tx.Commit();
 					s.Flush();
+					return pageType;
 				}
 			}
 		}

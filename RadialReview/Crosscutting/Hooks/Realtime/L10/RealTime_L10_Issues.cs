@@ -81,8 +81,13 @@ namespace RadialReview.Hooks.Realtime.L10 {
             if (updates.PriorityChanged)
                 group.updateIssuePriority(issueRecurrenceId, issueRecurrence.Priority);
 
-            if (updates.RankChanged)
-                group.updateIssueRank(issueRecurrenceId, issueRecurrence.Rank, true);
+			if (updates.RankChanged) {
+				group.updateIssueRank(issueRecurrenceId, issueRecurrence.Rank, true);
+
+				if (issueRecurrence.Rank == 3) {
+					//group.floatTopThreeIssues(issueRecurrence.Id);
+				}
+			}
 
             if (updates.CompletionChanged) {
                 var added = issueRecurrence.CloseTime == null;

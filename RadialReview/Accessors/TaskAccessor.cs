@@ -1,11 +1,16 @@
-﻿using NHibernate;
+﻿using Hangfire;
+using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Linq;
 using RadialReview.Controllers;
 using RadialReview.Exceptions;
+using RadialReview.Hangfire;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Payments;
+using RadialReview.Models.Periods;
 using RadialReview.Models.Prereview;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Tasks;
@@ -14,6 +19,7 @@ using RadialReview.Models.UserModels;
 using RadialReview.Properties;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Utilities.Hooks;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
@@ -54,39 +60,154 @@ namespace RadialReview.Accessors {
 
 			public List<ScheduledTask> NewTasks { get; set; }
 		}
-		public static async Task<List<ExecutionResult>> ExecuteTasks(DateTime? now = null) {
-			var nowV = now ?? DateTime.UtcNow;
-			var tasks = GetTasksToExecute(nowV,true);
+
+        [Queue(HangfireQueues.Immediate.DAILY_TASKS)]
+        [AutomaticRetry(Attempts = 0)]
+        public static async Task<bool> DailyTask(DateTime now) {
+            var any = false;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var orgs = s.QueryOver<OrganizationModel>().Where(x => x.DeleteTime == null).List().ToList();
+
+                    var tomorrow = DateTime.UtcNow.Date.AddDays(7);
+                    foreach (var o in orgs) {
+                        var o1 = o;
+                        var period = s.QueryOver<PeriodModel>().Where(x => x.OrganizationId == o1.Id && x.DeleteTime == null && x.StartTime <= tomorrow && tomorrow < x.EndTime).List().ToList();
+
+                        if (!period.Any()) {
+
+                            var startOfYear = (int)o.Settings.StartOfYearMonth;
+
+                            if (startOfYear == 0)
+                                startOfYear = 1;
+
+                            var start = new DateTime(tomorrow.Year - 2, startOfYear, 1);
+
+                            //var curM = (int)o.Settings.StartOfYearMonth;
+                            //var curY = tomorrow.Year;
+                            //var last = 
+                            var quarter = 0;
+                            var prev = start;
+                            while (true) {
+                                start = start.AddMonths(3);
+                                quarter += 1;
+                                var tick = start.AddDateOffset(o.Settings.StartOfYearOffset);
+                                if (tick > tomorrow) {
+                                    break;
+                                }
+                                prev = start;
+                            }
+
+                            var p = new PeriodModel() {
+                                StartTime = prev.AddDateOffset(o.Settings.StartOfYearOffset),
+                                EndTime = start.AddDateOffset(o.Settings.StartOfYearOffset).AddDays(-1),
+                                Name = prev.AddDateOffset(o.Settings.StartOfYearOffset).Year + " Q" + (((quarter + 3) % 4) + 1),// +3 same as -1
+                                Organization = o,
+                                OrganizationId = o.Id,
+                            };
+
+                            s.Save(p);
+                            any = true;
+                        }
+                    }
+
+
+                    #region Cleanup Sync model
+                    try {
+                        {
+                            var syncTable = "Sync";
+                            s.CreateSQLQuery("delete from " + syncTable + " where CreateTime < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
+                             .ExecuteUpdate();
+                        }
+                        {
+                            DeleteOldSyncLocks(s);
+                        }
+                    } catch (Exception e) {
+                        log.Error(e);
+                    }
+                    #endregion
+
+                    await EventUtil.GenerateAllDailyEvents(s, DateTime.UtcNow);
+
+                    await CheckCardExpirations(s);
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return any;
+        }
+
+        public static void DeleteOldSyncLocks(ISession s) {
+            var syncTable = "SyncLock";
+            s.CreateSQLQuery("delete from " + syncTable + " where LastClientUpdateTimeMs < \"" + DateTime.UtcNow.AddDays(-1).ToJavascriptMilliseconds() + "\"")
+             .ExecuteUpdate();
+        }
+
+
+        private static async Task CheckCardExpirations(ISession s) {
+            var date = DateTime.UtcNow.Date;
+            if (date == new DateTime(date.Year, date.Month, 1) || date == new DateTime(date.Year, date.Month, 15) || date == new DateTime(date.Year, date.Month, 21)) {
+                var expireMonth = date.AddMonths(1);
+                var tokens = s.QueryOver<PaymentSpringsToken>()
+                        .Where(x => x.Active && x.DeleteTime == null && x.TokenType == PaymentSpringTokenType.CreditCard && x.MonthExpire == expireMonth.Month && x.YearExpire == expireMonth.Year)
+                        .List().ToList();
+
+                var tt = tokens.GroupBy(x => x.OrganizationId).Select(x => x.OrderByDescending(y => y.CreateTime).First());
+                foreach (var t in tt)
+                    await HooksRegistry.Each<IPaymentHook>((ses, x) => x.CardExpiresSoon(ses, t));
+
+            }
+        }
+
+
+        [Queue(HangfireQueues.Immediate.EXECUTE_TASKS)]
+		[AutomaticRetry(Attempts = 0)]
+		public static async Task<List<ExecutionResult>> ExecuteTasks(DateTime now) {
+			var nowV = now;
+			var tasks = GetTasksToExecute(nowV, true);
 			return await _ExecuteTasks(tasks, nowV, d_ExecuteTaskFunc);
 		}
 
 		[Obsolete("Used only in testing")]
 		public static async Task<ExecutionResult> ExecuteTask_Test(ScheduledTask task, DateTime now) {
 
-            MarkStarted(task.AsList(), now);
-            return (await _ExecuteTasks(task.AsList(), now, d_ExecuteTaskFunc_Test)).Single();
+			MarkStarted(task.AsList(), now);
+			return (await _ExecuteTasks(task.AsList(), now, d_ExecuteTaskFunc_Test)).Single();
 		}
 		[Obsolete("Used only in testing")]
-		public static async Task<List<ExecutionResult>> ExecuteTasks_Test(List<ScheduledTask> tasks, DateTime now) { 
-            MarkStarted(tasks, now);
-            return await _ExecuteTasks(tasks, now, d_ExecuteTaskFunc_Test);
+		public static async Task<List<ExecutionResult>> ExecuteTasks_Test(List<ScheduledTask> tasks, DateTime now) {
+			MarkStarted(tasks, now);
+			return await _ExecuteTasks(tasks, now, d_ExecuteTaskFunc_Test);
 		}
-		
+
 		protected static async Task<List<ExecutionResult>> _ExecuteTasks(List<ScheduledTask> tasks, DateTime now, ExecuteTaskFunc executeTaskFunc) {
 			var toCreate = new List<ScheduledTask>();
 			var emails = new List<Mail>();
 			var res = new List<ExecutionResult>();
-			log.Info("ExecuteTasks - Starting Execute Tasks (" + tasks.Count+") " + DateTime.UtcNow);
+			log.Info("ExecuteTasks - Starting Execute Tasks (" + tasks.Count + ") " + DateTime.UtcNow);
 			try {
 				//MarkStarted(tasks, now);
-				var results = await Task.WhenAll(tasks.Select(task => {
-					try {
-						return ExecuteTask_Internal(task, now, executeTaskFunc);
-					} catch (Exception e) {
-						log.Error("ExecuteTasks - Task execution exception.", e);
-						return null;
-					}
-				}));
+				var groupedTasks = tasks
+					.Select((task, i) => new { task, i })
+					.GroupBy(x => (int)(x.i / 4))
+					.ToList();
+
+				var results = new List<TaskResult>();
+				foreach (var group in groupedTasks) {
+					var groupResults = await Task.WhenAll(
+						group.Select(a => {
+							var task = a.task;
+							try {
+								return ExecuteTask_Internal(task, now, executeTaskFunc);
+							} catch (Exception e) {
+								log.Error("ExecuteTasks - Task execution exception.", e);
+								return null;
+							}
+						})
+					);
+					results.AddRange(groupResults);
+				}
 				toCreate = results.Where(x => x != null).SelectMany(x => x.CreateTasks).ToList();
 				emails = results.Where(x => x != null).SelectMany(x => x.SendEmails).ToList();
 				res = results.Where(x => x != null).Select(x => {
@@ -113,7 +234,7 @@ namespace RadialReview.Accessors {
 
 			log.Info("ExecuteTasks - UpdateScorecard " + DateTime.UtcNow);
 			UpdateScorecard(now);
-			log.Info("ExecuteTasks - Sending (" + emails.Count+") emails " + DateTime.UtcNow);
+			log.Info("ExecuteTasks - Sending (" + emails.Count + ") emails " + DateTime.UtcNow);
 			try {
 				await Emailer.SendEmails(emails);
 			} catch (Exception e) {
@@ -123,8 +244,8 @@ namespace RadialReview.Accessors {
 			return res;
 		}
 
-		protected delegate Task<dynamic> ExecuteTaskFunc(string server, ScheduledTask task,DateTime now);
-		protected static async Task<TaskResult> ExecuteTask_Internal(ScheduledTask task,DateTime now, ExecuteTaskFunc execute) {
+		protected delegate Task<dynamic> ExecuteTaskFunc(string server, ScheduledTask task, DateTime now);
+		protected static async Task<TaskResult> ExecuteTask_Internal(ScheduledTask task, DateTime now, ExecuteTaskFunc execute) {
 			var o = new TaskResult();
 			var newTasks = o.CreateTasks;
 			var sr = o.Result;
@@ -138,9 +259,9 @@ namespace RadialReview.Accessors {
 							sr.Response = await execute(Config.BaseUrl(null), task, now);
 						} catch (WebException webEx) {
 							var response = webEx.Response as HttpWebResponse;
-							if (response != null && response.StatusCode==HttpStatusCode.NotImplemented) {
+							if (response != null && response.StatusCode == HttpStatusCode.NotImplemented) {
 								//Fallthrough Exception...
-								log.Info("Task Fallthrough [OK] (taskId:"+task.Id+") (url:"+ task.Url + ")");
+								log.Info("Task Fallthrough [OK] (taskId:" + task.Id + ") (url:" + task.Url + ")");
 							} else {
 								throw webEx;
 							}
@@ -229,20 +350,21 @@ namespace RadialReview.Accessors {
 			return o;
 		}
 		public static async Task<dynamic> d_ExecuteTaskFunc(String server, ScheduledTask task, DateTime _unused) {
-			var webClient = new WebClient();
-            var url = "";
-            if (server != null) {
-                url = (server.TrimEnd('/'))+"/";
-            }
-			url = url + task.Url.TrimStart('/');
-			if (url.Contains("?"))
-				url += "&taskId=" + task.Id;
-			else
-				url += "?taskId=" + task.Id;
-			var str = await webClient.DownloadStringTaskAsync(new Uri(url, UriKind.Absolute));
-			return str;
+			using (var webClient = new WebClient()) {
+				var url = "";
+				if (server != null) {
+					url = (server.TrimEnd('/')) + "/";
+				}
+				url = url + task.Url.TrimStart('/');
+				if (url.Contains("?"))
+					url += "&taskId=" + task.Id;
+				else
+					url += "?taskId=" + task.Id;
+				var str = await webClient.DownloadStringTaskAsync(new Uri(url, UriKind.Absolute));
+				return str;
+			}
 		}
-		protected static async Task<dynamic> d_ExecuteTaskFunc_Test(string _unused, ScheduledTask task,DateTime now) {
+		protected static async Task<dynamic> d_ExecuteTaskFunc_Test(string _unused, ScheduledTask task, DateTime now) {
 			var t = task;
 			var url = t.Url;
 			string[] parts = url.Split(new char[] { '?', '&' });
@@ -254,8 +376,11 @@ namespace RadialReview.Accessors {
 			if (path.StartsWith("/Scheduler/ChargeAccount/")) {
 				//var sc = new SchedulerController();
 				//var re = await sc.ChargeAccount(pathParts.Last().ToLong(), task.Id/*,executeTime:now.ToJavascriptMilliseconds()*/);
-				return await PaymentAccessor.ChargeOrganization(pathParts.Last().ToLong(), task.Id, true, executeTime:now);
-
+				return await PaymentAccessor.EnqueueChargeOrganizationFromTask(pathParts.Last().ToLong(), task.Id, true, executeTime: now);
+			} else if (url == "https://example.com") {
+				using (var webClient = new WebClient()) {
+					return await webClient.DownloadStringTaskAsync(new Uri(url, UriKind.Absolute));
+				}
 			} else {
 				throw new Exception("Unhandled URL: " + url);
 			}
@@ -268,7 +393,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static List<ScheduledTask> GetTasksToExecute(DateTime now,bool markStarted) {
+		public static List<ScheduledTask> GetTasksToExecute(DateTime now, bool markStarted) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
 					//var all = s.QueryOver<ScheduledTask>().List().ToList();
@@ -276,16 +401,16 @@ namespace RadialReview.Accessors {
 						.Where(x => x.ExceptionCount < (x.MaxException ?? 12))
 						.ToList();
 
-                    if (markStarted) {
-                        var d = DateTime.UtcNow;
-                        foreach(var c in current) {
-                            c.Started = d;
-                        }
-                    }
-                    tx.Commit();
-                    s.Flush();
+					if (markStarted) {
+						var d = DateTime.UtcNow;
+						foreach (var c in current) {
+							c.Started = d;
+						}
+					}
+					tx.Commit();
+					s.Flush();
 
-                    return current;
+					return current;
 				}
 			}
 		}
@@ -306,20 +431,20 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-        
-        public static void UnmarkStarted(List<ScheduledTask> tasks) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
-                    foreach (var t in tasks) {
-                        t.Started = null;
-                        s.Update(t);
-                    }
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-        }
-        [Obsolete("Do not use",true)]
+
+		public static void UnmarkStarted(List<ScheduledTask> tasks) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
+					foreach (var t in tasks) {
+						t.Started = null;
+						s.Update(t);
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+		[Obsolete("Do not use", true)]
 		public static void MarkStarted(List<ScheduledTask> tasks, DateTime? date) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) { ////HEY ... IsolationLevel.Serializable ??
@@ -399,7 +524,7 @@ namespace RadialReview.Accessors {
 					var todoTasks = todos.Select(x => new TaskModel() {
 						Id = x.Id,
 						Type = TaskType.Todo,
-						DueDate = x.DueDate??DateTime.UtcNow.AddDays(7),
+						DueDate = x.DueDate ?? DateTime.UtcNow.AddDays(7),
 						Name = x.Name,
 					});
 					tasks.AddRange(todoTasks);
