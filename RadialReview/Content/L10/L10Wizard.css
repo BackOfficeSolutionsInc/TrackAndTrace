@@ -1753,6 +1753,9 @@ body,
 .wizard .todo-list-container .message-column input {
   max-width: 100%;
 }
+.wizard .todo-list-container .todo-text div {
+  min-height: 18px !important;
+}
 .wizard .todo-list-container .due-column {
   vertical-align: middle !important;
 }

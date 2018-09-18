@@ -1898,6 +1898,9 @@ body.resizing .notes-tile:after,
   margin-right: -105px;
   margin-top: -4px;
 }
+.dashboard .todo-list-container .todo-text div {
+  min-height: 18px !important;
+}
 .dashboard .todo-list-container .due-date.red {
   font-weight: normal;
 }

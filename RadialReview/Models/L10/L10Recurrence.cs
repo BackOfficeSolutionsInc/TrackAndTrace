@@ -66,6 +66,7 @@ namespace RadialReview.Models.L10 {
 
 
 		public virtual bool CountDown { get; set; }
+		public virtual bool PrintOutRockStatus { get; set; }
 		public virtual bool AttendingOffByDefault { get; set; }
 		public virtual int CurrentWeekHighlightShift { get; set; }
 
@@ -186,6 +187,7 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.MeetingInProgress);
 				Map(x => x.DeleteTime);
 				Map(x => x.CountDown);
+				Map(x => x.PrintOutRockStatus);
 				Map(x => x.StartOfWeekOverride);
 				Map(x => x.IsLeadershipTeam);
 				Map(x => x.VtoId);
