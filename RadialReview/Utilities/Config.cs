@@ -468,7 +468,12 @@ namespace RadialReview.Utilities {
 		}
 
 		public static string FixEmail(string email) {
-			return Config.IsLocal() ? "clay.upton+test_" + (email ?? "").Replace("@", "_at_") + "@mytractiontools.com" : email;
+			if (Config.IsLocal()) {
+				string appSettingEmail = GetAppSetting("TestEmail", "clay.upton+test_{0}@mytractiontools.com");
+				return String.Format(appSettingEmail, ((email ?? "").Replace("@", "_at_")));
+			} else {
+				return email;
+			}
 		}
 
 		public static Env GetEnv() {

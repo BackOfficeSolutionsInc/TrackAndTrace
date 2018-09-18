@@ -1728,6 +1728,12 @@ body.resizing .notes-tile:after,
 .dashboard .rock-list-container .company-rock-column {
   max-width: none;
 }
+.dashboard .rock-list-container .company-rock-column .vto-heading-text {
+  display: none;
+}
+.dashboard .rock-list-container .company-rock-column md-checkbox {
+  display: none;
+}
 .dashboard .rock-list-container .status-column {
   padding: 2px !important;
 }
@@ -1909,6 +1915,9 @@ body.resizing .notes-tile:after,
   margin-left: -25px;
   margin-right: -105px;
   margin-top: -4px;
+}
+.dashboard .todo-list-container .todo-text div {
+  min-height: 18px !important;
 }
 .dashboard .todo-list-container .due-date.red {
   font-weight: normal;

@@ -72,7 +72,7 @@ angular.module('priorityTemplates', []).directive("priority", ["$compile", funct
             $scope.add = function () {
                 console.log("add");
                 $scope.priority += 1;
-                if ($scope.priority > 6)
+                if ($scope.priority > 9)
                     $scope.priority = 0;
                 ngModelCtrl.$setViewValue($scope.priority);
                // console.log($scope.ngModel);

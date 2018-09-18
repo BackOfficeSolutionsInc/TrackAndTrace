@@ -68,7 +68,163 @@ namespace RadialReview.Accessors {
 		}
 	}
 
+	public class DocumentMerger {
 
+		protected List<object> docs { get; set; }
+
+		public void AddDocs(IEnumerable<PdfDocument> docList) {
+			foreach (var doc in docList) {
+				docs.Add(doc);
+			}
+		}
+		public void AddDocs(IEnumerable<Document> docList) {
+			foreach (var doc in docList) {
+				docs.Add(doc);
+			}
+		}
+		public void AddDoc(PdfDocument doc) {
+			docs.Add(doc);
+		}
+		public void AddDoc(Document doc) {
+			docs.Add(doc);
+		}
+		public void AddDoc(PdfDocumentRenderer doc) {
+			docs.Add(doc);
+		}
+
+		public DocumentMerger() {
+			docs = new List<object>();
+		}
+
+		protected void DrawNumber(XGraphics gfx, XFont font, int? number, DateTime? date, string dateFormat, string name = null) {
+
+			var wmargin = 35;
+			var hmargin = 22;
+
+			var size = new XSize(gfx.PageSize.Width - wmargin * 2, gfx.PageSize.Height - hmargin * 2);
+
+			//var text = "";
+			if (number != null) {
+				gfx.DrawString(number.ToString(), font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
+
+				//text += number.ToString();
+			}
+			if (date != null) {
+				//	if (number != null) {
+				//		text += " | ";
+				//	};
+				var text = "" + date.Value.ToString(dateFormat ?? "MM-dd-yyyy") + "   " + name ?? "";
+				var gray = new XSolidBrush(XColor.FromArgb(100, 100, 100, 100));
+				var dateFont = new XFont("Arial Narrow", 9, XFontStyle.Regular);
+
+				gfx.DrawString(text, dateFont, gray, new XRect(new XPoint(wmargin/*22*/, hmargin), size), XStringFormats.BottomLeft);
+				//gfx.DrawString(text, font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
+
+			}
+
+
+			//gfx.DrawString(text, font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
+		}
+
+
+		public PdfDocument Flatten(string title, bool includeNumber, bool includeDate = true, string dateFormat = null, string name = null) {
+			DateTime now = DateTime.Now;
+			//  filename = filename.ToLower().EndsWith(".pdf")?filename:filename+".pdf";
+			PdfDocument document = new PdfDocument();
+			document.Info.Title = title;
+			document.Info.Author = "Traction Tools";
+			document.Info.Keywords = "Traction Tools";
+			document.Info.CreationDate = now;
+
+			var pages = 0;
+			XFont font = new XFont("Verdana", 10, XFontStyle.Regular);
+
+			if (!docs.Any()) {
+				//Cannot save empty document
+				var doc = new Document();
+				var section = new Section();
+				var paragraph = new Paragraph();
+				var text = paragraph.AddFormattedText("Page intentionally left blank.", new Font("Verdana", 10));
+				text.Color = Colors.Gray;
+				paragraph.Format.Alignment = ParagraphAlignment.Center;
+				section.Add(paragraph);
+				doc.Add(section);
+				AddDoc(doc);
+			}
+
+			foreach (var doc in docs) {
+				if (doc is PdfDocument) {
+					var pdfDoc = (PdfDocument)doc;
+					PdfDocument newPdfDoc;
+
+					using (var stream = new MemoryStream()) {
+						pdfDoc.Save(stream, false);
+						newPdfDoc = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+					}
+
+					foreach (var p in newPdfDoc.Pages) {
+						var page = document.AddPage(p);
+						page.Width = p.Width;
+						page.Height = p.Height;
+						page.Orientation = p.Orientation;
+						XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
+
+						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
+
+						pages += 1;
+					}
+				}
+				if (doc is Document) {
+					var mdoc = (Document)doc;
+
+					DocumentRenderer docRenderer = new DocumentRenderer(mdoc);
+					docRenderer.PrepareDocument();
+
+					int pageCount = docRenderer.FormattedDocument.PageCount;
+					for (int idx = 0; idx < pageCount; idx++) {
+						PdfPage page = document.AddPage();
+
+						var pageInfo = docRenderer.FormattedDocument.GetPageInfo(idx + 1);
+						page.Width = pageInfo.Width;
+						page.Height = pageInfo.Height;
+						page.Orientation = pageInfo.Orientation;
+
+						XGraphics gfx = XGraphics.FromPdfPage(page);
+						gfx.MUH = PdfFontEncoding.Unicode;
+						docRenderer.RenderPage(gfx, idx + 1);
+						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
+						pages += 1;
+					}
+				}
+				if (doc is PdfDocumentRenderer) {
+					var mdoc = (PdfDocumentRenderer)doc;
+					PdfDocument newPdfDoc;
+
+					using (var stream = new MemoryStream()) {
+						mdoc.Save(stream, false);
+						newPdfDoc = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+					}
+
+					foreach (var p in newPdfDoc.Pages) {
+						var page = document.AddPage(p);
+						page.Width = p.Width;
+						page.Height = p.Height;
+						page.Orientation = p.Orientation;
+						XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
+						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat, name);
+						pages += 1;
+					}
+
+				}
+			}
+
+
+
+			return document;
+
+		}
+
+	}
 
 
 	public partial class PdfAccessor {
@@ -1465,15 +1621,15 @@ namespace RadialReview.Accessors {
 
 
 			var getStatusText = new Func<RockState?, string>(x => {
-
-				if (quarterlyPrintout)
+				
+				if (quarterlyPrintout &&  !recur.NotNull(y=>y._Recurrence.Item.PrintOutRockStatus) )
 					return (x == RockState.Complete) ? "Done" : "Not Done";
 				if (x == null)
 					return "Not set";
 				return x.Value.GetDisplayName();
 			});
 			var getStatusColor = new Func<RockState?, Color>(x => {
-				if (quarterlyPrintout)
+				if (quarterlyPrintout && !recur.NotNull(y => y._Recurrence.Item.PrintOutRockStatus))
 					return (x == RockState.Complete) ? Colors.DarkGreen : Colors.DarkRed;
 				if (x == null)
 					return Colors.Gray;

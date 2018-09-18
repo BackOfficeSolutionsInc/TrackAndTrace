@@ -124,6 +124,8 @@
             console.log("current priority:" + p);
             if (e.button == 0) {
                 p += 1;
+                if (p > 9)
+                    p = 0;
             } else if (e.button == 2) {
                 p -= 1;
                 p = Math.max(0, p);

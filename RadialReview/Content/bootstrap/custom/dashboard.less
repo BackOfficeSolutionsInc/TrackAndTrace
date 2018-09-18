@@ -762,6 +762,14 @@ body.resizing .notes-tile,
 
 		.company-rock-column {
 			max-width: none;
+
+			.vto-heading-text {
+				display: none;
+			}
+
+			md-checkbox {
+				display: none;
+			}
 		}
 
 		.status-column {
@@ -854,6 +862,10 @@ body.resizing .notes-tile,
 			margin-left: -25px;
 			margin-right: -105px;
 			margin-top: -4px;
+
+			div {
+				min-height: 18px !important;
+			}
 		}
 
 		.due-date.red {
@@ -1305,7 +1317,6 @@ body.resizing .notes-tile,
 		background: -webkit-linear-gradient(left, #f7f7f7 0%,#f7f7f7 82%,#ffffff 94%); /* Chrome10-25,Safari5.1-6 */
 		background: linear-gradient(to right, #f7f7f7 0%,#f7f7f7 82%,#ffffff 94%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
-
 		h1 {
 			margin: 0;
 			font-size: 16px;
@@ -1344,7 +1355,7 @@ body.resizing .notes-tile,
 
 		.update {
 
-			.su-details{
+			.su-details {
 				background-color: #f1f1f1;
 				margin: 5px;
 				padding: 15px 15px 10px 23px;
@@ -1355,7 +1366,7 @@ body.resizing .notes-tile,
 				opacity: 0.8;
 			}
 
-			&.update-current .su-details{
+			&.update-current .su-details {
 				border: 1px solid #d9d9d9;
 				box-shadow: 0px 8px 18px -5px rgba(0,0,0,.5);
 				background-color: white;

@@ -5,6 +5,7 @@
     ViewBag.Title = Html.ReviewName() + "s";
     ViewBag.Subheading = "";
     var showDropdown = Model.Reviews.Any(x => x.DropdownLinks.Any());
+    ViewBag.FullWidth = true;
 }
 
 @section top{
@@ -37,6 +38,10 @@
 
         .grayRow.prereview {
             background-color: rgba(91, 192, 222, 0.42);
+        }
+
+        .body-full-width .body-content {
+            width:1170px !important;
         }
 
     </style>

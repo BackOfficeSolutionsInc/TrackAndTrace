@@ -1055,6 +1055,7 @@ namespace RadialReview.Utilities {
 
 		public PermissionsUtility ViewRGM(long id) {
 			var rgm = session.Get<ResponsibilityGroupModel>(id);
+			rgm = (ResponsibilityGroupModel)session.GetSessionImplementation().PersistenceContext.Unproxy(rgm);
 
 			if (rgm is OrganizationModel) {
 				return ViewOrganization(rgm.Id);
