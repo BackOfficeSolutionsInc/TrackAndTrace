@@ -475,6 +475,10 @@ namespace RadialReview.Accessors {
 						throw new PermissionsException("You do not have permission to copy this issue.");
 					}
 
+					if(!L10Accessor._GetAllConnectedL10Recurrence(s, caller, parent.Recurrence.Id).Any(x => x.Id == childRecurrenceId)) {
+						throw new PermissionsException("You do not have permission to copy this issue.");
+					}
+
 					var issue_recur = new IssueModel.IssueModel_Recurrence() {
 						ParentRecurrenceIssue = null,
 						CreateTime = now,
