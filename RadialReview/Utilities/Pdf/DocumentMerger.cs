@@ -44,49 +44,10 @@ namespace RadialReview.Utilities.Pdf {
 		public void AddDoc(PdfDocumentRenderer doc) {
 			docs.Add(doc);
 		}
-
-		//public static PdfDocument FlattenPages(List<PdfPageAndStats> pages) {
-
-		//	//var doc = IntermediateDocument;
-		//	//using (var stream = new MemoryStream()) {
-		//	//	doc.Save(stream, false);
-		//	//	var form = XPdfForm.FromStream(stream);
-		//	//	for (var i = 0; i < form.PageCount; i++) {
-		//	//		form.PageNumber = i + 1;
-		//	//		pages.Add(form.Page);
-		//	//	}
-
-		//	//	Action<XGraphics, XRect, int> draw = null;
-		//	//	if (constructDocument) {
-		//	//		draw = (gfx, box, pageNum) => {
-		//	//			form.PageNumber = pageNum + 1;//Pdf is one-indexed..
-		//	//			gfx.DrawImage(form, box);
-		//	//		};
-		//	//	}
-		//	//	return Flatten(DocumentSettings, pages, pageCellsOnPage, orientation, draw);
-		//	//}
-
-		//	var doc = new PdfDocument();
-		//	foreach (var p in pages) {
-		//		try {
-		//			var page = p.Page.Clone() as PdfPage;
-		//			doc.AddPage(page);
-		//		} catch (Exception e) {
-		//			throw e;
-		//		}
-		//	}
-
-		//	using (var stream = new MemoryStream()) {
-		//		doc.Save(stream);
-		//		stream.Seek(0, SeekOrigin.Begin);
-		//		return new PdfDocument(stream);
-		//	}
-		//}
-
-
+		
 		public PdfDocument Flatten(string title, bool includeNumber, bool includeDate = true, string dateFormat = null, string name = null) {
 			DateTime now = DateTime.Now;
-			//  filename = filename.ToLower().EndsWith(".pdf")?filename:filename+".pdf";
+
 			PdfDocument document = new PdfDocument();
 			document.Info.Title = title;
 			document.Info.Author = "Traction Tools";
@@ -115,7 +76,6 @@ namespace RadialReview.Utilities.Pdf {
 					var scaleDoc = ((MultiPageDocument)docPage);
 					doc = scaleDoc.Flatten().Document;
 				}
-				//pages += 1;
 				RenderPage(document, doc, name,ref pages, includeNumber, includeDate, dateFormat, font, now);
 			}
 			return document;
