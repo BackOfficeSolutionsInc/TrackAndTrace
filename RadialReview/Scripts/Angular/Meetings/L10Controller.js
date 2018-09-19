@@ -354,10 +354,6 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			$scope.$apply();
 		};
 
-		//$scope.functions.fixedHeader = function (self, $event) {
-		//	debugger;
-		//}
-
 		$scope.functions.setPage = function (page) {
 			//console.info("should we be here?")
 			$http.get("/meeting/SetPage/" + $scope.model.RecurrenceId + "?page=" + page + "&connection=" + $scope.connectionId);
@@ -845,7 +841,8 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			var _clientTimestamp = new Date().getTime();
 			//self.Hide = true;
 			var origArchive = self.Archived;
-			//self.Archived = true;
+			self.Archived = true;
+
 
 			$(".editable-wrap").remove();
 
@@ -853,9 +850,11 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
 			$http.post(url, dat).error(function (data) {
 				showJsonAlert(data, false, true);
-				//self.Archived = origArchive;
+				self.Archived = origArchive;
 				//self.Hide = false;
 			}).finally(function () {
+				// reload
+                if (self.Type != "AngularRock") 
 				$scope.functions.reload(true, $scope.model.dataDateRange, false);
 			});
 		};
@@ -864,19 +863,20 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			var dat = angular.copy(self);
 			var _clientTimestamp = new Date().getTime();
 			var origArchive = self.Archived;
-
-			//self.Archived = false;
+			self.Archived = false;
 			//self.Hide = true;
 
-			$(".editable-wrap").remove();
+            $(".editable-wrap").remove();
 
 			var url = Time.addTimestamp("/L10/Unarchive" + self.Type + "/?recurrenceId=" + $scope.recurrenceId + "&connectionId=" + $scope.connectionId);
 
 			$http.post(url, dat).error(function (data) {
 				showJsonAlert(data, false, true);
 				//self.Hide = false;
-				//self.Archived = origArchive;
+				self.Archived = origArchive;
 			}).finally(function () {
+				// reload
+                if (self.Type != "AngularRock") 
 				$scope.functions.reload(true, $scope.model.dataDateRange, false);
 			});
 		};
