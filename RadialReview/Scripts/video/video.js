@@ -222,7 +222,7 @@ function addVideoProvider(vcProvider) {
 function selectVideoProvider(providerId) {
 	var connectionId = "";
 	try{
-		connectionId=meetingHub.connection.id;
+		connectionId=RealTime.connectionId;
 	}catch(e){
 		console.error(e);
 	}

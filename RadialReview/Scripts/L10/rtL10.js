@@ -14,22 +14,7 @@ $(function () {
 
 	var setup = function (i) {
 		//All Scripts loaded
-		//meetingHub = $.connection.meetingHub;
-		///*meetingHub.error = function (error) {
-		//	console.log(error);
-		//};*/
-
-		//if (typeof (meetingHub) === "undefined") {
-		//    if (i==20){
-		//	showAlert("Error. Please try refreshing.");
-		//        return;
-		//    }
-		//    console.log("Hub undefined. Trying again. Attempt " + (i + 2));
-		//    setTimeout(function(){setup(i+1);},500);
-		//    return;
-		//}
-
-
+	
 		RealTime.client.jsonAlert = function (data, showSuccess) { showJsonAlert(data, showSuccess); };
 		RealTime.client.unhide = function (selector) { $(selector).show(); };
 		RealTime.client.status = function (text) {
@@ -47,10 +32,7 @@ $(function () {
 				});
 			}, 2000);
 		};
-
-		//RealTime.client.insert = insert;
-		//RealTime.client.remove = remove;
-
+			
 		RealTime.client.updateUserFocus = updateUserFocus;
 		RealTime.client.updateTextContents = updateTextContents;
 		RealTime.client.setCurrentPage = setCurrentPage;
@@ -272,68 +254,13 @@ function rejoin(callback) {
 				}, 3000 + Math.pow(1.5, reconnectionCount) * 1000);
 			}, 2000)
 		});
-
-		//if (meetingHub) {
-		//    reconnectionCount += 1;
-		//    meetingHub.server.join(window.recurrenceId, $.connection.hub.id).done(function () {
-		//        //update(d);
-		//        if (rejoinTimer) {
-		//            showAlert("Successfully joined.", "alert-danger", "Error", 1500);
-		//            clearTimeout(rejoinTimer);
-		//        }
-		//        reconnectionCount = 0;
-
-		//        console.log("rejoin completed");
-		//        $(".rt").prop("disabled", false);
-		//        if (callback) {
-		//            console.log("calling rejoin callback");
-		//            callback();
-		//        }
-		//        if (disconnected) {
-		//            clearAlerts();
-		//            showAlert("Reconnected.", "alert-success", "Success", 1000);
-		//        }
-		//        disconnected = false;
-		//    }).fail(function (d) {
-		//        console.error('Could not connect. Join failed');
-		//        console.error(d);
-		//        showAlert("Join meeting failed. Could not connect with server.", "alert-danger", "Error", 1500);
-
-		//        if (rejoinTimer) {
-		//            clearTimeout(rejoinTimer);
-		//        }
-
-		//        if (reconnectionCount >= 6) {
-		//            showAlert("Could not connect after 6 attempts.", "alert-danger", "Error", 2000);
-		//            setTimeout(function () {
-		//                location.reload();
-		//            }, 2000);
-
-		//            return;
-		//        }
-
-
-		//        setTimeout(function () {
-		//            var attempt = "";
-		//            if (reconnectionCount > 1) {
-		//                attempt = " Attempt " + (reconnectionCount + 1) + ".";
-		//            }
-		//            console.log("Attempt #" + reconnectionCount);
-
-		//            showAlert("Attempting to rejoin." + attempt, "alert-danger", "Error", Math.max(3000, 1000 + Math.pow(1.5, reconnectionCount) * 1000));
-		//            rejoinTimer = setTimeout(function () {
-		//                rejoin(callback);
-		//            }, 3000 + Math.pow(1.5, reconnectionCount) * 1000);
-		//        }, 2000)
-		//    });
-		//}
+				
 	} catch (e) {
 		console.error(e);
 		showAlert("Could not connect with server.", "alert-danger", "Error");
 		setTimeout(function () {
 			location.reload();
-		}, 2000)
-		//callback();
+		}, 2000);
 	}
 }
 

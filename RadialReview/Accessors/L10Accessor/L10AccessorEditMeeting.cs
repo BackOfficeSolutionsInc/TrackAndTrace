@@ -47,10 +47,10 @@ namespace RadialReview.Accessors {
                     }*/
 					var oldRecur = s.Get<L10Recurrence>(l10Recurrence.Id);
 					_LoadRecurrences(s, new LoadMeeting() {
-                        LoadMeasurables = true,
-                        LoadRocks = true,
-                        LoadUsers  = true,                        
-                    }, oldRecur);
+						LoadMeasurables = true,
+						LoadRocks = true,
+						LoadUsers = true,
+					}, oldRecur);
 
 					var oldMeeting = _GetCurrentL10Meeting(s, perm, l10Recurrence.Id, true, true);
 					SetUtility.AddedRemoved<MeasurableModel> updateMeasurables = null;
@@ -122,7 +122,7 @@ namespace RadialReview.Accessors {
 					s.UpdateList(oldRecur.NotNull(x => x._DefaultRocks), l10Recurrence._DefaultRocks, now);
 
 
-					l10Recurrence.CreateTime = oldRecur.CreateTime;
+					l10Recurrence.CreateTime = (oldRecur != null) ? (oldRecur.CreateTime) : (DateTime.UtcNow);
 
 					/////////////
 					//Update rocks on the VTO also

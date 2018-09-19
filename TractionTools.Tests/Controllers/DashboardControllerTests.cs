@@ -53,7 +53,7 @@ namespace TractionTools.Tests.Controllers {
 
 			//Manager cannot access
 			using (var c = new ControllerCtx<DashboardController>(org.Manager)) {
-				Throws<Exception>(() => c.Get(x=>x.Index(dashNum + 2)));
+				await ThrowsAsync<Exception>(async () => await c.Get(x => x.Index(dashNum + 2)));
 			}
 
 			//Create another for manager
