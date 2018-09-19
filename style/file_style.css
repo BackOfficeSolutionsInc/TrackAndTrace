@@ -1,0 +1,50 @@
+
+body  {  
+     margin:0;  
+     padding:0;  
+     background-color:#f1f1f1;  
+     }  
+	 
+.container {
+	
+	font-family: FamiliarPro;
+	color: #09717f;
+	margin-top: 55px;
+	
+	
+}
+
+.logo {
+	
+	padding-top: 60px;
+	position: center;
+	
+}
+.box  {  
+     width:900px;  
+     padding:20px;  
+     background-color:#fff;  
+     border:1px solid #ccc;  
+     border-radius:5px;  
+     margin-top:100px;  
+}  
+
+
+
+input[type="file"] {
+    width:50%;
+    height:25px;
+    border-radius:2px;
+    display:inline-block;
+    border:thin solid #ddd;  
+    	
+}
+
+.footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	color: #09717f;
+	text-align: center;
+}

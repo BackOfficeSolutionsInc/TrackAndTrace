@@ -5,11 +5,11 @@ $dateawb="Date:";
 $ref="Reference:";
 $cons="Sender:";
 $cosign="Consignee:";
-$wbn = NULL;
-$date = NULL;
-$reference = NULL;
-$sender = NULL;
-$consignee = NULL;
+$TrackingNumber= NULL;
+$Date = NULL;
+$Reference = NULL;
+$Sender = NULL;
+$Consignee = NULL;
 $isSet=true;
 $search=NULL;
 $resultSet=NULL;
@@ -18,10 +18,15 @@ $mysqli=NULL;
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 		<head>
 		<title>Logistikus-Express</title>
-		<link rel="stylesheet" type="text/css" href="././style/banner_style.css">
-		<link rel="stylesheet" type="text/css" href="././style/status_style.css">
-	
-		<meta name="description" content="apple juice addict" />
+			<link rel="stylesheet" type="text/css" href="././style/banner_style.css">
+			<link rel="stylesheet" type="text/css" href="././style/status_style.css">
+			<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+			<link rel="icon" href="images/favicon.ico" type="image/x-icon">
+			<meta charset="utf-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+					<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+					<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+					<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		</head>
 		<body>
 	
@@ -41,20 +46,30 @@ $mysqli=NULL;
 			</form>
 		</div>
 
+	           <style>  
+                .notfound  
+                {  
+                     padding:20px;  
+                     margin-top:90px;  
+					 postion: absolute;
+					 font-size:30px;
+                }  
+           </style> 
+
 <?php
 
 if(isset($_POST['submit'])) { 
-	$mysqli = NEW MySQLi("localhost","root","","logistikus");
+	$mysqli = NEW MySQLi("localhost","root","","trackandtrace");
 	$search = $mysqli->real_escape_string($_POST['search']);
-	$resultSet = $mysqli->query("SELECT DISTINCT wbn, date, reference, sender, consignee FROM trackandtrace WHERE wbn = '$search' LIMIT 1");
+	$resultSet = $mysqli->query("SELECT DISTINCT TrackingNumber, Date, Reference, Sender, Consignee FROM tbl_trackandtrace WHERE TrackingNumber = '$search' LIMIT 1");
 
 	if($resultSet->num_rows > 0 ) {
 		while($rows =$resultSet->fetch_assoc()) {
-			$wbn = $rows["wbn"];
-			$date = $rows["date"];
-			$reference = $rows["reference"];
-			$sender = $rows["sender"];
-			$consignee = $rows["consignee"];
+			$TrackingNumber = $rows["TrackingNumber"];
+			$Date = $rows["Date"];
+			$Reference = $rows["Reference"];
+			$Sender = $rows["Sender"];
+			$Consignee = $rows["Consignee"];
 		}
 		?>
 		
@@ -68,11 +83,11 @@ if(isset($_POST['submit'])) {
 							<div class="row">
 								<div class="col">
 									<div class="info">
-										<div class="line"><?php echo $waybill; ?> <span><?php echo $wbn ?></span></div>
-										<div class="line"><?php echo $dateawb; ?> <span><?php echo $date ?></span></div>
+										<div class="line"><?php echo $waybill; ?> <span><?php echo $TrackingNumber ?></span></div>
+										<div class="line"><?php echo $dateawb; ?> <span><?php echo $Date ?></span></div>
 										<div class="line"><?php echo $ref; ?><span></span></div>
-										<div class="line"><?php echo $cons; ?><span><?php echo $sender ?></span></div>
-										<div class="line"><?php echo $cosign; ?><span><?php echo $consignee ?></span></div>
+										<div class="line"><?php echo $cons; ?><span><?php echo $Sender ?></span></div>
+										<div class="line"><?php echo $cosign; ?><span><?php echo $Consignee ?></span></div>
 									</div>
 									<div class="fb">
 										<div class="logo"><a href="#"><img alt="Like us" src="images/icon/fbicon.png"></a></div>
@@ -84,37 +99,37 @@ if(isset($_POST['submit'])) {
 								</div>
 								<div class="col colStatus">							
 		<?php	
-		$resultSet = $mysqli->query("SELECT DISTINCT wbn, date, reference, sender, consignee, status, stamp, location, status_icon FROM trackandtrace WHERE wbn = '$search' ORDER BY `stamp` DESC");
+		$resultSet = $mysqli->query("SELECT DISTINCT TrackingNumber, Date, Reference, Sender, Consignee, Status, Stamp, Location, StatusIcon FROM tbl_trackandtrace WHERE TrackingNumber = '$search' ORDER BY `stamp` DESC");
 		if($resultSet->num_rows > 0 ) {
 			while($rows =$resultSet->fetch_assoc())
 				{     
-					$stamp = $rows["stamp"];
-					$status = $rows["status"];
-					$location = $rows["location"];
-					$status_icon = $rows["status_icon"];
+					$Stamp = $rows["Stamp"];
+					$Status = $rows["Status"];
+					$Location = $rows["Location"];
+					$StatusIcon = $rows["StatusIcon"];
 		?>
 									<div class="status piority-success">
 										<div class="date">
-											<div><?php echo $stamp; ?></div>
-											<div> </div>
+											<div><?php echo $Stamp; ?></div>
+											<div></div>
 										</div>
 										<div class="desc">
 											<div class="d1">
-												<div class="0"><?php echo $status; ?></div>
+												<div class="0"><?php echo $Status; ?></div>
 											</div>
-											<div class="d2"> <?php echo $location;  ?></div>
+											<div class="d2"> <?php echo $Location;  ?></div>
 										</div>
 										<div class="icon">
 											<div>
 											<?php 
-										if ($status_icon == 1) { ?>
+										if ($StatusIcon == 1) { ?>
 											<img src="images/icon/status/package.png" alt=" ">
 											<?php	}
-											elseif ($status_icon == 2) {
+											elseif ($StatusIcon == 2) {
 											?>
 											<img src="images/icon/status/warning.png" alt=" ">
 											<?php } 
-											elseif ($status_icon == 3) {
+											elseif ($StatusIcon == 3) {
 											?>
 											<img src="images/icon/status/complete.png" alt=" ">
 											<?php }
@@ -143,15 +158,15 @@ if(isset($_POST['submit'])) {
 
 
 		
-		<div class="nf"><?php		
-			}	
-			else {
-				echo "Tracking Number not found";
-			}
+			<div class="nf"><?php		
+				}	
+				else {
+						echo '<div class="notfound" align="center">Tracking number not found</div>';
+				}
 				
 			}
 
-		?></div>
+			?></div>
 		<div class="footer">
 		<p>&copy; Copy Right Logistikus-Express.com</p>
 		</div>
