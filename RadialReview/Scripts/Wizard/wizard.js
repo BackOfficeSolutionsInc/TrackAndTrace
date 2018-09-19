@@ -16,7 +16,7 @@ var doneLoading = true;
 var currentPage = null;
 function changePage(page, first) {
 
-	window.location.hash = page;
+    window.location.hash = page;
     if (page[0] == "#") {
         if (page[1] == "/")
             page = page.substr(2);
@@ -27,14 +27,14 @@ function changePage(page, first) {
         setTimeout(function () {
             changePage(page, first);
             console.log("trying again to change page");
-        },300);
+        }, 300);
         return;
     }
     var pages = $(".wizard-page:not(.hidden)");
     function showPage(pg) {
         console.log("Changing page");
         var cpe = $(".wizard-page[data-page='" + pg + "']");
-        if (cpe.length == 0 && typeof(first)==="undefined") {
+        if (cpe.length == 0 && typeof (first) === "undefined") {
             doneLoading = true;
             var fp = $(".wizard-page").first().attr("data-page");
             if (typeof (fp) !== "undefined") {
@@ -46,22 +46,28 @@ function changePage(page, first) {
             setTimeout(function () { cpe.removeClass("hidden"); }, 2);
 
             cpe.fadeIn(function () {
-            	cpe.css("opacity", "1");
-            	cpe.removeClass("hidden");
+
+                var existingPages = $(".wizard-page:not(.hidden)");
+                $.each(existingPages, function (key, value) {
+                    hideWizard(this);
+                });
+
+                cpe.css("opacity", "1");
+                cpe.removeClass("hidden");
                 doneLoading = true;
                 console.log("Changed page");
                 currentPage = page;
-                
+
                 var total = $(".wizard-page");
                 var i = 1;
                 for (var t in total) {
-                	if (arrayHasOwnIndex(total, t)) {
-                		if ($(total[t]).attr("data-page") == pg)
-                			break;
-                		i = i + 1;
-                	}
+                    if (arrayHasOwnIndex(total, t)) {
+                        if ($(total[t]).attr("data-page") == pg)
+                            break;
+                        i = i + 1;
+                    }
                 }
-                var completion = i / (total.length+1);
+                var completion = i / (total.length + 1);
 
                 $(window).trigger("wizard:changed-page", { page: page, completion: completion });
 
@@ -79,14 +85,17 @@ function changePage(page, first) {
         showPage(page);
     } else {
         $(pages).fadeOut(250, function () {
-            var pg=$(this).attr("data-page");
-            $("[href='#" + pg + "']").removeClass("selected");
-
-            $(this).addClass("hidden");
+            hideWizard(this);
             showPage(page);
         });
     }
-   
+
+}
+
+function hideWizard(obj) {
+    var pg = $(obj).attr("data-page");
+    $("[href='#" + pg + "']").removeClass("selected");
+    $(obj).addClass("hidden");
 }
 
 function initWizard(page) {
@@ -110,14 +119,14 @@ function nextPage() {
     var nextpage = $(next).attr("data-page");
     changePage(nextpage);
 
-   
+
 }
 function backPage() {
     var prev = $(".wizard-page[data-page='" + currentPage + "']").prev(".wizard-page");
     if (prev.length == 0)
         return false;
     var prevpage = $(prev).attr("data-page");
-    changePage(prevpage);    
+    changePage(prevpage);
 }
 
 
@@ -151,11 +160,11 @@ $(function () {
             }, 100);
             return false;
         } else if (e.keyCode == 34) {
-        	var b = $(".nextButton:visible");
-        	b.click();
+            var b = $(".nextButton:visible");
+            b.click();
         } else if (e.keyCode == 33) {
-        	var b = $(".backButton:visible");
-        	b.click();
+            var b = $(".backButton:visible");
+            b.click();
         }
     });
 });

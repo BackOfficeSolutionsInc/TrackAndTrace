@@ -126,8 +126,10 @@
 				url: "/Dashboard/CreateTile/",
 				data: dat,
 				success: function(data) {
-					if (showJsonAlert(data, false, true)) {
-						Grid.addTile(data.Object);
+                    if (showJsonAlert(data, false, true)) {
+                        Grid.addTile(data.Object);
+                        var scrollAmount = ($(document).height() - $(window).height());
+                        $('html,body').animate({ scrollTop: scrollAmount }, 500);
 					}
 				}
 			});

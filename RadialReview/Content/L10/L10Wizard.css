@@ -1026,6 +1026,9 @@ body,
 .wizard .checkbox-column {
   padding-right: 20px !important;
 }
+.wizard .checkbox-column .vto-status-inline {
+  display: none;
+}
 .wizard .delete-column {
   padding-right: 0px !important;
 }
@@ -1769,6 +1772,9 @@ body,
 }
 .wizard .todo-list-container .message-column .todoModal {
   padding-left: 10px;
+}
+.wizard .todo-list-container .todo-text div {
+  min-height: 18px !important;
 }
 .wizard .todo-list-container .due-column {
   vertical-align: middle !important;

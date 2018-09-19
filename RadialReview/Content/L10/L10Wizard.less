@@ -133,7 +133,6 @@ body,
 
 .wizard {
 
-
 	.wizard-nav-bar {
 		/*background-color:@traction-orange;*/
 		padding-top: 13px;
@@ -182,6 +181,11 @@ body,
 
 	.checkbox-column {
 		padding-right: 20px !important;
+
+
+		.vto-status-inline {
+			display: none;
+		}
 	}
 
 	.delete-column {
@@ -355,20 +359,17 @@ body,
 			}
 		}
 
-       // &:not(.show-full){
-
-		    #ScorecardTable_Over,
-		    .score-column,
-		    .admin-column,
-		    .IsDivider,
-		    .top-row,
-		    .delete-column-alt,
-		    .cumulative-column,
-		    .average-column,
-		    thead {
-			    display: none;
-		    }
-      //  }
+		#ScorecardTable_Over,
+		.score-column,
+		.admin-column,
+		.IsDivider,
+		.top-row,
+		.delete-column-alt,
+		.cumulative-column,
+		.average-column,
+		thead {
+			display: none;
+		}
 
 		.direction {
 			font-size: 13px;
@@ -506,9 +507,9 @@ body,
 				max-width: 100%;
 			}
 		}
-		
-		.message-column .rockModal{			
-			padding-left:10px;
+
+		.message-column .rockModal {
+			padding-left: 10px;
 		}
 
 		.picture-column .item-wrapper {
@@ -552,8 +553,8 @@ body,
 			padding-left: 6px;
 		}
 
-		.message-column .issuesModal{			
-			padding-left:10px;
+		.message-column .issuesModal {
+			padding-left: 10px;
 		}
 
 		.delete-row {
@@ -591,8 +592,12 @@ body,
 			max-width: 100%;
 		}
 
-		.message-column .todoModal{			
-			padding-left:10px;
+		.message-column .todoModal {
+			padding-left: 10px;
+		}
+
+		.todo-text div {
+			min-height: 18px !important;
 		}
 
 		.due-column {

@@ -68,9 +68,6 @@ namespace RadialReview.Accessors {
 		}
 	}
 
-
-
-
 	public partial class PdfAccessor {
 
 		static XRect GetRect(int index) {
@@ -1465,15 +1462,15 @@ namespace RadialReview.Accessors {
 
 
 			var getStatusText = new Func<RockState?, string>(x => {
-
-				if (quarterlyPrintout)
+				
+				if (quarterlyPrintout &&  !recur.NotNull(y=>y._Recurrence.Item.PrintOutRockStatus) )
 					return (x == RockState.Complete) ? "Done" : "Not Done";
 				if (x == null)
 					return "Not set";
 				return x.Value.GetDisplayName();
 			});
 			var getStatusColor = new Func<RockState?, Color>(x => {
-				if (quarterlyPrintout)
+				if (quarterlyPrintout && !recur.NotNull(y => y._Recurrence.Item.PrintOutRockStatus))
 					return (x == RockState.Complete) ? Colors.DarkGreen : Colors.DarkRed;
 				if (x == null)
 					return Colors.Gray;

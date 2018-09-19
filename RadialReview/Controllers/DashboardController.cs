@@ -140,7 +140,7 @@ namespace RadialReview.Controllers {
 			if (tiles.Any(x => x.Type == TileType.Rocks || (x.DataUrl ?? "").Contains("UserRock"))) {
 				try {
 					var now = DateTime.UtcNow;
-					var rocks = L10Accessor.GetAllMyL10Rocks(caller, caller.Id).Select(x => new AngularRock(x, false));
+					var rocks = L10Accessor.GetAllMyL10Rocks(caller, caller.Id).Select(x => new AngularRock(x,false));
 					output.Rocks = rocks;
 				} catch (Exception e) {
 					ProcessDeadTile(e);
@@ -282,7 +282,7 @@ namespace RadialReview.Controllers {
 						if (long.TryParse(rock.KeyId, out l10Id)) {
 							try {
 								var tile = new AngularTileId<List<AngularRock>>(rock.Id, l10Id, l10Lookup[l10Id].Name + " rocks", AngularTileKeys.L10RocksList(l10Id));
-								tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock, false)).ToList();
+								tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock,x.VtoRock)).ToList();
 								output.L10Rocks.Add(tile);
 							} catch (Exception e) {
 								output.L10Rocks.Add(AngularTileId<List<AngularRock>>.Error(rock.Id, l10Id, e));
