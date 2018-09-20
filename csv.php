@@ -7,9 +7,11 @@ if(isset($_POST["submit"]))
 				$filename = explode(".", $_FILES['file']['name']);
 				if($filename[1] == 'csv')
 					{
+						
 						$handle = fopen($_FILES['file']['tmp_name'], "r");
+						$lineHead=0;
 						while($data = fgetcsv($handle))
-							{
+							{	
 									$trackingnumber = mysqli_real_escape_string($connect, $data[1]);  
 									$date = mysqli_real_escape_string($connect, $data[2]);
 									$reference = mysqli_real_escape_string($connect, $data[3]);
@@ -26,14 +28,18 @@ if(isset($_POST["submit"]))
 									if($resultSet){
 										$row = mysqli_fetch_assoc($resultSet);
 										if ( $row['ans']=='Y'){
-											$query= "Update tbl_trackandtrace set Status=$status, Location=$location, StatusIcon=$statusicon) WHERE trackingnumber = $trackingnumber and stamp = $stamp ";
+											$query= "Update tbl_trackandtrace set Status='$status', Location='$location', StatusIcon='$statusicon' WHERE trackingnumber = '$trackingnumber' and stamp = '$stamp' ";
 											mysqli_query($connect, $query);
 			
 										}else {
-											$query = "INSERT into tbl_trackandtrace
-												(TrackingNumber, Date, Reference, Sender, Consignee, Stamp, Status, Location, StatusIcon) 
-												VALUES ('".$trackingnumber."', '".$date."', '".$reference."', '".$sender."', '".$consignee."', '".$stamp."', '".$status."', '".$location."', '".$statusicon."')";
-											mysqli_query($connect, $query);
+											if($lineHead>0){
+												
+													$query = "INSERT into tbl_trackandtrace
+														(TrackingNumber, Date, Reference, Sender, Consignee, Stamp, Status, Location, StatusIcon) 
+														VALUES ('".$trackingnumber."', '".$date."', '".$reference."', '".$sender."', '".$consignee."', '".$stamp."', '".$status."', '".$location."', '".$statusicon."')";
+													mysqli_query($connect, $query);
+											}
+											$lineHead=1;
 										}
 
 									}
