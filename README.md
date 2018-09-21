@@ -1,2 +1,0 @@
-# TrackAndTrace
-Logistikus web status
