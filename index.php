@@ -18,15 +18,21 @@ $mysqli=NULL;
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 		<head>
 		<title>Logistikus-Express</title>
-			<link rel="stylesheet" type="text/css" href="././style/banner_style.css">
-			<link rel="stylesheet" type="text/css" href="././style/status_style.css">
-			<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-			<link rel="icon" href="images/favicon.ico" type="image/x-icon">
-			<meta charset="utf-8">
-			<meta name="viewport" content="width=device-width, initial-scale=1">
-					<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
 					<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 					<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<meta name="msapplication-TileColor" content="#da532c">
+		<meta name="theme-color" content="#ffffff">
+		<meta name="description" content="apple juice addict">
+
+		<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+		<link rel="manifest" href="/site.webmanifest">
+		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+		<link rel="stylesheet" type="text/css" href="style/banner_style.css">		
+		<link rel="stylesheet" type="text/css" href="style/status_style.css">
+
 		</head>
 		<body>
 	
@@ -52,7 +58,7 @@ $mysqli=NULL;
                      padding:20px;  
                      margin-top:90px;  
 					 postion: absolute;
-					 font-size:30px;
+					 font-size:20px;
                 }  
            </style> 
 
@@ -87,8 +93,8 @@ if(isset($_POST['submit'])) {
 										<div class="line"><?php echo $waybill; ?> <span><?php echo $TrackingNumber ?></span></div>
 										<div class="line"><?php echo $dateawb; ?> <span><?php echo date_format($dateStamp,"Y/m/d h:i:s A"); ?></span></div>
 										<div class="line"><?php echo $ref; ?><span></span></div>
-										<div class="line"><?php echo $cons; ?><span><?php echo $Sender ?></span></div>
-										<div class="line"><?php echo $cosign; ?><span><?php echo $Consignee ?></span></div>
+										<div class="line"><?php echo $cons; ?> <span><?php echo $Sender ?></span></div>
+										<div class="line"><?php echo $cosign; ?> <span><?php echo $Consignee ?></span></div>
 									</div>
 									<div class="fb">
 										<div class="logo"><a href="#"><img alt="Like us" src="images/icon/fbicon.png"></a></div>
@@ -173,7 +179,7 @@ if(isset($_POST['submit'])) {
 
 			?></div>
 		<div class="footer">
-		<p>&copy; Copy Right Logistikus-Express.com</p>
+		<p>&copy; Copyright Logistikus Express Philippines, Inc.</p>
 		</div>
 			</body>	
 		

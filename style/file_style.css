@@ -1,3 +1,9 @@
+@charset "utf-8";
+@font-face {
+	font-family: 'FamiliarPro';
+	src: url('fonts/FamiliarPro.otf') format('truetype');
+
+}
 
 body  {  
      margin:0;  
