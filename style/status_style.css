@@ -1,7 +1,7 @@
 @charset "utf-8";
 @font-face {
 	font-family: 'FamiliarPro';
-	src: url('../fonts/FamiliarPro.otf') format('truetype');
+	src: url('fonts/FamiliarPro.otf') format('truetype');
 
 }
 
@@ -15,7 +15,7 @@ html , body {
 
 body {
 	font-size: 14px;
-	font-family: 'FamiliarPro',verdana,arial,sans-serif,"lucida grande";
+	font-family: 'Helvetica',verdana,arial,sans-serif,"lucida grande";
 }
 
 
