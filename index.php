@@ -15,6 +15,7 @@ $search=NULL;
 $resultSet=NULL;
 $mysqli=NULL;
 ?>
+<?php include 'navbar.php';?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 		<head>
 		<title>Logistikus-Express</title>

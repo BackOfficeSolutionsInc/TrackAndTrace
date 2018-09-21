@@ -19,24 +19,29 @@
     <div id="cssmenu" class="centered">
       <ul>
         <li class='first'><a href="#welcome" class="smoothScroll" "><span>Home</span></a></li>
-        <li><a href="#user" class="smoothScroll"><span>User Maintenance</span></a>
-				          <ul>
-            <li><a href="#">Add User</a></li>
-            <li><a href="#">Edit User</a></li>
-            <li><a href="#">Grant Role</a></li>
+		<?php if(isset($_SESSION['Role']) && ($_SESSION['Role']=='admin'))	{ ?>
+			<li><a href="#user" class="smoothScroll"><span>User Maintenance</span></a>
+			<ul>
+				<li><a href="#">Add User</a></li>
+				<li><a href="#">Edit User</a></li>
+				<li><a href="#">Grant Role</a></li>
 
-          </ul>
-		</li>
-        <li><a href="#maintenance" class="smoothScroll"><span>Maintenance</span></a>
+			  </ul>
+			</li>
+		<?php } ?>
+		<?php if(isset($_SESSION['Role']) && ($_SESSION['Role']=='USER'))
+		{ ?>
+			<li><a href="#maintenance" class="smoothScroll"><span>Maintenance</span></a>
 
-          <ul>
-            <li><a href="#">Upload</a></li>
-            <li><a href="#">Scan Barcode</a></li>
-            <li><a href="#">Delete Data</a></li>
+			  <ul>
+				<li><a href="csv.php">Upload</a></li>
+				<li><a href="#">Scan Barcode</a></li>
+				<li><a href="#">Delete Entry</a></li>
 
-          </ul>
-        </li>
-        <li><a href="#track" class="smoothScroll"><span>Track</span></a></li>
+			  </ul>
+			</li> 
+		<?php } ?>
+        <li><a href="index.php" class="smoothScroll"><span>Track</span></a></li>
 		<li><a href="#login" class="smoothScroll"><span>Log-in</span></a></li>
 
 
