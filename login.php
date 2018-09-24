@@ -30,3 +30,8 @@
 </body>
 </head>
 </html>
+<script>   
+		$('input,textarea').focus(function(){
+       $(this).removeAttr('placeholder');
+    });
+</script>

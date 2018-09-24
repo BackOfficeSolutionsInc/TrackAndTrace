@@ -185,3 +185,6 @@ if(isset($_POST['submit'])) {
 			</body>	
 		
 		</html>
+<script>    $('input,textarea').focus(function(){
+       $(this).removeAttr('placeholder');
+    });</script>
