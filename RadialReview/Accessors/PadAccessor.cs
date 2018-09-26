@@ -33,7 +33,7 @@ namespace RadialReview.Accessors
     public class PadAccessor :BaseAccessor
     {
        
-        public static async Task<string> CreatePad(string text=null,PadType? padType=PadType.firepad )
+        public static async Task<string> CreatePad(string text=null,PadType padType=PadType.firepad )
 		{
 			try{
                 
@@ -42,13 +42,13 @@ namespace RadialReview.Accessors
                 switch (padType)
                 {
                     case PadType.firepad:
-                        padid = await Firepad(padid, text);
-                        break;
+                        return await Firepad(padid, text);
                     case PadType.etherpad:
-                        padid = await Etherpad(padid, text);
-                        break;
+                        return await Etherpad(padid, text);
+                    default:
+                        throw new ArgumentOutOfRangeException("" + padType);
                 }
-                return padid;
+               
             }
             catch (Exception e){
 				log.Error("Error PadAccessor.CreatePad",e);
