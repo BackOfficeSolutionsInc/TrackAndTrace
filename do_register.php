@@ -20,7 +20,7 @@ if(isset($_POST["submit"])) {
 			header("Location:register.php?signup=invalid");
 			exit();
 		} else {
-				$sql = "SELECT * FROM register WHERE user='$user', '$type'";
+				$sql = "SELECT * FROM register WHERE user='$user'";
 				   $result = mysqli_query($con, $sql);
 				   $resulCheck = mysqli_num_rows($result);
 				   	if ($pass != $cpass) {

@@ -1,5 +1,5 @@
 <?php  
-$connect = mysqli_connect("localhost", "root", "", "trackandtrace");
+include('connect.php');
 if(isset($_POST["submit"]))
 	{
 		if($_FILES['file']['name'])
