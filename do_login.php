@@ -12,10 +12,11 @@ if(isset($_POST["submit"])){
     if (empty($user) || empty($pass)) {
 		header("Location: login.php?login=empty");
 		exit();
-        
+    } else if ( strspn($user,"';'")>0 || strspn($pass,"';'")>0 ) {
+		header("Location: login.php?login=empty");
+		exit();       
 	} else {
-        
-		$sql ="SELECT * FROM register WHERE user='$user'";
+ 		$sql ="SELECT * FROM register WHERE user='$user'";
 		$result = mysqli_query($con, $sql);
 		$resultCheck = mysqli_num_rows($result);
 		if ($resultCheck < 1) {

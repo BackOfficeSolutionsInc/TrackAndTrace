@@ -16,7 +16,7 @@ if(isset($_POST["submit"])) {
 		header("Location:register.php?signup=empty");
 		exit();
 	} else {
-		if (!preg_match("/^[a-zA-Z]*$/", $user) || !preg_match("/^[a-zA-Z]*$/", $type) ) {
+		if (!preg_match("/^[a-zA-Z]*$/", $user) || !preg_match("#[0-9]+#", $pass) ) {
 			header("Location:register.php?signup=invalid");
 			exit();
 		} else {
