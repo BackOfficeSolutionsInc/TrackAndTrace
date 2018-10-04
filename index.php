@@ -92,7 +92,7 @@ if(isset($_POST['submit'])) {
 								<div class="col">
 									<div class="info">
 										<div class="line"><?php echo $waybill; ?> <span><?php echo $TrackingNumber ?></span></div>
-										<div class="line"><?php echo $dateawb; ?> <span><?php echo date_format($dateStamp,"Y/m/d h:i:s A"); ?></span></div>
+										<div class="line"><?php echo $dateawb; ?> <span><?php echo date_format($dateStamp,"Y/m/d h:i A"); ?></span></div>
 										<div class="line"><?php echo $ref; ?><span></span></div>
 										<div class="line"><?php echo $cons; ?> <span><?php echo $Sender ?></span></div>
 										<div class="line"><?php echo $cosign; ?> <span><?php echo $Consignee ?></span></div>
@@ -122,7 +122,7 @@ if(isset($_POST['submit'])) {
 			?>
 										<div class="status piority-success">
 											<div class="date">
-												<div><?php echo date_format($dateStamp,"Y/m/d h:i:s A"); ?></div>
+												<div><?php echo date_format($dateStamp,"Y/m/d h:i A"); ?></div>
 												<div></div>
 											</div>
 											<div class="desc">

@@ -10,26 +10,28 @@ if(isset($_POST["submit"]))
 						
 						$handle = fopen($_FILES['file']['tmp_name'], "r");
 						$lineHead=0;
+                        
 						while($data = fgetcsv($handle))
+                            
 							{	
-									$trackingnumber = mysqli_real_escape_string($connect, $data[1]);  
-									$date = mysqli_real_escape_string($connect, $data[2]);
-									$reference = mysqli_real_escape_string($connect, $data[3]);
-									$sender = mysqli_real_escape_string($connect, $data[4]);
-									$consignee = mysqli_real_escape_string($connect, $data[5]);
-									$stamp = mysqli_real_escape_string($connect, $data[6]);
-									$status = mysqli_real_escape_string($connect, $data[7]);
-									$location = mysqli_real_escape_string($connect, $data[8]);
-									$statusicon = mysqli_real_escape_string($connect, $data[9]);
-									
+									$trackingnumber = mysqli_real_escape_string($con, $data[1]);  
+									$date = mysqli_real_escape_string($con, $data[2]);
+									$reference = mysqli_real_escape_string($con, $data[3]);
+									$sender = mysqli_real_escape_string($con, $data[4]);
+									$consignee = mysqli_real_escape_string($con, $data[5]);
+									$stamp_from_csv = mysqli_real_escape_string($con, $data[6]);
+									$status = mysqli_real_escape_string($con, $data[7]);
+									$location = mysqli_real_escape_string($con, $data[8]);
+									$statusicon = mysqli_real_escape_string($con, $data[9]);
+                                    $stamp=date('Y/m/d h:i',strtotime($stamp_from_csv));
 									$query="SELECT 'Y' ans FROM tbl_trackandtrace WHERE TrackingNumber = '$trackingnumber' and stamp = '$stamp' Limit 1";
-									$resultSet = mysqli_query($connect, $query);
+									$resultSet = mysqli_query($con, $query);
 									
 									if($resultSet){
 										$row = mysqli_fetch_assoc($resultSet);
 										if ( $row['ans']=='Y'){
 											$query= "Update tbl_trackandtrace set Status='$status', Location='$location', StatusIcon='$statusicon' WHERE trackingnumber = '$trackingnumber' and stamp = '$stamp' ";
-											mysqli_query($connect, $query);
+											mysqli_query($con, $query);
 			
 										}else {
 											if($lineHead>0){
@@ -37,7 +39,7 @@ if(isset($_POST["submit"]))
 													$query = "INSERT into tbl_trackandtrace
 														(TrackingNumber, Date, Reference, Sender, Consignee, Stamp, Status, Location, StatusIcon) 
 														VALUES ('".$trackingnumber."', '".$date."', '".$reference."', '".$sender."', '".$consignee."', '".$stamp."', '".$status."', '".$location."', '".$statusicon."')";
-													mysqli_query($connect, $query);
+													mysqli_query($con, $query);
 											}
 											$lineHead=1;
 										}
