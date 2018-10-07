@@ -48,11 +48,11 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
 					var recurIds = RealTimeHelpers.GetRecurrencesForScore(s, score);
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					var groupIds = recurIds.Select(rid => MeetingHub.GenerateMeetingGroupId(rid)).ToList();
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					var groupIds = recurIds.Select(rid => RealTimeHub.Keys.GenerateMeetingGroupId(rid)).ToList();
 
-					groupIds.Add(MeetingHub.GenerateUserId(score.AccountableUserId));
-					groupIds.Add(MeetingHub.GenerateUserId(score.Measurable.AdminUserId));
+					groupIds.Add(RealTimeHub.Keys.UserId(score.AccountableUserId));
+					groupIds.Add(RealTimeHub.Keys.UserId(score.Measurable.AdminUserId));
 
 					groupIds = groupIds.OrderBy(x => x).ToList();
 					var groupKey = string.Join("##", groupIds) + "###" + connection;

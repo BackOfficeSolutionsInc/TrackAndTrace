@@ -48,6 +48,15 @@ namespace RadialReview.Controllers {
 						.Where(x => x.DeleteTime != null && x.Organization.Id == user.Organization.Id)
 						.List().ToList();
 
+					try {
+						foreach (var u in users) {
+							var a = u.Cache.LastLogin;
+						}
+					} catch (Exception e) {
+						//opps
+					}
+
+
 					return View(users);
 
 				}
@@ -66,7 +75,7 @@ namespace RadialReview.Controllers {
 						.Where(x => x.DeleteTime != null && x.Organization.Id == user.Organization.Id)
 						.List().ToList();
 
-					return View(l10s.Select(x => new { Name = x.Name, Id = x.Id }).ToList());
+					return View(l10s.Select(x => new { Name = x.Name, Id = x.Id, DeleteTime = x.DeleteTime }).ToList());
 
 				}
 			}

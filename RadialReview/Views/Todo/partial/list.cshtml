@@ -23,6 +23,8 @@
 
     var showMeeting = ViewBag.ShowMeeting != false;
 
+	var context = ViewBag.Context ?? "General";
+
 
     var attrLookup = new Dictionary<string, string>(){
 {"todotype-column",""},
@@ -122,7 +124,7 @@
                     </md-table-container>
                     <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
                     @*<div class="create-row" ng-click="functions.addRow($event,'AngularTodo')" data-toggle="tooltip" data-placement="left" title="New To-do"></div>*@
-                    <div class="create-row todoModal" data-method="CreateTodo" data-recurrence="{{@(recurrenceId)}}" data-toggle="tooltip" data-placement="left" title="New To-do"></div>
+                    <div class="create-row todoModal" data-method="CreateTodoRecurrence" data-context="@(context)" data-recurrence="{{@(recurrenceId)}}" data-toggle="tooltip" data-placement="left" title="New To-do"></div>
                     <div class="gray no-todos empty-search" style="padding: 30px 15px;" ng-if="(@(selector) @(filter)).length==0">
                         @(onempty)
                     </div>

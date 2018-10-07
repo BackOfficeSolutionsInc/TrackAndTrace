@@ -21,9 +21,16 @@ namespace RadialReview.Models.Todo {
         Milestone = 2,
     }
 
+	public interface ITodoTiny {
+		DateTime DueDate { get; }
+		string Message { get; }
+		string PadId { get; }
+		long Id { get; }
+		long AccountableUserId { get; }
+	}
 
-    [DebuggerDisplay("Message = {Message}, Owner={AccountableUser}")]
-    public class TodoModel : IDeletable, ILongIdentifiable, IIssue {
+	[DebuggerDisplay("Message = {Message}, Owner={AccountableUser}")]
+    public class TodoModel : IDeletable, ILongIdentifiable, IIssue, ITodoTiny {
         public virtual long Id { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
         public virtual DateTime CreateTime { get; set; }

@@ -89,7 +89,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 		_hub,
 		_connect = function (username, onSuccess, onFailure) {
 			// Set Up SignalR Signaler
-			var hub = $.connection.meetingHub;
+			var hub = $.connection.realTimeHub;
 			$.support.cors = true;
 			$.connection.hub.url = '/signalr/hubs';
 			_setupHubCallbacks(hub);

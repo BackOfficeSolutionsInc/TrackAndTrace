@@ -1,4 +1,5 @@
 ﻿using RadialReview.Utilities.DataTypes;
+using System;
 using System.Collections.Generic;
 
 namespace RadialReview.Models.L10.VM
@@ -22,5 +23,6 @@ namespace RadialReview.Models.L10.VM
 		public long? MeetingInProgress { get; set; }
 		public bool IsAttendee { get; set; }
 		public List<TinyUser> _DefaultAttendees { get; set; }
+		public DateTime? StarDate { get; set; }
 	}
 }

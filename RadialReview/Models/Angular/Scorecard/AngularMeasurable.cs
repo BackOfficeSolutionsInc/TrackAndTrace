@@ -52,8 +52,10 @@ namespace RadialReview.Models.Angular.Scorecard {
 			IsDivider = false;
 			ShowCumulative = measurable.ShowCumulative;
 			CumulativeRange = measurable.CumulativeRange;
-			Cumulative = measurable._Cumulative;
-			if (measurable._Editable == false) {
+            Cumulative = measurable._Cumulative;
+            ShowAverage = measurable.ShowAverage;
+            Average = measurable._Average;
+            if (measurable._Editable == false) {
 				Disabled = true;
 			}
 
@@ -110,5 +112,8 @@ namespace RadialReview.Models.Angular.Scorecard {
 		[IgnoreDataMember]
 		public AngularMeasurableGroup Grouping { get; set; }
 		public bool? IsFormula { get; set; }
-	}
+
+        public decimal? Average { get; set; }
+        public bool? ShowAverage { get; set; }
+    }
 }

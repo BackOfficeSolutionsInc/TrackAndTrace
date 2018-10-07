@@ -25,11 +25,20 @@ namespace RadialReview.Api.V1 {
 	[RoutePrefix("api/v1")]
 	public class RocksController : BaseApiController {
 		/// <summary>
+		/// Get a list of your rocks
+		/// </summary>
+		/// <returns></returns>
+		[Route("rocks/user/mine")]
+		[HttpGet]
+		public async Task<IEnumerable<AngularRock>> GetYourRocks() {
+			return await GetRocksForUser(GetUser().Id);
+		}
+
+		/// <summary>
 		/// Get milestones for a particular rock
 		/// </summary>
 		/// <param name="ROCK_ID">Rock ID</param>
 		/// <returns>List of milestones</returns>
-		//[GET/PUT] /rocks/{ROCK_ID}/milestones
 		[Route("rocks/{ROCK_ID}/milestones")]
 		[HttpGet]
 		public IEnumerable<AngularMilestone> GetRocksMilestones(long ROCK_ID) {
@@ -133,15 +142,18 @@ namespace RadialReview.Api.V1 {
 		public async Task<IEnumerable<AngularRock>> GetRocksForUser(long USER_ID) {
 			return RockAccessor.GetRocks(GetUser(), USER_ID).Select(x => new AngularRock(x, false));
 		}
-		/// <summary>
-		/// Get a list of your rocks
-		/// </summary>
-		/// <returns></returns>
-		[Route("rocks/user/mine")]
-		[HttpGet]
-		public async Task<IEnumerable<AngularRock>> GetYourRocks() {
-			return await GetRocksForUser(GetUser().Id);
-		}
+
+        /// <summary>
+        /// Restore a rock from the archive
+        /// </summary>
+        /// <param name="ROCK_ID">Rock ID</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("rocks/{ROCK_ID:long}/restore")]
+        public async Task RestoreRock(long ROCK_ID) {
+            await RockAccessor.UnArchiveRock(GetUser(), ROCK_ID);
+        }
+		
 
 	}
 

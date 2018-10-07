@@ -343,8 +343,8 @@ namespace RadialReview.Accessors {
 				issueRecur.DeleteTime = null;
 				s.Update(issueRecur);
 				//Add back to issues list (does not need to be added below. CreateIssue calls this.
-				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-				var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(issueRecur.Recurrence.Id));
+				var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+				var meetingHub = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(issueRecur.Recurrence.Id));
 				meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(issueRecur), recur.OrderIssueBy);
 			} else {
 				var vto = s.Get<VtoModel>(vtoIssueStr.Vto.Id);
@@ -357,8 +357,8 @@ namespace RadialReview.Accessors {
 				issueRecur = issue.IssueRecurrenceModel;
 			}
 			//Remove from vto
-			var vtoHub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-			var group = vtoHub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoIssueStr.Vto.Id));
+			var vtoHub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			var group = vtoHub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(vtoIssueStr.Vto.Id));
 			vtoIssueStr.Vto = null;
 			group.update(new AngularUpdate() { AngularVtoString.Create(vtoIssueStr) });
 			
@@ -473,6 +473,10 @@ namespace RadialReview.Accessors {
 						throw new PermissionsException("You do not have permission to copy this issue.");
 					}
 
+					if(!L10Accessor._GetAllConnectedL10Recurrence(s, caller, parent.Recurrence.Id).Any(x => x.Id == childRecurrenceId)) {
+						throw new PermissionsException("You do not have permission to copy this issue.");
+					}
+
 					var issue_recur = new IssueModel.IssueModel_Recurrence() {
 						ParentRecurrenceIssue = null,
 						CreateTime = now,
@@ -488,8 +492,8 @@ namespace RadialReview.Accessors {
 					tx.Commit();
 					s.Flush();
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(childRecurrenceId));
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					var meetingHub = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(childRecurrenceId));
 
 					meetingHub.appendIssue(".issues-list", viewModel);
 					var issue = s.Get<IssueModel>(parent.Issue.Id);
@@ -561,8 +565,8 @@ namespace RadialReview.Accessors {
 					tx.Commit();
 					s.Flush();
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(childRecurrenceId));
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					var meetingHub = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(childRecurrenceId));
 
 					meetingHub.removeIssueRow(getL10RecurrenceChild.Id);
 					var issue = s.Get<IssueModel>(parent.Issue.Id);

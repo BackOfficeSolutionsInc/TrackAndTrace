@@ -16,10 +16,14 @@ namespace RadialReview.Utilities.Hooks {
 		public bool AccountableUserChanged { get; set; }
 		public bool AdminUserChanged { get; set; }
 		public bool AlternateGoalChanged { get; set; }
-		public bool ShowCumulativeChanged { get; set; }
-		public bool CumulativeRangeChanged { get; set; }
 
-		public long OriginalAccountableUserId { get; set; }
+        public bool ShowCumulativeChanged { get; set; }
+        public bool CumulativeRangeChanged { get; set; }
+
+        public bool ShowAverageChanged { get; set; }
+        public bool AverageRangeChanged { get; set; }
+
+        public long OriginalAccountableUserId { get; set; }
 		public long OriginalAdminUserId { get; set; }
 		public DateTime UpdateAboveWeek { get; set; }
 

@@ -34,8 +34,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
         public async Task CreateHeadline(ISession s, PeopleHeadline headline) {
             var recurrenceId = headline.RecurrenceId;
             if (recurrenceId > 0) {
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                var meetingHub = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 
                 if (headline.CreatedDuringMeetingId == null) {
                     headline.CreatedDuringMeetingId = L10Accessor._GetCurrentL10Meeting(s, PermissionsUtility.CreateAdmin(s), recurrenceId, true, false, false).NotNull(x => (long?)x.Id);
@@ -50,8 +50,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
         }
 
         public async Task UpdateHeadline(ISession s, PeopleHeadline headline, IHeadlineHookUpdates updates) {
-            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-            var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(headline.RecurrenceId), RealTimeHelpers.GetConnectionString());
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+            var group = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(headline.RecurrenceId), RealTimeHelpers.GetConnectionString());
 
             if (updates.MessageChanged) {
                 group.updateHeadlineMessage(headline.Id, headline.Message);

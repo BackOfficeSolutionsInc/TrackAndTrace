@@ -5,7 +5,7 @@ function arrayHasOwnIndex(array, prop) {
 
 
 Constants = {
-	StartHubSettings: { transport: ['webSockets', 'longPolling'] }
+	StartHubSettings: { /*transport: ['webSockets', 'longPolling']*/ }
 };
 
 function showDebug(show) {
@@ -28,12 +28,14 @@ function escapeString(str) {
 	return str;
 }
 
-function generateGuid() {
+function generateGuid(dash) {
 	var result, i, j;
 	result = '';
 	for (j = 0; j < 32; j++) {
 		if (j == 8 || j == 12 || j == 16 || j == 20)
-			result = result + '-';
+			if (dash != false) {
+				result = result + '-';
+			}
 		i = Math.floor(Math.random() * 16).toString(16).toUpperCase();
 		result = result + i;
 	}

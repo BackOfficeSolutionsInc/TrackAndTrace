@@ -16,6 +16,9 @@
 <div class="row">
 	<div class="col-md-8 col-md-offset-2">
 		<div id="qc-archive"></div>
+		@if (ViewBag.CanCreate == true) {
+			<span class="pull-right gray clickable" style="margin-right:5px;margin-top:-14px;"><a href="/people/quarterlyconversation/archive">view archive</a></span>
+		}
 	</div>
 </div>
 
@@ -45,6 +48,11 @@
 			background-color: gray;
 			color: lightgray;
 		}
+
+		.emptyable:empty{
+			padding-left:0;
+			padding-right:0;
+		}
 	</style>
 }
 @using (Html.BeginScripts()) {
@@ -62,7 +70,8 @@
 		var dtOptions = {
 			container: "#qc-archive",
 			data: @Html.ArrayToString(Model),
-
+			clickEdit:"/people/quarterlyconversation/editmodal/{0}",
+			postEdit:"/people/quarterlyconversation/edit/{0}",
 			clickRemove: "/people/quarterlyconversation/remove/{0}",
 			nodataText: "No quarterly conversations at this time.",
 			cells:[{
@@ -91,23 +100,19 @@
 			]};
 
 
-		var messageHub = $.connection.messageHub;
+		//var messageHub = $.connection.messageHub;
+
+		//$(function(){
+			RealTime.client.addQC = function(message,row){
+				//table.addRow(row);
+				debugger;
+				StoreJsonAlert({Message:message});
+				location.reload();
+				//showAlert(message,"success");
+			};
+		//});
 
 
-		messageHub.client.addQC = function(message,row){
-			table.addRow(row);
-			showAlert(message,"success");
-		};
-		messageHub.client.showAlert = function(mObj){
-			showAlert(mObj);
-		};
-
-
-		$.connection.hub.start(Constants.StartHubSettings).done(function(){
-			messageHub.server.joinUser($.connection.hub.id).done(function () {
-				console.log("connected to messageHub")
-			});
-		});
 
 	</script>
 
@@ -130,12 +135,12 @@
 						return null;
 				}
 			},{
-				remove:true,
-				hideIfEmpty:true,
+				remove: function(x){return (x.IssuedBy.Id == UserId);},
+				//hideIfEmpty:true,
 				classes:function(x){
 					//if (x.IssuedBy.Id != UserId)
 					//	return "hidden";
-					return"nowrap alignRight";
+					return"nowrap alignRight emptyable";
 				},
 				contents:function(x){
 					if (x.IssuedBy.Id == UserId)
@@ -144,12 +149,26 @@
 						return null;
 				}
 			},{
-				name: "",
-				hideIfEmpty:true,
+				edit: function(x){return (x.IssuedBy.Id == UserId);},
+				//hideIfEmpty:true,
 				classes:function(x){
 					//if (x.IssuedBy.Id != UserId)
 					//	return "hidden";
-					return"nowrap alignRight";
+					return"nowrap alignRight emptyable";
+				},
+				contents:function(x){
+					if (x.IssuedBy.Id == UserId)
+						return "<span class='gray clickable glyphicon glyphicon-pencil' title='Edit'></span>";
+					else
+						return null;
+				}
+			},{
+				name: "",
+				//hideIfEmpty:true,
+				classes:function(x){
+					//if (x.IssuedBy.Id != UserId)
+					//	return "hidden";
+					return"nowrap alignRight emptyable";
 				},
 				contents:function(x){
 					if (x.IssuedBy.Id == UserId)

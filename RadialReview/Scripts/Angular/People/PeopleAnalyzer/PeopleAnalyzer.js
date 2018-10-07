@@ -22,19 +22,22 @@
 			$scope.showQuarterlyConversationActions=this.showQcActions;
 
 
+			var r = radial($scope, {  });
+
 			var r = radial($scope, {
-				hubName: "PeopleHub",
-				hubJoinMethod: "Join",
-				hubJoinArgs: [null, null],//ctrl.surveyContainerId, ctrl.surveyId],
+				hubs: { surveyContainerId:null,surveyId:null},
+				//hubName: "RealTimeHub",
+				//hubJoinMethod: "Join",
+				//hubJoinArgs: [{
+				//	surveys: [{surveyContainerId:null,surveyId:null}]
+				//}],//null, null],//ctrl.surveyContainerId, ctrl.surveyId],
 				sendUpdateUrl: function (self) { return "/People/PeopleAnalyzer/Update" + self.Type; },
 				loadDataUrl: "/People/PeopleAnalyzer/Data" + query,
 				loadDataOptions: {
 					success: function (data) {
-						//$log.log("survComp2:", $scope);
 						r.updater.clearAndApply(data);
 						angular.element(window).triggerHandler('data-loaded');
 
-						//var dates = [];
 						$scope.surveyContainerLookup = {};
 						$scope.surveyContainerLookupById = {};
 

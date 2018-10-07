@@ -2,6 +2,7 @@
 using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
 using PdfSharp.Drawing;
+using RadialReview.Accessors.PDF;
 using RadialReview.Areas.People.Angular;
 using RadialReview.Models;
 using RadialReview.Models.Interfaces;
@@ -36,7 +37,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 		/// <param name="taggedCells"></param>
 		/// <param name="font"></param>
 		/// <param name="angleDeg"></param>
-		private static void AddDiagonalText(DocumentRenderer docRenderer, PdfDocumentRenderer renderer, List<Cell> taggedCells, XFont font, double angleDeg) {
+		private static void AddDiagonalText(DocumentRenderer docRenderer, PdfDocumentRenderer renderer,PdfSettings settings, List<Cell> taggedCells, XFont font, double angleDeg) {
 			using (XGraphics gfx = XGraphics.FromPdfPage(renderer.PdfDocument.Pages[0])) {
 				CellLocation cellLocation;
 				XGraphicsState state;
@@ -44,7 +45,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 					cellLocation = (CellLocation)cell.Tag;
 
-					var pen = new XPen(XColors.LightGray, .5);
+					var pen = new XPen(settings.BorderXColor, .5);
 					var p1 = new XPoint(cellLocation.LineX, cellLocation.LineY);
 					var p2 = new XPoint(
 							cellLocation.LineX + Math.Cos(Math.PI / 180 * angleDeg) * cellLocation.LineWidth,
@@ -143,7 +144,8 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 		/// <param name="pa"></param>
 		/// <param name="beforeDate"></param>
 		/// <returns></returns>
-		public static PdfDocumentRenderer AppendPeopleAnalyzer(UserOrganizationModel caller, Document doc, AngularPeopleAnalyzer pa, DateTime? beforeDate = null) {
+		public static PdfDocumentRenderer AppendPeopleAnalyzer(UserOrganizationModel caller, Document doc, AngularPeopleAnalyzer pa, PdfSettings settings, DateTime? beforeDate = null) {
+			settings = settings ?? new PdfSettings();
 			beforeDate = beforeDate ?? DateTime.MaxValue;
 
 			var resultColumns = 3 + pa.Values.Distinct(x => x.Source.PrettyString).Count();
@@ -192,7 +194,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			//setup table
 			var table = section.AddTable();
 			table.Rows.LeftIndent = addlPadding;
-			table.Borders.Color = Colors.LightGray;
+			table.Borders.Color = settings.BorderColor;
 
 			//... define Columns
 			table.AddColumn(titleWidth);
@@ -262,7 +264,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			renderer.RenderDocument();
 
 			XFont font = new XFont("Arial", fs, XFontStyle.Regular);
-			AddDiagonalText(docRenderer, renderer, taggedCells, font, angle);
+			AddDiagonalText(docRenderer, renderer,settings, taggedCells, font, angle);
 
 			var container = pa.NotNull(y => y.SurveyContainers.Where(x => x.IssueDate <= beforeDate).OrderBy(x => x.IssueDate).LastOrDefault());
 			if (container != null) {

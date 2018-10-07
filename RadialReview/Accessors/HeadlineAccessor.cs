@@ -64,9 +64,20 @@ namespace RadialReview.Accessors {
 				s.Update(r);
 			}
 
+//<<<<<<< HEAD
             headline.HeadlinePadId = await PadAccessor.CreatePad(headline._Details);
             
             s.Save(headline);
+//=======
+//			if (String.IsNullOrWhiteSpace(headline.HeadlinePadId))
+//				headline.HeadlinePadId = Guid.NewGuid().ToString();
+
+//			if (!string.IsNullOrWhiteSpace(headline._Details))
+//				await PadAccessor.CreatePad(headline.HeadlinePadId, headline._Details);
+			
+
+//			s.Save(headline);
+//>>>>>>> engineering
 			headline.Ordering = -headline.Id;
 			//s.Update(headline);
 

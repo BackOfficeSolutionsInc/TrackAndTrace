@@ -17,13 +17,13 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
         }
 
         public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
-
-            var aboutSUN = (data.About as SurveyUserNode);
-
-            if (aboutSUN!=null && aboutSUN._Relationship[data.By.ToKey()].HasFlag(AboutType.Subordinate)) {
-                yield return new InputItemIntializer("# of Rocks completed last Quarter", SurveyQuestionIdentifier.RockCompletion, SurveyItemType.Number, new KV[] { new KV("QN", NUMBER_COMPLETE_LAST_QUARTER) });
-                yield return new InputItemIntializer("# of Rocks last Quarter", SurveyQuestionIdentifier.RockCompletion, SurveyItemType.Number, new KV[] { new KV("QN", NUMBER_LAST_QUARTER) });
-            }
+			if (data.FirstSeenByAbout()) {
+				var aboutSUN = (data.About as SurveyUserNode);
+				if (aboutSUN != null && aboutSUN._Relationship[data.By.ToKey()].HasFlag(AboutType.Subordinate)) {
+					yield return new InputItemIntializer("# of Rocks completed last Quarter", SurveyQuestionIdentifier.RockCompletion, SurveyItemType.Number, new KV[] { new KV("QN", NUMBER_COMPLETE_LAST_QUARTER) });
+					yield return new InputItemIntializer("# of Rocks last Quarter", SurveyQuestionIdentifier.RockCompletion, SurveyItemType.Number, new KV[] { new KV("QN", NUMBER_LAST_QUARTER) });
+				}
+			}
             yield break;
         }
 

@@ -5,30 +5,30 @@
 		$scope.disconnected = false;
 		$scope.vtoId = vtoId;
 
-		function rejoin(connection, proxy, callback) {
-			try {
-				if (proxy) {
-					proxy.invoke("join", $scope.vtoId, connection.id).done(function () {
-						console.log("rejoin");
-						$(".rt").prop("disabled", false);
-						if (callback) {
-							callback();
-						}
-						if ($scope.disconnected) {
-							clearAlerts();
-							showAlert("Reconnected.", "alert-success", "Success", 1000);
-						}
-						$scope.disconnected = false;
-					});
-				}
-			} catch (e) {
-				console.error(e);
-			}
-		}
+		//function rejoin(connection, proxy, callback) {
+		//	try {
+		//		if (proxy) {
+		//			proxy.invoke("join", $scope.vtoId, connection.id).done(function () {
+		//				console.log("rejoin");
+		//				$(".rt").prop("disabled", false);
+		//				if (callback) {
+		//					callback();
+		//				}
+		//				if ($scope.disconnected) {
+		//					clearAlerts();
+		//					showAlert("Reconnected.", "alert-success", "Success", 1000);
+		//				}
+		//				$scope.disconnected = false;
+		//			});
+		//		}
+		//	} catch (e) {
+		//		console.error(e);
+		//	}
+		//}
 
 
-
-		var r = radial($scope, 'vtoHub', rejoin);
+		debugger;
+		var r = radial($scope,{hubs:{ vtoIds: [vtoId] }}/* 'vtoHub', rejoin*/);
 
 		$http({ method: 'get', url: vtoDataUrlBase + $scope.vtoId })
 			.success(function (data, status) {

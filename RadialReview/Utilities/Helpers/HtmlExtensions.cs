@@ -15,6 +15,12 @@ using System.Linq.Expressions;
 using RadialReview.Reflection;
 
 namespace System.Web {
+
+	public enum TimeOfDay {
+		Beginning,
+		End
+	}
+
 	public static class HtmlExtensions {
 		public static string VideoConferenceUrl(this HtmlHelper html, string resource = null) {
 			return Config.VideoConferenceUrl(resource);
@@ -127,6 +133,13 @@ namespace System.Web {
 			return new HtmlString(hexColor);
 		}
 
+		public static HtmlString ShowNew(this HtmlHelper html, DateTime showUntil) {
+			if (DateTime.UtcNow < showUntil) {
+				return new HtmlString("<span class='show-new-marker' style='color:red;font-size:70%;opacity:0.7;pointer-events:none;width:0px;display:inline-block;'>New!</span>");
+			}
+			return new HtmlString("");
+		}
+
 		public static HtmlString EditFirstButton(this HtmlHelper html, List<string> items, bool edit = true) {
 			var count = items.Count();
 			var name = "" + count;
@@ -237,10 +250,12 @@ namespace System.Web {
 			return new HtmlString(output);
 		}
 
-		public static MvcHtmlString ArrayToString<T>(this HtmlHelper html, IEnumerable<T> items) {
+		public static MvcHtmlString ArrayToString<T>(this HtmlHelper html, IEnumerable<T> items,bool format=false) {
 			//	var unproxied = items.Select(x => NHibernateProxyRemover.From(x));
 
-			return new MvcHtmlString(JsonConvert.SerializeObject(items));
+			return new MvcHtmlString(JsonConvert.SerializeObject(items, new JsonSerializerSettings() {
+				Formatting = format ? Formatting.Indented : Formatting.None
+			}).Replace("</script>","<\\/script>"));
 			//Json.Encode());
 		}
 
@@ -265,6 +280,36 @@ namespace System.Web {
 			return new MvcHtmlString(JsonConvert.SerializeObject(convert));
 			//Json.Encode());
 		}
+
+		public static string NewGuid(this HtmlHelper html) {
+			return "g"+Guid.NewGuid().ToString().Replace("-", "");
+		}
+
+
+		public static HtmlString ClientDateFor<T>(this HtmlHelper<T> html, Expression<Func<T, DateTime>> serverDateSelector,TimeOfDay timeOfDay) {
+			var guid = html.NewGuid();
+			var model = (T)html.ViewData.Model;
+			var serverDate = serverDateSelector.Compile();
+			var builder = $@"
+<div class='{guid} client-datepicker'></div>
+<script>
+	setTimeout(function(){{
+		var options = {{
+			selector : $("".{guid}.client-datepicker""),
+			serverTime : new Date(""{serverDate(model).ToString("yyyy-MM-dd HH:mm:ss")}""),
+			displayAsLocal : true,
+			name:""{html.NameFor(serverDateSelector)}"",
+			id:""{html.IdFor(serverDateSelector)}"",
+			datePickerOptions:undefined,
+			endOfDay: {(timeOfDay==TimeOfDay.End?"true":"false")}
+		}};
+		Time.createClientDatepicker(options);
+	}},1);
+ </script>
+";
+			return new HtmlString(builder);
+		}
+
 
 
 		//public class TableOptions {

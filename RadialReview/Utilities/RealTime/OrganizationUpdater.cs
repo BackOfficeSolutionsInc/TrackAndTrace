@@ -24,7 +24,7 @@ namespace RadialReview.Utilities.RealTime {
 			}
 			public RTOrganizationUpdater NotificationStatus(long notificationId,bool seen, string username) {
 				rt.AddAction(() => {
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 					var group = hub.Clients.User(username);
 					var updates = new AngularNotification(notificationId) {
 						 Seen = seen
@@ -36,7 +36,7 @@ namespace RadialReview.Utilities.RealTime {
 
 			public RTOrganizationUpdater Notification(Notification notification,IEnumerable<string> usernames) {
 				rt.AddAction(() => {
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 					var group = hub.Clients.Users(usernames.ToList());
 					var updates = new {
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -50,7 +50,7 @@ namespace RadialReview.Utilities.RealTime {
 
             protected void UpdateAll(Func<long, IAngularId> itemGenerater, bool forceNoSkip = false)
             {
-                var updater = rt.GetUpdater<OrganizationHub>(OrganizationHub.GenerateId(_OrganizationId),!forceNoSkip);
+                var updater = rt.GetUpdater<RealTimeHub>(RealTimeHub.Keys.OrganizationId(_OrganizationId),!forceNoSkip);
                 updater.Add(itemGenerater(_OrganizationId));
 			}
 			public RTOrganizationUpdater Update(IAngularId item, bool forceNoSkip = false) {
@@ -69,11 +69,12 @@ namespace RadialReview.Utilities.RealTime {
 
 			public RTOrganizationUpdater AddLowLevelAction(Action<dynamic> action, bool forceNoSkip = false) {
 				rt.AddAction(() => {
-					var updater = rt.GetUpdater<OrganizationHub>(OrganizationHub.GenerateId(_OrganizationId), forceNoSkip);
+					var updater = rt.GetUpdater<RealTimeHub>(RealTimeHub.Keys.OrganizationId(_OrganizationId), forceNoSkip);
 					action(updater);
 				});
 				return this;
 			}
-		}		
+		}
+
 	}
 }

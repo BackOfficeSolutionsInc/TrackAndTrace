@@ -161,13 +161,25 @@
 				}
 			}
 		}
-
+		
+		survey + survey:before {
+				content: "";
+				height: 3px;
+				display: inline-block;
+				position: absolute;
+				left: -120%;
+				right: -20px;
+				margin-top: -38px;
+				border-top: 5px dotted #cecece;
+		}
 
 		.survey {
 			.panel();
 			.panel-primary();
 			border-color: @traction-black;
 			margin-bottom: 70px;
+
+		
 
 			& > .title {
 				.panel-heading();
@@ -184,6 +196,27 @@
 
 			.sections {
 				.panel-body();
+
+				/*background:#cecece33;
+				transition:background-color ease-in-out .75s;
+				&:hover{
+					background:#cecece00;
+				}*/
+
+				/*survey-section{
+					transition:background-color ease-in-out .5s;
+					background:#cecece33;
+					padding:15px;
+
+					&:hover{
+						background:#cecece00;
+					}
+					&:empty{
+						display:none;
+					}
+				}*/
+
+
 
 				&.in {
 					margin-bottom: 50px;

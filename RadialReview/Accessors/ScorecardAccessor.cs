@@ -118,9 +118,11 @@ namespace RadialReview.Accessors {
 
 	public class ScorecardAccessor {
 
-		#region Create
+        public static DateTime MINIMUM_SCORE_WEEK = new DateTime(1990, 1, 1);
 
-		public static async Task<MeasurableModel> CreateMeasurable(UserOrganizationModel caller, MeasurableBuilder measurableBuilder) {
+        #region Create
+
+        public static async Task<MeasurableModel> CreateMeasurable(UserOrganizationModel caller, MeasurableBuilder measurableBuilder) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -160,7 +162,8 @@ namespace RadialReview.Accessors {
 			//var measurableLU = measurables.ToDefaultDictionary(x => x.Id, x => x, x => null);
 			//var measurableIds = measurables.Select(x => x.Id).ToList();
 			var weekMeasurables = new List<Tuple<DateTime, long>>();
-			foreach (var week in weeks) {
+            
+            foreach (var week in weeks) {
 				foreach (var mid in measurableIds) {
 					weekMeasurables.Add(Tuple.Create(week, mid));
 				}
@@ -172,7 +175,7 @@ namespace RadialReview.Accessors {
 		private static async Task<List<ScoreModel>> _GenerateScoreModels_AddMissingScores_Unsafe(ISession s, IEnumerable<Tuple<DateTime, long>> weekMeasurables, List<ScoreModel> existing) {
 			var measurableToGet = new List<long>();
 			var toAdd_WeekMeasurable = new List<Tuple<DateTime, long>>();
-			foreach (var wm in weekMeasurables) {
+			foreach (var wm in weekMeasurables.Where(x => x.Item1 >= MINIMUM_SCORE_WEEK)) {
 				var week = wm.Item1;
 				var mid = wm.Item2;
 				if (!existing.Any(x => x.ForWeek == week && x.MeasurableId == mid)) {
@@ -206,7 +209,6 @@ namespace RadialReview.Accessors {
 						if (m.HasFormula) {
 							calc.Add(curr);
 						}
-
 
 						s.Save(curr);
 						added.Add(curr);
@@ -340,11 +342,11 @@ namespace RadialReview.Accessors {
 					}
 				}
 
-				return results;
+				return results.Where(x => x.DeleteTime == null).ToList();
 			} else {
 				//q = s.QueryOver<MeasurableModel>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null);
 				if (perms.IsPermitted(x => x.ViewOrganizationScorecard(organizationId))) {
-					return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
+					return GetOrganizationMeasurables(s, perms, organizationId, loadUsers).Where(x => x.DeleteTime == null).ToList();
 				} else {
 					var results = GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers, false, true);
 
@@ -366,7 +368,7 @@ namespace RadialReview.Accessors {
 						}
 					}
 
-					return results;
+					return results.Where(x => x.DeleteTime == null).ToList();
 				}
 			}
 		}
@@ -407,7 +409,7 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
 
-					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, LoadMeeting.True())._DefaultAttendees.Select(x => x.User.Id).ToList();
 					if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
 						userIds = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
 					}
@@ -603,18 +605,18 @@ namespace RadialReview.Accessors {
 
 		#region Edit
 
-		public static async Task UpdateMeasurable(UserOrganizationModel caller, long measurableId, string name = null, LessGreater? direction = null, decimal? target = null, long? accountableId = null, long? adminId = null, string connectionId = null, bool updateFutureOnly = true, decimal? altTarget = null, bool? showCumulative = null, DateTime? cumulativeRange = null, UnitType? unitType = null) {
+		public static async Task UpdateMeasurable(UserOrganizationModel caller, long measurableId, string name = null, LessGreater? direction = null, decimal? target = null, long? accountableId = null, long? adminId = null, string connectionId = null, bool updateFutureOnly = true, decimal? altTarget = null, bool? showCumulative = null, DateTime? cumulativeRange = null, UnitType? unitType = null,bool? showAverage=null,DateTime? averageRange=null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					await UpdateMeasurable(s, perms, measurableId, name, direction, target, accountableId, adminId, connectionId, updateFutureOnly, altTarget, showCumulative, cumulativeRange, unitType);
+					await UpdateMeasurable(s, perms, measurableId, name, direction, target, accountableId, adminId, connectionId, updateFutureOnly, altTarget, showCumulative, cumulativeRange, unitType,showAverage,averageRange);
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
 
-		public static async Task UpdateMeasurable(ISession s, PermissionsUtility perms, long measurableId, string name = null, LessGreater? direction = null, decimal? target = null, long? accountableId = null, long? adminId = null, string connectionId = null, bool updateFutureOnly = true, decimal? altTarget = null, bool? showCumulative = null, DateTime? cumulativeRange = null, UnitType? unitType = null) {
+		public static async Task UpdateMeasurable(ISession s, PermissionsUtility perms, long measurableId, string name = null, LessGreater? direction = null, decimal? target = null, long? accountableId = null, long? adminId = null, string connectionId = null, bool updateFutureOnly = true, decimal? altTarget = null, bool? showCumulative = null, DateTime? cumulativeRange = null, UnitType? unitType = null, bool? showAverage = null, DateTime? averageRange = null) {
 			var measurable = s.Get<MeasurableModel>(measurableId);
 
 			if (measurable == null)
@@ -647,8 +649,22 @@ namespace RadialReview.Accessors {
 				updates.CumulativeRangeChanged = true;
 			}
 
-			//Direction
-			if ((direction != null && measurable.GoalDirection != direction.Value) || !updateFutureOnly) {
+
+            //Show Average
+            if (showAverage != null && measurable.ShowAverage != showAverage) {
+                measurable.ShowAverage = showAverage.Value;
+                updates.ShowAverageChanged = true;
+            }
+
+            //Average Range
+            if (averageRange != null && measurable.AverageRange != averageRange) {
+                measurable.AverageRange = averageRange.Value;
+                updates.AverageRangeChanged = true;
+            }
+
+
+            //Direction
+            if ((direction != null && measurable.GoalDirection != direction.Value) || !updateFutureOnly) {
 				measurable.GoalDirection = direction.Value;
 				var scoresQ = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.MeasurableId == measurable.Id);
 

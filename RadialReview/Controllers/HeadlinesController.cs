@@ -53,11 +53,11 @@ namespace RadialReview.Controllers {
 			try {
 				var headline = HeadlineAccessor.GetHeadline(GetUser(), id);
 				var padId = headline.HeadlinePadId;
-				if (readOnly || !_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditHeadline(id))) {
+				if (readOnly || !PermissionsAccessor.IsPermitted(GetUser(), x => x.EditHeadline(id))) {
 					padId = await PadAccessor.GetReadonlyPad(headline.HeadlinePadId);
 				}
                 //this is to choose what to use between Noteserves or firepad
-                return Redirect(PadAccessor.GetNotesURL(padId, showControls,GetUser().GetName()));
+                return Redirect(await PadAccessor.GetNotesURL(padId, showControls,GetUser().GetName()));
                   
 			} catch (Exception e) {
 				Response.StatusCode = 400;

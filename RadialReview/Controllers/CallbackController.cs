@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Amazon.IdentityManagement.Model;
+
 using RadialReview.Accessors;
 using RadialReview.Accessors.TodoIntegrations;
 using TrelloNet;
@@ -25,7 +25,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Trello(long recurrence, long user, string token = null) {
 			var username = UserAccessor.GetUserOrganization(GetUser(), user, false, false).GetName();
-			var recurName = L10Accessor.GetL10Recurrence(GetUser(), recurrence, false);
+			var recurName = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.False());
 
 			var model = new SelectTrelloList() {
 				ServiceName = "Trello",
@@ -53,7 +53,7 @@ namespace RadialReview.Controllers {
 			var recurrence = args[1].ToLong();
 
 			var username = UserAccessor.GetUserOrganization(GetUser(), user, false, false).GetName();
-			var recurName = L10Accessor.GetL10Recurrence(GetUser(), recurrence, false);
+			var recurName = L10Accessor.GetL10Recurrence(GetUser(), recurrence, LoadMeeting.False());
 
 			var auth = BaseCampAccessor.Authorize(GetUser(), code, recurrence, user);
 

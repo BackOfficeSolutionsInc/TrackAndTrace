@@ -83,11 +83,20 @@ if (ViewBag.NoTitleBar ?? false) {
 
         var curRecur=0;
         function showPrint(recurrenceId) {
-            //Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
             curRecur=recurrenceId;
             showModal("Generate Quarterly Printout", "/Quarterly/Modal/"+ recurrenceId, "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
-
         }
+
+        function showImplementer(recurrenceId){			
+        	showModal("Send a quarterly printout to your implementer", "/Quarterly/Send/"+ recurrenceId, "/Quarterly/Send/" + recurrenceId, null,"validateImplementer");
+        }
+
+        function validateImplementer(m){
+        	var re = /^(([^<>()\[\]\\.,;:\s@@"]+(\.[^<>()\[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        	if (!re.test(String(m.ImplementerEmail).toLowerCase()))
+        		return "Please enter a valid e-mail address";
+        }
+
 
         function callbackPrint() {
             $("#modalForm").unbind("submit");
@@ -138,11 +147,6 @@ if (ViewBag.NoTitleBar ?? false) {
                                 </td>
                             </tr>
                         </table>
-
-
-                        @*<div class="wizard-nav-bar">
-
-                            </div>*@
                         <div class="clearfix"></div>
                         <ol>
                             <li><a href="#Basics">Basics</a></li>
@@ -152,14 +156,14 @@ if (ViewBag.NoTitleBar ?? false) {
                             <li ng-show="model.HeadlineType=='HeadlinesList' && model.ShowHeadlines"><a href="#Headlines">People Headlines</a></li>
                             <li ng-show="model.ShowTodos"><a href="#Todos">To-dos</a></li>
                             <li ng-show="model.ShowIDS"><a href="#Issues">Issues</a></li>
-                            @*<li><a href="#VTO">V/TO</a></li>*@
                         </ol>
 
                     </div>
                     <div class="component1 wizard-extra-buttons" id="wizard-extra-buttons">
                         <div class="btn-row pull-right1">
                             <a class="btn btn-default btn-sm1 btn-meeting-archive" href="/L10/Details/@Model"><span style="top: 2px;" class="icon fontastic-icon-archive-1" title=""></span> Meeting Archive <span class="glyphicon glyphicon-triangle-right gray"></span></a>
-                            <a class="btn btn-default btn-sm1 btn-generate-printout" href="#" onclick="showPrint(@(Model))"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Printout <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+							<a class="btn btn-default btn-sm1 btn-generate-printout" href="#" onclick="showPrint(@(Model))"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Printout <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+							<a class="btn btn-default btn-sm1 btn-send-to-implementer" href="#" onclick="showImplementer(@(Model))"><span style="top: 2px;" class="glyphicon glyphicon-send" ></span> Send to Implementer @Html.ShowNew(new DateTime(2018,12,31)) <span class="glyphicon glyphicon-triangle-right gray"></span></a>
                             <a class="btn btn-default btn-sm1 shift-hidden btn-export" href="@Url.Action("ExportAll", new { id = Model })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All <span class="glyphicon glyphicon-triangle-right gray"></span></a>
                             <a class="btn btn-default btn-sm1 shift-visible hidden btn-export" href="@Url.Action("ExportAll", new { id = Model, includeDetails = true })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> <i>Export All <span class="gray fadein">(include notes)</span></i> <span class="glyphicon glyphicon-triangle-right gray"></span></a>
                             <a class="btn btn-default btn-sm1 btn-timeline" href="/L10/Timeline/@Model"><span class="icon fontastic-icon-back-in-time"></span> Timeline <span class="glyphicon glyphicon-triangle-right gray"></span></a>
@@ -256,15 +260,16 @@ if (ViewBag.NoTitleBar ?? false) {
                         <div class="upload upload-todos" ng-click="functions.goto('/upload/l10/todos?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload To-dos"></div>
                         <div class="title-bar">To-do List</div>
                         @{Html.RenderPartial("~/Views/Todo/partial/list.cshtml", new ViewDataDictionary{
-                              {"AddHeaders",false},
-                              {"ShowDetails",false},
-                              {"SortBy","createtime-column"},
-                                 {"UsePopup",true},
-                              {"AddDatePicker",false},
-                              {"DefaultSort","CreateTime"},
-                              {"ShowMeeting",false},
-                              {"Order","| orderBy: ['Id','DateCreated']"}
-                          });
+							  {"AddHeaders",false},
+							  {"ShowDetails",false},
+							  {"SortBy","createtime-column"},
+								 {"UsePopup",true},
+							  {"AddDatePicker",false},
+							  {"DefaultSort","CreateTime"},
+							  {"ShowMeeting",false},
+							  {"Context","L10"},
+							  {"Order","| orderBy: ['Id','DateCreated']"}
+						  });
                         }
                     </div>
                     <div class="component wizard-page" data-page="Issues" id="l10-wizard-issues">

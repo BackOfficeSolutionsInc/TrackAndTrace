@@ -132,6 +132,16 @@
     padding-top: 10px;
   }
 }
+.people.quarterly-conversation survey-container survey + survey:before {
+  content: "";
+  height: 3px;
+  display: inline-block;
+  position: absolute;
+  left: -120%;
+  right: -20px;
+  margin-top: -38px;
+  border-top: 5px dotted #cecece;
+}
 .people.quarterly-conversation survey-container .survey {
   margin-bottom: 20px;
   background-color: #fff;
@@ -352,6 +362,23 @@
 }
 .people.quarterly-conversation survey-container .survey .sections {
   padding: 15px;
+  /*background:#cecece33;
+				transition:background-color ease-in-out .75s;
+				&:hover{
+					background:#cecece00;
+				}*/
+  /*survey-section{
+					transition:background-color ease-in-out .5s;
+					background:#cecece33;
+					padding:15px;
+
+					&:hover{
+						background:#cecece00;
+					}
+					&:empty{
+						display:none;
+					}
+				}*/
 }
 .people.quarterly-conversation survey-container .survey .sections.in {
   margin-bottom: 50px;

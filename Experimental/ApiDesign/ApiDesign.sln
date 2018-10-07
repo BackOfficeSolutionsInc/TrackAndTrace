@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiDesign", "ApiDesign\ApiDesign.csproj", "{BAD3B67F-79F9-4359-A061-087617CB85F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiDesign.Tests", "ApiDesign.Tests\ApiDesign.Tests.csproj", "{BC405E92-8C6E-4EB3-88E7-BAD5B527A0BA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BAD3B67F-79F9-4359-A061-087617CB85F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAD3B67F-79F9-4359-A061-087617CB85F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAD3B67F-79F9-4359-A061-087617CB85F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAD3B67F-79F9-4359-A061-087617CB85F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC405E92-8C6E-4EB3-88E7-BAD5B527A0BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC405E92-8C6E-4EB3-88E7-BAD5B527A0BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC405E92-8C6E-4EB3-88E7-BAD5B527A0BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC405E92-8C6E-4EB3-88E7-BAD5B527A0BA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

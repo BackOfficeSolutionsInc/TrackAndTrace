@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
-using Amazon.ElasticTranscoder.Model;
+
 using FluentNHibernate.Utils;
 using NHibernate.Cache;
 using RadialReview.Models;
@@ -36,10 +36,12 @@ using RadialReview.Models.Reviews;
 using RadialReview.Utilities.RealTime;
 using System.Diagnostics;
 using RadialReview.Utiliities;
+using RadialReview.Models.Admin;
 
 namespace RadialReview.Accessors {
 
 	public class UserAccessor : BaseAccessor {
+
 		public String GetUserIdByUsername(ISession s, String username) {
 			return (string)CacheLookup.GetOrAddDefault("username_" + username, x => {
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -232,6 +234,10 @@ namespace RadialReview.Accessors {
 
 		private UserOrganizationModel GetUserOrganizationModel(ISession session, long id, Boolean full) {
 			var result = session.Get<UserOrganizationModel>(id);
+
+			if (Config.IsTest() && result.IsRadialAdmin) {
+				result._IsTestAdmin = true;
+			}
 			return result;
 		}
 
@@ -534,18 +540,99 @@ namespace RadialReview.Accessors {
 
 		}
 
-		public void ChangeRole(UserModel caller, UserOrganizationModel callerUserOrg, long roleId) {
+		public void ChangeRole(UserModel caller, UserOrganizationModel callerUserOrg, long roleId, AdminAccessViewModel audit = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					caller = s.Get<UserModel>(caller.Id);
-					if ((caller != null && caller.IsRadialAdmin) || (callerUserOrg != null && callerUserOrg.IsRadialAdmin) || caller.UserOrganizationIds.Any(x => x == roleId))
-						caller.CurrentRole = roleId;
-					else
-						throw new PermissionsException();
+					var myUserOrganizations = caller.UserOrganizationIds;
+					var isAdmin = caller != null && ((caller.IsRadialAdmin) || (callerUserOrg != null && callerUserOrg.IsRadialAdmin));
+
+					var requestedOrg = s.Get<UserOrganizationModel>(roleId).Organization;
+					var recordAudit = new Action(() => s.Save(audit.ToDatabaseModel(caller.Id)));
+
+					var canChange = CanChangeToRole(roleId, myUserOrganizations, requestedOrg.Id, requestedOrg.AccountType, Config.GetDisallowedOrgIds(s), isAdmin, audit, recordAudit);
+					if (!canChange.Allowed) {
+						throw new PermissionsException(canChange.Message);
+					}
+					caller.CurrentRole = roleId;
+
 					s.Update(caller);
 					tx.Commit();
 					s.Flush();
 				}
+			}
+		}
+
+		public static UserModel GetSetAsUser(UserModel caller, UserOrganizationModel callerUserOrg, string requestedEmail, AdminAccessViewModel audit = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var requestedUser = new UserAccessor().GetUserByEmail(requestedEmail);
+					var isAdmin = caller != null && ((caller.IsRadialAdmin) || (callerUserOrg != null && callerUserOrg.IsRadialAdmin));
+
+					var recordAudit = new Action(() => s.Save(audit.ToDatabaseModel(caller.Id)));
+					if (!CanSetAs(isAdmin, caller.Id, requestedUser.Id, requestedEmail, "tractiontools.com", audit, recordAudit)) {
+						throw new PermissionsException("Cannot set as other Traction Tools users.");
+					}
+
+					s.Update(caller);
+					tx.Commit();
+					s.Flush();
+					return requestedUser;
+				}
+			}
+		}
+
+		public static bool CanSetAs(bool isAdmin, string callerUserId, string requestedUserId, string requestedEmail, string tractionToolsEmailSubstring, AdminAccessViewModel audit, Action onAdminAllow) {
+			if (!isAdmin) {
+				return false;
+			} else {
+				if (callerUserId == requestedUserId)
+					return true;
+				if (requestedEmail.ToLower().Contains(tractionToolsEmailSubstring.ToLower()))
+					return false;
+				if (audit == null)
+					throw new AdminSetRoleException(requestedEmail);
+				audit.EnsureValid();
+				onAdminAllow?.Invoke();
+				return true;
+			}
+		}
+
+		public class CanChangeRole {
+			public CanChangeRole(bool allowed, string message) {
+				Allowed = allowed;
+				Message = message;
+			}
+			public bool Allowed { get; set; }
+			public string Message { get; set; }
+		}
+
+		public static CanChangeRole CanChangeToRole(long requestedUserOrgId, long[] myUserOrganizations, long requestedOrganizationId, AccountType requestedOrganizationType, long[] disallowedOrgIds, bool isAdmin, AdminAccessViewModel audit, Action onAdminAllow) {
+			if (!isAdmin && myUserOrganizations.Any(x => x == requestedUserOrgId)) {
+				//Not an admin and has Access
+				//caller.CurrentRole = roleId;
+				return new CanChangeRole(true, "success");
+			} else if (isAdmin) {
+				if (requestedOrganizationType == AccountType.SwanServices) {
+					//Auto set if Swan services
+					return new CanChangeRole(true, "success");
+				} else if (disallowedOrgIds.Contains(requestedOrganizationId)) {
+					//Only allow TT if owned..
+					if (myUserOrganizations.Any(x => x == requestedUserOrgId))
+						return new CanChangeRole(true, "success");
+					return new CanChangeRole(false, "Admins cannot access disallowed organizations.");
+				} else {
+					//Is Admin
+					if (audit == null) {
+						throw new AdminSetRoleException(requestedUserOrgId);
+					}
+					audit.EnsureValid();
+					onAdminAllow?.Invoke();
+					//caller.CurrentRole = roleId;
+					return new CanChangeRole(true, "success");
+				}
+			} else {
+				return new CanChangeRole(false, "Cannot access.");
 			}
 		}
 
@@ -1012,11 +1099,11 @@ namespace RadialReview.Accessors {
 			//var caller = GetUser().Hydrate().Organization().Execute();
 			//var positions = _OrganizationAccessor.GetOrganizationPositions(caller, caller.Organization.Id);
 			var e1 = sw.ElapsedMilliseconds;
-			var _PermissionsAccessor = new PermissionsAccessor();
+			//var _PermissionsAccessor = new PermissionsAccessor();
 			var _OrganizationAccessor = new OrganizationAccessor();
 			var _PositionAccessor = new PositionAccessor();
 
-			_PermissionsAccessor.Permitted(caller, x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, caller.Organization.Id));
+			PermissionsAccessor.Permitted(caller, x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, caller.Organization.Id));
 
 #pragma warning disable CS0618 // Type or member is obsolete
 			var orgPos = _OrganizationAccessor
@@ -1025,7 +1112,7 @@ namespace RadialReview.Accessors {
 						.OrderBy(x => x.CustomName)
 						.ToSelectList(x => x.CustomName, x => x.Id).ToList();
 #pragma warning restore CS0618 // Type or member is obsolete
-			if (_PermissionsAccessor.IsPermitted(caller, x => x.EditPositions(caller.Organization.Id))) {
+			if (PermissionsAccessor.IsPermitted(caller, x => x.EditPositions(caller.Organization.Id))) {
 				orgPos.Insert(0, new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
 			}
 			var e2 = sw.ElapsedMilliseconds;

@@ -39,7 +39,7 @@ namespace RadialReview.Hooks.Realtime {
 
 			var recurRocks = recurRocksQ.List().ToList();
 
-			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 
 
 
@@ -51,7 +51,7 @@ namespace RadialReview.Hooks.Realtime {
 
 				//if (vtoId != null) {
 					var updates = action(qrId, recurRock);
-					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
+					var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(vtoId), connectionId);
 					group.update(updates);
 				//}
 			}

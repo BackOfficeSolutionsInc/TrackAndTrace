@@ -1,0 +1,24 @@
+﻿@model List<RadialReview.Controllers.IntegrationsController.AsanaActionVM>
+
+<div id="table"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+		var data = @(Html.ArrayToString(Model));
+		DataTable({
+			container:"#table",
+			data:data,
+			clickAdd:"/Integrations/AsanaAddAction",			
+			postAdd:"/Integrations/AsanaEditAction/{0}",
+			clickRemove:"/Integrations/AsanaRemoveAction/{0}",
+			clickEdit:"/Integrations/AsanaEditAction/{0}",
+			cells: [
+				{contents:function(x){return x.Description},classes:"fullWidth"},
+				{edit:true},
+				{remove:true},
+			],
+			nodataText:"No actions"
+		});
+
+	</script>
+}

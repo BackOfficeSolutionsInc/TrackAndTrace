@@ -70,7 +70,7 @@ namespace RadialReview.Hooks.Realtime {
 
 		public class Rock_Data {
 			public IEnumerable<Rock_RecurId> RecurData { get; set; }
-		//	public IEnumerable<Rock_MeetingId> MeetingData { get; set; }
+			//	public IEnumerable<Rock_MeetingId> MeetingData { get; set; }
 
 			public List<long> GetRecurrenceIds() {
 				return RecurData.Select(x => x.RecurrenceId).ToList();
@@ -80,17 +80,17 @@ namespace RadialReview.Hooks.Realtime {
 
 		public static dynamic DoRecurrenceUpdate(ISession s, long recurrenceId, Func<AngularUpdate> action) {
 
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			var meetingHub = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
 			var a = action();
 			meetingHub.update(a);
 
 			return meetingHub;
 		}
 
-		public static dynamic GetUserHubForRecurrence(long userId,bool excludeCaller=true) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			return hub.Clients.Group(MeetingHub.GenerateUserId(userId), excludeCaller?RealTimeHelpers.GetConnectionString():null);
+		public static dynamic GetUserHubForRecurrence(long userId, bool excludeCaller = true) {
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			return hub.Clients.Group(RealTimeHub.Keys.UserId(userId), excludeCaller ? RealTimeHelpers.GetConnectionString() : null);
 		}
 
 	}

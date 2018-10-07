@@ -438,6 +438,15 @@ body {
   vertical-align: middle;
   display: inline-block;
 }
+.vto .rocks-table.border-table .number {
+  padding-top: 10px;
+}
+.vto .rocks-table.border-table .rock-message {
+  padding-top: 7px;
+}
+.vto .rocks-table.border-table td {
+  vertical-align: top;
+}
 .vto ol {
   margin-bottom: 0px;
 }
@@ -523,6 +532,7 @@ profile-image .picture-container {
   width: auto;
   max-width: 100%;
   max-width: calc(100% - 15px);
+  padding: 10px;
 }
 .traction .eos-model {
   max-height: 135px;

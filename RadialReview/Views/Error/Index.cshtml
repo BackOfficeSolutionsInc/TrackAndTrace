@@ -6,6 +6,7 @@
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	var subject = ((string)ViewBag.Message).NotNull(x => x.ToString().UrlEncode());
 	var body = Model.NotNull(x => x.StackTrace.UrlEncode());
+	var errorCode = ((string)ViewBag.ErrorCode) ?? "1";
 }
 
 
@@ -19,11 +20,12 @@
 		</div>
 
 		@if (Context.IsDebuggingEnabled && Model != null && !String.IsNullOrWhiteSpace(Model.StackTrace)) {
-			<div class="review" style="white-space: pre;font-size: 11px;overflow-x: auto;">@Model.NotNull(x => x.StackTrace)</div>
-			<a target="_blank" href="mailto:@ProductStrings.SupportEmail?subject=Error:@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A@(body)">Email Support</a>
+			<div class="error-window"><b>Error Code: </b><br /><span style="padding-left:10px">@errorCode</span></div>
+			<div class="review hidden" style="white-space: pre;font-size: 11px;overflow-x: auto;">@Model.NotNull(x => x.StackTrace)</div>
+			<a class="pull-right" target="_blank" href="mailto:@ProductStrings.SupportEmail?subject=Received%20an%20error%20@(subject)&body=I%27ve%20received%20the%20following%20error%3A%0D%0A%0D%0A@(errorCode)">Email Support</a>
 		}
 
-		@if (((int?)ViewBag.Organizations ?? 0) == 0 && !(ViewBag.NoAccessCode ?? false) ) {
+		@if (((int?)ViewBag.Organizations ?? 0) == 0 && !(ViewBag.NoAccessCode ?? false)) {
 			<div class="review">
 				<h4>Instructions to access your organization:</h4>
 				<p>
@@ -44,16 +46,28 @@
 			</div>
 			<br />
 		}
-		<h3>Need help?</h3>
-		<button class="btn btn-default"  href="#" onclick="supportEmail('An error has occurred.', 'support@mail.traction.tools','@(ViewBag.Message??"I received an error message")')">Contact Customer Support</button>
+            <h3>Need help?</h3>
+            <button class="btn btn-default" href="#" onclick="supportEmail('An error has occurred.', 'support@mail.traction.tools','@(ViewBag.Message??"I received an error message")')">Contact Customer Support</button>
+        
 	</div>
 </div>
-
-<script>
-	try {
-		console.error("@ViewBag.Message");
-		console.error("@ViewBag.StackTrace");
-	} catch (e) {
-		console.error(e);
+@using (Html.BeginScripts()) {
+	<script>
+		@{try {
+			@:console.error("@ViewBag.Message");console.error("@(Model.NotNull(x => x.Message).Replace("\\", "\\\\").Replace("\r\n", "\\n"))");console.error("@Model.NotNull(x => x.StackTrace.Replace("\\", "\\\\")).Replace("\r\n", "\\n")");
+		} catch (Exception e) {
+			@:console.warn(e);
+		}}
+	</script>
 	}
-</script>
+
+<style>
+	.error-window {
+		border: 1px solid #D1D1D1;
+		background-color: #FDFDFD;
+		padding: 10px 15px;
+		border-radius: 0px;
+		margin-bottom: 10px;
+		word-break: break-word;
+	}
+</style>

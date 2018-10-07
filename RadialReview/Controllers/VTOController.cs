@@ -46,13 +46,17 @@ namespace RadialReview.Controllers {
 				model = VtoAccessor.GetVTO(GetUser(), id);
 			}
 
+			if (GetUser().Organization.Settings.HasImage()) {
+				ViewBag.CompanyImageUrl = GetUser().Organization.Settings.GetImageUrl(ImageSize._img);
+			}
+
 			var defaultVision = false;
 			var defaultTraction = true;
 			var defaultCompanyVision = true;
 			//var onlyCompanyWideRocks = false;
 
 			if (model.L10Recurrence != null) {
-				var isLeadership = L10Accessor.GetL10Recurrence(GetUser(), model.L10Recurrence.Value, false).TeamType == L10TeamType.LeadershipTeam;
+				var isLeadership = L10Accessor.GetL10Recurrence(GetUser(), model.L10Recurrence.Value, LoadMeeting.False()).TeamType == L10TeamType.LeadershipTeam;
 				defaultVision = isLeadership;
 				//onlyCompanyWideRocks = onlyCompanyWideRocks || isLeadership;
 			} else {
@@ -73,12 +77,12 @@ namespace RadialReview.Controllers {
 
 			}
 
-			ViewBag.CanEditCoreValues = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditCompanyValues(model.Organization.Id));
+			ViewBag.CanEditCoreValues = PermissionsAccessor.IsPermitted(GetUser(), x => x.EditCompanyValues(model.Organization.Id));
 
 			var editVision = false;
 			var editTraction = false;
 
-			if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditVTO(model.Id))) {
+			if (PermissionsAccessor.IsPermitted(GetUser(), x => x.EditVTO(model.Id))) {
 				editTraction = true;
 				if (visionPage == null) {
 					editVision = true;

@@ -102,6 +102,7 @@ namespace RadialReview {
 				"~/Scripts/Main/time.js",
 				"~/Scripts/Main/linq.js",
 				"~/Scripts/Main/radial.js",
+				"~/Scripts/Main/realtime.js",
 				"~/Scripts/Main/modals.js",
 				"~/Scripts/Main/datepickers.js",
 				"~/Scripts/Main/support.js",
@@ -113,7 +114,8 @@ namespace RadialReview {
 				"~/Scripts/Main/clickableclass.js",
 				"~/Scripts/Main/profilepicture.js",
 				"~/Scripts/Main/libraries.js",
-				"~/Scripts/Main/chart.js"
+				"~/Scripts/Main/chart.js",
+				"~/Scripts/Main/notifications.js",
 			};
 
 
@@ -189,6 +191,7 @@ namespace RadialReview {
 			//^^^^^
 
 			bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/DashboardGrid").Include(
+				"~/Scripts/Dashboard/jquery-ui.min.js",
 				"~/Scripts/Dashboard/dashboard.js",
 				"~/Scripts/Grid/fixtures.js",
 				"~/Scripts/Grid/src/gridList.js",

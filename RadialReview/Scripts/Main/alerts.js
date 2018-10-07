@@ -44,6 +44,11 @@ function showHtmlErrorAlert(html, defaultMessage) {
 }
 
 function showAlert(message, alertType, preface, duration) {
+	if ($("#alerts .alert .message").html()==message){
+		console.log("Already displaying message: '" + message + "'");
+		return;
+	}
+
 	if (typeof (alertType) === "number" && typeof (preface) === "undefined" && typeof (duration) === "undefined") {
 		duration = alertType;
 		alertType = undefined;

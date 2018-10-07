@@ -21,7 +21,7 @@ namespace RadialReview.Utilities.RealTime {
             protected void UpdateAll(Func<long, IAngularId> itemGenerater)
             {
                 foreach (var r in _vtoIds) {
-                    var updater = rt.GetUpdater<VtoHub>(VtoHub.GenerateVtoGroupId(r));
+                    var updater = rt.GetUpdater<RealTimeHub>(RealTimeHub.Keys.GenerateVtoGroupId(r));
                     updater.Add(itemGenerater(r));
                 }
             }

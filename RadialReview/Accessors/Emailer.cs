@@ -1,21 +1,14 @@
-﻿using Amazon.DynamoDBv2.DocumentModel;
-using NHibernate;
-using RadialReview.Exceptions;
+﻿using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Json;
 using RadialReview.Properties;
 using RadialReview.Utilities;
-using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net.Mail;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using System.Collections.Concurrent;
 using RadialReview.Utilities.DataTypes;
 using Mandrill.Models;
 using System.Text.RegularExpressions;
@@ -23,7 +16,7 @@ using Mandrill;
 using Mandrill.Requests.Messages;
 
 namespace RadialReview.Accessors {
-	public class EmailResult {
+    public class EmailResult {
 		public int Sent { get; set; }
 		public int Unsent { get; set; }
 		public int Queued { get; set; }
@@ -349,8 +342,7 @@ namespace RadialReview.Accessors {
 			}
 
 
-			var oEmail = new EmailMessage() {
-				
+			var oEmail = new EmailMessage() {				
 				FromEmail = MandrillStrings.FromAddress,
 				FromName = email._ReplyToName ?? MandrillStrings.FromName,
 				Html = email.Body,
@@ -358,8 +350,12 @@ namespace RadialReview.Accessors {
 				To  = toAddresses,
 				TrackOpens = true,
 				TrackClicks = true,
-				GoogleAnalyticsDomains = Config.GetMandrillGoogleAnalyticsDomain().NotNull(x => x.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList())
+				GoogleAnalyticsDomains = Config.GetMandrillGoogleAnalyticsDomain().NotNull(x => x.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList()),								
 			};
+
+			if (email._Attachments != null && email._Attachments.Any()) {
+				oEmail.Attachments = email._Attachments;
+			}
 
 			if (!string.IsNullOrWhiteSpace(email._ReplyToEmail)) {
 				oEmail.AddHeader("Reply-To", email._ReplyToEmail);
@@ -454,8 +450,15 @@ namespace RadialReview.Accessors {
 							EmailType = email.EmailType,
 							_ReplyToName = email.ReplyToName,
 							_ReplyToEmail = email.ReplyToAddress,
-
 						};
+
+						if (email.Attachment != null) {
+							unsent._Attachments = new List<EmailAttachment>() {
+								email.Attachment
+							};
+						}
+
+
 						s.Save(unsent);
 						unsentEmails.Add(unsent);
 					}

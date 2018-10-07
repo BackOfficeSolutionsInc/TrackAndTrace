@@ -198,14 +198,15 @@ var Grid = {
                     var originalX = null;
                     var originalY = null;
                     $(window).on("mousemove.gridresize", function (e) {
-                        if (originalX == null) originalX = e.clientX;
-                        if (originalY == null) originalY = e.clientY;
-                        var diffX = (e.clientX - originalX);
-                        var diffY = (e.clientY - originalY);
+                        if (originalX == null) originalX = e.pageX;
+                        if (originalY == null) originalY = e.pageY;
+                        var diffX = (e.pageX - originalX);
+                        var diffY = (e.pageY - originalY);
                         var curH = $(resizeCell).data("h");
                         var curW = $(resizeCell).data("w");
                         var newH = curH;
                         var newW = curW;
+
                         if (unlocks.indexOf("vertical") != -1) {
                             var shift = -.2
                             if (diffY < 0)

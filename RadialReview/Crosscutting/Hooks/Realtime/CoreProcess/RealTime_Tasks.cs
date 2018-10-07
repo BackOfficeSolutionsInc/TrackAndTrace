@@ -26,7 +26,7 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		private void _UpdateGroup(IHubContext hub,IEnumerable<IdentityLink> links,string identityLinkType, AngularListType addOrRemove,  AngularTask angularTask) {
-            var groups = links.Where(x => identityLinkType == null || x.type == identityLinkType).SelectNoException(link => CoreProcessHub.GenerateRgm(link)).ToList();
+            var groups = links.Where(x => identityLinkType == null || x.type == identityLinkType).SelectNoException(link => RealTimeHub.Keys.GenerateRgm(link)).ToList();
             _UpdateGroup(hub, groups, addOrRemove, angularTask);
         }
 
@@ -40,7 +40,7 @@ namespace RadialReview.Hooks.Realtime {
         }
 
         public async Task ClaimTask(ISession s, string taskId, long userId) {
-            var hub = GlobalHost.ConnectionManager.GetHubContext<CoreProcessHub>();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
             var links = await CommFactory.Get().GetIdentityLinks(taskId);
             var task = await CommFactory.Get().GetTaskById(taskId);
 
@@ -50,8 +50,8 @@ namespace RadialReview.Hooks.Realtime {
         }
 
         public async Task CompleteTask(ISession s, string taskId, long userId) {
-            var hub = GlobalHost.ConnectionManager.GetHubContext<CoreProcessHub>();
-            var groups = CoreProcessHub.GenerateRgm(userId).AsList();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+            var groups = RealTimeHub.Keys.GenerateRgm(userId).AsList();
 
             var angularTask = new AngularTask(taskId);
             _UpdateGroup(hub, groups, AngularListType.Remove, angularTask);
@@ -59,7 +59,7 @@ namespace RadialReview.Hooks.Realtime {
 
         public async Task UnclaimTask(ISession s, string taskId) {
 
-            var hub = GlobalHost.ConnectionManager.GetHubContext<CoreProcessHub>();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
             var links = await CommFactory.Get().GetIdentityLinks(taskId);
             var task = await CommFactory.Get().GetTaskById(taskId);
 

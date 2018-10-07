@@ -36,7 +36,7 @@ namespace TractionTools.Tests.Api.v1 {
 			var milestonesController = new MilestonesController();
 			milestonesController.MockUser(c.E1);
 
-			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id, false);
 			await L10Accessor.AddAttendee(c.E1, _recurrence.Id, c.E1.Id);
 			//var rock = new RockModel() {
 			//	OrganizationId = c.E1.Organization.Id,
@@ -66,7 +66,7 @@ namespace TractionTools.Tests.Api.v1 {
 			var milestonesController = new MilestonesController();
 			milestonesController.MockUser(c.E1);
 
-			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id, false);
 			await L10Accessor.AddAttendee(c.E1, _recurrence.Id, c.E1.Id);
 
 			//var rock = new RockModel() {
@@ -100,7 +100,7 @@ namespace TractionTools.Tests.Api.v1 {
 			var milestonesController = new MilestonesController();
 			milestonesController.MockUser(c.E1);
 
-			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id, false);
 			await L10Accessor.AddAttendee(c.E1, _recurrence.Id, c.E1.Id);
 
 			//var rock = new RockModel() {

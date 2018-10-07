@@ -140,7 +140,7 @@ namespace RadialReview.Controllers {
 			if (tiles.Any(x => x.Type == TileType.Rocks || (x.DataUrl ?? "").Contains("UserRock"))) {
 				try {
 					var now = DateTime.UtcNow;
-					var rocks = L10Accessor.GetAllMyL10Rocks(caller, caller.Id).Select(x => new AngularRock(x, false));
+					var rocks = L10Accessor.GetAllMyL10Rocks(caller, caller.Id).Select(x => new AngularRock(x,false));
 					output.Rocks = rocks;
 				} catch (Exception e) {
 					ProcessDeadTile(e);
@@ -211,7 +211,7 @@ namespace RadialReview.Controllers {
 					}
 
 
-					var l10Lookup = new DefaultDictionary<long, L10Recurrence>(x => L10Accessor.GetL10Recurrence(s, perms, x, false));
+					var l10Lookup = new DefaultDictionary<long, L10Recurrence>(x => L10Accessor.GetL10Recurrence(s, perms, x, LoadMeeting.False()));
 
 					//L10 Todos
 					foreach (var todo in tiles.Where(x => x.Type == TileType.L10Todos || (x.DataUrl ?? "").Contains("L10Todos")).Distinct(x => x.KeyId)) {
@@ -282,7 +282,7 @@ namespace RadialReview.Controllers {
 						if (long.TryParse(rock.KeyId, out l10Id)) {
 							try {
 								var tile = new AngularTileId<List<AngularRock>>(rock.Id, l10Id, l10Lookup[l10Id].Name + " rocks", AngularTileKeys.L10RocksList(l10Id));
-								tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock, false)).ToList();
+								tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock,x.VtoRock)).ToList();
 								output.L10Rocks.Add(tile);
 							} catch (Exception e) {
 								output.L10Rocks.Add(AngularTileId<List<AngularRock>>.Error(rock.Id, l10Id, e));
@@ -428,6 +428,7 @@ namespace RadialReview.Controllers {
 			public List<SelectListItem> Dashboards { get; set; }
 
 			public class L10 {
+				public DateTime StarDate { get; set; }
 				public bool Selected { get; set; }
 				public string Text { get; set; }
 				public string Value { get; set; }
@@ -522,7 +523,7 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Index(long? id = null) {
+		public async Task<ActionResult> Index(long? id = null) {
 
 			var useDefault = id == null;
 
@@ -539,14 +540,16 @@ namespace RadialReview.Controllers {
 				if (item.DataUrl.Contains("L10Todos"))
 					item.ShowPrintButton = true;
 			}
-			DashboardVM dashboard = GenerateDashboardViewModel(id, useDefault, tiles);
+			DashboardVM dashboard = await GenerateDashboardViewModel(id, useDefault, tiles);
 
 			return View(dashboard);
 		}
 
-		private DashboardVM GenerateDashboardViewModel(long? id, bool useDefault, List<TileModel> tiles, string workspaceName = null) {
+		private async Task<DashboardVM> GenerateDashboardViewModel(long? id, bool useDefault, List<TileModel> tiles, string workspaceName = null) {
 			var l10s = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, onlyDashboardRecurrences: true);
 			var notes = L10Accessor.GetVisibleL10Notes_Unsafe(l10s.Select(x => x.Id).ToList());
+
+			var starred = (await L10Accessor.GetStarredRecurrences(GetUser(), GetUser().Id)).ToDefaultDictionary(x=>x.RecurrenceId,x=>x.StarDate,x=> DateTime.MaxValue);
 
 			var jsonTiles = Json(ResultObject.SilentSuccess(tiles), JsonRequestBehavior.AllowGet);
 			var jsonTilesStr = new JavaScriptSerializer().Serialize(jsonTiles.Data);
@@ -557,6 +560,7 @@ namespace RadialReview.Controllers {
 				DashboardId = id.Value,
 				TileJson = jsonTilesStr,
 				L10s = l10s.Select(x => new DashboardVM.L10() {
+					StarDate = starred[x.Id],
 					Value = "" + x.Id,
 					Text = x.Name,
 					Notes = notes.Where(y => y.Recurrence.Id == x.Id).Select(z => new SelectListItem() {
@@ -586,7 +590,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Generate(long id, DashboardType type) {
 			var o = DashboardAccessor.GenerateDashboard(GetUser(), id, type);
-			var dashboard = GenerateDashboardViewModel(o.Dashboard.Id, false, o.Tiles, o.Dashboard.Title);
+			var dashboard = await GenerateDashboardViewModel(o.Dashboard.Id, false, o.Tiles, o.Dashboard.Title);
 
 			var jsonTiles = Json(await DashboardDataController.GetTileData(GetUser(), o.Dashboard.Id, GetUser().Id, o.Tiles), JsonRequestBehavior.AllowGet);
 			var jsonTilesStr = new JavaScriptSerializer().Serialize(jsonTiles.Data);

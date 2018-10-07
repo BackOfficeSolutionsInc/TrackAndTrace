@@ -58,12 +58,17 @@ namespace RadialReview.Models.Scorecard {
 		public virtual DayOfWeek DueDate { get; set; }
 		public virtual TimeSpan DueTime { get; set; }
 
-		public virtual DateTime? CumulativeRange { get; set; }
-		public virtual bool ShowCumulative { get; set; }
-		public virtual decimal? _Cumulative { get; set; }
+        public virtual DateTime? CumulativeRange { get; set; }
+        public virtual DateTime? AverageRange { get; set; }
+
+        public virtual bool ShowCumulative { get; set; }
+        public virtual bool ShowAverage { get; set; }
+
+        public virtual decimal? _Cumulative { get; set; }
+        public virtual decimal? _Average { get; set; }
 
 
-		public virtual bool _Editable { get; set; }
+        public virtual bool _Editable { get; set; }
 		public virtual int? _Ordering { get; set; }
 		public virtual long? _Grouping { get; set; }
 		public virtual string _GroupingName { get; set; }
@@ -123,9 +128,11 @@ namespace RadialReview.Models.Scorecard {
 
 				Map(x => x.FromTemplateItemId);
 
-				Map(x => x.ShowCumulative);
-				Map(x => x.CumulativeRange);
-			}
+                Map(x => x.ShowCumulative);
+                Map(x => x.CumulativeRange);
+                Map(x => x.ShowAverage);
+                Map(x => x.AverageRange);
+            }
 		}
 
 		public virtual string ToSymbolString() {

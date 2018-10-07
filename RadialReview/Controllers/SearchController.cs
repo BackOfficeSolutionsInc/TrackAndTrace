@@ -16,8 +16,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Radial)]
         public JsonResult AdminAllUsers(string search)
         {
-
-
+			//AllowAdminsWithoutAudit();
             return Json(SearchAccessor.AdminSearchAllUsers(GetUser(), search), JsonRequestBehavior.AllowGet);
 
             //using (var s = HibernateSession.GetCurrentSession()) {

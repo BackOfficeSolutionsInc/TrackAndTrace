@@ -117,7 +117,7 @@ namespace TractionTools.Tests.Accessors {
 			measurables = ScorecardAccessor.GetOrganizationMeasurables(manager, org.Id, false);
 			Assert.AreEqual(3, measurables.Count);
 			//Test L10 rocks
-			var recurLoaded = L10Accessor.GetL10Recurrence(manager, recur.Id, true);
+			var recurLoaded = L10Accessor.GetL10Recurrence(manager, recur.Id, LoadMeeting.True());
 			Assert.AreEqual(0, recurLoaded._DefaultMeasurables.Count);
 
 			//Add measurables skip l10s
@@ -138,7 +138,7 @@ namespace TractionTools.Tests.Accessors {
 			measurables = ScorecardAccessor.GetOrganizationMeasurables(manager, org.Id, false);
 			Assert.AreEqual(4, measurables.Count);
 			//Test L10 rocks
-			recurLoaded = L10Accessor.GetL10Recurrence(manager, recur.Id, true);
+			recurLoaded = L10Accessor.GetL10Recurrence(manager, recur.Id, LoadMeeting.True());
 			Assert.AreEqual(1, recurLoaded._DefaultMeasurables.Count);
 			Assert.AreEqual("Measurable D", recurLoaded._DefaultMeasurables[0].Measurable.Title);
 			Assert.AreEqual(recur.Id, recurLoaded._DefaultMeasurables[0].L10Recurrence.Id);

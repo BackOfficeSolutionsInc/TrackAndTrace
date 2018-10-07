@@ -1,29 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Web;
-using Amazon.ElasticTranscoder.Model;
-using Amazon.S3.Model;
-using Amazon.SimpleDB.Model;
 using Microsoft.AspNet.SignalR;
 using NHibernate;
-using NHibernate.Hql.Ast.ANTLR.Tree;
 using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Angular.CompanyValue;
-using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.VTO;
 using RadialReview.Models.Askables;
-using RadialReview.Models.Enums;
-using RadialReview.Models.Periods;
 using RadialReview.Models.VTO;
 using RadialReview.Utilities;
-using TrelloNet;
-using Twilio;
 using RadialReview.Models.L10;
-using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
 using RadialReview.Exceptions;
 using Novacode;
@@ -31,25 +19,23 @@ using System.Globalization;
 using System.Threading;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Synchronize;
-using RadialReview.Models.Angular.Rocks;
 using System.Threading.Tasks;
-using static RadialReview.Controllers.L10Controller;
 
 namespace RadialReview.Accessors {
 	public class VtoAccessor : BaseAccessor {
 
 		public static void UpdateAllVTOs(ISession s, long organizationId, string connectionId, Action<dynamic> action) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 			var vtoIds = s.QueryOver<VtoModel>().Where(x => x.Organization.Id == organizationId).Select(x => x.Id).List<long>();
 			foreach (var vtoId in vtoIds) {
-				var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
+				var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(vtoId), connectionId);
 				action(group);
 			}
 		}
 
 		public static void UpdateVTO(ISession s, long vtoId, string connectionId, Action<dynamic> action) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-			var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(vtoId), connectionId);
 			action(group);
 		}
 
@@ -161,18 +147,11 @@ namespace RadialReview.Accessors {
 
 					if (ang.L10Recurrence != null) {
 						try {
-							var recur = L10Accessor.GetL10Recurrence(s, perms, ang.L10Recurrence.Value, false);
-							//var isLeadership = recur.TeamType == L10TeamType.LeadershipTeam;
-							//if (isLeadership) {
-							//   ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();
-							//}
-
+							var recur = L10Accessor.GetL10Recurrence(s, perms, ang.L10Recurrence.Value, LoadMeeting.False());
 							var orgVto = GetOrganizationVTO(s, perms, vto.Organization.Id);
-
 							if (recur.TeamType != L10TeamType.LeadershipTeam && orgVto == null) {
 								ang.IncludeVision = false;
 							}
-
 							if (orgVto != null) {
 								ang.ReplaceVision(orgVto);
 
@@ -187,7 +166,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 		public static VtoModel CreateRecurrenceVTO(ISession s, PermissionsUtility perm, long recurrenceId) {
-			perm.EditL10Recurrence(recurrenceId);//.CreateVTO(organizationId);
+			perm.EditL10Recurrence(recurrenceId);
 			var recurrence = s.Get<L10Recurrence>(recurrenceId);
 			perm.ViewOrganization(recurrence.OrganizationId);
 
@@ -195,11 +174,6 @@ namespace RadialReview.Accessors {
 			model.Organization = s.Get<OrganizationModel>(recurrence.OrganizationId);
 
 			s.SaveOrUpdate(model);
-			//s.Save(model.MarketingStrategy);
-			//s.Save(model.CoreFocus);
-			//s.Save(model.ThreeYearPicture);
-			//s.Save(model.OneYearPlan);
-			//s.Save(model.QuarterlyRocks);
 
 			model.CoreFocus.Vto = model.Id;
 			model.MarketingStrategy.Vto = model.Id;
@@ -255,13 +229,11 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perm = PermissionsUtility.Create(s, caller);
-
 					MarketingStrategyModel obj = new MarketingStrategyModel();
 					obj.Vto = vtoId;
 					s.Save(obj);
 					tx.Commit();
 					s.Flush();
-
 					return obj;
 				}
 			}
@@ -270,22 +242,15 @@ namespace RadialReview.Accessors {
 
         public static async Task RemoveMarketingStrategy(UserOrganizationModel caller, long strategyId, string connectionId) {
             await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateStrategy(strategyId), async s => {
-                //using (var s = HibernateSession.GetCurrentSession()) {
-                //	using (var tx = s.BeginTransaction()) {
 					var strategy = s.Get<MarketingStrategyModel>(strategyId);
 					PermissionsUtility.Create(s, caller).EditVTO(strategy.Vto);
-                //SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateStrategy(strategyId));
 					strategy.DeleteTime = DateTime.UtcNow;
 					s.Update(strategy);
-                //tx.Commit();
-                //s.Flush();
-					var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(strategy.Vto));
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(strategy.Vto));
 					group.update(new AngularUpdate(){new AngularVTO(strategy.Vto) {
 						Strategies = AngularList.CreateFrom(AngularListType.Remove,new AngularStrategy(strategyId))
 					} });
-                //	}
-                //}
             });
 		}
 
@@ -294,11 +259,8 @@ namespace RadialReview.Accessors {
 			long? update_VtoId = null;
 			VtoItem_String str = null;
             await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateVtoItem(vtoStringId), async s => {
-                //using (var s = HibernateSession.GetCurrentSession()) {
-                //using (var tx = s.BeginTransaction()) {
 					str = s.Get<VtoItem_String>(vtoStringId);
 					var perm = PermissionsUtility.Create(s, caller).EditVTO(str.Vto.Id);
-                //SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateVtoItem(vtoStringId));
 					str.Data = message;
 					if (str.BaseId == 0)
 						str.BaseId = str.Id;
@@ -323,13 +285,9 @@ namespace RadialReview.Accessors {
 						}
 					}
             });
-            //        tx.Commit();
-            //        s.Flush();
-            //    }
-            //}
 			if (update_VtoId != null) {
-				var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-				var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(update_VtoId.Value), connectionId);
+				var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+				var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(update_VtoId.Value), connectionId);
 				str.Vto = null;
 				group.update(new AngularUpdate(){
 					AngularVtoString.Create(str)
@@ -338,17 +296,13 @@ namespace RadialReview.Accessors {
 		}
         [Untested("ESA")]
         public static async Task UpdateVto(UserOrganizationModel caller, long vtoId, String name = null, String tenYearTarget = null, String tenYearTargetTitle = null, String coreValueTitle = null, String issuesListTitle = null, string connectionId = null) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-			var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(vtoId), connectionId);
             await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateVto(vtoId), async s => {
-
-                //using (var s = HibernateSession.GetCurrentSession()) {
-                //using (var tx = s.BeginTransaction()) {
+				
 					PermissionsUtility.Create(s, caller).EditVTO(vtoId);
 					var vto = s.Get<VtoModel>(vtoId);
-
-
-                //   SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateVto(vtoId));
+				
 
 					vto.Name = name;
 					vto.TenYearTarget = tenYearTarget;
@@ -358,8 +312,6 @@ namespace RadialReview.Accessors {
 
 					s.Update(vto);
 
-                //tx.Commit();
-                //s.Flush();
 					group.update(new AngularVTO(vtoId) {
 						Name = vto.Name,
 						TenYearTarget = vto.TenYearTarget,
@@ -368,7 +320,7 @@ namespace RadialReview.Accessors {
 						IssuesListTitle = vto.IssuesListTitle
 					});
             });
-            // }
+
 		}
 
 		public static async Task Update(UserOrganizationModel caller, BaseAngular model, string connectionId) {
@@ -403,15 +355,12 @@ namespace RadialReview.Accessors {
 		}
 
         public static async Task UpdateThreeYearPicture(UserOrganizationModel caller, long id, DateTime? futuredate = null, string revenue = null, string profit = null, string measurables = null, string threeYearPictureTitle = null, string connectionId = null) {
-            //using (var s = HibernateSession.GetCurrentSession()) {
-            //    using (var tx = s.BeginTransaction()) {
             await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateThreeYearPicture(id), async s => {
 					var threeYear = s.Get<ThreeYearPictureModel>(id);
 					var vtoId = threeYear.Vto;
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
-                //    SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateThreeYearPicture(id));
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(vtoId), connectionId);
 					PermissionsUtility.Create(s, caller).EditVTO(vtoId);
 
 					threeYear.FutureDate = futuredate;
@@ -420,8 +369,7 @@ namespace RadialReview.Accessors {
 					threeYear.Measurables = measurables;
 					threeYear.ThreeYearPictureTitle = threeYearPictureTitle;
 					s.Update(threeYear);
-                //tx.Commit();
-                //s.Flush();
+
 					group.update(new AngularUpdate(){new AngularThreeYearPicture(id) {
 						FutureDate = futuredate,
 						Revenue = revenue,
@@ -430,19 +378,15 @@ namespace RadialReview.Accessors {
 						ThreeYearPictureTitle=threeYearPictureTitle
 					}});
             });
-            //}
 				}
         public static async Task UpdateQuarterlyRocks(UserOrganizationModel caller, long id, DateTime? futuredate = null, string revenue = null, string profit = null, string measurables = null, string rocksTitle = null, string connectionId = null) {
-            //using (var s = HibernateSession.GetCurrentSession()) {
-            //    using (var tx = s.BeginTransaction()) {
-            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateQuarterlyRocks(id), async s => {
+           await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateQuarterlyRocks(id), async s => {
 					var quarterlyRocks = s.Get<QuarterlyRocksModel>(id);
 					var vtoId = quarterlyRocks.Vto;
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
-
-                //SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateQuarterlyRocks(id));
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(vtoId), connectionId);
+				
 
 					PermissionsUtility.Create(s, caller).EditVTO(vtoId);
 
@@ -452,9 +396,7 @@ namespace RadialReview.Accessors {
 					quarterlyRocks.Measurables = measurables;
 					quarterlyRocks.RocksTitle = rocksTitle;
 					s.Update(quarterlyRocks);
-
-                //tx.Commit();
-                //s.Flush();
+				
 #pragma warning disable CS0618 // Type or member is obsolete
 					group.update(new AngularUpdate(){new AngularQuarterlyRocks(id) {
 						FutureDate = futuredate,
@@ -465,20 +407,16 @@ namespace RadialReview.Accessors {
 					}});
 #pragma warning restore CS0618 // Type or member is obsolete
             });
-            //}
 				}
 
         public static async Task UpdateOneYearPlan(UserOrganizationModel caller, long id, DateTime? futuredate = null, string revenue = null, string profit = null, string measurables = null, string oneYearPlanTitle = null, string connectionId = null) {
-            //using (var s = HibernateSession.GetCurrentSession()) {
-            //    using (var tx = s.BeginTransaction()) {
             await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateOneYearPlan(id), async s => {
 					var plan = s.Get<OneYearPlanModel>(id);
 					var vtoId = plan.Vto;
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(vtoId), connectionId);
 
-                //SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateOneYearPlan(id));
 
 					PermissionsUtility.Create(s, caller).EditVTO(vtoId);
 
@@ -488,9 +426,7 @@ namespace RadialReview.Accessors {
 					plan.Measurables = measurables;
 					plan.OneYearPlanTitle = oneYearPlanTitle;
 					s.Update(plan);
-
-                //tx.Commit();
-                //s.Flush();
+				
 #pragma warning disable CS0618 // Type or member is obsolete
 					group.update(new AngularUpdate(){new AngularOneYearPlan(id) {
 						FutureDate = futuredate,
@@ -501,21 +437,18 @@ namespace RadialReview.Accessors {
 					}});
 #pragma warning restore CS0618 // Type or member is obsolete
             });
-            //}
 		}
 
         public static async Task UpdateStrategy(UserOrganizationModel caller, long strategyId, String targetMarket = null, String provenProcess = null, String guarantee = null, String marketingStrategyTitle = null, String title = null, string connectionId = null) {
-            //using (var s = HibernateSession.GetCurrentSession()) {
-            //    using (var tx = s.BeginTransaction()) {
+           
             await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateStrategy(strategyId), async s => {
 					var strategy = s.Get<MarketingStrategyModel>(strategyId);
 					var vtoId = strategy.Vto;
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
+					var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+					var group = hub.Clients.Group(RealTimeHub.Keys.GenerateVtoGroupId(vtoId), connectionId);
 
 					PermissionsUtility.Create(s, caller).EditVTO(vtoId);
-                //SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateStrategy(strategyId));
 
 					strategy.ProvenProcess = provenProcess;
 					strategy.Guarantee = guarantee;
@@ -523,9 +456,7 @@ namespace RadialReview.Accessors {
 					strategy.MarketingStrategyTitle = marketingStrategyTitle;
 					strategy.Title = title;
 					s.Update(strategy);
-
-                //tx.Commit();
-                //s.Flush();
+				
 #pragma warning disable CS0618 // Type or member is obsolete
 					group.update(new AngularUpdate(){new AngularStrategy(strategyId) {
 						ProvenProcess = provenProcess,
@@ -535,17 +466,12 @@ namespace RadialReview.Accessors {
 					}});
 #pragma warning restore CS0618 // Type or member is obsolete
             });
-            //}
 		}
 
         public static async Task UpdateCoreFocus(UserOrganizationModel caller, long coreFocusId, string purpose, string niche, string purposeTitle, string coreFocusTitle, string connectionId) {
-			//var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-            //using (var s = HibernateSession.GetCurrentSession()) {
-            //    using (var tx = s.BeginTransaction()) {
            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateCoreFocus(coreFocusId),async s => {
 					var coreFocus = s.Get<CoreFocusModel>(coreFocusId);
 					PermissionsUtility.Create(s, caller).EditVTO(coreFocus.Vto);
-                //SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateCoreFocus(coreFocusId));
 					coreFocus.Purpose = purpose;
 					coreFocus.Niche = niche;
 					coreFocus.PurposeTitle = purposeTitle;
@@ -554,21 +480,15 @@ namespace RadialReview.Accessors {
 
 					var update = new AngularUpdate() { AngularCoreFocus.Create(coreFocus) };
 					UpdateVTO(s, coreFocus.Vto, connectionId, x => x.update(update));
-                //tx.Commit();
-                //s.Flush();
             });
-//            }
 		}
 
         public static async Task UpdateCompanyValue(UserOrganizationModel caller, long companyValueId, string message, string details, bool? deleted, string connectionId) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-            //using (var s = HibernateSession.GetCurrentSession()) {
-            //    using (var tx = s.BeginTransaction()) {
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
             await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateCompanyValue(companyValueId), async s => {
 					var companyValue = s.Get<CompanyValueModel>(companyValueId);
 					PermissionsUtility.Create(s, caller).EditCompanyValues(companyValue.OrganizationId);
-
-                //SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateCompanyValue(companyValueId));
+				
 
 					if (message != null) {
 						companyValue.CompanyValue = message;
@@ -592,147 +512,12 @@ namespace RadialReview.Accessors {
 					var update = new AngularUpdate();
 					update.Add(AngularCompanyValue.Create(companyValue));
 					UpdateAllVTOs(s, companyValue.OrganizationId, connectionId, x => x.update(update));
-
-                //tx.Commit();
-                //s.Flush();
+				
             });
-            //    }
-            //}
 		}
-
-		#region Deleted
-		//[Untested("Vto_Rocks","Change to L10Accessor","RockID mapped with VtoRock")]
-		//[Obsolete("Do not use, Call update rock instead",true)]
-		//public static void UpdateRockAccountable(UserOrganizationModel caller, long vtoRockId, long accountableUser,long recurrenceRockId) {
-		//	throw new NotImplementedException();
-		//	//var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-		//	//using (var s = HibernateSession.GetCurrentSession()) {
-		//	//	using (var tx = s.BeginTransaction()) {
-		//	//		var rock = s.Get<Vto_Rocks>(vtoRockId);
-		//	//		PermissionsUtility.Create(s, caller).EditVTO(rock.Vto.Id).ViewUserOrganization(accountableUser, false);
-
-		//	//		SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateRockOwner(vtoRockId));
-
-		//	//		rock.Rock.AccountableUser = s.Get<UserOrganizationModel>(accountableUser);
-		//	//		rock.Rock.ForUserId = accountableUser;
-
-		//	//		var a = rock.Rock.AccountableUser.GetName();
-		//	//		var b = rock.Rock.AccountableUser.GetImageUrl();
-
-		//	//		s.Update(rock.Rock);
-		//	//		tx.Commit();
-		//	//		s.Flush();
-
-		//	//		var update = new AngularUpdate() { AngularVtoRock.Create(rock), new AngularRock(rock.Rock), };
-		//	//		UpdateVTO(s, rock.Vto.Id, null, x => x.update(update));
-		//	//	}
-		//	//}
-		//}
-
-		//[Untested("Vto_Rocks","Change to L10Accessor", "RockID mapped with VtoRock")]
-		//public static async Task UpdateRock_Old(UserOrganizationModel caller, long vtoRockId, string message, long? accountableUser, bool? deleted, string connectionId, long recurrenceRockId) {
-		//	throw new NotImplementedException();
-
-		//	////var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-		//	//using (var s = HibernateSession.GetCurrentSession()) {
-		//	//	using (var tx = s.BeginTransaction()) {
-		//	//		//var vtoRock = s.Get<Vto_Rocks>(vtoRockId);
-		//	//		var perm = PermissionsUtility.Create(s, caller).EditVTO(vtoRock.Vto.Id);
-
-		//	//		var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-		//	//		SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateRock(vtoRockId));
-
-		//	//		bool skipUpdate = false;
-
-
-		//	//		if (deleted != null) {
-		//	//			var vto = s.Get<VtoModel>(vtoRock.Vto.Id);
-
-
-		//	//			if (deleted == false) {
-		//	//				vtoRock.DeleteTime = null;
-		//	//				//rock.Rock.DeleteTime = null;
-		//	//				if (vto.L10Recurrence != null)
-		//	//					await L10Accessor.AddExistingRockToL10(s, perm, vto.L10Recurrence.Value, vtoRock.Rock);
-
-		//	//			} else if (vtoRock.DeleteTime == null) {
-		//	//				vtoRock.DeleteTime = DateTime.UtcNow;
-		//	//				//rock.Rock.DeleteTime = rock.DeleteTime;
-		//	//				if (vto.L10Recurrence != null) {
-		//	//					var recurRocks1 = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.ForRock.Id == vtoRock.Rock.Id && x.L10Recurrence.Id == vto.L10Recurrence && x.DeleteTime == null).List().ToList();
-
-		//	//					foreach (var r in recurRocks1) {
-		//	//						r.DeleteTime = vtoRock.DeleteTime;
-		//	//						s.Update(r);
-		//	//						var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(r.L10Recurrence.Id));
-		//	//						group.removeRock(r.ForRock.Id);
-		//	//					}
-
-		//	//					//Delete this meetings rocks
-		//	//					var m = L10Accessor._GetCurrentL10Meeting(s, perm, vto.L10Recurrence.Value, true, false, false);
-		//	//					if (m != null) {
-		//	//						var meetingRocks = s.QueryOver<L10Meeting.L10Meeting_Rock>()
-		//	//							.Where(x => x.ForRock.Id == vtoRock.Rock.Id && x.L10Meeting.Id == m.Id && x.DeleteTime == null).List().ToList();
-
-		//	//						foreach (var r in meetingRocks) {
-		//	//							r.DeleteTime = vtoRock.DeleteTime;
-		//	//							s.Update(r);
-		//	//						}
-		//	//					}
-
-		//	//					//var recurRocks = L10Accessor.GetRocksForRecurrence(s, perm, vto.L10Recurrence.Value);
-		//	//					var arecur = new AngularRecurrence(vto.L10Recurrence.Value) {
-		//	//						Rocks = AngularList.Create(AngularListType.Remove, new AngularRock(vtoRock.Rock.Id).AsList()),
-		//	//					};
-		//	//					var group1 = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(vto.L10Recurrence.Value));
-		//	//					group1.update(new AngularUpdate() { arecur });
-		//	//				}
-		//	//				var update = new AngularUpdate() {
-		//	//					new AngularQuarterlyRocks(){
-		//	//						Rocks = AngularList.Create(AngularListType.Remove,AngularVtoRock.Create(vtoRock).AsList())
-		//	//					}
-		//	//				};
-		//	//				UpdateVTO(s, vtoRock.Vto.Id, null, x => x.update(update));
-		//	//				skipUpdate = true; // Assumes all you do is delete the rock.
-		//	//			}
-
-		//	//		} else {
-		//	//			if (vtoRock.Rock.Rock != message) {
-		//	//				vtoRock.Rock.Rock = message;
-		//	//				var recurRocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null && x.ForRock.Id == vtoRock.Rock.Id).List().ToList();
-
-		//	//				foreach (var r in recurRocks) {
-		//	//					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(r.L10Recurrence.Id));
-		//	//					group.updateRockName(r.ForRock.Id, r.ForRock.Rock);
-		//	//					group.update(new AngularUpdate() { new AngularRock(vtoRock.Rock.Id) { Name = message } });
-		//	//				}
-		//	//			}
-		//	//			if (accountableUser.HasValue) {
-		//	//				perm.ViewUserOrganization(accountableUser.Value, false);
-		//	//				vtoRock.Rock.AccountableUser = s.Get<UserOrganizationModel>(accountableUser.Value);
-		//	//			}
-		//	//		}
-
-		//	//		s.Update(vtoRock);
-		//	//		s.Update(vtoRock.Rock);
-
-		//	//		tx.Commit();
-		//	//		s.Flush();
-
-		//	//		if (!skipUpdate) {
-		//	//			var update2 = new AngularUpdate() { AngularVtoRock.Create(vtoRock) };
-		//	//			UpdateVTO(s, vtoRock.Vto.Id, connectionId /*should not be null*/, x => x.update(update2));
-		//	//		}
-
-
-		//	//	}
-		//	//}
-		//}
-		#endregion
+		
 
 		public static async Task UpdateRock(UserOrganizationModel caller, long recurrenceRockId, string message, long? accountableUser, bool? deleted, string connectionId) {
-            //using (var s = HibernateSession.GetCurrentSession()) {
-            //    using (var tx = s.BeginTransaction()) {
             await SyncUtil.EnsureStrictlyAfter(caller, s => {
                 var recurRock = s.Get<L10Recurrence.L10Recurrence_Rocks>(recurrenceRockId);
                 return SyncAction.UpdateRockCompletion(recurRock.ForRock.Id);
@@ -749,17 +534,14 @@ namespace RadialReview.Accessors {
 						await RockAccessor.UpdateRock(s, perms, recurRock.ForRock.Id, message, accountableUser);
 					}
             });
-            //tx.Commit();
-            //s.Flush();
-            //}
 		}
 
 		public static void JoinVto(UserOrganizationModel caller, long vtoId, string connectionId) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ViewVTO(vtoId);
-					hub.Groups.Add(connectionId, VtoHub.GenerateVtoGroupId(vtoId));
+					hub.Groups.Add(connectionId, RealTimeHub.Keys.GenerateVtoGroupId(vtoId));
 					Audit.VtoLog(s, caller, vtoId, "JoinVto");
 				}
 			}
@@ -856,52 +638,8 @@ namespace RadialReview.Accessors {
 
         }
 
-
-        //		[Untested("Vto_Rocks", "Accessible?")]
-        //		[Obsolete("Do not use", true)]
-        //		private static async Task AddRock(ISession s, PermissionsUtility perms, long vtoId, RockModel rock, DateTime? nowTime = null) {
-        //			throw new NotImplementedException();
-        //			if (rock._AddedToVTO)
-        //				throw new PermissionsException("Already added to vto");
-        //			rock._AddedToVTO = true;
-        //			perms.EditVTO(vtoId);
-
-        //			var vto = s.Get<VtoModel>(vtoId);
-        //			var organizationId = vto.Organization.Id;
-
-
-        //			var now = nowTime ?? DateTime.UtcNow;
-        //			var vtoRocks = GetVtoRocks_Unsafe(s, vtoId);
-
-        //			s.SaveOrUpdate(rock);
-
-        //			await L10Accessor.AddRock(s, perms, vto.L10Recurrence.Value, AddRockVm.CreateRock(vto.L10Recurrence.Value, rock, true));
-
-        //			//var vtoRock = new /*Vto_Rocks*/ {
-        //			//	CreateTime = now,
-        //			//	Rock = rock,
-        //			//	Vto = vto,
-        //			//	_Ordering = vtoRocks.Count(),
-
-        //			//};
-        //			//s.Save(vtoRock);
-
-        //			if (vto.L10Recurrence != null && !rock._AddedToL10) {
-        //				await L10Accessor.AddExistingRockToL10(s, perms, vto.L10Recurrence.Value, rock, now);
-        //			}
-
-        //			vtoRocks.Add(vtoRock);
-
-
-        //			var angularItems = AngularList.Create(AngularListType.Add, AngularVtoRock.Create(vtoRock).AsList());
-        //#pragma warning disable CS0618 // Type or member is obsolete
-        //			var update = new AngularUpdate() { new AngularQuarterlyRocks(vto.QuarterlyRocks.Id) { Rocks = angularItems } };
-        //#pragma warning restore CS0618 // Type or member is obsolete
-        //			UpdateVTO(s, vtoId, null, x => x.update(update));
-
-        //		}
-
-        //[Obsolete("Do not use",true)]
+		
+		
         public static async Task CreateNewRock(UserOrganizationModel caller, long vtoId, string message = null) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -913,34 +651,9 @@ namespace RadialReview.Accessors {
             }
         }
 
-        //[Obsolete("Do not use",true)]
         public static async Task CreateNewRock(ISession s, PermissionsUtility perms, long vtoId, long ownerId, string message = null) {
             var vto = s.Get<VtoModel>(vtoId);
-
-            //var now = DateTime.UtcNow;
-            //var organizationId = vto.Organization.Id;
-            //perms.ViewUserOrganization(owner, false);
-            //var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
-
-            await L10Accessor.CreateAndAttachRock(s, perms, vto.L10Recurrence.Value, ownerId, message, true);
-            //var rock = await RockAccessor.CreateRock(s, perms, owner, message);
-            //await L10Accessor.AttachRock(s, perms, vto.L10Recurrence.Value, rock.Id, true);
-
-
-            //---Removed---
-            //var rock = new RockModel() {
-            //	CreateTime = now,
-            //	OrganizationId = organizationId,
-            //	CompanyRock = true,
-            //	Category = category,
-            //	//Period = s.Load<PeriodModel>(vto.PeriodId),
-            //	PeriodId = vto.PeriodId,
-            //	OnlyAsk = AboutType.Self,
-            //	ForUserId = owner,
-            //	AccountableUser = s.Load<UserOrganizationModel>(owner),
-            //	Rock = message,
-            //};
-            //await AddRock(s, perms, vtoId, rock, now);
+			await L10Accessor.CreateAndAttachRock(s, perms, vto.L10Recurrence.Value, ownerId, message, true);          
         }
 
         private static string ParseVtoHeader(Novacode.Cell cell, string searchFor) {
@@ -972,11 +685,7 @@ namespace RadialReview.Accessors {
                     var vto = s.Get<VtoModel>(vtoId);
                     if (vto == null)
                         throw new PermissionsException("V/TO does not exist.");
-
-                    //var organizationId = vto.Organization.Id;
-                    //var existing = OrganizationAccessor.GetCompanyValues(s.ToQueryProvider(true), perms, organizationId, null);
-                    //existing.Add(new CompanyValueModel() { OrganizationId = organizationId });
-                    //OrganizationAccessor.EditCompanyValues(s, perms, organizationId, existing);
+					
                     #region Initialize defaults
                     var corevaluesTitle = "CORE VALUES";
                     var threeYearTitle = "3-YEAR PICTURE™";
@@ -1373,7 +1082,6 @@ namespace RadialReview.Accessors {
                     return vto;
                 }
             }
-
 
         }
     }

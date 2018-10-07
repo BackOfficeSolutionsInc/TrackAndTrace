@@ -24,13 +24,14 @@ using RadialReview.Properties;
 using RadialReview.Utilities.DataTypes;
 using System.Threading;
 using Hangfire;
+using RadialReview.Crosscutting.Schedulers;
 
 namespace RadialReview.Areas.People.Controllers {
 	public class QuarterlyConversationController : BaseController {
 		// GET: People/QuarterlyConversation
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Index() {
-			ViewBag.CanCreate = new PermissionsAccessor().IsPermitted(GetUser(), x => x.CreateQuarterlyConversation(GetUser().Organization.Id));
+			ViewBag.CanCreate = PermissionsAccessor.IsPermitted(GetUser(), x => x.CreateQuarterlyConversation(GetUser().Organization.Id));
 			var containers = SurveyAccessor.GetSurveyContainersBy(GetUser(), GetUser(), SurveyType.QuarterlyConversation).OrderByDescending(x => x.IssueDate);
 			return View(containers);
 		}
@@ -55,14 +56,46 @@ namespace RadialReview.Areas.People.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Issue() {
+		public ActionResult Archive() {
+			var containers = SurveyAccessor.GetArchivedSurveyContainersBy(GetUser(), GetUser(), SurveyType.QuarterlyConversation).OrderByDescending(x => x.IssueDate);
+			return View(containers.ToList());
+		}
 
+
+		[HttpGet]
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult EditModal(long id) {
+			var m = SurveyAccessor.GetSurveyContainer(GetUser(),id);
+			return PartialView(m);
+		}
+
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Edit(long id, DateTime? duedate=null,string name=null) {
+			//WRONG... this should be done on the client... but im in a hurry
+			duedate = duedate.NotNull(x => GetUser().GetTimeSettings().ConvertFromServerTime(x.Value).AddDays(1).AddSeconds(-1));
+
+			var update = SurveyAccessor.UpdateSurveyContainer(GetUser(), id, name, duedate);
+			return Json(ResultObject.SilentSuccess(update));
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Issue() {
 			var vm = new IssueViewModel() {
 				AvailableUsers = Possible(),
 				DueDate = GetUser().GetTimeSettings().ConvertFromServerTime(DateTime.UtcNow.AddDays(7)),
 			};
 			return View(vm);
 		}
+
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> Admin(long id) {
+			var items = SurveyAccessor.GetSurveysForContainer_Unsafe(id);
+			return View(items);
+		}
+
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
@@ -92,8 +125,10 @@ namespace RadialReview.Areas.People.Controllers {
 				//byAbouts = byAbouts.Distinct().ToList();
 				var quarterRange = new DateRange(qtrStart, qtrStart.AddDays(90));
 				var callerId = GetUser().Id;
-				BackgroundJob.Enqueue(() =>QuarterlyConversationAccessor.GenerateQuarterlyConversation(callerId, name, filtered, quarterRange, dueDate, email));
-				
+				Scheduler.Enqueue(() =>QuarterlyConversationAccessor.GenerateQuarterlyConversation(callerId, name, filtered, quarterRange, dueDate, email));
+
+				TempData["InfoAlert"] = new HtmlString("Generating Quarterly Conversation.<br/>This might take a couple of minutes.");
+
 				return RedirectToAction("Index");// "Questions",new { id = id });
 			}
 
@@ -181,15 +216,21 @@ namespace RadialReview.Areas.People.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult PrintAll(long surveyContainerId, bool print = true) {
 
-			
-
 			var doc = SurveyPdfAccessor.CreateDoc(GetUser(), "All Quarterly Conversations");
 
-			var allAbout = QuarterlyConversationAccessor.GetPeopleAnalyzer(GetUser(), GetUser().Id).Responses
-				.Where(x => x.SurveyContainerId == surveyContainerId && x.SunId.HasValue)
-				.Select(x => ForModel.Create<SurveyUserNode>(x.SunId.Value))
-				.Distinct(x => x.ToKey())
-				.ToList();
+			//var allAbout = QuarterlyConversationAccessor.GetPeopleAnalyzer(GetUser(), GetUser().Id).Responses
+			//	.Where(x => x.SurveyContainerId == surveyContainerId && x.SunId.HasValue)
+			//	.Select(x => ForModel.Create<SurveyUserNode>(x.SunId.Value))
+			//	.Distinct(x => x.ToKey())
+			//	.ToList();
+
+			var allAbout = SurveyAccessor.GetAllAboutsForSurveyContainer(GetUser(), surveyContainerId)
+											
+											//.Select(x => ForModel.Create<SurveyUserNode>(x.SunId.Value))
+											.ToList();
+			;
+
+
 			foreach (var about in allAbout) {
 				var surveyContainer = SurveyAccessor.GetSurveyContainerAbout(GetUser(), about, surveyContainerId);
 				foreach (var survey in surveyContainer.GetSurveys()) {
@@ -220,6 +261,11 @@ namespace RadialReview.Areas.People.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Remove(long id) {
 			SurveyAccessor.RemoveSurveyContainer(GetUser(), id);// QuarterlyConversationAccessor
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Undelete(long id) {
+			SurveyAccessor.UndeleteSurveyContainer(GetUser(), id);// QuarterlyConversationAccessor
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 

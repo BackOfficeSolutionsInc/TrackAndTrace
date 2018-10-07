@@ -39,8 +39,8 @@ namespace RadialReview.Accessors
 					s.Save(t);
 
 					if (recurrenceId != null){
-						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-						hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId.Value),connectionId)
+						var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+						hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId.Value),connectionId)
 							.addTranscription(text,caller.GetName(),DateTime.UtcNow.ToJavascriptMilliseconds(),t.Id);
 					}
 

@@ -55,7 +55,7 @@ namespace RadialReview.Api.V1 {
 					try {
 						var f = files[k];
 						filename = f.FileName;
-						url = await ia.UploadImage(GetUser().User, filename, f.InputStream, UploadType.AppImage, true);
+						url = await ia.UploadImage(GetUser().User,null, filename, f.InputStream, UploadType.AppImage, true);
 					} catch (Exception) {
 						success = false;
 					}
@@ -87,7 +87,7 @@ namespace RadialReview.Api.V1 {
 			if (file != null && file.ContentLength > 0) {
 				// extract only the fielname
 				var _ImageAccessor = new ImageAccessor();
-				var url = await _ImageAccessor.UploadImage(userModel, file.FileName, file.InputStream, UploadType.ProfileImage, true);
+				var url = await _ImageAccessor.UploadImage(userModel, null, file.FileName, file.InputStream, UploadType.ProfileImage, true);
 				return new UploadImageResult() {
 					Name = file.FileName,
 					Success = true,

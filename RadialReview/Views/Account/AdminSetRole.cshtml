@@ -1,0 +1,95 @@
+﻿@model RadialReview.Models.Admin.AdminAccessViewModel
+
+@{
+	ViewBag.Title = "Set Role";
+}
+
+
+@using (Html.BeginForm()) {
+	@Html.AntiForgeryToken()
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="form-horizontal">
+				@*<h2>Set Role</h2>*@
+				<br />
+				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+				@Html.HiddenFor(x => x.ReturnUrl)
+				@Html.HiddenFor(x => x.SourceLink)
+				@Html.HiddenFor(x => x.AccessId)
+				@Html.HiddenFor(x => x.AccessLevel)
+				@Html.HiddenFor(x => x.SetAsEmail)
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.Reason, htmlAttributes: new { @class = "control-label col-md-2" })
+
+					<div class="col-md-10">
+						<div class="potentialDropdown smallBreak2">
+							@Html.DropDownList("ReasonDropdown", Model.PotentialReasons, new { @class = "form-control", })
+						</div>
+						<div class="reasonBox hidden ">
+							@Html.TextAreaFor(x => x.Reason, new { @class = "form-control", @minLength = "15", placeholder = "Please be specific. Use 'I need to ...' sentences" })
+						</div>
+						@Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.RequestedDurationMinutes, "Duration", htmlAttributes: new { @class = "control-label col-md-2" })
+					<div class="col-md-10">
+						@Html.DropDownListFor(model => model.RequestedDurationMinutes, Model.Durations, new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.RequestedDurationMinutes, "", new { @class = "text-danger" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-md-offset-2 col-md-10">
+						<input type="submit" value="Create" class="btn btn-default" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6">
+			@if (Model.AccessLevel == RadialReview.Models.Admin.AdminAccessLevel.View) {
+				<h2>
+					View User
+				</h2>
+			} else if (Model.AccessLevel == RadialReview.Models.Admin.AdminAccessLevel.SetAs) {
+				<h2>
+					Set As User
+				</h2>
+			}
+			<h5>@Model.AccessUser</h5>
+			<h5>@Model.AccessOrganization</h5>
+			<hr />
+		</div>
+	</div>
+}
+@using (Html.BeginScripts()) {
+	<script>
+		var otherReason = "";
+		var oldReason = "";
+		$(".potentialDropdown select").on("change", function (e) {
+			var showBox = false;
+			var reason = $(this).find("option:selected").text();
+			if (reason == "Other") {
+				showBox = true;
+				$(".reasonBox textarea").val(otherReason);
+			} else {
+				if (oldReason = "Other") {
+					otherReason = $(".reasonBox textarea").val();
+				}
+				$(".reasonBox textarea").val($(this).find("option:selected").val());
+			}
+			$(".reasonBox").toggleClass("hidden", !showBox);
+			var oldReason = reason;
+		});
+	</script>
+	@Scripts.Render("~/bundles/jqueryval")
+
+}
+
+<style>
+	textarea {
+		resize: vertical;
+		min-height: 300px;
+	}
+</style>

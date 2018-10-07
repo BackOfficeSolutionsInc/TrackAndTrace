@@ -34,6 +34,8 @@ $(function () {
 		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable on-edit-enabled' data-todo='" + todo + "'><span data-todo='" + todo + "' class='message editable-text '>" + message + "</span></h4></div>");
 		$(detailsContents).append("<iframe class='details todo-details on-edit-enabled' name='embed_readwrite' src='/Todo/Pad/" + todo + "' width='100%' height='100%'></iframe>");
 
+		var guid = generateGuid(false);
+
 		$(detailsContents).append(
 			"<div class='button-bar'>" +
 			"<div style='height:28px'>" +
@@ -49,18 +51,35 @@ $(function () {
 			"<div >" +
 			"<span class='gray' style='width:75px;display:inline-block'>Due date:</span>" +
 			"<span style='width:250px;padding-left:10px;' class='duedate on-edit-enabled' data-accountable='" + accountable + "' data-todo='" + todo + "' >" +
-			"<span class='date' style='display:inline-block' data-date='" + dateFormatter(due) + "' data-date-format='m-d-yyyy'>" +
-			"<input type='text' data-todo='" + todo + "' class='form-control datePicker' value='" + dateFormatter(due) + "'/>" +
+			//"<span class='date' style='display:inline-block' data-date='" + dateFormatter(due) + "' data-date-format='m-d-yyyy'>" +
+			"<span class='duedate-"+guid+" due-date-selector' data-todo='"+todo+"'></span>"+
+			//"<input type='text' data-todo='" + todo + "' class='form-control datePicker' value='" + dateFormatter(due) + "'/>" +
 			"</span>" +
 			"</span>" +
 			"</div>" +
-			"<div>" +
+			"<div style='padding-top: 3px;'>" +
 			"<span class='gray' style='width:78px;display:inline-block'>Create date:</span>" +
-			"<span style='width:250px;padding-left:21px;'>" + dateFormatter(new Date(createtime)) +
+			"<span style='width:250px;padding-left:21px;color:'>" + dateFormatter(new Date(createtime)) +
 			"</span>" +
 			"</span>" +
 			"</div>" +
 			"</div>");
+
+
+		//$(datePicker).on("change", function (a) {
+		//	debugger;
+		//	//var data = { date: ev.date.addDays(.99999).valueOf() };
+		//	////var data = { date: Time.toServerTime(ev.date.addDays(.99999)).valueOf() };
+		//	//$.ajax({
+		//	//	method: "POST",
+		//	//	data: data,
+		//	//	url: "/L10/UpdateTodoDate/" + todo,
+		//	//	success: function (dd) {
+		//	//		showJsonAlert(dd);
+		//	//	}
+		//	//});
+		//});
+
 		var w = $(window).width();
 		$("#todoDetails").html("");
 		if (w <= modalWidth || $(".conclusion").is(":visible")) {
@@ -75,6 +94,24 @@ $(function () {
 			$("#todoDetails").append(detailsContents);
 			fixTodoDetailsBoxSize();
 		}
+
+		var datePicker= Time.createClientDatepicker({
+			selector: $(detailsContents).find(".duedate-" + guid),
+			serverTime: due,
+			displayAsLocal: true,
+			endOfDay : true,
+		});
+		$(datePicker).on("change", function (a, b) {
+			var data = { date: b.serverDate };
+			$.ajax({
+				method: "POST",
+				data: data,
+				url: "/L10/UpdateTodoDate/" + todo,
+				success: function (dd) {
+					showJsonAlert(dd);
+				}
+			});
+		});
 	}
 	$("body").on("click", ".todo-list>.todo-row", clickTodoRow);
 
@@ -85,7 +122,7 @@ $(function () {
 		$(this).parent().html(input);
 		input.focusTextToEnd();
 	});
-	$("body").on('click', ".todoDetails .date input", function () {
+	/*$("body").on('click', ".todoDetails .date input", function () {
 		if (!$(this).attr("init")) {
 			var now = new Date();
 			var todo = $(this).data("todo");
@@ -114,7 +151,7 @@ $(function () {
 				$(that).datepickerX("show");
 			}, 10);
 		}
-	});
+	});*/
 
 	$("body").on("click", ".todoDetails .assignee .btn", function () {
 		var that = $(this).parent();
@@ -208,12 +245,11 @@ $(window).on("footer-resize", function () {
 });
 
 function updateTodoDueDate(todo, duedate) {
-	var row = $(".todo-row[data-todo=" + todo + "]");
-	row.attr("data-duedate", duedate);
-
-	debugger;
 	var d = new Date(duedate);
-	d = Time.parseJsonDate(d);
+	var row = $(".todo-row[data-todo=" + todo + "]");
+	row.attr("data-duedate", +d);
+
+	d = Time.parseJsonDate(duedate);
 
 	//var a = d.toISOString().substr(0, 10).split("-");
 	//var dispDate = new Date(a[0], a[1] - 1, a[2]);
@@ -231,7 +267,14 @@ function updateTodoDueDate(todo, duedate) {
 		$(row).find(".btn-group .overdue-indicator").remove();
 	}
 	found.html(dateFormatter(dispDate));
-	$("input[data-todo=" + todo + "]").val(dateFormatter(dispDate));
+	var input = $(".due-date-selector[data-todo='" + todo + "'] input.client-date");
+	input.val(dateFormatter(dispDate));
+	input.attr("value", dateFormatter(dispDate));
+	//debugger;
+	//$(input).datepickerX().data().datepicker.dates[0] = dispDate;
+	//$(input).datepickerX().data().datepicker.viewDate = dispDate;
+	//$(input).datepickerX("date", dateFormatter(dispDate));
+	//$("input[data-todo=" + todo + "]").val(dateFormatter(dispDate));
 
 }
 

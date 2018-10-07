@@ -98,6 +98,7 @@ body.resizing .notes-tile,
 
 .dashboard {
 
+
 	tbody {
 		position: initial;
 	}
@@ -168,6 +169,7 @@ body.resizing .notes-tile,
 	}
 	//SCORECARD
 	.width_2 .scorecard {
+		.average-column,
 		.cumulative-column,
 		.goal-column {
 			display: none;
@@ -187,16 +189,9 @@ body.resizing .notes-tile,
 	}
 
 	.l10-scorecard-tile {
-		//.button-column,
 		.admin-column {
 			display: none;
 		}
-		/*.direction,input{
-			pointer-events:none;
-		}
-		input{
-			pointer-events:none;
-		}*/
 	}
 
 	.task-list-container {
@@ -366,6 +361,10 @@ body.resizing .notes-tile,
 		}
 	}
 
+	.scorecard-table .date {
+		min-width: 88px;
+	}
+
 	.scorecard {
 		min-height: 60px;
 
@@ -431,7 +430,7 @@ body.resizing .notes-tile,
 			}
 
 			.goal-column.value {
-				width: inherit;
+				/*width: inherit;*/
 				min-width: 56px;
 				max-width: 150px;
 
@@ -442,6 +441,12 @@ body.resizing .notes-tile,
 				}
 			}
 
+			.elastic-input {
+				min-width: 30px;
+				max-width: 300px;
+			}
+
+			.average-column,
 			.cumulative-column {
 				text-align: center;
 				padding-right: 4px;
@@ -461,12 +466,22 @@ body.resizing .notes-tile,
 					outline: none;
 					cursor: pointer;
 
+
+
 					&:active,
 					&:focus {
 						outline: none;
 					}
 				}
 			}
+		}
+
+		#ScorecardTable_Over {
+			width: min-content;
+			display: -ms-grid;
+			-ms-grid-columns: min-content;
+			width: -moz-min-content;
+			width: -webkit-min-content;
 		}
 
 		.row {
@@ -479,6 +494,8 @@ body.resizing .notes-tile,
 
 		.measurable-column {
 			//padding-left: 4px;
+			width: 112px;
+			/*width: -webkit-min-content;*/
 		}
 
 		.goal-column {
@@ -550,6 +567,7 @@ body.resizing .notes-tile,
 
 	.scorecard-table {
 		display: block !important;
+		padding-left: 9px;
 
 		tr:nth-child(1) th {
 			border-bottom: 0;
@@ -744,6 +762,14 @@ body.resizing .notes-tile,
 
 		.company-rock-column {
 			max-width: none;
+
+			.vto-heading-text {
+				display: none;
+			}
+
+			md-checkbox {
+				display: none;
+			}
 		}
 
 		.status-column {
@@ -836,6 +862,10 @@ body.resizing .notes-tile,
 			margin-left: -25px;
 			margin-right: -105px;
 			margin-top: -4px;
+
+			div {
+				min-height: 18px !important;
+			}
 		}
 
 		.due-date.red {
@@ -1294,6 +1324,7 @@ body.resizing .notes-tile,
 			font-weight: bold;
 			text-transform: uppercase;
 			white-space: nowrap;
+			margin-left: -1px;
 		}
 
 		.head {
@@ -1304,7 +1335,7 @@ body.resizing .notes-tile,
 			white-space: nowrap;
 			font-family: 'Lato', sans-serif;
 			letter-spacing: 0.6px;
-			margin-bottom: 10px;
+			margin-bottom: 0px;
 		}
 
 		h2 {
@@ -1322,10 +1353,32 @@ body.resizing .notes-tile,
 			margin-left: 6px;
 		}
 
+		.update {
+
+			.su-details {
+				background-color: #f1f1f1;
+				margin: 5px;
+				padding: 15px 15px 10px 23px;
+				border: 1px solid #e8e8e8;
+				border-radius: 6px;
+				margin-bottom: 35px;
+				box-shadow: 0px 4px 4px -2px inset rgba(0, 0, 0, 0.1);
+				opacity: 0.8;
+			}
+
+			&.update-current .su-details {
+				border: 1px solid #d9d9d9;
+				box-shadow: 0px 8px 18px -5px rgba(0,0,0,.5);
+				background-color: white;
+				opacity: 1;
+			}
+		}
+
+
 		.su-details {
 			padding-left: 14px;
-			border-bottom: 2px dashed #c7c7c7;
-			margin-bottom: 14px;
+			/*border-bottom: 2px dashed #c7c7c7;*/
+			//margin-bottom: 14px;
 		}
 
 		.su-row {
@@ -1342,28 +1395,25 @@ body.resizing .notes-tile,
 				font-weight: bold;
 				transition: ease-in-out 0.2s color;
 			}
-
-			&:hover {
+			/*&:hover {
 				color: @traction-orange;
 			}
 
 			&:hover:before {
 				color: @traction-orange;
-			}
+			}*/
 		}
 
 		ul {
 			/*padding-left: 6px;
 			font-size: 9px;*/
-			font-size: 13px;
+			font-size: 12px;
 			color: #A9A9A9;
 			list-style: none;
 			transition: ease-in-out .2s color;
-
-			&:hover {
+			/*&:hover {
 				color: #333;
-			}
-
+			}*/
 			> li {
 				padding-left: 1.1m;
 				text-indent: -.7em;
@@ -1376,16 +1426,26 @@ body.resizing .notes-tile,
 		}
 
 		blockquote {
-			padding: 0px 10px;
+			padding: 0px 18px;
 			margin-bottom: 20px;
 			border-left: 4px solid #D0D0D0;
-			font-size: 14px;
+			font-size: 12px;
 			margin-top: 10px;
 		}
 	}
 
 	.width_1 .software-updates {
 		padding: 5px;
+
+		.update {
+			padding: 7px 0px !important;
+			box-shadow: none !important;
+			border: none !important;
+			margin: 0px !important;
+			background-color: white !important;
+			border-bottom: 1px solid #dddddd !important;
+			border-radius: 0px !important;
+		}
 
 		blockquote {
 			padding: 4px 4px;
@@ -1405,6 +1465,10 @@ body.resizing .notes-tile,
 
 		p {
 			font-size: 10px;
+		}
+
+		* {
+			font-size: 12px !important;
 		}
 	}
 	//md-table
@@ -1518,21 +1582,24 @@ body.resizing .notes-tile,
 
 	.tiny > .heading {
 		font-weight: bold;
-		background-color: lighten(@traction-gray,17%); //#F7F7F7;
+		background-color: #f5f4f4;
 		text-align: left;
 		padding: 0 5px;
-		color: lighten(@traction-black,17%); //#666;
-		font-size: 13px;
-		border-top: 1px solid #D9D9D9;
-		border-bottom: 1px solid #D1D1D1;
+		color: #969696 !important;
+		/* text-shadow: 0px 0px 0px #bcb5b0; */
+		font-size: 11px;
+		border-top: 1px solid #d9d9d9;
+		/* border-bottom: 1px solid #d9d9d94f; */
 		padding: 2px 6px;
 		white-space: nowrap;
 		overflow-x: hidden;
 		-ms-text-overflow: ellipsis;
 		-o-text-overflow: ellipsis;
 		text-overflow: ellipsis;
-		font-family: 'Roboto', sans-serif;
+		font-family: 'Roboto',sans-serif;
 		text-transform: uppercase;
+		padding: 9px 10px;
+
 
 		a {
 			font-size: 10px;
@@ -1540,7 +1607,7 @@ body.resizing .notes-tile,
 		}
 
 		.clickable {
-			color: lighten(@traction-black,17%);
+			color: #9d9d9d; //lighten(@traction-black,17%);
 		}
 
 		.new {
@@ -1861,14 +1928,13 @@ body.resizing .notes-tile,
 	}
 
 	.grid-tile .heading {
-		background-color: rgba(0,0,0,.1) !important;
+		background-color: #f9f9f9 !important;
 		//border-bottom: 0px !important;
-		border-bottom: 1px solid #dedede !important;
+		border-bottom: none; //1px solid #dedede !important;
 	}
-
-	.software-updates {
+	/*.software-updates {
 		background: none;
-	}
+	}*/
 	/*::-webkit-input-placeholder { /* WebKit, Blink, Edge *
         color: #909;
     }

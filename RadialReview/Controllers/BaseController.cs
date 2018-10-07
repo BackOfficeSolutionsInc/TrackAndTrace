@@ -50,6 +50,7 @@ using RadialReview.Hooks;
 using System.Net;
 using RadialReview.Models.Application;
 using RadialReview.Variables;
+using static RadialReview.Models.UserOrganizationModel;
 
 namespace RadialReview.Controllers {
 	public class UserManagementController : BaseController {
@@ -62,10 +63,15 @@ namespace RadialReview.Controllers {
 			UserManager = userManager;
 		}
 
-		protected async Task SignInAsync(UserModel user, bool isPersistent = false) {
+		protected async Task SignInAsync(UserModel user, bool isPersistent = false, TimeSpan? expiration = null) {
 			AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
 			var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-			AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, identity);
+			var settings = new AuthenticationProperties() { IsPersistent = isPersistent };
+			if (expiration != null) {
+				settings.ExpiresUtc = DateTime.UtcNow.Add(expiration.Value);
+				settings.AllowRefresh = false;
+			}
+			AuthenticationManager.SignIn(settings, identity);
 		}
 
 		public NHibernateUserManager UserManager { get; protected set; }
@@ -156,8 +162,14 @@ namespace RadialReview.Controllers {
 		};
 
 
-		private UserOrganizationModel PopulateUserData(UserOrganizationModel user) {
+		private UserOrganizationModel PopulateUserData(UserOrganizationModel user,PermissionsOverrides overrides=null) {
+            
+
 			if (user != null && Request != null) {
+                if (overrides != null) {
+                    user._PermissionsOverrides = overrides;
+                }
+
 				user._IsRadialAdmin = user.IsRadialAdmin;
 
 				user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
@@ -180,8 +192,8 @@ namespace RadialReview.Controllers {
 		public UserOrganizationModel GetUser() {
 			return PopulateUserData(_GetUser());
 		}
-		public UserOrganizationModel GetUser(ISession s) {
-			return PopulateUserData(_GetUser(s));
+		public UserOrganizationModel GetUser(ISession s,PermissionsOverrides overrides) {
+			return PopulateUserData(_GetUser(s),overrides);
 		}
 		public UserOrganizationModel GetUser(long userOrganizationId) {
 			return PopulateUserData(_GetUser(userOrganizationId));
@@ -306,6 +318,16 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+		protected void AllowAdminsWithoutAudit() {
+			try {
+				var user = GetUser();
+				if (user != null && user._PermissionsOverrides != null) {
+					user._PermissionsOverrides.Admin.AllowAdminWithoutAudit = true;
+				}
+			} catch (Exception e) {
+			}
+		}
+
 		protected List<UserOrganizationModel> GetUserOrganizations(String redirectUrl) //Boolean full = false)
 		{
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -376,35 +398,6 @@ namespace RadialReview.Controllers {
 		}
 
 		protected ActionResult Pdf(PdfDocument document, string name = null, bool inline = true) {
-			//var stream = new MemoryStream();
-			////try {
-			////	document.Save("C:\\Users\\Clay\\Desktop\\Stuff\\doc.pdf");
-			////} catch (Exception e) {
-			////	int a = 0;
-			////}
-			//document.Save(stream, false);
-			//name = name ?? (Guid.NewGuid() + ".pdf");
-			////if (inline){
-			////    Response.AppendHeader("content-disposition", "inline; filename=\""+name+"\"");
-			////}
-			////stream.Seek(0, SeekOrigin.Begin);
-			////stream.Position = 0;
-
-			////Response.ContentEncoding = Encoding.UTF8;
-			////return new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
-			//stream.Seek(0, SeekOrigin.Begin);
-
-			//Response.ContentType = "application/pdf";
-			//Response.AddHeader("Content-Disposition", "attachment;filename=" + name);
-			//Response.Buffer = true;
-			//Response.Clear();
-			//Response.OutputStream.Write(stream.GetBuffer(), 0, stream.GetBuffer().Length);
-			//Response.OutputStream.Flush();
-			//Response.End();
-
-			//return new FileStreamResult(Response.OutputStream, "application/pdf");
-
-			//XPdfFontOptions opt = new XPdfFontOptions(PdfFontEmbedding.Default);
 			name = name ?? document.Info.Title;
 
 			MemoryStream stream = new MemoryStream();
@@ -419,34 +412,8 @@ namespace RadialReview.Controllers {
 			}
 			Response.AddHeader("content-length", stream.Length.ToString());
 			Response.BinaryWrite(stream.ToArray());
-			//Response.Flush();
 			stream.Close();
-			//Response.End();
-			//var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
-			//pdfRenderer.PdfDocument = document;
-			//pdfRenderer.DocumentRenderer = new DocumentRenderer(document) { PrivateFonts = pfc };
-			//pdfRenderer.RenderDocument();
-
-			//var stream = new MemoryStream();
-			//pdfRenderer.Save(stream, false);
-			//name = name ?? (Guid.NewGuid() + ".pdf");
-			////var file = File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
-			//if (inline) {
-			//	//Response.Headers.Remove("Content-Disposition");
-			//	//var f = Response.Filter;
-			//	//Response.Filter = null;
-			//	//if (Response.Headers.AllKeys.Any(x => x == "Content-Encoding"))
-			//	//    Response.Headers.Remove("Content-Encoding");
-			//	//Response.AppendHeader("Content-Disposition", "inline; filename=output.pdf");
-			//	//Response.AppendHeader("Cache-Control", "private");
-
-			//}
 			return new EmptyResult();
-			//new ActionResult(stream, System.Net.Mime.MediaTypeNames.Application.Pdf);
-
-
-
-			//return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
 		}
 		private static string MappedAppPath() {
 			string APP_PATH = System.Web.HttpContext.Current.Request.ApplicationPath.ToLower();
@@ -524,7 +491,16 @@ namespace RadialReview.Controllers {
 		}
 
 		protected override void OnException(ExceptionContext filterContext) {
+			bool shouldLog = false;
+			Uri url = null;
+			Uri urlReferrer = null;
+
 			try {
+				try {
+					url = Request.Url;
+					urlReferrer = Request.UrlReferrer;
+				} catch (Exception e) {
+				}
 				ChromeExtensionComms.SendCommand("pageError");
 				var f = filterContext.HttpContext.Response.Filter;
 				filterContext.HttpContext.Response.Filter = null;
@@ -551,7 +527,6 @@ namespace RadialReview.Controllers {
 						if (re.StatusCodeOverride != null) {
 							statusOverride = re.StatusCodeOverride.Value;
 						}
-
 					}
 
 					filterContext.ExceptionHandled = true;
@@ -562,61 +537,90 @@ namespace RadialReview.Controllers {
 					return;
 				}
 
-
 				if (filterContext.ExceptionHandled)
 					return;
 
-				if (filterContext.Exception is LoginException) {
-					SignOut();
-					var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
-					if (redirectUrl == null)
-						redirectUrl = Request.Url.PathAndQuery;
-					log.Info("Login: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
-					filterContext.Result = RedirectToAction("Login", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl });
-					filterContext.ExceptionHandled = true;
-					filterContext.HttpContext.Response.Clear();
-				} else if (filterContext.Exception is OrganizationIdException) {
-					var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
-					log.Info("Organization: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
-					filterContext.Result = RedirectToAction("Role", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl });
-					filterContext.ExceptionHandled = true;
-					filterContext.HttpContext.Response.Clear();
-				} else if (filterContext.Exception is PermissionsException) {
-					filterContext.HttpContext.Response.Clear();
-					var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
-					log.Info("Permissions: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
-					ViewBag.Message = filterContext.Exception.Message;
-					if (typeof(PartialViewResult).IsAssignableFrom(action.ReturnType)) {
-						filterContext.Result = PartialView("~/Views/Error/Index.cshtml", filterContext.Exception);
-					} else {
-						filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
-					}
-					filterContext.ExceptionHandled = true;
-				} else if (filterContext.Exception is MeetingException) {
-					var type = ((MeetingException)filterContext.Exception).MeetingExceptionType;
-					log.Info("MeetingException: [" + Request.Url.PathAndQuery + "] --> [" + type + "]");
-					filterContext.Result = RedirectToAction("ErrorMessage", "L10", new { area = "", message = filterContext.Exception.Message, type });
-					filterContext.ExceptionHandled = true;
-					filterContext.HttpContext.Response.Clear();
-				} else if (filterContext.Exception is RedirectException) {
-					var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
-					log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
-					filterContext.Result = RedirectToAction("Index", "Error", new { area = "", message = filterContext.Exception.Message, returnUrl = returnUrl });
-					filterContext.ExceptionHandled = true;
-					filterContext.HttpContext.Response.Clear();
-				} else if (filterContext.Exception is HttpAntiForgeryException) {
-					log.Info("AntiForgery: [" + Request.Url.PathAndQuery + "] --> []");
-					filterContext.Result = RedirectToAction("Login", "Account", new { area = "", message = "Session Timeout. Please try again." /*filterContext.Exception.Message*/ });
-					filterContext.ExceptionHandled = true;
-					filterContext.HttpContext.Response.Clear();
-				} else {
-					log.Error("Error: [" + Request.Url.PathAndQuery + "]<<" + filterContext.Exception.Message + ">>", filterContext.Exception);
-					base.OnException(filterContext);
-				}
+                if (filterContext.Exception is LoginException) {
+                    SignOut();
+                    var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
+                    if (redirectUrl == null)
+                        redirectUrl = Request.Url.PathAndQuery;
+                    log.Info("Login: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
+                    filterContext.Result = RedirectToAction("Login", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl });
+                    filterContext.ExceptionHandled = true;
+                    filterContext.HttpContext.Response.Clear();
+                } else if (filterContext.Exception is OrganizationIdException) {
+                    var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
+                    log.Info("Organization: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
+                    filterContext.Result = RedirectToAction("Role", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl });
+                    filterContext.ExceptionHandled = true;
+                    filterContext.HttpContext.Response.Clear();
+                } else if (filterContext.Exception is PermissionsException) {
+                    filterContext.HttpContext.Response.Clear();
+                    var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
+                    log.Info("Permissions: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
+                    ViewBag.Message = filterContext.Exception.Message;
+                    if (typeof(PartialViewResult).IsAssignableFrom(action.ReturnType)) {
+                        filterContext.Result = PartialView("~/Views/Error/Index.cshtml", filterContext.Exception);
+                    } else {
+                        filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
+                    }
+                    shouldLog = true;
+                    filterContext.ExceptionHandled = true;
+                } else if (filterContext.Exception is MeetingException) {
+                    var type = ((MeetingException)filterContext.Exception).MeetingExceptionType;
+                    log.Info("MeetingException: [" + Request.Url.PathAndQuery + "] --> [" + type + "]");
+                    filterContext.Result = RedirectToAction("ErrorMessage", "L10", new { area = "", message = filterContext.Exception.Message, type });
+                    filterContext.ExceptionHandled = true;
+                    filterContext.HttpContext.Response.Clear();
+                } else if (filterContext.Exception is AdminSetRoleException) {
+                    var ex = (AdminSetRoleException)filterContext.Exception;
+                    var redirectUrl = ex.RedirectUrl;
+                    log.Info("AdminSetRoleException: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
+                    if (ex.AccessLevel == Models.Admin.AdminAccessLevel.View)
+                        filterContext.Result = RedirectToAction("AdminSetRole", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl, Id = ex.RequestedRoleId });
+                    if (ex.AccessLevel == Models.Admin.AdminAccessLevel.SetAs)
+                        filterContext.Result = RedirectToAction("SetAsUser", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl, Id = ex.RequestedEmail });
+                    filterContext.ExceptionHandled = true;
+                    filterContext.HttpContext.Response.Clear();
+                } else if (filterContext.Exception is RedirectToActionException) {
+                    var ex = (RedirectToActionException)filterContext.Exception;
+                    filterContext.Result = RedirectToAction(ex.Action, ex.Controller);
+                    log.Info("RedirectToAction: [" + Request.Url.PathAndQuery + "] --> [" + ex.Controller +": "+ex.Action+ "]");
+                    //filterContext.Result = RedirectToAction("Index", "Error", new { area = "", message = filterContext.Exception.Message, returnUrl = returnUrl });
+                    filterContext.ExceptionHandled = true;
+                    filterContext.HttpContext.Response.Clear();
+                } else if (filterContext.Exception is RedirectException) {
+                    var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
+                    log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
+                    filterContext.Result = RedirectToAction("Index", "Error", new { area = "", message = filterContext.Exception.Message, returnUrl = returnUrl });
+                    filterContext.ExceptionHandled = true;
+                    filterContext.HttpContext.Response.Clear();
+                } else if (filterContext.Exception is HttpAntiForgeryException) {
+                    log.Info("AntiForgery: [" + Request.Url.PathAndQuery + "] --> []");
+                    filterContext.Result = RedirectToAction("Login", "Account", new { area = "", message = "Session Timeout. Please try again." /*filterContext.Exception.Message*/ });
+                    filterContext.ExceptionHandled = true;
+                    filterContext.HttpContext.Response.Clear();
+                } else {
+                    log.Error("Error: [" + Request.Url.PathAndQuery + "]<<" + filterContext.Exception.Message + ">>", filterContext.Exception);
+                    base.OnException(filterContext);
+                }
 			} catch (Exception e) {
 				log.Info("OnException(Exception)", e);
 				filterContext.Result = Content(e.Message + "  " + e.StackTrace);
 			}
+
+			string errorCode = null;
+			if (shouldLog) {
+				try {
+					var userId = filterContext.HttpContext.User.Identity.Name;
+					errorCode = AdminAccessor.LogError(userId, Request.HttpMethod, url, urlReferrer, filterContext.Exception);
+				} catch (Exception) {
+				}
+			}
+			ViewBag.ErrorCode = errorCode ?? "1";
+
+
 		}
 
 		protected void CompressContent(ActionExecutedContext filterContext) {
@@ -648,7 +652,7 @@ namespace RadialReview.Controllers {
 				//I guess just eat it..
 			}
 		}
-
+        
 		protected override void OnActionExecuting(ActionExecutingContext filterContext) {
 			try {
 				using (var s = HibernateSession.GetCurrentSession()) {
@@ -665,7 +669,15 @@ namespace RadialReview.Controllers {
 						if (accessAttributes.Count() == 0)
 							throw new NotImplementedException("Access attribute missing.");
 
-						switch ((AccessLevel)accessAttributes.Min(x => (int)x.AccessLevel)) {
+						var accessLevel = (AccessLevel)accessAttributes.Max(x => (int)x.AccessLevel);
+                        var ignorePaymentLockout = accessAttributes.Any(x=>x.IgnorePaymentLockout);
+
+                        var permissionsOverrides = new PermissionsOverrides() {
+                            IgnorePaymentLockout = ignorePaymentLockout,
+                        };
+
+                        var adminShortCircuit = false;
+						switch (accessLevel) {
 							case AccessLevel.SignedOut: {
 									if (Request.IsAuthenticated) {
 										SignOut();
@@ -678,37 +690,30 @@ namespace RadialReview.Controllers {
 								GetUserModel(s);
 								break;
 							case AccessLevel.UserOrganization:
-								var u1 = GetUser(s);
-								if (u1.DeleteTime != null)
-									throw new PermissionsException("You're no longer attached to this organization.");
-								if (u1.Organization.DeleteTime != null)
-									throw new PermissionsException("This organization no longer exists.");
-								break;
+								var u1 = GetUser(s,permissionsOverrides);
+                                LockoutUtility.ProcessLockout(u1);
+                                break;
 							case AccessLevel.Manager:
-								var u2 = GetUser(s);
-								if (u2.DeleteTime != null)
-									throw new PermissionsException("You're no longer attached to this organization.");
-								if (u2.Organization.DeleteTime != null)
-									throw new PermissionsException("This organization no longer exists.");
-								if (!u2.IsManager())
+								var u2 = GetUser(s,permissionsOverrides);
+                                LockoutUtility.ProcessLockout(u2);
+                                if (!u2.IsManager())
 									throw new PermissionsException("You must be a " + Config.ManagerName() + " to view this resource.");
 								break;
 							case AccessLevel.Radial:
-								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
+								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s, permissionsOverrides).IsRadialAdmin))
 									throw new PermissionsException("You do not have access to this resource.");
+								adminShortCircuit = true;
 								break;
 							case AccessLevel.RadialData:
-								var ids = s.GetSettingOrDefault(Variable.Names.USER_RADIAL_DATA_IDS, () => "").Split(new[] { ',' },StringSplitOptions.RemoveEmptyEntries).Select(x=>long.Parse(x)).ToList();
-								var u3 = GetUser(s);
+								var ids = s.GetSettingOrDefault(Variable.Names.USER_RADIAL_DATA_IDS, () => "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x)).ToList();
+								var u3 = GetUser(s, permissionsOverrides);
 								if (u3 != null && ids.Contains(u3.Id)) {
-									if (u3.DeleteTime != null)
-										throw new PermissionsException("You're no longer attached to this organization.");
-									if (u3.Organization.DeleteTime != null)
-										throw new PermissionsException("This organization no longer exists.");
+                                    LockoutUtility.ProcessLockout(u3);
 									break;
 								}
-								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
+								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s, permissionsOverrides).IsRadialAdmin))
 									throw new PermissionsException("You do not have access to this resource.");
+								adminShortCircuit = true;
 								break;
 							default:
 								throw new Exception("Unknown Access Type");
@@ -723,7 +728,9 @@ namespace RadialReview.Controllers {
 						//    Thread.CurrentThread.CurrentUICulture = culture;
 						//}
 
-						filterContext.Controller.ViewBag.IsLocal = Config.IsLocal();
+						var viewBag = filterContext.Controller.ViewBag;
+
+						viewBag.IsLocal = Config.IsLocal();
 						filterContext.Controller.ViewBag.HasBaseController = true;
 						filterContext.Controller.ViewBag.AppVersion = GetAppVersion();
 						filterContext.Controller.ViewBag.IsRadialAdmin = false;
@@ -732,37 +739,39 @@ namespace RadialReview.Controllers {
 							var userOrgsCount = GetUserOrganizationCounts(s, Request.Url.PathAndQuery);
 							UserOrganizationModel oneUser = null;
 							try {
-								oneUser = GetUser(s);
-								if (oneUser == null)
-									throw new NoUserOrganizationException();
+                                oneUser = GetUser(s, permissionsOverrides);
+                                if (oneUser == null)
+                                    throw new NoUserOrganizationException();
 
 #pragma warning disable CS0618 // Type or member is obsolete
-								var lu = s.Get<UserLookup>(oneUser.Cache.Id);
+                                var lu = s.Get<UserLookup>(oneUser.Cache.Id);
 #pragma warning restore CS0618 // Type or member is obsolete
-								var isRadialAdmin = GetUserModel(s).IsRadialAdmin;
-								oneUser._IsRadialAdmin = oneUser._IsRadialAdmin || isRadialAdmin;
+                                var actualUserModel = GetUserModel(s);
+                                var isRadialAdmin = oneUser.IsRadialAdmin || actualUserModel.IsRadialAdmin;
 
-								Thread.SetData(Thread.GetNamedDataSlot("IsRadialAdmin"), oneUser._IsRadialAdmin);
-								filterContext.Controller.ViewBag.IsRadialAdmin = oneUser._IsRadialAdmin;
+                                SetupPermissionsOverride(oneUser, actualUserModel, isRadialAdmin, adminShortCircuit);
 
-								if (!oneUser._IsRadialAdmin) {
-									lu.LastLogin = DateTime.UtcNow;
-									s.Update(lu);
+                                oneUser._IsRadialAdmin = isRadialAdmin;
+                                filterContext.Controller.ViewBag.IsRadialAdmin = isRadialAdmin;
 
-									var ol = s.QueryOver<OrganizationLookup>().Where(x => x.OrgId == oneUser.Organization.Id).Take(1).SingleOrDefault();
-									if (ol == null) {
-										ol = new OrganizationLookup() {
-											OrgId = oneUser.Organization.Id,
-											CreateTime = oneUser.Organization.CreationTime
-										};
-									}
-									ol.LastUserLogin = oneUser.Id;
-									ol.LastUserLoginTime = lu.LastLogin.Value;
-									s.SaveOrUpdate(ol);
+                                if (!isRadialAdmin) {
+                                    lu.LastLogin = DateTime.UtcNow;
+                                    s.Update(lu);
+
+                                    var ol = s.QueryOver<OrganizationLookup>().Where(x => x.OrgId == oneUser.Organization.Id).Take(1).SingleOrDefault();
+                                    if (ol == null) {
+                                        ol = new OrganizationLookup() {
+                                            OrgId = oneUser.Organization.Id,
+                                            CreateTime = oneUser.Organization.CreationTime
+                                        };
+                                    }
+                                    ol.LastUserLogin = oneUser.Id;
+                                    ol.LastUserLoginTime = lu.LastLogin.Value;
+                                    s.SaveOrUpdate(ol);
 
 
-								}
-							} catch (OrganizationIdException) {
+                                }
+                            } catch (OrganizationIdException) {
 							} catch (NoUserOrganizationException) {
 							}
 
@@ -828,7 +837,23 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-		protected string GetAppVersion() {
+        private void SetupPermissionsOverride(UserOrganizationModel oneUser, UserModel actualUserModel, bool isRadialAdmin, bool adminShortCircuit) {
+            if (oneUser._PermissionsOverrides == null)
+                oneUser._PermissionsOverrides = new PermissionsOverrides();
+
+            oneUser._PermissionsOverrides.Admin = new AdminShortCircuit() { IsRadialAdmin = isRadialAdmin, };
+            if (actualUserModel != null) {
+                oneUser._PermissionsOverrides.Admin.ActualUserId = actualUserModel.Id;
+                if (oneUser.User != null) {
+                    oneUser._PermissionsOverrides.Admin.IsMocking = oneUser.User.Id != actualUserModel.Id;
+                }
+            }
+            if (adminShortCircuit) {
+                AllowAdminsWithoutAudit();
+            }
+        }
+
+        protected string GetAppVersion() {
 			var version = Assembly.GetExecutingAssembly().GetName().Version;
 			//var buildDate = new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
 			return version.ToString();
@@ -887,6 +912,7 @@ namespace RadialReview.Controllers {
 			filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
 			filterContext.Controller.ViewBag.Organization = oneUser.Organization;
 			filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);
+			filterContext.Controller.ViewBag.InjectedScripts = VariableAccessor.Get(Variable.Names.INJECTED_SCRIPTS, () => "<script>/*none*/</script>");
 		}
 
 		protected override void OnActionExecuted(ActionExecutedContext filterContext) {

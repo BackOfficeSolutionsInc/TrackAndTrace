@@ -16,6 +16,9 @@ using TractionTools.Tests.Utilities;
 using RadialReview.Models;
 using static RadialReview.Accessors.PDF.JS.Tree;
 using System.Threading.Tasks;
+using RadialReview.Utilities;
+using RadialReview.Utilities.Pdf;
+using PdfSharp.Drawing;
 
 namespace TractionTools.Tests.PDF {
 	[TestClass]
@@ -238,7 +241,7 @@ namespace TractionTools.Tests.PDF {
 			var tree = AccountabilityAccessor.GetTree(c.Manager, c.Org.Organization.AccountabilityChartId, expandAll: true);
 			var root = adjTree(tree);
 			var ts = new TreeSettings() { compact = true };
-			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, 44, 11, true, ts);
+			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, XUnit.FromInch(44), XUnit.FromInch(11), new AccountabilityChartPDF.AccountabilityChartSettings(), true, ts).Document;
 			pdf.Save(Path.Combine(GetCurrentPdfFolder(), "DiffTreeDiagram.pdf"));
 			pdf.Save(Path.Combine(GetPdfFolder(), "DiffTreeDiagram.pdf"));
 		}
@@ -250,7 +253,7 @@ namespace TractionTools.Tests.PDF {
 			var tree = AccountabilityAccessor.GetTree(c.Manager, c.Org.Organization.AccountabilityChartId, expandAll: true);
 			var root = adjTree(tree);
 			var ts = new TreeSettings() {compact = false};
-			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, 11, 8.5, false, ts);
+			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, XUnit.FromInch(11), XUnit.FromInch(8.5), new AccountabilityChartPDF.AccountabilityChartSettings(), false, ts).Document;
 			pdf.Save(Path.Combine(GetCurrentPdfFolder(), "FullTreeDiagram.pdf"));
 			pdf.Save(Path.Combine(GetPdfFolder(), "FullTreeDiagram.pdf"));
 		}
@@ -265,7 +268,7 @@ namespace TractionTools.Tests.PDF {
 			var root = adjTree(tree);
 			var compactTS = new TreeSettings() { compact = true };
 			var noncompactTS = new TreeSettings() { compact = false };
-			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, 11, 8.5, true, compactTS);
+			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, XUnit.FromInch(11), XUnit.FromInch(8.5), new AccountabilityChartPDF.AccountabilityChartSettings(), true, compactTS).Document;
 			pdf.Save(Path.Combine(GetCurrentPdfFolder(), "LargeTreeDiagram_single_compact.pdf"));
 			pdf.Save(Path.Combine(GetPdfFolder(), "LargeTreeDiagram_single_compact.pdf"));
 
@@ -280,7 +283,7 @@ namespace TractionTools.Tests.PDF {
 			var root = adjTree(tree);
 			var compactTS = new TreeSettings() { compact = true };
 			var noncompactTS = new TreeSettings() { compact = false };
-			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, 11, 8.5, true, compactTS);
+			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, XUnit.FromInch(11), XUnit.FromInch(8.5), new AccountabilityChartPDF.AccountabilityChartSettings(), true, compactTS).Document;
 			pdf.Save(Path.Combine(GetCurrentPdfFolder(), "HugeTreeDiagram_single_compact.pdf"));
 			pdf.Save(Path.Combine(GetPdfFolder(), "HugeTreeDiagram_single_compact.pdf"));
 		}
@@ -297,7 +300,7 @@ namespace TractionTools.Tests.PDF {
 			var root = adjTree(tree);
 			var compactTS = new TreeSettings() { compact = true };
 			var noncompactTS = new TreeSettings() { compact = false };
-			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, 11, 8.5, false, compactTS);
+			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, XUnit.FromInch(11), XUnit.FromInch(8.5), new AccountabilityChartPDF.AccountabilityChartSettings(), false, compactTS).Document;
 			pdf.Save(Path.Combine(GetCurrentPdfFolder(), "LargeTreeDiagram_multi_compact.pdf"));
 			pdf.Save(Path.Combine(GetPdfFolder(), "LargeTreeDiagram_multi_compact.pdf"));
 		}
@@ -314,7 +317,7 @@ namespace TractionTools.Tests.PDF {
 			var root = adjTree(tree);
 			var compactTS = new TreeSettings() { compact = true };
 			var noncompactTS = new TreeSettings() { compact = false };
-			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, 11, 8.5, true, noncompactTS);
+			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, XUnit.FromInch(11), XUnit.FromInch(8.5), new AccountabilityChartPDF.AccountabilityChartSettings(), true, noncompactTS).Document;
 			pdf.Save(Path.Combine(GetCurrentPdfFolder(), "LargeTreeDiagram_single_noncompact.pdf"));
 			pdf.Save(Path.Combine(GetPdfFolder(), "LargeTreeDiagram_single_noncompact.pdf"));
 
@@ -331,7 +334,7 @@ namespace TractionTools.Tests.PDF {
 			var root = adjTree(tree);
 			var compactTS = new TreeSettings() { compact = true };
 			var noncompactTS = new TreeSettings() { compact = false };
-			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, 11, 8.5, false, noncompactTS);
+			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, XUnit.FromInch(11), XUnit.FromInch(8.5), new AccountabilityChartPDF.AccountabilityChartSettings(), false, noncompactTS).Document;
 			pdf.Save(Path.Combine(GetCurrentPdfFolder(), "LargeTreeDiagram_multi_noncompact.pdf"));
 			pdf.Save(Path.Combine(GetPdfFolder(), "LargeTreeDiagram_multi_noncompact.pdf"));
 		}
@@ -344,7 +347,9 @@ namespace TractionTools.Tests.PDF {
 			var tree = AccountabilityAccessor.GetTree(c.Manager, c.Org.Organization.AccountabilityChartId, expandAll: true);
 			var root = adjTree(tree);
 			var noncompactTS = new TreeSettings() { compact = false };
-			var pdfs = AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(root, 11, 8.5, false, noncompactTS);
+			var pdfs = AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(root, XUnit.FromInch(11), XUnit.FromInch(8.5), new AccountabilityChartPDF.AccountabilityChartSettings(), false, noncompactTS)
+				.Select(x=>x.Document)
+				.ToList();
 			var merger = new DocumentMerger();
 			merger.AddDocs(pdfs);
 			var pdf = merger.Flatten("FullTreeDiagram_SingleLevel", true, true);

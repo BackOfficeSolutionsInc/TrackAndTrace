@@ -117,8 +117,8 @@ function InitTranscribe(thisRecurrenceId, thisMeetingId, shouldStartTranscribe) 
         var text = encodeURIComponent($(this).text());
         var tid = $(this).parent("li").attr("data-transcript-id");
         showModal("Add a to-do",
-                  "/Todo/CreateTodo?recurrence=" + thisRecurrenceId + "&meeting=" + thisMeetingId + "&todo=" + text + "&modelid=" + tid + "&modeltype=Transcript",
-                  "/Todo/CreateTodo");
+                  "/Todo/CreateTodoRecurrence?recurrence=" + thisRecurrenceId + "&meeting=" + thisMeetingId + "&todo=" + text + "&modelid=" + tid + "&modeltype=Transcript",
+                  "/Todo/CreateTodoRecurrence");
     });
     $(document).on("click", ".issue-text", function () {
         var text = encodeURIComponent($(this).text());

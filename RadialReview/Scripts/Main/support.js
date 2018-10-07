@@ -57,7 +57,7 @@ function sendErrorReport() {
 				}
 			});
 		}
-		try {
+		/*try {
 			$.getScript("/Scripts/home/screenshot.js").done(function () {
 				try {
 					console.log("...begin render");
@@ -74,7 +74,7 @@ function sendErrorReport() {
 			});
 		} catch (e) {
 			_send();
-		}
+		}*/
 	} catch (e) {
 		console.error("Error sending report:");
 		console.error(e);

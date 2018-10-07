@@ -782,8 +782,8 @@ namespace RadialReview.Accessors {
 						tx.Commit();
 						s.Flush();
 
-						var hub = GlobalHost.ConnectionManager.GetHubContext<OrganizationHub>();
-						var orgHub = hub.Clients.Group(OrganizationHub.GenerateId(node.OrganizationId));
+						var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+						var orgHub = hub.Clients.Group(RealTimeHub.Keys.OrganizationId(node.OrganizationId));
 
 						orgHub.update(new AngularUpdate() {
 							new AngularAccountabilityChart(node.AccountabilityChartId) {
@@ -907,12 +907,9 @@ namespace RadialReview.Accessors {
 
 						//	}
 						//}
-
-						// var hub = GlobalHost.ConnectionManager.GetHubContext<OrganizationHub>();
-						// var orgHub = hub.Clients.Group(OrganizationHub.GenerateId(node.OrganizationId), connectionId);
-
-						var hub = GlobalHost.ConnectionManager.GetHubContext<OrganizationHub>();
-						var orgHub = hub.Clients.Group(OrganizationHub.GenerateId(node.OrganizationId), connectionId); //skips updating self
+						
+						var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+						var orgHub = hub.Clients.Group(RealTimeHub.Keys.OrganizationId(node.OrganizationId), connectionId); //skips updating self
 						var update = new AngularUpdate();
 						update.Add(new AngularAccountabilityNode(newParentId) {
 							children = AngularList.CreateFrom(AngularListType.Add, new AngularAccountabilityNode(node.Id) {
@@ -926,8 +923,8 @@ namespace RadialReview.Accessors {
 						}
 						orgHub.update(update);
 					} else {
-						var hub = GlobalHost.ConnectionManager.GetHubContext<OrganizationHub>();
-						var orgHub = hub.Clients.Group(OrganizationHub.GenerateId(node.OrganizationId)); //updates self also
+						var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+						var orgHub = hub.Clients.Group(RealTimeHub.Keys.OrganizationId(node.OrganizationId)); //updates self also
 						var update = new AngularUpdate();
 						update.Add(new AngularAccountabilityNode(node.Id) {
 							order = ordering
@@ -997,8 +994,7 @@ namespace RadialReview.Accessors {
 			if (userId != null) {
 				SetUser(s, rt, perms, node.Id, userId, skipAddManager, false, now);
 			}
-			//var hub = GlobalHost.ConnectionManager.GetHubContext<OrganizationHub>();
-			//var orgHub = hub.Clients.Group(OrganizationHub.GenerateId(node.OrganizationId));
+
 			var updater = rt.UpdateOrganization(node.OrganizationId);
 
 			updater.Update(new AngularAccountabilityChart(node.AccountabilityChartId) {

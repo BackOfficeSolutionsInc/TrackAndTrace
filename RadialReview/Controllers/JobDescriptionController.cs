@@ -22,7 +22,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id) {
 
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
 
 			var user = UserAccessor.GetUserOrganization(GetUser(), id, false, false);
 			return PartialView(new JobDescriptionVM{JobDescription = user.JobDescription, UserId = user.Id, Locked = user.JobDescriptionFromTemplateId!=null});

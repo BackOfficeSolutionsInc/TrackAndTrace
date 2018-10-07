@@ -22,7 +22,8 @@
         var firepadRef;
         
         var initialText = '';
-        firepadRef = firebase.database().ref(this.padID);
+        var padId = this.padID;
+        firepadRef = firebase.database().ref(padId);
 
         firepadRef.on("value", function (snapshot) {
             var firepadSnapshot = snapshot.val();
@@ -49,12 +50,23 @@
         if (this.readOnly=='True') {
             $('#firepadTextArea').attr('disabled', 'disabled');
         }
+        
         firepad.on('ready', function () {
-            
+            console.log(firepad.getHtml());
             if (firepad.isHistoryEmpty()) {                
-                firepad.setHtml(initialText); 
-            }  
+                firepad.setHtml(initialText);
+            }
+            
         });
+        firepad.on('synced', function () {
+            firebase.database().ref(padId + '/note').set({
+                html:firepad.getHtml(),
+                text:firepad.getText()
+            });
+
+        });
+
+        
         
     }    
 }

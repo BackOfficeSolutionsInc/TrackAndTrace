@@ -413,8 +413,9 @@
             var builder = "";
             args = args || {};
 
-            if (!("connectionId" in args))
-            	args["connectionId"] = this.hub.connection.id;//$scope.connectionId;
+            if (!("connectionId" in args)) {
+            	args["connectionId"] = window.RealTime.connectionId;//this.hub.connection.id;//$scope.connectionId;
+            }
 
             for (var i in args) {
                 if (arrayHasOwnIndex(args, i)) {

@@ -1,11 +1,17 @@
 ﻿
 //Date stuff
 function parseJsonDate(value, allowNumbers) {
-	console.warn("obsolete. use Time.parseJsonDate(...) instead");
+	if (typeof (parseJsonDate.shownError) === "undefined") {
+		console.warn("obsolete. use Time.parseJsonDate(...) instead");
+		parseJsonDate.shownError = true;
+	}
 	return Time.parseJsonDate(value, allowNumbers);
 }
 function getWeekSinceEpoch(day) {
-	console.warn("obsolete. use Time.getWeekSinceEpoch(...) instead");
+	if (typeof (this.shownError) === "undefined") {
+		console.warn("obsolete. use Time.getWeekSinceEpoch(...) instead");
+		getWeekSinceEpoch.shownError = true;
+	}
 	return Time.getWeekSinceEpoch(day);
 }
 
@@ -15,8 +21,10 @@ function dateFormatter(date) {
 
 function clientDateFormat(date) {
 	//console.info("using clientDateFormat");
-	if (date == false)
+	if (date == false || isNaN(date.getDate())) {
 		return "";
+	}
+
 	var _d = date.getDate(),
 		dd = _d > 9 ? _d : '0' + _d,
 		_m = date.getMonth() + 1,
@@ -29,30 +37,37 @@ function clientDateFormat(date) {
 }
 
 function serverDateFormat(edate) {
-	//console.info("using serverDateFormat");
-	if (edate == false)
-		return "";
-	var _d = edate.getDate(),
-	_m = edate.getMonth() + 1,
-	_mm = edate.getMinutes(),
-	_h = edate.getHours(),
-	_s = edate.getSeconds(),
-	d = _d > 9 ? _d : '0' + _d,
-	m = _m > 9 ? _m : '0' + _m,
-	h = _h > 9 ? _h : '0' + _h,
-	mm = _mm > 9 ? _mm : '0' + _mm,
-	s = _s > 9 ? _s : '0' + _s;
-	return m + '-' + d + '-' + (edate.getFullYear()) + " " + h + ":" + mm + ":" + s;
+	return Time.serverDateFormat(edate);
+	////console.info("using serverDateFormat");
+	//if (edate == false)
+	//	return "";
+	//var _d = edate.getDate(),
+	//_m = edate.getMonth() + 1,
+	//_mm = edate.getMinutes(),
+	//_h = edate.getHours(),
+	//_s = edate.getSeconds(),
+	//d = _d > 9 ? _d : '0' + _d,
+	//m = _m > 9 ? _m : '0' + _m,
+	//h = _h > 9 ? _h : '0' + _h,
+	//mm = _mm > 9 ? _mm : '0' + _mm,
+	//s = _s > 9 ? _s : '0' + _s;
+	//return m + '-' + d + '-' + (edate.getFullYear()) + " " + h + ":" + mm + ":" + s;
 }
 
+
 function createDatepicker(selector, date, name, id, options) {
-	//debugger;
+	if (typeof (createDatepicker.shownError) === "undefined") {
+		createDatepicker.shownError = true;
+		console.warn("Time.createClientDatepicker might work better for displaying client dates");
+	}
+	var localizeDate = false;
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (date == false) {
 		//do nothing.
 	} else {
 		var pdate = Time.parseJsonDate(date, true);
+		localizeDate = Time.shouldLocalize(date);
 		if (!pdate) {
 			console.error("Could not determine format from date: " + date);
 			var err = $("<span style='color:rgba(255,0,0,.5)' >DateErr</span>");
@@ -120,6 +135,9 @@ function createDatepicker(selector, date, name, id, options) {
 
 	$('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
 		var edate = Time.toServerTime(e.date);// new Date(e.date.getTime() + _offsetMin * 60000);
+
+		debugger;
+
 		var formatted = serverDateFormat(edate);
 		$('.' + guid + ' .server-date').val(formatted);
 
@@ -141,7 +159,10 @@ function createDatepicker(selector, date, name, id, options) {
 }
 
 function generateDatepickerLocalize(selector, date, name, id, options) {
-	console.warn("obsolete: use createDatepicker");
+	if (typeof (generateDatepickerLocalize.shownError) === "undefined") {
+		generateDatepickerLocalize.shownError = true;
+		console.warn("obsolete: use createDatepicker");
+	}
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (date == false) {
@@ -168,7 +189,10 @@ function generateDatepickerLocalize(selector, date, name, id, options) {
 }
 
 function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
-	console.warn("obsolete: use createDatepicker");
+	if (typeof (generateDatepicker.shownError) === "undefined") {
+		generateDatepicker.shownError = true;
+		console.warn("obsolete: use createDatepicker");
+	}
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (date == false) {

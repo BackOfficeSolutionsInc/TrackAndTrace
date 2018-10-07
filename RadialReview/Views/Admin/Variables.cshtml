@@ -1,0 +1,49 @@
+﻿@model List<Variable>
+@{
+	ViewBag.Title = "Variables";
+}
+
+<h4 style="color:red"><u><b>Warning:</b></u> You must preserve the initial and final quote where they exist. <b>Not doing so will cause errors.</b></h4>
+
+<div id="table"></div>
+
+@using (Html.BeginScripts()) {
+	<script>		
+
+		DataTable({
+			cellId: function(x){return x.K},
+			container:"#table",
+			clickEdit:true,
+			postEdit:"/admin/variables/{0}",
+			data: @Html.ArrayToString(Model,true),
+			cells:[
+				{contents:function(x){return x.K;}, name:"Key", input:{
+					type:"hidden",
+					name:"K",
+					value:function(x){return x.K}
+				}},
+				{contents:function(x){return "<code>"+ escapeHTML(x.V)+"</code>";}, name:function(x){return x.K;}, input:{
+						type:"textarea",
+						classes:"pre",
+						name:"V",
+						value:function(x){return x.V;}
+				}},
+				{edit:true}
+			]
+		});
+		function escapeHTML(str) {
+			str=str||"";
+			return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace("<\/script>","<\\/script>").replace("\\\\","\\");
+		}
+
+	</script>
+}
+
+<style>
+	.pre {
+		display: block;
+		font-family: monospace;
+		white-space: pre;
+		margin: 1em 0;
+	}
+</style>

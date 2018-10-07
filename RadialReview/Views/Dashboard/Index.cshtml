@@ -19,14 +19,14 @@
 }
 
 @using (Html.BeginScripts()) {
-	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+	@*<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>*@
 	@Scripts.Render("~/bundles/DashboardGrid")
 	<script type="text/javascript">
 		dataDateRange = {
-			startDate : null,// new Date().setDate(new Date().getDate() - 1)
+			startDate : null,
 			endDate:null,
 			todoStart : new Date().setDate(new Date().getDate() - 1),
-            todoEnd:null
+			todoEnd:null
 		};
 		function buildGrid(data) {
 			if (showJsonAlert(data, true, true)) {
@@ -80,7 +80,6 @@
 		}
 
 		function renamePage(id,existingName,deflt){
-
 			var fields = [{
 				name:"title",
 				text:"Title",
@@ -116,8 +115,6 @@
 		function createTile(url,type,keyId) {
 			if(typeof(keyId)=="undefined")
 				keyId=null;
-
-
 			var dat = {
 				id: @(Model.DashboardId),
 				type:type,
@@ -129,40 +126,36 @@
 				url: "/Dashboard/CreateTile/",
 				data: dat,
 				success: function(data) {
-					if (showJsonAlert(data, false, true)) {
-						Grid.addTile(data.Object);
+                    if (showJsonAlert(data, false, true)) {
+                        Grid.addTile(data.Object);
+                        var scrollAmount = ($(document).height() - $(window).height());
+                        $('html,body').animate({ scrollTop: scrollAmount }, 500);
 					}
 				}
 			});
 		}
-
 	</script>
 
 	if (ViewBag.DisableEditTiles ?? false) {
 		<script>
 			$(".add-tile").attr("title","This workspace cannot be edited.").css({"opacity":.5,"cursor":"not-allowed"})
-				.find("button").css({"pointer-events":"none"});			
-
+				.find("button").css({"pointer-events":"none"});
 			window.AllowDragDrop =false;
 		</script>
 		<style>
-			.settings-container,.resizer {
-				display:none!important;
+			.settings-container, .resizer {
+				display: none !important;
 			}
-			
-			.grid-container li .heading{
-				cursor:default;
+			.grid-container li .heading {
+				cursor: default;
 			}
-
 		</style>
 	}
-
 	if (ViewBag.InitialModel is String) {
 		<script>
 			window.InitialModel = @(new HtmlString(ViewBag.InitialModel));
 		</script>
 	}
-
 }
 @section topSection{
 	<div class="ng-cloak2" ng-app="L10App">
@@ -180,18 +173,18 @@
 				<li><a onclick="createTile('/TileData/UserTodo2','Url')">To-do List</a></li>
 				<li><a onclick="createTile('/TileData/UserScorecard2','Url')">Scorecard</a></li>
 				<li><a onclick="createTile('/TileData/UserRock2','Url')">@Html.Organization().Settings.RockName</a></li>
-                <li><a onclick="createTile('/TileData/Milestones','Url')">Milestones</a></li>
+				<li><a onclick="createTile('/TileData/Milestones','Url')">Milestones</a></li>
 				<li><a onclick="createTile('/TileData/UserRoles','Url')">Roles</a></li>
 				@if (ViewBag.IsManager) {
-					<li><a onclick="createTile('/TileData/UserManage2', 'Url') ">Direct Reports</a></li>
+				<li><a onclick="createTile('/TileData/UserManage2', 'Url') ">Direct Reports</a></li>
 				}
 				<li><a onclick="createTile('/TileData/UserNotes','Url')">Personal Notes</a></li>
 				<li><a onclick="createTile('/TileData/UserProfile2','Url')">Profile Picture</a></li>
 				<!--<li><a onclick="createTile('/TileData/UserNotifications','Url')">Notifications</a></li>-->
-                @if (ViewBag.ShowCoreProcess ?? false) {
-                    <li class="divider"></li>
-                    <li><a onclick="createTile('/TileData/CoreProcesses','Url')">Core Processes</a></li>
-                    <li><a onclick="createTile('/TileData/Tasks','Url')">Tasks</a></li>
+				@if (ViewBag.ShowCoreProcess ?? false) {
+				<li class="divider"></li>
+				<li><a onclick="createTile('/TileData/CoreProcesses','Url')">Core Processes</a></li>
+				<li><a onclick="createTile('/TileData/Tasks','Url')">Tasks</a></li>
                 }
 			</ul>
 		</li>
@@ -203,14 +196,14 @@
 		</li>
 		@if (Model.L10s.Any()) {
 			if (Model.L10s.Count > 8) {
-				<li class="dropdown-submenu">
-					<a tabindex="-1">L10s</a>
-					<ul class="dropdown-menu" style="">
-						@{Html.RenderPartial("_L10TileList", Model.L10s);}
-					</ul>
-				</li>
+		<li class="dropdown-submenu">
+			<a tabindex="-1">L10s</a>
+			<ul class="dropdown-menu" style="">
+				@{Html.RenderPartial("_L10TileList", Model.L10s);}
+			</ul>
+		</li>
 			} else {
-				<li class="divider"></li>
+		<li class="divider"></li>
 				Html.RenderPartial("_L10TileList", Model.L10s);
 			}
 		}
@@ -223,9 +216,7 @@
 			</ul>
 		</li>
 	</ul>
-
 </div>
-
 <div class="btn-group add-pages" style="position: fixed;top: 25px;left:90px;z-index: 1001;color:white">
 	<button type="button" class="btn btn-link clickable dropdown-toggle" style="color:white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		Pages <span class="caret"></span>
@@ -243,13 +234,12 @@
 		<li><a onclick="addPage()">Add Page</a></li>
 	</ul>
 </div>
-
-<div class="btn-group l10-pages" style="position: fixed;top: 25px;left:162px;z-index: 1001;color:white">
+<div class="btn-group l10-pages">
 	<button type="button" class="btn btn-link clickable dropdown-toggle" style="color:white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		Meetings <span class="caret"></span>
 	</button>
 	<ul class="dropdown-menu">
-		@foreach (var l10 in Model.L10s) {
+		@foreach (var l10 in Model.L10s.OrderBy(x=>x.StarDate)) {
 			<li>
 				<a href="#">
 					<span class="dashtitle" onclick="window.location='/Dashboard/Generate/@l10.Value?type=L10'">@l10.Text</span>
@@ -262,7 +252,7 @@
 	<div ng-controller2="L10Controller">
 		@Html.Partial("~/Views/Angular/_L10App.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
 			{ "IncludeComplete", false},
-			{"PullUrl","/DashboardData/Data2/" + ViewBag.UserId + "?dashboardId="+ Model.DashboardId+"&"}
+			{ "PullUrl","/DashboardData/Data2/" + ViewBag.UserId + "?dashboardId="+ Model.DashboardId+"&"}
 		})
 		<ul id="grid" class="grid"></ul>
 	</div>
@@ -290,6 +280,20 @@
 
 		#alerts .alert {
 			z-index: 1000;
+		}
+
+		.l10-pages {
+			position: fixed;
+			top: 25px;
+			left: 162px;
+			z-index: 1001;
+			color: white;
+		}
+
+		@@media (max-width: 768px) {
+			.l10-pages {
+				left: 60px;
+			}
 		}
 	</style>
 	@Styles.Render("~/styles/Dashboard");

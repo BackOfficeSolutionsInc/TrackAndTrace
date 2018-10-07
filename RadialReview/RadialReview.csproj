@@ -49,9 +49,9 @@
       <HintPath>..\CamundaCSharpClient\bin\Debug\CamundaCSharpClient.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Solver.Foundation, Version=3.0.2.10889, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Runtime" />
     <Reference Include="System.Globalization" />
     <Reference Include="System.ObjectModel" />
@@ -76,8 +76,8 @@
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accessors\AccountabilityAccessor.cs" />
+    <Compile Include="Accessors\AdminAccessor.cs" />
     <Compile Include="Accessors\ApplicationAccessor.cs" />
     <Compile Include="Accessors\AskableAccessor.cs" />
     <Compile Include="Accessors\AttachAccessor.cs" />
@@ -132,10 +133,15 @@
     <Compile Include="Accessors\OrganizationAccessors\JoinOrganizationAccessor.cs" />
     <Compile Include="Accessors\PdfChartAccessor.cs" />
     <Compile Include="Accessors\PDF\AccountabilityChartPDF.cs" />
+    <Compile Include="Accessors\PDF\AccountabilityChartSettings.cs" />
     <Compile Include="Accessors\PDF\JS\D3.js.cs" />
     <Compile Include="Accessors\PDF\DocumentPlacer.cs" />
     <Compile Include="Accessors\PDF\JS\Tree.js.cs" />
-    <Compile Include="Accessors\PDF\PdfAccessor_VTO.cs" />
+    <Compile Include="Accessors\PDF\PdfSettings.cs" />
+    <Compile Include="Accessors\PDF\QuarterlyPrintoutPdf.cs" />
+    <Compile Include="Accessors\PDF\VTO\PdfAccessor_VTO.cs" />
+    <Compile Include="Accessors\PDF\VTO\VtoPdfSettings.cs" />
+    <Compile Include="Accessors\QuarterlyAccessor.cs" />
     <Compile Include="Accessors\ReportAccessor.cs" />
     <Compile Include="Accessors\SearchAccessor.cs" />
     <Compile Include="Accessors\StatsAccessor.cs" />
@@ -155,6 +161,7 @@
     <Compile Include="Api\V1\Todo.cs" />
     <Compile Include="Api\V1\Users.cs" />
     <Compile Include="App_Start\DateTimeModelBinder.cs" />
+    <Compile Include="App_Start\HangfireConfig.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />
@@ -175,20 +182,32 @@
       <DependentUpon>angular-material.less</DependentUpon>
     </Content>
     <Content Include="Content\Angular\angular-material.less" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Archive.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\EditModal.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Admin.cshtml" />
     <None Include="Content\Chart\metric-graphics.less" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\FirePadController.cs" />
+    <Compile Include="Controllers\Integrations\AsanaIntegrationsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\Upload\Upload_OrgUsersController.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\SetPeopleToolsTrial.cs" />
+    <Compile Include="Crosscutting\Hooks\Integrations\AsanaTodoHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IMilestoneHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IPositionHooks.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IQuarterlyConversationHook.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IRecurrenceSettings.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\UnlockOnCard.cs" />
     <Compile Include="Crosscutting\Hooks\QuarterlyConversation\QuarterlyConversationCreationNotifications.cs" />
     <Compile Include="Crosscutting\Hooks\Realtime\Position\RealTime_Positions.cs" />
+    <Compile Include="Crosscutting\Integrations\Asana\AsanaAccessor.cs" />
+    <Compile Include="Crosscutting\Schedulers\HangfireConstants.cs" />
+    <Compile Include="Crosscutting\Schedulers\Scheduler.cs" />
+    <Compile Include="Crosscutting\Schedulers\TodoEmailsScheduler.cs" />
+    <Compile Include="Exceptions\AdminSetRoleException.cs" />
+    <Compile Include="Exceptions\RedirectToActionException.cs" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Milestone.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventsFactory.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnaylzerGenerators.cs" />
@@ -244,20 +263,28 @@
     <Compile Include="Crosscutting\Hooks\Realtime\CoreProcess\RealTime_Tasks.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\UpdateUserCache.cs" />
     <Compile Include="Crosscutting\Hooks\UserRegistration\UpdatePlaceholder.cs" />
-    <Compile Include="Hubs\CoreProcessHub.cs" />
+    <Compile Include="Hubs\ToFix\CoreProcessHub.cs" />
+    <Compile Include="Hubs\RealTimeHub.cs" />
+    <Compile Include="Models\Admin\AdminAuditLog.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Angular\LocalDateTime.cs" />
     <Compile Include="Models\Angular\Notifications\AngularAppNotification.cs" />
     <Compile Include="Models\Angular\Organization\AngularOrganizationUnsafe.cs" />
+    <Compile Include="Models\Angular\Rocks\AngularRockAndMilestones.cs" />
     <Compile Include="Models\Angular\Users\AngularUserRole.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\Charts\MetricGraphic.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
+    <Compile Include="Models\Components\ColorComponent.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
     <Compile Include="Models\Frontend\EditorModels.cs" />
+    <Compile Include="Models\Integrations\Asana\AsanaDTOs.cs" />
+    <Compile Include="Models\Integrations\Asana\AsanaModels.cs" />
+    <Compile Include="Models\Integrations\TodoLink.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
     <Compile Include="Models\Notifications\NotificationModel.cs" />
+    <Compile Include="Models\Quarterly\QuarterlyEmail.cs" />
     <Compile Include="Models\UserModels\ConsentModel.cs" />
     <Compile Include="Models\Payments\PaymentCredit.cs" />
     <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
@@ -265,6 +292,9 @@
     <Compile Include="Models\UserModels\UserRole.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Attributes\Untested.cs" />
+    <Compile Include="Utilities\Algorithms\BinPacking.cs" />
+    <Compile Include="Utilities\Algorithms\BreakOptimization.cs" />
+    <Compile Include="Utilities\Constants\KeyManager.cs" />
     <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
     <Compile Include="Utilities\AsyncUtility.cs" />
     <Compile Include="Utilities\CoreProcess\BpmnUtility.cs" />
@@ -355,7 +385,7 @@
     <Compile Include="Crosscutting\Hooks\CrossCutting\UpdateUserModel_TeamNames.cs" />
     <Compile Include="Crosscutting\Hooks\Webhook\IssueWebhook.cs" />
     <Compile Include="Crosscutting\Hooks\Webhook\TodoWebhook.cs" />
-    <Compile Include="Hubs\PeopleHub.cs" />
+    <Compile Include="Hubs\ToFix\PeopleHub.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
     <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
     <Compile Include="Models\Angular\DataType\AngularString.cs" />
@@ -395,10 +425,15 @@
     <Compile Include="Notifications\PubSub.cs" />
     <Compile Include="Utilities\AngularTreeUtil.cs" />
     <Compile Include="Utilities\Constants\PdfImageConst.cs" />
+    <Compile Include="Utilities\DataTypes\FixedSizedQueue.cs" />
     <Compile Include="Utilities\DataTypes\LazyCollection.cs" />
+    <Compile Include="Utilities\DatePointAnalyzerUtility.cs" />
     <Compile Include="Utilities\DivisorUtility.cs" />
+    <Compile Include="Utilities\LockoutUtility.cs" />
+    <Compile Include="Utilities\Pdf\BreakoutDuration.cs" />
+    <Compile Include="Utilities\Pdf\DocumentMerger.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
-    <Compile Include="Controllers\IntegrationsController.cs" />
+    <Compile Include="Controllers\Integrations\ZoomIntegrationsController.cs" />
     <Compile Include="Crosscutting\Hooks\Integrations\BasecampTodoHook.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\CreateUserOrganization_UpdateHierarchy.cs" />
     <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
@@ -577,11 +612,10 @@
     <Compile Include="Crosscutting\Hooks\Integrations\Outlook_TodoHook.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
-    <Compile Include="Hubs\MessageHub.cs" />
-    <Compile Include="Hubs\MeetingHub.cs" />
-    <Compile Include="Hubs\OrganizationHub.cs" />
-    <Compile Include="Hubs\VtoHub.cs" />
-    <Compile Include="Hubs\WebRtcHub.cs" />
+    <Compile Include="Hubs\ToFix\MessageHub.cs" />
+    <Compile Include="Hubs\ToFix\MeetingHub.cs" />
+    <Compile Include="Hubs\ToFix\OrganizationHub.cs" />
+    <Compile Include="Hubs\ToFix\VtoHub.cs" />
     <Compile Include="Models\Accountability\AccountabilityModel.cs" />
     <Compile Include="Models\Angular\Accountability\AngularAccountability.cs" />
     <Compile Include="Models\Angular\DataType\AngularTree.cs" />
@@ -938,7 +972,7 @@
     <Compile Include="Utilities\Extensions\TimespanExtensions.cs" />
     <Compile Include="Utilities\Extensions\ViewBagExtensions.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
-    <Compile Include="Utilities\DistanceUtility.cs" />
+    <Compile Include="Utilities\Algorithms\DistanceUtility.cs" />
     <Compile Include="Utilities\ForModelUtil.cs" />
     <Compile Include="Utilities\FormulaUtility.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
@@ -970,7 +1004,12 @@
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PaymentSpringUtil.cs" />
-    <Compile Include="Utilities\PdfOptimizer.cs" />
+    <Compile Include="Utilities\Pdf\LayoutOptimizer.cs" />
+    <Compile Include="Utilities\Pdf\LayoutTimeoutException.cs" />
+    <Compile Include="Utilities\Pdf\LayoutTrialResult.cs" />
+    <Compile Include="Utilities\Pdf\MultiPageDocument.cs" />
+    <Compile Include="Utilities\Pdf\PdfDocumentAndStats.cs" />
+    <Compile Include="Utilities\Pdf\PdfOptimizer.cs" />
     <Compile Include="Utilities\Pdf\PdfWordWrapper.cs" />
     <Compile Include="Utilities\PermissionItemHelper.cs" />
     <Compile Include="Utilities\Productivity\ChromeExtensionComms.cs" />
@@ -997,7 +1036,6 @@
     <Compile Include="Utilities\Extensions\PaginationExtensions.cs" />
     <Compile Include="Utilities\Extensions\StreamExtension.cs" />
     <Compile Include="Utilities\Pop3Utility.cs" />
-    <Compile Include="Utilities\Schedule.cs" />
     <Compile Include="Utilities\ServerUtility.cs" />
     <Compile Include="Utilities\Chart\ChartUtility.cs" />
     <Compile Include="Utilities\CsvUtility.cs" />
@@ -1039,6 +1077,7 @@
     <!--<Compile Include="Utilities\NHibernate\SingleRequestTransaction.cs" />-->
     <Compile Include="Utilities\StreamUtil.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />
+    <Compile Include="Utilities\Synchronize\CancellationException.cs" />
     <Compile Include="Utilities\Synchronize\SyncAction.cs" />
     <Compile Include="Utilities\Synchronize\SyncUtil.cs" />
     <Compile Include="Utilities\TestUtilities.cs" />
@@ -1126,6 +1165,9 @@
       <DependentUpon>GettingStarted.less</DependentUpon>
     </Content>
     <Content Include="Content\img\TRACTION-TOOLS_large_stacked_2c.png" />
+    <Content Include="Content\Inputs\IOSwitch.css">
+      <DependentUpon>IOSwitch.less</DependentUpon>
+    </Content>
     <Content Include="Content\L10\L10Scorecard.css">
       <DependentUpon>L10Scorecard.less</DependentUpon>
     </Content>
@@ -1279,6 +1321,7 @@
     <Content Include="Content\L10\L10Wizard.less" />
     <Content Include="Content\Angular\Rocks.less" />
     <Content Include="Content\Angular\Issues.less" />
+    <Content Include="Content\Inputs\IOSwitch.less" />
     <None Include="Data\APS.cert" />
     <Content Include="IIS\install.zip" />
     <Content Include="Content\bootstrap\custom\modal.less" />
@@ -1397,6 +1440,7 @@
     <Content Include="Scripts\Inputs\token-editor.js" />
     <Content Include="Scripts\Inputs\underscore.min.js" />
     <Content Include="Scripts\Inputs\underscore.string.min.js" />
+    <Content Include="Scripts\Dashboard\jquery-ui.min.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.min.js">
       <DependentUpon>jquery.autoresize.js</DependentUpon>
     </Content>
@@ -1431,6 +1475,7 @@
     <Content Include="Scripts\Main\linq.js" />
     <Content Include="Scripts\Main\log-helper.js" />
     <Content Include="Scripts\Main\modals.js" />
+    <Content Include="Scripts\Main\notifications.js" />
     <Content Include="Scripts\Main\profilepicture.js" />
     <Content Include="Scripts\Main\support.js" />
     <Content Include="Scripts\Main\time.js" />
@@ -1474,6 +1519,7 @@
     <Content Include="SoftwareUpdates\20160818.txt" />
     <Content Include="SoftwareUpdates\20160622.txt" />
     <Content Include="SoftwareUpdates\20160620.txt" />
+    <Content Include="SoftwareUpdates\20180728.txt" />
     <Content Include="SoftwareUpdates\20171207.txt" />
     <Compile Include="Utilities\QuarterGuessUtility.cs" />
     <Content Include="Views\Permissions\Dropdown.cshtml" />
@@ -1737,7 +1783,6 @@
     <Content Include="Scripts\Angular\Meetings\L10Controller.js" />
     <Content Include="Scripts\Angular\Helpers\signalR.js" />
     <Content Include="Scripts\Angular\Meetings\RockState.js" />
-    <Content Include="Scripts\Angular\SignalR\SignalR.js" />
     <Content Include="Scripts\Angular\VTO\VtoApp.js" />
     <Content Include="Scripts\Angular\VTO\VtoController.js" />
     <Content Include="Scripts\components\fivestate.js" />
@@ -1881,6 +1926,19 @@
     <Content Include="Views\User\EditUserDetails.cshtml" />
     <Content Include="Views\Organization\Flags.cshtml" />
     <Content Include="Views\FirePad\Index.cshtml" />
+    <Content Include="Views\Rocks\All.cshtml" />
+    <Content Include="Views\Admin\AllEmails.cshtml" />
+    <Content Include="Views\Account\AdminSetRole.cshtml" />
+    <Content Include="Views\Account\AdminAuditLog.cshtml" />
+    <Content Include="Views\Admin\AccountsAtRisk.cshtml" />
+    <Content Include="Views\Admin\Variables.cshtml" />
+    <Content Include="Views\Admin\Errors.cshtml" />
+    <Content Include="Views\Payment\Lockout.cshtml" />
+    <Content Include="Views\Payment\LockoutNonadmin.cshtml" />
+    <Content Include="Views\Quarterly\Send.cshtml" />
+    <Content Include="Views\Integrations\Asana.cshtml" />
+    <Content Include="Views\Integrations\AsanaActionModal.cshtml" />
+    <Content Include="Views\Integrations\AsanaNoConnection.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -2513,8 +2571,6 @@
     <Content Include="Views\Review\Details\_GwcTable.cshtml" />
     <Content Include="Views\Shared\_ReviewStats2.cshtml" />
     <Content Include="Views\Review\Details\_ValueTable.cshtml" />
-    <Content Include="Views\Scorecard\Index.cshtml" />
-    <Content Include="Views\Scorecard\Edit.cshtml" />
     <Content Include="Views\Review\Details\_RockTable.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\RockState.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\RockState.cshtml" />
@@ -2590,6 +2646,7 @@
     <Content Include="Views\TileData\L10Issues.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Accessors\Powerpoint\" />
     <Folder Include="App_Data\" />
     <Folder Include="Areas\CoreProcess\CamundaFiles\" />
     <Folder Include="Areas\People\Engines\Surveys\Abstract\" />
@@ -2598,7 +2655,9 @@
     <Folder Include="logs\" />
     <Folder Include="Models\Frontend\ViewModels\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
+    <Folder Include="Scripts\Models\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
+    <Folder Include="Utilities\NewFolder2\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />
     <Folder Include="Views\Console\" />
@@ -2700,7 +2759,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Scripts\Models\Charts.ts" />
     <Content Include="SoftwareUpdates\20151217.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -2719,7 +2777,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\XmlComments.xml</DocumentationFile>
-    <NoWarn>1591,1998</NoWarn>
+    <NoWarn>1591,1998,0219</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\</OutputPath>
@@ -2729,6 +2787,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\XmlComments.xml</DocumentationFile>
+    <NoWarn>1591,1998</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -2781,6 +2841,18 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptMapRoot>~\Scripts\</TypeScriptMapRoot>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptSourceRoot />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

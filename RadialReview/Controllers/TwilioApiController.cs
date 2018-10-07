@@ -60,7 +60,7 @@ namespace RadialReview.Controllers
 			var posActions = PossibleActions.ToList();
 			if (recurrenceId != -2) {
 				//Personal Todo
-				new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(recurrenceId));
+				PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Recurrence(recurrenceId));
 
 				var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), recurrenceId, false, false, false);
 				if (recur.HeadlineType != Model.Enums.PeopleHeadlineType.HeadlinesList)
@@ -117,7 +117,7 @@ namespace RadialReview.Controllers
 			//ValidateValues(model,x=>x.RecurrenceId);
 			if (model.RecurrenceId != -2) {
 				//Personal Todo
-				new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(model.RecurrenceId));
+				PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Recurrence(model.RecurrenceId));
 			}
 			if(PossibleActions.All(x => x.Value != model.SelectedAction))
 				throw new PermissionsException("Action does not exist.");

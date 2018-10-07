@@ -159,7 +159,7 @@ namespace TractionTools.Tests.Accessors
             recur._DefaultRocks = new List<L10Recurrence.L10Recurrence_Rocks>();
 			await L10Accessor.EditL10Recurrence(manager, recur);
             
-            var foundRecur = L10Accessor.GetL10Recurrence(manager, recur.Id, true);
+            var foundRecur = L10Accessor.GetL10Recurrence(manager, recur.Id, LoadMeeting.True());
 
             Assert.AreEqual(1, foundRecur._DefaultAttendees.Count);
             Assert.AreEqual(manager.Id, foundRecur._DefaultAttendees[0].User.Id);
@@ -180,7 +180,7 @@ namespace TractionTools.Tests.Accessors
             var editVR = await edit as RedirectToRouteResult;
             Assert.IsNotNull(editVR);
 
-            var foundRecur1 = L10Accessor.GetL10Recurrence(manager, recur.Id, true);
+            var foundRecur1 = L10Accessor.GetL10Recurrence(manager, recur.Id, LoadMeeting.True());
             Assert.AreEqual(2, foundRecur1._DefaultAttendees.Count);
             Assert.AreEqual(manager.Id, foundRecur1._DefaultAttendees[0].User.Id);
             Assert.AreEqual(employee.Id, foundRecur1._DefaultAttendees[1].User.Id);

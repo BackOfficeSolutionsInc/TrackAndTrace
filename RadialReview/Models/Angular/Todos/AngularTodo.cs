@@ -72,6 +72,7 @@ namespace RadialReview.Models.Angular.Todos {
         public DateTime? DueDate { get; set; }
         public AngularUser Owner { get; set; }
         public DateTime? CompleteTime { get; set; }
+		[IgnoreDataMember]
 		public DateTime? DeleteTime { get; set; }
 		public DateTime? CreateTime { get; set; }
         public bool? Complete { get; set; }

@@ -261,7 +261,7 @@ namespace RadialReview.Controllers {
 							.OrderBy(x => x.CustomName)
 							.ToSelectList(x => x.CustomName, x => x.Id, id).ToList();
 #pragma warning restore CS0618 // Type or member is obsolete
-			if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditPositions(orgId))) {
+			if (PermissionsAccessor.IsPermitted(GetUser(), x => x.EditPositions(orgId))) {
 				orgPos.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
 			}
 

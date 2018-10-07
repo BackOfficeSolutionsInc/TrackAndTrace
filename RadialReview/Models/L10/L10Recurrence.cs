@@ -66,6 +66,7 @@ namespace RadialReview.Models.L10 {
 
 
 		public virtual bool CountDown { get; set; }
+		public virtual bool PrintOutRockStatus { get; set; }
 		public virtual bool AttendingOffByDefault { get; set; }
 		public virtual int CurrentWeekHighlightShift { get; set; }
 
@@ -186,6 +187,7 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.MeetingInProgress);
 				Map(x => x.DeleteTime);
 				Map(x => x.CountDown);
+				Map(x => x.PrintOutRockStatus);
 				Map(x => x.StartOfWeekOverride);
 				Map(x => x.IsLeadershipTeam);
 				Map(x => x.VtoId);
@@ -266,6 +268,7 @@ namespace RadialReview.Models.L10 {
 			public virtual UserOrganizationModel User { get; set; }
 			public virtual L10Recurrence L10Recurrence { get; set; }
 			public virtual SharePeopleAnalyzer SharePeopleAnalyzer { get; set; }
+			public virtual DateTime? StarDate { get; set; }
            // public virtual int? Ordering { get; set;  }
 
 			public L10Recurrence_Attendee() {
@@ -277,6 +280,7 @@ namespace RadialReview.Models.L10 {
 					Map(x => x.CreateTime);
 					Map(x => x.DeleteTime);
 					Map(x => x.SharePeopleAnalyzer);
+					Map(x => x.StarDate);
 					//Map(x => x.Ordering);
 					References(x => x.L10Recurrence).Column("L10RecurrenceId");
 					References(x => x.User).Column("UserId");

@@ -4,20 +4,16 @@ using Amazon.S3.Transfer;
 using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
-using RadialReview.Models;
-using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using System.Xml.Linq;
 using RadialReview.Areas.CoreProcess.Models.Process;
 
 namespace RadialReview.Utilities.CoreProcess {
-    public class BpmnUtility {
+	public class BpmnUtility {
         public static XNamespace CAMUNDA_NAMESPACE = "http://camunda.org/schema/1.0/bpmn";
         public static XNamespace BPMN_NAMESPACE = "http://www.omg.org/spec/BPMN/20100524/MODEL";
 

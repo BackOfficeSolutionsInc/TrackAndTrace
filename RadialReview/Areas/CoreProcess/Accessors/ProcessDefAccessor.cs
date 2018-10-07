@@ -1,7 +1,4 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using Amazon.S3.Transfer;
-using CamundaCSharpClient.Model;
+﻿using CamundaCSharpClient.Model;
 using CamundaCSharpClient.Model.Deployment;
 using CamundaCSharpClient.Model.Task;
 using log4net;
@@ -10,11 +7,8 @@ using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Areas.CoreProcess.CamundaComm;
 using RadialReview.Areas.CoreProcess.Interfaces;
-using RadialReview.Areas.CoreProcess.Models;
-using RadialReview.Areas.CoreProcess.Models.Interfaces;
 using RadialReview.Areas.CoreProcess.Models.MapModel;
 using RadialReview.Areas.CoreProcess.Models.Process;
-using RadialReview.Areas.CoreProcess.Models.ViewModel;
 using RadialReview.Exceptions;
 using RadialReview.Hooks;
 using RadialReview.Hubs;
@@ -22,26 +16,21 @@ using RadialReview.Models;
 using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Angular.CoreProcess;
 using RadialReview.Models.Angular.Dashboard;
-using RadialReview.Models.Application;
-using RadialReview.Models.Components;
 using RadialReview.Utilities;
 using RadialReview.Utilities.CoreProcess;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Variables;
-using RestSharp.Serializers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using System.Xml.Linq;
 using static CamundaCSharpClient.Query.Task.TaskQuery;
 using static RadialReview.Utilities.CoreProcess.BpmnUtility;
 
 namespace RadialReview.Areas.CoreProcess.Accessors {
-    public class ProcessDefAccessor : IProcessDefAccessor {
+	public class ProcessDefAccessor : IProcessDefAccessor {
 
         protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public async Task<bool> Deploy(UserOrganizationModel caller, long processDefId) {
@@ -945,10 +934,10 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
             var lookup = await _GetTaskIdentityLinkLookup(allTasks);
 
-            var hub = GlobalHost.ConnectionManager.GetHubContext<CoreProcessHub>();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
             foreach (var t in allTasks) {
                 var rgms = lookup.GetOrDefault(t.Id, new List<IdentityLink>());
-                var assignee = rgms.Where(x => x.type == "assignee").Select(x => CoreProcessHub.GenerateRgm(x.userId.SubstringAfter("u_").ToLong())).ToList();
+                var assignee = rgms.Where(x => x.type == "assignee").Select(x => RealTimeHub.Keys.GenerateRgm(x.userId.SubstringAfter("u_").ToLong())).ToList();
                 if (assignee.Any()) {
                     var group = hub.Clients.Groups(assignee);
                     group.update(new AngularUpdate() {
@@ -958,7 +947,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     });
                     group.showMessage("assignee" + t.Id);
                 } else {
-                    var candidateGroups = rgms.Where(x => x.type == "candidate").Select(x => CoreProcessHub.GenerateRgm(x.groupId)).ToList();
+                    var candidateGroups = rgms.Where(x => x.type == "candidate").Select(x => RealTimeHub.Keys.GenerateRgm(x.groupId)).ToList();
                     var group = hub.Clients.Groups(candidateGroups);
                     group.update(new AngularUpdate() {
                         new AngularCoreProcessData() {
@@ -975,14 +964,14 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
         }
 
         public static void JoinCoreProcessHub(UserOrganizationModel caller, string connectionId) {
-            var hub = GlobalHost.ConnectionManager.GetHubContext<CoreProcessHub>();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
                     var groups = ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(s, perms, caller.Id);
 
                     foreach (var r in groups) {
-                        hub.Groups.Add(connectionId, CoreProcessHub.GenerateRgm(r));
+                        hub.Groups.Add(connectionId, RealTimeHub.Keys.GenerateRgm(r));
                     }
                 }
             }

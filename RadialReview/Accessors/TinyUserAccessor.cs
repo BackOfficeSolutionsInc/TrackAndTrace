@@ -12,13 +12,7 @@ using System.Web;
 
 namespace RadialReview.Accessors {
 	public class TinyUserAccessor {
-
-		//private static TempUserModel tempUserAlias = null;
-		//private static UserOrganizationModel userOrgAlias = null;
-		//private static UserModel userAlias = null;
-		//private static Expression<Func<UserOrganizationModel, object>>[] Package = new Expression<Func<UserOrganizationModel, object>>[]{			
-		//};
-
+		
 		private static Func<object[], TinyUser> Unpackage = new Func<object[], TinyUser>(x => {
 			var fname = (string)x[0];
 			var lname = (string)x[1];
@@ -38,6 +32,31 @@ namespace RadialReview.Accessors {
 				ImageGuid = imageGuid
 			};
 		});
+
+		public class TinyUserAndOrganization {
+			public long UserId { get; set; }
+			public long OrganizationId { get; set; }
+			public string FirstName { get; set; }
+			public string LastName { get; set; }
+			public string Organization { get; set; }
+		}
+
+		public static TinyUserAndOrganization GetUserAndOrganization_Unsafe(UserOrganizationModel caller, long userId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var user = s.Get<UserOrganizationModel>(userId);
+
+					return new TinyUserAndOrganization() {
+						FirstName = user.GetFirstName(),
+						LastName = user.GetLastName(),
+						Organization = user.Organization.GetName(),
+						OrganizationId = user.Organization.Id,
+						UserId = userId
+					};
+				}
+			}
+		}
 
 
 		public static IEnumerable<TinyUser> GetUsers_Unsafe(ISession s, IEnumerable<long> userIds, bool noDeleted = true) {

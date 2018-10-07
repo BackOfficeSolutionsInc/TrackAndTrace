@@ -1,0 +1,69 @@
+﻿@model List<RadialReview.Areas.People.Angular.Survey.AngularSurvey>
+@{
+	ViewBag.Title = "Admin";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Admin</h2>
+
+<div onclick="$('.hideable').toggleClass('hidden')">hide</div>
+
+<div id="table"></div>
+
+
+@using (Html.BeginScripts()) {
+	<script>
+		var data = @Html.ArrayToString(Model);
+		var table = DataTable({
+			content:"#table",
+			data : data,
+			cells:[{
+				name: "Name",
+				classes:"fullWidth",
+				contents:function(x){
+					var sections = x.Sections;
+					var res = "<table class='table'><tr><td colspan='3' class='survey-name'>"+x.Help+"</td>";//<td>("+x.Help+")</td>";
+					for(var s in sections){
+						var section = sections[s];
+						var questions = "<table class='hideable'>";
+						for(var i in section.Items){
+							var item = section.Items[i];
+							questions +="<tr><td>"+item.Item.Name+"</td></tr>";
+						}
+						questions+="</table>";
+						res += "<tr class='section hideable'><td class='space'></td><td class='section-name'>"+section.Name+"</td><td>"+questions+"</td></tr>";
+					}
+					res+="</table>";
+					return res;
+				}
+			}]
+		});
+	</script>
+}
+<style>
+	.table .table{
+		background-color:transparent;
+		margin-bottom:0;
+	}
+	.survey-name{
+		font-weight:bold;
+	}
+	.section-name{
+		width:190px;
+		color:black;
+		font-weight:bold;
+	}
+	.space{
+		width:60px;
+	}
+	.section{
+		font-size:12px;
+	}
+	.section > td:not(.space){
+		border-top:1px solid gray !important;
+	}
+	.row > td {
+		color: #333;
+		border-bottom: 4px solid #ef7622;
+	}
+</style>

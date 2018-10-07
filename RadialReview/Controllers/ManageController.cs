@@ -14,6 +14,7 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Controllers {
 	public class ManageController : BaseController {
@@ -21,6 +22,7 @@ namespace RadialReview.Controllers {
 		private void UpdateViewbag() {
 			ViewBag.ManagingPayments = PermissionsAccessor.CanEdit(GetUser(), PermItem.ResourceType.UpdatePaymentForOrganization, GetUser().Organization.Id);
 			ViewBag.ShowAddClient = GetUser().Organization.Settings.AllowAddClient;
+			ViewBag.CanAddUsers = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
 		}
 
 
@@ -56,7 +58,7 @@ namespace RadialReview.Controllers {
 			//DeepSubordianteAccessor.ManagesUser(GetUser(), GetUser().Id, id);
 			//details.User.PopulatePersonallyManaging(GetUser(), caller.AllSubordinates);
 
-			details.ForceEditable = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditQuestionForUser(id));
+			details.ForceEditable = PermissionsAccessor.IsPermitted(GetUser(), x => x.EditQuestionForUser(id));
 
 			var model = new ManageUserModel() {
 				Details = details
@@ -125,8 +127,8 @@ namespace RadialReview.Controllers {
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
 			var hasAdminDelete = _PermissionsAccessor.AnyTrue(GetUser(), PermissionType.DeleteEmployees, x => x.ManagingOrganization);
 			var messages = MessageAccessor.GetManageMembers_Messages(GetUser(), GetUser().Organization.Id);
-			var canUpgrade = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
-			var canEditUserDetails = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.EditDeleteUserDataForOrganization, GetUser().Organization.Id));
+			var canUpgrade = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
+			var canEditUserDetails = PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.EditDeleteUserDataForOrganization, GetUser().Organization.Id));
 
 			for (int i = 0; i < members.Count(); i++) {
 				var u = members[i];
@@ -174,7 +176,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Organization() {
 			UpdateViewbag();
 			var user = GetUser().Hydrate().Organization().Execute();
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
+			PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 
 			var companyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
 				//.Select(x => x.CompanyValue)
@@ -203,6 +205,8 @@ namespace RadialReview.Controllers {
 		public ActionResult Payment() {
 			UpdateViewbag();
 			OrganizationViewModel model = GetAdminDataModel(false, true);
+			ViewBag.Credits = PaymentAccessor.GetCredits(GetUser(), GetUser().Organization.Id);
+
 			return View(model);
 		}
 
@@ -213,10 +217,9 @@ namespace RadialReview.Controllers {
 				throw new PermissionsException();
 
 			if (testManageOrg)
-				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
+				PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 			if (testManageFinance)
-				_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
-
+				PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
 
 			var model = new OrganizationViewModel() {
 				Id = user.Organization.Id,
@@ -235,30 +238,32 @@ namespace RadialReview.Controllers {
 				RockName = user.Organization.Settings.RockName,
 				TimeZone = user.Organization.Settings.TimeZoneId,
 				WeekStart = user.Organization.Settings.WeekStart,
-				Cards = PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id),
-
 				OnlySeeRockAndScorecardBelowYou = user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou,
-
-				PaymentPlan = PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id),
-
 				ScorecardPeriod = user.Organization.Settings.ScorecardPeriod,
-
 				StartOfYearMonth = user.Organization.Settings.StartOfYearMonth,
 				StartOfYearOffset = user.Organization.Settings.StartOfYearOffset,
-
 				DateFormat = user.Organization.Settings.DateFormat,
 				NumberFormat = user.Organization.Settings.NumberFormat,
-
 				LimitFiveState = user.Organization.Settings.LimitFiveState,
-
 				AllowAddClient = user.Organization.Settings.AllowAddClient,
-
 				DefaultSendTodoTime = user.Organization.Settings.DefaultSendTodoTime,
 				PossibleTodoTimes = TimingUtility.GetPossibleTimes(user.Organization.Settings.DefaultSendTodoTime),
+				AccountabilityChartId = user.Organization.AccountabilityChartId,
 
-				AccountabilityChartId = user.Organization.AccountabilityChartId
+				PrimaryColorHex = user.Organization.Settings.PrimaryColor.ToHex(false),
+				LogoUrl = new ImageUploadViewModel() {
+					ImageUrl = user.Organization.Settings.GetImageUrl(),
+					UploadUrl = "/upload/Logo/",
+					ForType = UploadType.Logo.ToString(),
 
+				},
 			};
+
+			if (testManageFinance) {
+				model.PaymentPlan = PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id);
+				model.Cards = PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id);
+			}
+
 			return model;
 		}
 
@@ -299,7 +304,9 @@ namespace RadialReview.Controllers {
 				model.NumberFormat,
 				model.LimitFiveState,
 				model.DefaultSendTodoTime,
-				model.AllowAddClient);
+				model.AllowAddClient,				
+				model.PrimaryColorHex
+				);
 			ViewBag.Success = "Successfully Saved.";
 
 			//model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)

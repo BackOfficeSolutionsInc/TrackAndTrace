@@ -1,0 +1,144 @@
+﻿@model List<RadialReview.Models.Admin.AdminAccessModel>
+@{
+	ViewBag.Title = "AdminAuditLog";
+}
+
+<h2>Admin Audit Log</h2>
+
+<div id="table"></div>
+
+@using (Html.BeginScripts()) {
+	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+
+	<script>
+
+		moment.updateLocale('en', {
+			relativeTime : {
+				future: "%s",
+				past:   "%s",
+				s: function (number, withoutSuffix, key, isFuture){
+					return '00:' + (number<10 ? '0':'') + number + 'min';
+				},
+				m:  "1m",
+				mm: function (number, withoutSuffix, key, isFuture){
+					return (number<10 ? '':'') + number + 'min';
+				},
+				h:  "1 hr",
+				hh: "%d hr",
+				d:  "1 day",
+				dd: "%d days",
+				M:  "a month",
+				MM: "%d months",
+				y:  "a year",
+				yy: "%d years"
+			}
+		});
+
+		function diffToColor(x){
+			var end = moment(Time.parseJsonDate(x.DeleteTime));
+			var start = moment(Time.parseJsonDate(x.CreateTime));
+			return +(end-start)/60000;
+		}
+
+
+		DataTable({
+			container: "#table",
+			data: @Html.ArrayToString(Model),
+			cells:[
+				//{name:"Id",contents:function(x){ return x.Id; }},
+				{name:"",contents:function(x){ 
+					return "<span class='hidden'>"+(+Time.parseJsonDate(x.CreateTime))+"</span> "+dateFormatter(Time.parseJsonDate(x.CreateTime)); 
+				}, classes:"nowrap admin-lbl"},
+				{name:"Level", classes:function(x){return "alignCenter";},
+					contents:function(x){
+						if (x.AccessLevel==0){
+							return "<span class='label label-warning'>View</span>";
+						}else{
+							return "<span class='label label-danger'>Set As</span>";
+						}
+					}},
+				{name:"Admin",contents:function(x){ return x._AdminName; }, classes:"nowrap admin-lbl"},
+				{name:"User",contents:function(x){ return x._AccessName; }, classes:"nowrap user-lbl"},
+				{name:"Org",contents:function(x){ return x._AccessOrganization; }, classes:"nowrap user-lbl"},
+				{name:"",contents:function(x){
+					var end = moment(Time.parseJsonDate(x.DeleteTime));
+					var start = moment(Time.parseJsonDate(x.CreateTime));
+					var human = start.from(end);
+					return "<span class='hidden'>"+(end-start)+"</span> <span class='label tc tc-"+diffToColor(x)+"'>"+human+"</span>";
+				}, classes:function(x){return "nowrap";}},
+				{name:"Reason",contents:function(x){ return x.Reason; }, classes:"fullWidth"},
+			]
+		});
+
+		$(function(){
+
+			$("table").tablesorter();
+		});
+
+	</script>
+
+}
+<style>
+	.label {
+		width: 45px;
+		display: inline-block;
+	}
+
+	.admin-lbl {
+		color: #3333338a;
+	}
+
+	.user-lbl {
+		/*font-weight: bold;*/
+		color: #333;
+	}
+
+	.tc {
+		background-color: #bbb;
+	}
+
+	.tc-5 {
+		color: #bbb;
+		background-color: transparent;
+		text-shadow: 0px 0px 0px #333;
+	}
+
+	.tc-10 {
+		color: #aaa;
+		background-color: transparent;
+		border: 1px solid #dedede;
+	}
+
+	.tc-30 {
+		color: #aaa;
+		background-color: #efefef;
+		border: 1px solid #c1c1c1;
+	}
+
+	.tc-60 {
+		background-color: #bbb;
+	}
+
+	.tc-240 {
+		background-color: #888;
+	}
+
+	.tc-480 {
+		background-color: #fc913a;
+	}
+
+	.tc-1440 {
+		background-color: #ff4e50;
+	}
+
+	.tc-2880 {
+		background-color: #d25656;
+		box-shadow: 0 0 6px 0 #d25656;
+	}
+
+	.tc-4320 {
+		background-color: #d25656;
+		box-shadow: 0 0 6px 0 #d25656;
+		text-shadow: 0px 0px 1px black;
+	}
+</style>

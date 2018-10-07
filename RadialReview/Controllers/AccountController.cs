@@ -24,32 +24,67 @@ using RadialReview.Hooks;
 using RadialReview.Variables;
 using NHibernate;
 using RadialReview.Models.UserModels;
+using RadialReview.Models.Admin;
 
 namespace RadialReview.Controllers {
 	[Authorize]
 	public partial class AccountController : UserManagementController {
 
-		//public AccountController()
-		//    : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
-		//{
-		//}
-
-		//public AccountController(NHibernateUserManager userManager)
-		//{
-		//    UserManager = userManager;
-		//}
+		#region ADMIN
 		[Access(AccessLevel.Radial)]
-		public virtual async Task<ActionResult> SetAsUser(string id) {
-#pragma warning disable CS0618 // Type or member is obsolete
+		public virtual async Task<ActionResult> SetAsUser(string id, string returnUrl = null) {
+
 			var user = _UserAccessor.GetUserByEmail(id.ToLower());
-#pragma warning restore CS0618 // Type or member is obsolete
-			if (user != null) {
-				await SignInAsync(user);
-				return RedirectToAction("Index", "Dashboard");
-			}
-			return Content("Could not set as " + id);
+			var audit = new AdminAccessViewModel(id) {
+				AccessUser = user.FirstName + " " + user.LastName,
+				AccessLevel = AdminAccessLevel.SetAs,
+				ReturnUrl = returnUrl,
+			};
+			return View("AdminSetRole", audit);
 		}
 
+
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public virtual async Task<ActionResult> SetAsUser(AdminAccessViewModel model) {
+			var user = UserAccessor.GetSetAsUser(GetUserModel(), GetUser(), model.SetAsEmail, model);
+			if (user != null) {
+				await SignInAsync(user, expiration: TimeSpan.FromMinutes(model.RequestedDurationMinutes + 1));
+				var returnUrl = model.ReturnUrl;
+				return RedirectToLocal(returnUrl ?? "/");
+			}
+			return Content("Could not set as " + model.SetAsEmail);
+		}
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult AdminSetRole(long id, AdminAccessLevel level = AdminAccessLevel.View, string returnUrl = null) {
+			var user = TinyUserAccessor.GetUserAndOrganization_Unsafe(GetUser(), id);
+			var audit = new AdminAccessViewModel(id) {
+				AccessId = id,
+				ReturnUrl = returnUrl,
+				AccessOrganization = user.Organization,
+				AccessUser = user.FirstName + " " + user.LastName,
+				AccessLevel = level,
+
+			};
+			return View(audit);
+		}
+		[HttpPost]
+		[Access(AccessLevel.Radial)]
+		public ActionResult AdminSetRole(AdminAccessViewModel model) {
+			_UserAccessor.ChangeRole(GetUserModel(), GetUser(), model.AccessId, model);
+			GetUser(model.AccessId);
+			var returnUrl = model.ReturnUrl;
+			return RedirectToReturnUrl(returnUrl);
+		}
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult AdminAuditLog(int days = 7) {
+			var logs = AdminAccessor.GetAdminAccessLogs_Unsafe(days);
+			return View(logs);			
+		}
+
+		#endregion
 
 
 		[AllowAnonymous]
@@ -85,7 +120,7 @@ namespace RadialReview.Controllers {
 						.Subject(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName)
 						.Body(EmailStrings.PasswordReset_Body, user.Name(), Config.BaseUrl(null) + "n/" + token, Config.BaseUrl(null) + "n/" + token, Config.ProductName(null))
 					);
-				TempData["InfoAlert"] = ("Please check your inbox, an email has been sent with further instructions.");
+				TempData["InfoAlert"] = ("Please check your inbox and spam folder, an email has been sent with further instructions.");
 
 				log.Info("Resent login information for " + user.Email);
 
@@ -161,7 +196,6 @@ namespace RadialReview.Controllers {
 		}
 
 
-
 		[Access(AccessLevel.Any)]
 		public ActionResult Role(String ReturnUrl) {
 			var userOrgs = GetUserOrganizations(null);
@@ -170,22 +204,37 @@ namespace RadialReview.Controllers {
 			return View(userOrgs.Where(x => x.DeleteTime == null && x.Organization.DeleteTime == null && x.Organization.AccountType != AccountType.Cancelled).ToList());
 		}
 
+
+		private ActionResult RedirectToReturnUrl(string ReturnUrl) {
+			if (ReturnUrl == null)
+				return RedirectToAction("Index", "Home");
+			if (ReturnUrl.ToLower().StartsWith("/account/role"))
+				return RedirectToAction("Index", "Home");
+			if (ReturnUrl.ToLower().StartsWith("/error"))
+				return RedirectToAction("Index", "Home");
+			if (ReturnUrl.ToLower().StartsWith("/account/adminsetrole"))
+				return RedirectToAction("Index", "Home");
+			if (ReturnUrl.ToLower().StartsWith("/account/setasuser"))
+				return RedirectToAction("Index", "Home");
+			return RedirectToLocal(ReturnUrl);
+		}
+
+
 		[Access(AccessLevel.Any)]
 		public ActionResult SetRole(long id, String ReturnUrl = null) {
 			UserOrganizationModel userOrg = null;
 			try {
 				userOrg = GetUser();
 			} catch (Exception) {
-
 			}
-
-			_UserAccessor.ChangeRole(GetUserModel(), userOrg, id);
+			try {
+				_UserAccessor.ChangeRole(GetUserModel(), userOrg, id);
+			} catch (AdminSetRoleException e) {
+				e.RedirectUrl = ReturnUrl;
+				throw e;
+			}
 			GetUser(id);
-			if (ReturnUrl == null || ReturnUrl.StartsWith("/Account/Role"))
-				return RedirectToAction("Index", "Home");
-			if (ReturnUrl == null || ReturnUrl.StartsWith("/Error"))
-				return RedirectToAction("Index", "Home");
-			return RedirectToLocal(ReturnUrl);
+			return RedirectToReturnUrl(ReturnUrl);
 		}
 
 
@@ -206,7 +255,7 @@ namespace RadialReview.Controllers {
 				UserName = username
 			};
 
-			ViewBag.SpecialOffer = VariableAccessor.Get("LOGIN_SPECIAL_OFFER", () =>
+			ViewBag.SpecialOffer = VariableAccessor.Get<string>("LOGIN_SPECIAL_OFFER", () =>
 @"<div class=""row"">
 	<div class=""col-md-offset-2 col-md-8 alignCenter"">
 		Would you like to test the latest Traction<sup>®</sup> Tools features before anyone else?<br/>
@@ -618,21 +667,21 @@ namespace RadialReview.Controllers {
 			return View();
 		}
 
-	
+
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Consent(FormCollection form) {
 			var u = GetUser();
 			if (form["btn"] == "no") {
-				ConsentAccessor.ApplyConsent(u,false);
+				ConsentAccessor.ApplyConsent(u, false);
 				return LogOff();
 			}
-			ConsentAccessor.ApplyConsent(u,true);
+			ConsentAccessor.ApplyConsent(u, true);
 			return RedirectToAction("Index", "Home");
 		}
 
-		
+
 
 		public class AppVersionVM {
 			public string VersionId { get; set; }

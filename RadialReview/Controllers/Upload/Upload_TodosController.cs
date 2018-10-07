@@ -36,7 +36,7 @@ namespace RadialReview.Controllers {
                 todosRect.EnsureRowOrColumn();
 
                 var m = new UploadTodosSelectedDataVM() { };
-                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
+                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, LoadMeeting.False()).OrganizationId;
                 var allUsers = TinyUserAccessor.GetOrganizationMembers(GetUser(), orgId);
                 m.AllUsers = allUsers.ToSelectList(x => x.FirstName + " " + x.LastName, x => x.UserOrgId);
                 var now = DateTime.UtcNow;
@@ -97,7 +97,7 @@ namespace RadialReview.Controllers {
                 //var useAws = model["UseAWS"].ToBoolean();
                 var recurrence = model["recurrenceId"].ToLong();
 
-                _PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
+				PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
 
                 var now = DateTime.UtcNow;
                 var keys = model.Keys.OfType<string>();
@@ -149,7 +149,7 @@ namespace RadialReview.Controllers {
                             if (details.ContainsKey(ident))
                                 dued = due[ident];
 
-                            var todoC = TodoCreation.CreateL10Todo(recurrence, todos[ident], dets, owner ?? caller.Id, dued, now: now);
+                            var todoC = TodoCreation.GenerateL10Todo(recurrence, todos[ident], dets, owner ?? caller.Id, dued, now: now);
                             await TodoAccessor.CreateTodo(s, perms, todoC);
 
                             //await TodoAccessor.CreateTodo(s, perms, recurrence, new TodoModel() {

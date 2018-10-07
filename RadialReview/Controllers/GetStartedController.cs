@@ -162,7 +162,7 @@ namespace RadialReview.Controllers {
                 string imageUrl = null;
 
                 if (file != null) {
-                    imageUrl = await (new ImageAccessor()).UploadImage(user, Server, file, UploadType.ProfileImage);
+                    imageUrl = await (new ImageAccessor()).UploadImage(user, null, Server, file, UploadType.ProfileImage);
                 }
 
                 var now = DateTime.UtcNow;

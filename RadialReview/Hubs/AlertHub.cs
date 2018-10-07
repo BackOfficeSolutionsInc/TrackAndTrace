@@ -13,6 +13,7 @@ using RadialReview.Utilities;
 
 namespace RadialReview.Hubs
 {
+	[Obsolete("Stop using")]
     public class AlertHub : Hub
     {
         protected UserAccessor _UserAccessor = new UserAccessor();

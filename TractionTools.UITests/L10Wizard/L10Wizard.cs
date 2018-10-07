@@ -366,7 +366,9 @@ namespace TractionTools.UITests.L10Wizard {
 				message.SendKeys(measurableName);
 
 				d.Find("#modalOk").Click();
-				var rows = d.Finds(".issues-pane tbody tr[md-row]");
+                d.Wait(500);
+                var rows = d.Finds(".issues-pane tbody tr[md-row]");
+
 				Assert.AreEqual(1, rows.Count);
 				var row = rows[0];
 				d.TestScreenshot("AfterAdd");

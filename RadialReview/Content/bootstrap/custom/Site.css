@@ -673,6 +673,12 @@ body.modal-open {
   font-size: 32px;
   margin-top: -6px;
 }
+.body-full-width .body-content {
+  padding: 59px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 150px;
+}
 .body-notitlebar #wrap #main {
   top: 0px;
 }
@@ -1212,6 +1218,26 @@ body.beta .beta-only .feedback-smile {
   background-size: 14px;
   display: block;
 }
+body.beta .heading-margin-smiley {
+  margin-right: 10px;
+}
+body:not(.body-full-width) .beta-only.beta-feedback {
+  position: relative;
+}
+body:not(.body-full-width) .beta-only.beta-label {
+  color: gray;
+  font-size: 10px;
+  left: 26px !important;
+  top: -20px;
+  font-style: oblique;
+  position: relative;
+  height: 0px;
+}
+body:not(.body-full-width) .beta-only .feedback-smile {
+  position: absolute;
+  top: 18px;
+  right: -15px;
+}
 @media print {
   .body-content {
     padding: 0px;
@@ -1282,18 +1308,4 @@ body.beta .beta-only .feedback-smile {
   position: relative;
   top: -2.3px;
   left: -0.5px;
-}
-body.beta .heading-margin-smiley {
-  margin-right: 10px;
-}
-body:not(.body-full-width) .feedback-smile {
-  right: 350px !important;
-}
-body:not(.body-full-width) .beta-only.beta-label {
-  color: gray;
-  font-size: 10px;
-  position: fixed;
-  left: 406px !important;
-  top: 30px;
-  font-style: oblique;
 }

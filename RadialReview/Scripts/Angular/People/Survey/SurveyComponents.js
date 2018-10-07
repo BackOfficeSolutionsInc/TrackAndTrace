@@ -10,9 +10,10 @@ angular.module('people').component('surveyContainer', {
 		$scope.functions = {};
 		$log.log("survComp:", $scope);
 		var r = radial($scope, {
-			hubName: "PeopleHub",
-			hubJoinMethod: "Join",
-			hubJoinArgs: [ctrl.surveyContainerId, ctrl.surveyId],
+			hubs: { surveyContainerId: ctrl.surveyContainerId, surveyId: ctrl.surveyId },
+			//hubName: "PeopleHub",
+			//hubJoinMethod: "Join",
+			//hubJoinArgs: [ctrl.surveyContainerId, ctrl.surveyId],
 			sendUpdateUrl: function (self) { return "/People/Survey/Update" + self.Type; },
 			loadDataUrl: "/People/Survey/Data?surveyId=" + ctrl.surveyId + "&surveyContainerId=" + ctrl.surveyContainerId,
 			loadDataOptions: {

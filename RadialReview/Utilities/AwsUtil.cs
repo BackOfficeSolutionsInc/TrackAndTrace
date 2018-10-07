@@ -10,6 +10,7 @@ namespace RadialReview.Utilities
 {
 	public class AwsUtil
 	{
+		[Obsolete("Do not use. Very unsafe")]
 		public static List<S3Object> GetObjectsInFolder(string bucket, string prefix)
 		{
 			var client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);

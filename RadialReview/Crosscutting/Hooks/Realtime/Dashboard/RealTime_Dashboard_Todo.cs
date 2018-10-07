@@ -33,8 +33,8 @@ namespace RadialReview.Hooks.Realtime {
 
 
 		private dynamic _GetUserHub(long userId) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			return hub.Clients.Group(MeetingHub.GenerateUserId(userId));
+			var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+			return hub.Clients.Group(RealTimeHub.Keys.UserId(userId));
 		}
 
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ArrayOfXmlExpectedResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <XmlExpectedResult Name="V1_File_Hashs">
+    <ExpectedJson>[{"Name":"C:\\Users\\Clay\\Documents\\Visual Studio 2015\\Projects\\ApiDesign\\ApiDesign\\Controllers\\API\\V1\\RocksController.cs","Hash":"79AE39D65E4682E288EB04E88D3E04709E109080"}]</ExpectedJson>
+    <GeneratedDate>2018-08-16T07:40:19.0680262Z</GeneratedDate>
+  </XmlExpectedResult>
+</ArrayOfXmlExpectedResult>

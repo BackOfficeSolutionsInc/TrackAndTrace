@@ -30,8 +30,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
         public async Task CreateTodo(ISession s, TodoModel todo) {
 
             if (todo.TodoType == TodoType.Personal) {
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                var userMeetingHub = hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId));
+                var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                var userMeetingHub = hub.Clients.Group(RealTimeHub.Keys.UserId(todo.AccountableUserId));
                 var todoData = TodoData.FromTodo(todo);
                 userMeetingHub.appendTodo(".todo-list", todoData);
 
@@ -78,12 +78,12 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
         public async Task UpdateTodo(ISession s, UserOrganizationModel caller, TodoModel todo, ITodoHookUpdates updates) {
 
-            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
             List<dynamic> groups = new List<dynamic>();
             if (todo.TodoType == TodoType.Recurrence) {
-                groups.Add(hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(todo.ForRecurrenceId.Value), RealTimeHelpers.GetConnectionString()));
+                groups.Add(hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(todo.ForRecurrenceId.Value), RealTimeHelpers.GetConnectionString()));
             }// else if (todo.TodoType == TodoType.Personal) {
-            groups.Add(hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId), RealTimeHelpers.GetConnectionString()));
+            groups.Add(hub.Clients.Group(RealTimeHub.Keys.UserId(todo.AccountableUserId), RealTimeHelpers.GetConnectionString()));
             //} else {
             //	throw new NotImplementedException("unhandled TodoType");
             //
@@ -97,7 +97,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
             //	group.updateTodoDetails(todoId, details);
             //}
             if (updates.DueDateChanged) {
-                groups.ForEach(g => g.updateTodoDueDate(todo.Id, todo.DueDate.ToJsMs()));
+                groups.ForEach(g => g.updateTodoDueDate(todo.Id, todo.DueDate));
             }
             if (updates.AccountableUserChanged) {
                 groups.ForEach(g => g.updateTodoAccountableUser(todo.Id, todo.AccountableUserId, todo.AccountableUser.GetName(), todo.AccountableUser.ImageUrl(true, ImageSize._32)));
@@ -118,7 +118,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
                             CompleteTime = Removed.Date()
                         })
                     }));
-                    var userGroup = hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId), RealTimeHelpers.GetConnectionString());
+                    var userGroup = hub.Clients.Group(RealTimeHub.Keys.UserId(todo.AccountableUserId), RealTimeHelpers.GetConnectionString());
                     userGroup.update(new ListDataVM(todo.AccountableUserId) {
                         Todos = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularTodo(todo) {
                             CompleteTime = Removed.Date()
@@ -135,8 +135,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
         public async Task AttachTodo(ISession s, UserOrganizationModel caller, TodoModel todo) {
 
             if (todo.TodoType == TodoType.Personal) {
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                var userMeetingHub = hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId));
+                var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                var userMeetingHub = hub.Clients.Group(RealTimeHub.Keys.UserId(todo.AccountableUserId));
                 var todoData = TodoData.FromTodo(todo);
                 userMeetingHub.appendTodo(".todo-list", todoData);
 
@@ -147,8 +147,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
                 });
             } else {
                 var recurrenceId = todo.ForRecurrenceId.Value;
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+                var meetingHub = hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(recurrenceId));
                 var todoData = TodoData.FromTodo(todo);
 
                 if (todo.CreatedDuringMeetingId != null)
@@ -181,13 +181,13 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
         public async Task DetachTodo(ISession s, UserOrganizationModel caller, TodoModel todo) {
 
-            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 
             List<dynamic> groups = new List<dynamic>();
             if (todo.TodoType == TodoType.Recurrence) {
-                groups.Add(hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(todo.ForRecurrenceId.Value), RealTimeHelpers.GetConnectionString()));
+                groups.Add(hub.Clients.Group(RealTimeHub.Keys.GenerateMeetingGroupId(todo.ForRecurrenceId.Value), RealTimeHelpers.GetConnectionString()));
             }
-            groups.Add(hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId), RealTimeHelpers.GetConnectionString()));
+            groups.Add(hub.Clients.Group(RealTimeHub.Keys.UserId(todo.AccountableUserId), RealTimeHelpers.GetConnectionString()));
 
             if (todo.ForRecurrenceId != null) {
                 groups.ForEach(g => g.update(new AngularRecurrence(todo.ForRecurrenceId.Value) {

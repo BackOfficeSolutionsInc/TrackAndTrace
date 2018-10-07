@@ -93,7 +93,6 @@ namespace TractionTools.UITests.Selenium {
 		}
 
 		[TestCleanup]
-		[DebuggerHidden]
 		public void TestCleanup() {
 			HibernateSession.CloseCurrentSession();
 
@@ -122,7 +121,7 @@ namespace TractionTools.UITests.Selenium {
 				}
 				if (Deferred.Count() == 1)
 					throw Deferred[0];
-				throw new AggregateException(Deferred);
+				throw new AggregateException(Deferred.OrderBy(x=>x is AssertInconclusiveException));
 			}
 		}
 
@@ -252,7 +251,7 @@ namespace TractionTools.UITests.Selenium {
 				if (any != null && any.Any()) {
 					Console.WriteLine("CONSOLE ERRORS:");
 					foreach (var a in any) {
-						Console.WriteLine(a);
+						Console.WriteLine(a.Text);
 					}
 					driver.DeferException(new Exception("CONSOLE ERRORS", new AggregateException(any.Select(x => new Exception(x.Text)).ToArray())));
 				}

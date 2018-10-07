@@ -312,6 +312,12 @@ namespace RadialReview.Models.Angular.VTO {
 				RocksTitle = quarterlyRocksModel.RocksTitle ?? "ROCKS"
 			};
 		}
+
+		public bool IsEmpty() {
+			return (string.IsNullOrEmpty(Measurables)
+				&& string.IsNullOrEmpty(Profit)
+				&& string.IsNullOrEmpty(Revenue));
+		}
 	}
 
 	public class AngularVtoRock : Base.BaseAngular {

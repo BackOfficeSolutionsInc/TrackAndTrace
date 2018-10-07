@@ -586,7 +586,7 @@ acapp.directive('rolegroups', function () {
 		"<ul>" +
 		"<li ng-repeat='role in group.Roles | orderBy:\"Ordering\" | filter:excludeHidden'  class='role-row' >" +
 		//"<tt-role tt-overflow='18'  ng-model='role'></tt-role>" +
-		"<textarea textarea-resize ng-trim='false' ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\"></textarea>" +
+		"<textarea textarea-resize ng-trim='false' ng-model-options='{debounce:400}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\"></textarea>" +
 		//"<input tt-overflow='18' ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
 		"<div title='{{role.Name}}' class='role' ng-show='::group.Editable==false'>{{role.Name | ttOverflowTxt:false:18 }}</div>" +
 		"<span ng-if='::group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\" title='Delete Role' tabindex='-1'></span>" +
@@ -812,28 +812,29 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
 		$scope.suspendUpdate = false;
 
-		function rejoin(connection, proxy, callback) {
-			try {
-				if (proxy) {
-					proxy.invoke("join", $scope.orgId, connection.id).done(function () {
-						console.log("rejoin");
-						//$(".rt").prop("disabled", false);
-						if (callback) {
-							callback();
-						}
-						if ($scope.disconnected) {
-							clearAlerts();
-							showAlert("Reconnected.", "alert-success", "Success", 1000);
-						}
-						$scope.disconnected = false;
-					});
-				}
-			} catch (e) {
-				console.error(e);
-			}
-		}
+		//function rejoin(connection, proxy, callback) {
+		//	try {
+		//		if (proxy) {
+		//			proxy.invoke("join", $scope.orgId, connection.id).done(function () {
+		//				console.log("rejoin");
+		//				//$(".rt").prop("disabled", false);
+		//				if (callback) {
+		//					callback();
+		//				}
+		//				if ($scope.disconnected) {
+		//					clearAlerts();
+		//					showAlert("Reconnected.", "alert-success", "Success", 1000);
+		//				}
+		//				$scope.disconnected = false;
+		//			});
+		//		}
+		//	} catch (e) {
+		//		console.error(e);
+		//	}
+		//}
 
-		var r = radial($scope, 'organizationHub', rejoin);
+		//var r = radial($scope, 'organizationHub', rejoin);
+		var r = radial($scope, {});
 		var tzoffset = Time.tzoffset();// r.updater.tzoffset;
 		$scope.functions.reload = function (clearData) {
 			if (typeof (clearData) === "undefined")
@@ -1238,6 +1239,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			.attr("placeholder", "Function")
 			.attr("tt-md-overflow", "14")
 			.attr("tt-md-clear-no-match", "true")
+			.attr("md-delay", "400")
 			.attr("md-input-name", function (d) {
 				return "searchPosName_" + d.Id;
 			}).attr("ng-disabled", function (d) {
@@ -1271,6 +1273,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			var autoComplete = owner.append("md-autocomplete")
 				.attr("tt-md-overflow", "14")
 				.attr("tt-md-clear-no-match", "true")
+				.attr("md-delay", "400")
 				.attr("md-blur", function (d) {
 					return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User,\"search.searchText_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
 				}).attr("md-selected-item", function (d) {
@@ -1363,7 +1366,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 			};
 
 			var printNode = function (d) {
-
+				debugger;
 				genPdf(true, d.Id);
 
 				//console.log(d);

@@ -36,7 +36,7 @@ namespace TractionTools.UITests.FAQ {
 			var testId = Guid.NewGuid();
 			var AUC = await GetAdminCredentials(testId);
 			
-			var l10 = await L10Accessor.CreateBlankRecurrence(AUC.User, AUC.User.Organization.Id);
+			var l10 = await L10Accessor.CreateBlankRecurrence(AUC.User, AUC.User.Organization.Id,false);
 			await L10Accessor.AddAttendee(AUC.User, l10.Id, AUC.User.Id);
 
 			TestView(AUC, "/L10", d => {
@@ -51,7 +51,7 @@ namespace TractionTools.UITests.FAQ {
 				d.Find(".rocks-section .future-date input").SendKeys(Keys.ArrowLeft);
 				d.Find(".rocks-section .future-date input").SendKeys("01022018");
 				d.Find(".rocks-section .future-date input").SendKeys(Keys.Enter);
-				d.Wait(200);
+				d.Wait(800);
 
 				//var tzOffset = TimeZoneInfo.Local.GetUtcOffset(new DateTime(2018, 01, 02, 0, 0, 0, DateTimeKind.Utc)).TotalMinutes;
 				//var expectedAngularTime = new DateTime(2018,01,02,0,0,0,DateTimeKind.Utc).ToJsMs() + ((24 * 60 - tzOffset)* 60 * 1000 - 1 );
@@ -147,9 +147,9 @@ namespace TractionTools.UITests.FAQ {
 			var testId = Guid.NewGuid();
 			var AUC = await GetAdminCredentials(testId);
 
-			var l10 = await L10Accessor.CreateBlankRecurrence(AUC.User, AUC.User.Organization.Id);
+			var l10 = await L10Accessor.CreateBlankRecurrence(AUC.User, AUC.User.Organization.Id, false);
 			await L10Accessor.AddAttendee(AUC.User, l10.Id, AUC.User.Id);
-			var recur = L10Accessor.GetL10Recurrence(AUC.User, l10.Id, true);
+			var recur = L10Accessor.GetL10Recurrence(AUC.User, l10.Id, LoadMeeting.True());
 			recur.RockType =RadialReview.Model.Enums.L10RockType.Milestones;
 			await L10Accessor.EditL10Recurrence(AUC.User, recur);
 			var rock = await RockAccessor.CreateRock(AUC.User, AUC.User.Id, "TimeRock");

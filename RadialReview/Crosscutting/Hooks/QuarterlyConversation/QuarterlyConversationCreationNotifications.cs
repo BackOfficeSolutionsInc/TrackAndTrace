@@ -29,15 +29,17 @@ namespace RadialReview.Crosscutting.Hooks.QuarterlyConversation {
 			var sc = s.Get<SurveyContainer>(qcId);
 			if (sc.CreatedBy.ModelType == ForModel.GetModelType<UserOrganizationModel>()) {
 				var user = s.Get<UserOrganizationModel>(sc.CreatedBy.ModelId);
-				var hub = GlobalHost.ConnectionManager.GetHubContext<MessageHub>();
-				hub.Clients.Group(MessageHub.GenerateUserId(user.Id)).addQC("Quarterly Conversation issued!", new AngularSurveyContainer(sc, false, AngularUser.CreateUser(user)));
+				var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
+				hub.Clients.Group(RealTimeHub.Keys.UserId(user.Id)).addQC("Quarterly Conversation issued!", new AngularSurveyContainer(sc, false, AngularUser.CreateUser(user)) {
+					Ordering = -1,
+				});
 			}
 		}
 
 		public async Task QuarterlyConversationError(ISession s, IForModel creator, QuarterlyConversationErrorType failureType, List<string> errors) {
 			if (creator.Is<UserOrganizationModel>()) {
 				var user = s.Get<UserOrganizationModel>(creator.ModelId);
-				var hub = GlobalHost.ConnectionManager.GetHubContext<MessageHub>();
+				var hub = GlobalHost.ConnectionManager.GetHubContext<RealTimeHub>();
 				var message = "An error occurred issuing the quarterly conversation.";
 				switch (failureType) {
 					case QuarterlyConversationErrorType.EmailsFailed:
@@ -46,7 +48,7 @@ namespace RadialReview.Crosscutting.Hooks.QuarterlyConversation {
 					default:
 						break;
 				}
-				hub.Clients.Group(MessageHub.GenerateUserId(user.Id)).showAlert(ResultObject.CreateError(message));
+				hub.Clients.Group(RealTimeHub.Keys.UserId(user.Id)).showAlert(ResultObject.CreateError(message));
 			}
 		}
 

@@ -52,14 +52,15 @@ namespace RadialReview {
                 return null;
             return ModelType.Split('.').Last();
         }
+		
+		public static ForModel From(IForModel model) {
+			return new ForModel() {
+				ModelId = model.ModelId,
+				ModelType = model.ModelType
 
-        public static ForModel From(IForModel model) {
-            return new ForModel() {
-                ModelId = model.ModelId,
-                ModelType = model.ModelType
+			};
+		}
 
-            };
-        }
         public static string GetModelType(ILongIdentifiable creator) {
             return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(creator.Deproxy().GetType()).EntityName;
         }

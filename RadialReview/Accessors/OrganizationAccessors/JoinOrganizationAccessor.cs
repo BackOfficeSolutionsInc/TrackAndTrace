@@ -44,9 +44,9 @@ namespace RadialReview.Accessors {
 			if (!Emailer.IsValid(email))
 				throw new PermissionsException(ExceptionStrings.InvalidEmail);
 			if (firstName == null)
-				throw new PermissionsException("First name cannot be empty.");
+				throw new PermissionsException("First name cannot be empty.") { NoErrorReport = true };
 			if (lastName == null)
-				throw new PermissionsException("Last name cannot be empty.");
+				throw new PermissionsException("Last name cannot be empty.") { NoErrorReport = true };
 			if (managerNodeId == -3)
 				managerNodeId = null;
 
@@ -201,9 +201,9 @@ namespace RadialReview.Accessors {
 			if (!Emailer.IsValid(email) && !placeholder)
 				throw new PermissionsException(ExceptionStrings.InvalidEmail);
 			if (firstName == null)
-				throw new PermissionsException("First name cannot be empty.");
+				throw new PermissionsException("First name cannot be empty.") { NoErrorReport = true };
 			if (lastName == null)
-				throw new PermissionsException("Last name cannot be empty.");
+				throw new PermissionsException("Last name cannot be empty.") { NoErrorReport = true };
 			if (managerNodeId == -3)
 				managerNodeId = null;
 

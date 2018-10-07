@@ -78,7 +78,7 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]		
-		public async Task<JsonResult> UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null, bool historical = false, decimal? lower = null, decimal? upper = null, bool? enableCumulative = null, DateTime? cumulativeStart = null/*, UnitType? Modifier=null*/) {
+		public async Task<JsonResult> UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null, bool historical = false, decimal? lower = null, decimal? upper = null, bool? enableCumulative = null, DateTime? cumulativeStart = null/*, UnitType? Modifier=null*/, bool? enableAverage=null, DateTime? averageStart=null) {
 			var target = model.Target;
 			var altTarget = (decimal?)null;
 			if (model.Direction == Models.Enums.LessGreater.Between) {
@@ -88,7 +88,8 @@ namespace RadialReview.Controllers {
 
 
 			await ScorecardAccessor.UpdateMeasurable(GetUser(), model.Id, model.Name, model.Direction, target,
-				model.Owner.NotNull(x => x.Id), model.Admin.NotNull(x => x.Id), connectionId, !historical, altTarget, enableCumulative, cumulativeStart, model.Modifiers);
+				model.Owner.NotNull(x => x.Id), model.Admin.NotNull(x => x.Id), connectionId, !historical, altTarget, enableCumulative, cumulativeStart, model.Modifiers,
+                showAverage:enableAverage,averageRange:averageStart);
 
 
 			//L10Accessor.UpdateArchiveMeasurable(GetUser(),
@@ -159,7 +160,7 @@ namespace RadialReview.Controllers {
             var selected = attendees.FirstOrDefault(x => x.Id == GetUser().Id);
             selected = selected ?? attendees.FirstOrDefault();
 
-			var todoModel = TodoCreation.CreateL10Todo(recurrenceId, null, null, selected.Id, null);
+			var todoModel = TodoCreation.GenerateL10Todo(recurrenceId, null, null, selected.Id, null);
 			await TodoAccessor.CreateTodo(GetUser(), todoModel);
 
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);

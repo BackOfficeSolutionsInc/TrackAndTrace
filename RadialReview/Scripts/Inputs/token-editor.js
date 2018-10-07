@@ -1448,18 +1448,15 @@
 
 			currentWord: function () {
 
-				var sel = window.getSelection(),
+			    var sel = window.getSelection(),
 					range = sel.getRangeAt(0);
 
-				if (range.endContainer == this.el
+			    if (range.endContainer == this.el
 				|| !range.endContainer.textContent) return;
 
-				var text = range.endContainer.textContent.slice(0, range.endOffset),
-					lastSpace = text.lastIndexOf(' ') > -1 ? text.lastIndexOf(' ') : text.lastIndexOf(' ');
-				word = lastSpace > -1 ? text.slice(lastSpace + 1) : text;
-
-				//console.log('current word: ', word);
-				return word;
+			    var word = range.endContainer.textContent.slice(0, range.endOffset);
+			    //Removing whitespace in formula name
+			    return word.replace(/ /g, '');
 			},
 
 			onPaste: function (e) {
