@@ -15,17 +15,13 @@ $search=NULL;
 $resultSet=NULL;
 $mysqli=NULL;
 ?>
-<?php include 'navbar.php';?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 		<head>
 		<title>Logistikus-Express</title>
+        <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-					<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-					<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<meta name="msapplication-TileColor" content="#da532c">
-		<meta name="theme-color" content="#ffffff">
-		<meta name="description" content="apple juice addict">
-
+            
 		<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
 		<link rel="manifest" href="/site.webmanifest">
@@ -34,6 +30,8 @@ $mysqli=NULL;
 		<link rel="stylesheet" type="text/css" href="style/banner_style.css">		
 		<link rel="stylesheet" type="text/css" href="style/status_style.css">
 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		</head>
 		<body>
 	
@@ -122,6 +120,7 @@ if(isset($_POST['submit'])) {
 			?>
 										<div class="status piority-success">
 											<div class="date">
+                                
 												<div><?php echo date_format($dateStamp,"Y/m/d h:i A"); ?></div>
 												<div></div>
 											</div>

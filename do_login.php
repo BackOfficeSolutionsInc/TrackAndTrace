@@ -36,10 +36,10 @@ if(isset($_POST["submit"])){
 					$_SESSION['type'] = $row['type'];
 					$_SESSION['pass'] = $row['pass'];
                 if($_SESSION["type"]=='admin'){
-                header("Location:home_admin.php");
+                header("Location:csv.php");
                     
 			     }else
-				    header("Location:home.php");
+				    header("Location:csv.php");
 		      }
 					
 			}

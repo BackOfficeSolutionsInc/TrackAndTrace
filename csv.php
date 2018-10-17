@@ -1,5 +1,8 @@
+
 <?php  
 include('connect.php');
+
+
 if(isset($_POST["submit"]))
 	{
 		if($_FILES['file']['name'])
@@ -23,7 +26,17 @@ if(isset($_POST["submit"]))
 									$status = mysqli_real_escape_string($con, $data[7]);
 									$location = mysqli_real_escape_string($con, $data[8]);
 									$statusicon = mysqli_real_escape_string($con, $data[9]);
-                                    $stamp=date('Y/m/d h:i',strtotime($stamp_from_csv));
+                                    $stamp=date('Y/m/d H:i',strtotime($stamp_from_csv));
+                            
+                            
+                                    
+                                    if (strpos($stamp_from_csv, 'AM') !== false || strpos($stamp_from_csv, 'PM') !== false) {
+                                        echo "<script>alert('Please Remove the AM/PM in the data stamp');</script>";
+                                    
+                                    } else {
+                            
+                                    //substr($stamp_from_csv,)
+                            
 									$query="SELECT 'Y' ans FROM tbl_trackandtrace WHERE TrackingNumber = '$trackingnumber' and stamp = '$stamp' Limit 1";
 									$resultSet = mysqli_query($con, $query);
 									
@@ -38,24 +51,29 @@ if(isset($_POST["submit"]))
 												
 													$query = "INSERT into tbl_trackandtrace
 														(TrackingNumber, Date, Reference, Sender, Consignee, Stamp, Status, Location, StatusIcon) 
-														VALUES ('".$trackingnumber."', '".$date."', '".$reference."', '".$sender."', '".$consignee."', '".$stamp."', '".$status."', '".$location."', '".$statusicon."')";
+														VALUES ('".strtoupper($trackingnumber)."', '".$date."', '".$reference."', '".$sender."', '".$consignee."', '".$stamp."', '".$status."', '".$location."', '".$statusicon."')";
 													mysqli_query($con, $query);
 											}
 											$lineHead=1;
 										}
 
 									}
-							}
+                                    }
+                                    }
 							fclose($handle);
 					}
 					echo "<script>alert('Status Update Success');</script>";
 			}
 	}
-?>  
+session_start();
+if(!isset($_SESSION['user'])){
+    header('location:login.php');
+}?>  
 <!DOCTYPE html>  
 <html>  
  <head>  
-  <title>Logistikus Express Philippines, Inc.</title>
+     <title>
+     </title>
   
 		  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>  
 		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
@@ -70,13 +88,10 @@ if(isset($_POST["submit"]))
 					  <link rel="stylesheet" type="text/css" href="style/banner_style.css">
  </head>  
  <body>
- 
-		 <div class="sector-banner">
-			<div class="logo">
-				<a href="http://www.logistikus-express.com"><img src="images/Logistikuslogo.png" class="center"></a>
-			</div>
-		 </div>
- 
+     <?php 
+    include('navbar.php');
+    include('header.php');
+     ?>
 		 <div class="container">
 				  <h3 align="center">Import Status Update</h3><br />
 				  <form method="post" enctype="multipart/form-data">
