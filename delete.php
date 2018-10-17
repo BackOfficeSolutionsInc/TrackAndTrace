@@ -1,23 +1,31 @@
+<?php
+ session_start();
+if(!isset($_SESSION['user'])){
+    header('location:login.php');
+    }
+    include("navbar.php");
+    include("header.php");?>
 
-
-<?php include("navbar.php"); ?>
-<?php include("header.php"); ?>
 
 <html>
 <head>
 <title>Delete Data</title>
 </head>
-		  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>  
-		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-
-					<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-					<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
-					<link rel="manifest" href="/site.webmanifest">
-					<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-					<meta name="msapplication-TileColor" content="#da532c">
-					<meta name="theme-color" content="#ffffff">
-					  <link rel="stylesheet" type="text/css" href="style/banner_style.css">
-					  <link rel="stylesheet" type="text/css" href="style/file_style.css">
+        <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>   
+		<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+		<link rel="manifest" href="/site.webmanifest">
+		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <link rel="manifest" href="/site.webmanifest">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <link rel="stylesheet" type="text/css" href="style/banner_style.css">
+        <link rel="stylesheet" type="text/css" href="style/file_style.css">
+    
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>  
 <body>
 <?php 
 	$resultSet;
