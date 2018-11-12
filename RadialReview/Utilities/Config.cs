@@ -470,7 +470,7 @@ namespace RadialReview.Utilities {
 
 		public static string FixEmail(string email) {
 			if (Config.IsLocal()) {
-				string appSettingEmail = GetAppSetting("TestEmail", "clay.upton+test_{0}@mytractiontools.com");
+				string appSettingEmail = GetAppSetting("TestEmail", "cons+test_{0}@mytractiontools.com");
 				return String.Format(appSettingEmail, ((email ?? "").Replace("@", "_at_")));
 			} else {
 				return email;
@@ -696,7 +696,7 @@ namespace RadialReview.Utilities {
             return server;
         }
         
-        public static IFirebaseConfig getFirePadConfig()
+        public static IFirebaseConfig GetFirePadConfig()
         {
             IFirebaseConfig FirePadConfig = new FirebaseConfig
             {

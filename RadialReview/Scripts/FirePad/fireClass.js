@@ -53,7 +53,7 @@
         
         firepad.on('ready', function () {
             console.log(firepad.getHtml());
-            if (firepad.isHistoryEmpty()) {                
+            if (firepad.isHistoryEmpty()) {
                 firepad.setHtml(initialText);
             }
             
@@ -68,5 +68,5 @@
 
         
         
-    }    
+    }
 }

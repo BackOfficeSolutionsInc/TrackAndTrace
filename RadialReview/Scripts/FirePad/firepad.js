@@ -5569,8 +5569,9 @@ firepad.Firepad = (function(global) {
     return op;
   };
 
-  Firepad.prototype.getHtml = function() {
-    return this.getHtmlFromRange(null, null);
+  Firepad.prototype.getHtml = function () {
+      return this.getHtmlFromRange(null, null);
+     
   };
 
   Firepad.prototype.getHtmlFromSelection = function() {

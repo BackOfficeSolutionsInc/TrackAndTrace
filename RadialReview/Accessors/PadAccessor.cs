@@ -13,10 +13,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models.Payments;
 using RadialReview.Models.FirePad;
 using RadialReview.Utilities;
-//<<<<<<< HEAD
 using RadialReview.Controllers;
-
-//install FireSharp.Serialization.JsonNet 1.1.0
 using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
@@ -24,9 +21,11 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using RadialReview.Models;
 using RadialReview.Crosscutting.Schedulers;
+using Hangfire;
+using RadialReview.Hangfire;
 
 namespace RadialReview.Accessors
-{
+{ 
     public enum PadType
     {
         firepad = 0,
@@ -49,7 +48,7 @@ namespace RadialReview.Accessors
                         break;
                     case PadType.etherpad:
                         Scheduler.Enqueue(() => CreateEtherpad(padid, text));
-                        break;                     
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException("" + padType);
                 }
@@ -59,82 +58,9 @@ namespace RadialReview.Accessors
 				log.Error("Error PadAccessor.CreatePad",e);
             }
             return padid;
-            
-//=======
-//using Hangfire;
-//using RadialReview.Hangfire;
-//using RadialReview.Crosscutting.Schedulers;
-
-//namespace RadialReview.Accessors
-//{
-//	public class PadAccessor :BaseAccessor
-//	{
-//		private static IEnumerable<string> WholeChunks(string str, int chunkSize) {
-//			for (int i = 0; i < str.Length; i += chunkSize)
-//				if (str.Length - i >= chunkSize)
-//					yield return str.Substring(i, chunkSize);
-//				else
-//					yield return str.Substring(i);
-//		}
-
-
-//		[AutomaticRetry(Attempts = 0)]
-//		[Queue(HangfireQueues.Immediate.ETHERPAD)]
-//		public static async Task<string> HangfireCreatePad(string padId, string text = null) {
-//			try {
-//				var client = new HttpClient();
-//				//if (!String.IsNullOrWhiteSpace(text))
-//				//	urlText = "&text=" + WebUtility.UrlEncode(text);
-
-//				{
-//					//Create pad
-//					var baseUrl = Config.NotesUrl() + "api/1/createPad?apikey=" + Config.NoteApiKey() + "&padID=" + padId ;
-//					HttpResponseMessage response = await client.GetAsync(baseUrl);
-//					HttpContent responseContent = response.Content;
-//					using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
-//						var result = await reader.ReadToEndAsync();
-//						int code = Json.Decode(result).code;
-//						string message = Json.Decode(result).message;
-//						if (code != 0) {
-//							throw new PermissionsException("Error " + code + ": " + message);
-//						}
-//					}
-//				}
-
-//				if (!String.IsNullOrWhiteSpace(text)) {
-//					var chunkSize = 100;
-//					var subtexts = WholeChunks(text, chunkSize);//Enumerable.Range(0, text.Length / chunkSize).Select(i => text.Substring(i * chunkSize, chunkSize)).ToList();
-//					//Append text to pad
-//					foreach (var t in subtexts) {
-//						var urlText = "&text=" + WebUtility.UrlEncode(t);
-//						var baseUrl = Config.NotesUrl() + "api/1.2.13/appendText?apikey=" + Config.NoteApiKey() + "&padID=" + padId + urlText;
-//						HttpResponseMessage response = await client.GetAsync(baseUrl);
-//						HttpContent responseContent = response.Content;
-//						using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
-//							var result = await reader.ReadToEndAsync();
-//							int code = Json.Decode(result).code;
-//							string message = Json.Decode(result).message;
-//							if (code != 0) {
-//								throw new PermissionsException("Error " + code + ": " + message);
-//							}
-//						}
-//					}
-//				}
-
-//				return padId;
-//			} catch (Exception e) {
-//				log.Error("Error PadAccessor.CreatePad", e);
-//				return "err";
-//			}
-//		}
-
-
-//		public static async Task<bool> CreatePad(string padid, string text=null){
-//			Scheduler.Enqueue(() => HangfireCreatePad(padid, text));
-//			return true;
-//>>>>>>> engineering
 		}
-
+        [AutomaticRetry(Attempts = 0)]
+        [Queue(HangfireQueues.Immediate.ETHERPAD)]
         public static async Task CreateEtherpad(string padid,string text) {
             var client = new HttpClient();
             var urlText = "";
@@ -157,11 +83,12 @@ namespace RadialReview.Accessors
             }
 
         }
-
+        [AutomaticRetry(Attempts = 0)]
+        [Queue(HangfireQueues.Immediate.FIREPAD)]
         public static async Task Firepad(string padid, string text)
         {
 
-            IFirebaseClient FirePadClient = new FireSharp.FirebaseClient(Config.getFirePadConfig());
+            IFirebaseClient FirePadClient = new FireSharp.FirebaseClient(Config.GetFirePadConfig());
             if (FirePadClient != null)
             {
                 var data = new FirePadData
@@ -169,8 +96,14 @@ namespace RadialReview.Accessors
                     initialText = text ?? ""
 
                 };
-                SetResponse FPResponse = await FirePadClient.SetTaskAsync(padid, data);
-                FirePadData FPresult = FPResponse.ResultAs<FirePadData>();
+               
+                    SetResponse FPResponse = await FirePadClient.SetTaskAsync(padid, data);
+                if (FPResponse == null)
+                {
+                    throw new Exception("Firepad Client returns null");
+                }
+                    FirePadData FPresult = FPResponse.ResultAs<FirePadData>();
+
             }
             else
             {
@@ -178,6 +111,7 @@ namespace RadialReview.Accessors
             }
 
         }
+        
 
         public static async Task<string> GetReadonlyPad(string padid) {
 			try {
@@ -193,9 +127,8 @@ namespace RadialReview.Accessors
 					if (code != 0) {
 						if (message == "padID does not exist") {
 							var pad = await CreatePad();
-							return await GetReadonlyPad(padid);
+							return await GetReadonlyPad(pad);
 						}
-
 						throw new PermissionsException("Error " + code + ": " + message);
 					}
 					return (string)(Json.Decode(result).data.readOnlyID);
@@ -205,7 +138,6 @@ namespace RadialReview.Accessors
 				return "r.0a198a5362822f17b4690e5e66a6fba3"; //readonly pad for https://notes.traction.tools/p/undefined-1657717875444
 			}
 		}
-
 		public static async Task<Dictionary<string, HtmlString>> GetHtmls(List<string> padIds) {
 			var results = await Task.WhenAll(padIds.Distinct().Select(x => _GetHtml(x)));
 			return results.ToDictionary(x => x.Item1, x => x.Item2);
@@ -238,7 +170,6 @@ namespace RadialReview.Accessors
             }
 			return Tuple.Create(padid, result);
 		}
-
 		public static async Task<HtmlString> GetHtml(string padid){
 			try{
 				var client = new HttpClient();
@@ -255,7 +186,6 @@ namespace RadialReview.Accessors
 						}
 						throw new PermissionsException("Error " + code + ": " + message);
 					}
-
 					var html = (string) (Json.Decode(result).data.html);
 					html = html.Substring("<!DOCTYPE HTML><html><body>".Length, html.Length - ("</body></html>".Length + "<!DOCTYPE HTML><html><body>".Length));
 					return new HtmlString(html);
@@ -274,27 +204,63 @@ namespace RadialReview.Accessors
             try {
                 firePadData = await GetFirepadNote(padId);
             } catch (Exception e){
-                    log.Error("Error PadAccessor.GetHtmlFirepad", e);
+                    log.Error("Error PadAccessor.GetHtmlFirepad " , e);
             }
             return new HtmlString(firePadData.html); 
         }
 
+        //public static async Task<FirePadData> GetFirepadNote(string padId)
+        //{
+        //    FirePadData firepadData=null;
+        //    string response;
+        //    string note = "";
+        //    using (var client = new WebClient())
+        //    {
+        //        client.BaseAddress = Config.FirePadUrl();
+        //        client.Headers.Add("Accept", "application /json");
+        //        response = client.DownloadString("/" + padId + "/note.json");
+        //    }
+        //    if (response != "null")
+        //    {
+        //        var items = JsonConvert.DeserializeObject<FirePadData>(response);
+        //        firepadData = items;
+
+        //    }
+        //    else
+        //    {
+        //        using (var client = new WebClient())
+        //        {
+        //            client.BaseAddress = Config.FirePadUrl();
+        //            client.Headers.Add("Accept", "application /json");
+        //            response = client.DownloadString("/" + padId + ".json");
+        //        }
+        //        var items = JsonConvert.DeserializeObject<FirePadData>(response);
+        //        firepadData = items;
+        //        firepadData.html = firepadData.initialText;
+        //        firepadData.text = firepadData.initialText;
+        //    }
+        //    return firepadData;
+        //}
+
         public static async Task<FirePadData> GetFirepadNote(string padId)
         {
-            FirePadData firepadData=null;
+            FirePadData firepadData = new FirePadData();
             string response;
             string note = "";
             using (var client = new WebClient())
             {
                 client.BaseAddress = Config.FirePadUrl();
                 client.Headers.Add("Accept", "application /json");
-                response = client.DownloadString("/" + padId + "/note.json");
+                response = client.DownloadString("/" + padId + "/history.json");
             }
             if (response != "null")
             {
-                var items = JsonConvert.DeserializeObject<FirePadData>(response);
-                firepadData = items;
-                
+
+              Dictionary<string, Dictionary<string, object>> items = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string,object>>>(response);
+                //firepadData.setText(items);
+
+                firepadData.setHtml(items);
+               
             }
             else
             {
@@ -311,7 +277,10 @@ namespace RadialReview.Accessors
             }
             return firepadData;
         }
-        
+
+
+
+
 
 
 
@@ -343,7 +312,6 @@ namespace RadialReview.Accessors
         public static async Task<String> GetTextFirepad(string padId)
         {
             FirePadData firePadData = null;
-            
             try
             {
                 firePadData = await GetFirepadNote(padId);
@@ -380,7 +348,6 @@ namespace RadialReview.Accessors
            
             return url;
         }
-        
     }
     
 }

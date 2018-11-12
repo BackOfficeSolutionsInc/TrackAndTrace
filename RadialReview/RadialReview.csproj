@@ -108,6 +108,10 @@
     <Compile Include="Accessors\EventAccessor.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
     <Compile Include="Accessors\ForModelAccessor.cs" />
+    <Compile Include="Models\FirePad\AttributeConstants.cs" />
+    <Compile Include="Models\FirePad\Attributes.cs" />
+    <Compile Include="Models\FirePad\Entity.cs" />
+    <Compile Include="Models\FirePad\EntityManager.cs" />
     <Compile Include="Models\FirePad\FirePadData.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\HeadlineAccessor.cs" />
@@ -278,6 +282,15 @@
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
     <Compile Include="Models\Components\ColorComponent.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
+    <Compile Include="Models\FirePad\HtmlParser.cs" />
+    <Compile Include="Models\FirePad\HtmlTag.cs" />
+    <Compile Include="Models\FirePad\LIST_TYPE.cs" />
+    <Compile Include="Models\FirePad\Options.cs" />
+    <Compile Include="Models\FirePad\TagHtml.cs" />
+    <Compile Include="Models\FirePad\TextOp.cs" />
+    <Compile Include="Models\FirePad\TextOperation.cs" />
+    <Compile Include="Models\FirePad\TextParser.cs" />
+    <Compile Include="Models\FirePad\Utils.cs" />
     <Compile Include="Models\Frontend\EditorModels.cs" />
     <Compile Include="Models\Integrations\Asana\AsanaDTOs.cs" />
     <Compile Include="Models\Integrations\Asana\AsanaModels.cs" />

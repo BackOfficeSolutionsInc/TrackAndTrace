@@ -63,23 +63,10 @@ namespace RadialReview.Accessors {
 				await L10Accessor.Depristine_Unsafe(s, perms.GetCaller(), r);
 				s.Update(r);
 			}
-
-//<<<<<<< HEAD
             headline.HeadlinePadId = await PadAccessor.CreatePad(headline._Details);
             
             s.Save(headline);
-//=======
-//			if (String.IsNullOrWhiteSpace(headline.HeadlinePadId))
-//				headline.HeadlinePadId = Guid.NewGuid().ToString();
-
-//			if (!string.IsNullOrWhiteSpace(headline._Details))
-//				await PadAccessor.CreatePad(headline.HeadlinePadId, headline._Details);
-			
-
-//			s.Save(headline);
-//>>>>>>> engineering
 			headline.Ordering = -headline.Id;
-			//s.Update(headline);
 
 			if (headline.AboutId.HasValue)
 				headline.About = s.Get<ResponsibilityGroupModel>(headline.AboutId.Value);
@@ -236,9 +223,6 @@ namespace RadialReview.Accessors {
 				table.Append(@"<tr><th colspan=""3"" align=""left"" style=""font-size:16px;border-bottom: 1px solid #D9DADB;"">" + title + @"</th></tr>");
 				var i = 1;
 				if (headlines.Any()) {
-					//var org = headlines.FirstOrDefault().NotNull(x => x.Organization);
-					//var now = headlines.FirstOrDefault().NotNull(x => x.Issue.Organization.ConvertFromUTC(DateTime.UtcNow).Date);
-					//var format = org.NotNull(x => x.Settings.NotNull(y => y.GetDateFormat())) ?? "MM-dd-yyyy";
 					foreach (var headline in headlines) {
 						if (headline == null)
 							continue;

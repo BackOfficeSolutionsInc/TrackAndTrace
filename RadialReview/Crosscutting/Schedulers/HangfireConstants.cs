@@ -33,6 +33,7 @@ namespace RadialReview.Hangfire {
 
             public const string CRITICAL = "critical_w_v1";
             public const string ETHERPAD = "etherpad_w_v1";
+            public const string FIREPAD = "firepad_w_v1";
             public const string CONCLUSION_EMAIL = "conclusionemail_w_v1";
             public const string GENERATE_QC = "generateqc_w_v1";
             public const string CHARGE_ACCOUNT_VIA_HANGFIRE = "chargeaccount_w_v1";
@@ -54,6 +55,7 @@ namespace RadialReview.Hangfire {
 		public static readonly string[] OrderedQueues = new[]{
 			Immediate.CRITICAL,
 			Immediate.ETHERPAD,
+            Immediate.FIREPAD,
 			Immediate.CONCLUSION_EMAIL,
 			Immediate.GENERATE_QC,
 			Immediate.CHARGE_ACCOUNT_VIA_HANGFIRE,
