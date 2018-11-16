@@ -25,8 +25,6 @@ namespace RadialReview.Models.FirePad {
 				} else if (o.GetType() == typeof(object)) {
 					return "object";
 
-
-
 				} else {
 					JValue jv = (JValue)o;
 					switch (jv.Type) {
@@ -48,6 +46,14 @@ namespace RadialReview.Models.FirePad {
 					if (jo.Type == JTokenType.Object) {
 						return "object";
 					} else {
+						return null;
+					}
+				} else if (e.Message == "Unable to cast object of type 'System.Collections.Generic.Dictionary`2[System.String,System.Object]' to type 'Newtonsoft.Json.Linq.JValue'.") {
+					Type t = o.GetType();
+					bool isDict = t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+					if (isDict) {
+						return "object";
+					}else {
 						return null;
 					}
 				} else {

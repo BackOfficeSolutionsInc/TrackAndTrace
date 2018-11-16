@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.Linq;
 
+
 namespace RadialReview.Models.FirePad {
 	public class FirePadData {
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -13,14 +14,28 @@ namespace RadialReview.Models.FirePad {
 		public string initialText { get; set; }
 		public string html { get; set; }
 		public string text { get; set; }
+		int baseLength = 0;
 		Dictionary<int, string> positionOccupied = new Dictionary<int, string>();
 		string TODO_STYLE = "<style>ul.firepad-todo { list-style: none; margin-left: 0; padding-left: 0; } ul.firepad-todo > li { padding-left: 1em; text-indent: -1em; } ul.firepad-todo > li:before { content: \"\\2610\"; padding-right: 5px; } ul.firepad-todo > li.firepad-checked:before { content: \"\\2611\"; padding-right: 5px; }</style>\n";
 		public void setHtml(Dictionary<string, Dictionary<string, object>> items) {
 
 			
 			TextOperation to = new TextOperation();
+			var str= "";
+			TextOperation doc = new TextOperation();
+			List<Dictionary<string, object>> oldAttributes = new List<Dictionary<string, object>>();
+			List<Dictionary<string, object>> newAttributes=null;
+			foreach (var item in items) {
 
-			var doc =to.fromJSON(items);
+				str=to.fromJSON(item).apply(str, oldAttributes, out newAttributes);
+				
+			}
+			
+			var i = 0;
+			foreach(var attr in newAttributes) {
+				var a = attr.Count > 0 ? attr.Values : new object();
+				doc.ops.Add(new TextOp("insert", str.Substring(i++, 1), a));
+			}
 			
 			EntityManager entityManager=null;
 			
@@ -36,9 +51,9 @@ namespace RadialReview.Models.FirePad {
 			var inListItem = false;
 			var firstLine = true;
 			var emptyLine = true;
+			string afterInsert = null;
+			
 		
-			
-			
 			
 			var usesTodo = false;
 			AttributeConstants ATTR = new AttributeConstants();
@@ -48,8 +63,12 @@ namespace RadialReview.Models.FirePad {
 				var op = (TextOp)doc.ops[i];
 				while (op!=null) {
 
-
+				var text1 = Regex.Replace(html, "<.*?>", string.Empty);
 				if (op.isRetain()) {
+					//var op1= (TextOp)doc.ops[i + 1];
+					//if (afterInsert == null && op.chars.GetType() == typeof(int) && (int)op.chars - 1 < baseLength && op1.isInsert()) {
+					//	html = insertText((int)op.chars, html, out afterInsert);
+					//}
 					if (doc.ops.Count - 1 == i) {
 						op = null;
 					} else {
@@ -57,6 +76,7 @@ namespace RadialReview.Models.FirePad {
 					}
 					continue;
 				} else if (op.isDelete()) {
+
 					if (doc.ops.Count - 1 == i) {
 						op = null;
 					} else {
@@ -73,7 +93,11 @@ namespace RadialReview.Models.FirePad {
 							attrs = new Dictionary<String, object>();
 						}
 					} else {
-						attrs = ((JObject)op.attributes).ToObject<Dictionary<String, object>>();
+						if (utils.IsDictionary(op.attributes)) {
+							attrs = attrs = (Dictionary<String, object>)op.attributes;
+						} else {
+							attrs = ((JObject)op.attributes).ToObject<Dictionary<String, object>>();
+						}
 					}
 					if (newLine) {
 					newLine = false;
@@ -207,9 +231,20 @@ namespace RadialReview.Models.FirePad {
 				}
 
 				var text = (string)op.text;
+				//added for insertion
+				//if (afterInsert != null) {
+				//	text += afterInsert;
+				//	afterInsert = null;
+				//}
+				
+				//added for insertion
+				
+				
 				var newLineIndex = text.IndexOf("\n");
 				if (newLineIndex >= 0) {
+					//baseLength++;
 					newLine = true;
+					
 					if (newLineIndex < text.Length - 1) {
 						// split op.
 						op = new TextOp("insert", text.Substring(newLineIndex + 1), attrs);
@@ -240,7 +275,7 @@ namespace RadialReview.Models.FirePad {
 				}
 
 				html += prefix + textToHtml(text) + suffix;
-					
+				baseLength += text.Length;
 			}
 
 			if (inListItem) {
@@ -263,7 +298,50 @@ namespace RadialReview.Models.FirePad {
 		
 			return html;
 		}
+		public string insertText(int chars,string htmlText,out string afterInsert) {
+			string html = "";
+			int letterCounter = 0;
 
+			afterInsert = "";
+			bool validchar = true;
+			string text="";
+			Dictionary<int, char> validInText = new Dictionary<int, char>();
+
+			text = Regex.Replace(htmlText, "<.*?>", string.Empty);
+			for (int i = text.IndexOf('>'); i > -1; i = text.IndexOf('>', i + 1)) {
+				validInText.Add(i,'>');
+			}
+			for (int i = text.IndexOf('<'); i > -1; i = text.IndexOf('<', i + 1)) {
+				validInText.Add(i, '<');
+			}
+			foreach (char c in htmlText) {
+				switch (c) {
+					case '<':				
+						if (!(validInText.ContainsKey(letterCounter) && validInText[letterCounter] == c)) {
+							validchar = false;
+						} 
+						break;
+					case '>':
+						if (!(validInText.ContainsKey(letterCounter) && validInText[letterCounter] == c)) {
+							validchar = true;
+						} 
+						break;
+					default:
+						if (validchar) {
+							letterCounter++;
+						}
+						break;
+				
+			}
+				html += c;
+				if (letterCounter == chars-1) {
+					afterInsert = htmlText.Substring(html.Length);
+					baseLength -= afterInsert.Length;
+					return html;
+				}
+			}
+			return html;
+		}
 		public string close(string listType) {
 			return (listType == LIST_TYPE.ORDERED) ? "</ol>" : "</ul>";
 		}

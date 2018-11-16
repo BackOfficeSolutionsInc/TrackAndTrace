@@ -125,10 +125,10 @@ namespace RadialReview.Models.FirePad {
 		}
 
 		// Converts a plain JS object into an operation and validates it.
-		public TextOperation fromJSON(Dictionary<string, Dictionary<string, object>> items) {
+		public TextOperation fromJSON(KeyValuePair<string, Dictionary<string, object>> item) {
 
 			var o = new TextOperation();
-			foreach (var item in items) {
+			
 				var itm = item.Value;
 				object obj = itm["o"];
 				IEnumerable<object> collection = (IEnumerable<object>)obj;
@@ -158,7 +158,7 @@ namespace RadialReview.Models.FirePad {
 						o.insert(op, attributes);
 					}
 				}
-			}
+			
 			return o;
 		}
 
@@ -184,8 +184,106 @@ namespace RadialReview.Models.FirePad {
 		}
 
 
+		public string apply (string str, List<Dictionary<string, object>> oldAttributes, out List<Dictionary<string, object>> newAttributes ) {
+			var operation = this;
+			newAttributes = null;
+			oldAttributes = oldAttributes ?? new List<Dictionary<string,object>>();
+			newAttributes = newAttributes ?? new List<Dictionary<string, object>>();
+			if (str.Length != operation.baseLength) {
+				throw new Exception("The operation's base length must be equal to the string's length.");
+			}
+			var newStringParts = new List<string>();
+			var j = 0;
+			//var k=0;
+			//object attr;
+			var oldIndex = 0;
+			var ops = this.ops;
+			for (var i = 0; i < ops.Count; i++) {
+				var op = (TextOp)ops[i];
+				if (op.isRetain()) {
+					if (oldIndex + (int)op.chars > str.Length) {
+						throw new Exception("Operation can't retain more characters than are left in the string.");
+					}
+					// Copy skipped part of the retained string.
 
+					//var s = str.Substring(oldIndex, oldIndex + (int)op.chars);
+					//s = Slice(str, oldIndex, oldIndex + (int)op.chars);
+					newStringParts.Add(str.Substring(oldIndex, (int)op.chars));
 
+					// Copy (and potentially update) attributes for each char in retained string.
+					for (var k = 0; k < (int)op.chars; k++) {
+						var currAttributes = new Dictionary<string, object>();
+						if (oldIndex + 1 < oldAttributes.Count) {
+							currAttributes = oldAttributes[oldIndex + k] ;
+						} 
+						var updatedAttributes = new Dictionary<string, object>();
+						foreach (var attr in currAttributes) {
+							updatedAttributes.Add(attr.Key,attr.Value);
+							utils.assert((bool)updatedAttributes[attr.Key] != false);
+						}
+						var obj = new Dictionary<string, object>();
+						if (op.attributes.GetType() == typeof(object)) {
+							if (utils.IsDictionary(op.attributes)) {
+								obj = (Dictionary<string, object>)op.attributes;
+							}
+						} else {
+							obj = ((JObject)op.attributes).ToObject<Dictionary<string, object>>();
+						}
+						foreach (var attr in obj) {
+							bool a=true;
+							if (attr.Value.GetType() == typeof(bool)) {
+								a = (bool)attr.Value;
+							}
+							if (a == false) {
+								 updatedAttributes.Remove(attr.Key);
+							} else {
+								updatedAttributes[attr.Key] = attr;
+							}
+							if (updatedAttributes[attr.Key].GetType()==typeof(bool)) {
+								utils.assert((bool)updatedAttributes[attr.Key] != false);
+							}
+						}
+						newAttributes.Add(updatedAttributes);
+					}
+
+					oldIndex += (int)op.chars;
+				} else if (op.isInsert()) {
+					// Insert string.
+					newStringParts.Add( (string)op.text);
+
+					// Insert attributes for each char.
+					var a = (string)op.text;
+					for (var k = 0; k < a.Length; k++) {
+						var insertedAttributes = new Dictionary<string, object>();
+						var obj=new Dictionary<string, object>() ;
+
+						if(op.attributes.GetType()==typeof(object)) {
+							if (utils.IsDictionary(op.attributes)) {
+								obj = (Dictionary<string, object>)op.attributes;
+							}
+						}else {
+							obj = ((JObject)op.attributes).ToObject<Dictionary<string, object>>();
+						}
+						foreach (var attr in obj) {
+							insertedAttributes[attr.Key] = attr;
+							if (attr.Value.GetType() == typeof(bool)) {
+								utils.assert((bool)attr.Value != false);
+							}
+						}
+						newAttributes.Add(insertedAttributes);
+					}
+				} else { // delete op
+					oldIndex += (int)op.chars;
+				}
+			}
+			if (oldIndex != str.Length) {
+				throw new Exception("The operation didn't operate on the whole string.");
+			}
+			var newString = string.Join("", newStringParts);
+			utils.assert(newString.Length == newAttributes.Count);
+
+			return newString;
+		}
 	}
 
 }
