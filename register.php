@@ -3,20 +3,21 @@ session_start();
 if(!isset($_SESSION['user'])){
     header('location:login.php');
 }
-include ('navbar.php');
 ?>
+
 <html>
 <head>
 <title>Create User Account/s</title>
-		 		   <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>  
+		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
-                    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-                    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
-                    <link rel="manifest" href="/site.webmanifest">
-                    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-                   <link rel="stylesheet" type="text/css" href="style/reg_style.css">
+					<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+					<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+					<link rel="manifest" href="/site.webmanifest">
+					<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+					<meta name="msapplication-TileColor" content="#da532c">
+					<meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" type="text/css" href="style/reg_style.css">
 <body>
     <div class="registerbox">
     <img src="images/avatar.png" class="avatar">
@@ -32,12 +33,19 @@ include ('navbar.php');
 				</div>
             <p>Username</p>
 			<input type="user" name="txtuser" placeholder="Enter Username" maxlength="15" required />
+            <p>Email</p>
+            <input type="email" name="txtemail" placeholder="Enter Email" maxlength="30" required />
             <p>Password</p>
 			<input type="password" name="txtpass" maxlength="15" placeholder="Enter Password" required />
             <p>Confirm Password</p>
 			<input type="password" name="cpass" maxlength="15" placeholder="Confirm Password" required />
+			 <?php
+
+?>
 			<input type="submit" name="submit" class="register_btn" value="REGISTER" />
-                        <p>Already a member? <a href="login.php">Sign in</a></p>
+            <a href="edit_user.php" class="btn btn-success btn-md"><span span class="glyphicon glyphicon-circle-arrow-left"></span> Back</a>
+                      
+                       <!-- <p>Already a member? <a href="login.php">Sign in</a></p>-->
         </form>
 
     </div>

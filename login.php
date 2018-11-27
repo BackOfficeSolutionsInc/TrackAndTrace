@@ -1,17 +1,6 @@
-<?php
-
-if(isset($_SESSION['user'])){
-    session_start();
-    header('location:login.php');
-}
-?>
-
 
 <html>
 <head>
-    <script language = "javascript" type ="text/javascript">
-    window.history.forward();
-    </script>
 <title>Login</title>
     <link rel="stylesheet" type="text/css" href="style/login_style.css">
 <body>
@@ -24,8 +13,8 @@ if(isset($_SESSION['user'])){
         <p>Password</p>
         <input type="password" name="txtpass" placeholder="Enter Password" required /> <br><br>
 		<input type="submit" name="submit" value="LOGIN" />
-        <a href="#">Lost your password?</a><br>
-        <!--<a href="register.php">Don't have an account?</a>-->											
+        <a href="reset/forgotPassword.php">Lost your password?</a><br>
+        <!-- <a href="register.php">Don't have an account?</a>-->											
 </form>
         
     </div>

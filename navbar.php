@@ -1,4 +1,3 @@
-
 <html>
 <head>
 <title>
@@ -14,7 +13,7 @@
         <link rel="stylesheet" type="text/css" href="style/style_nav.css">
 </head>
 <body>
-    
+<?php if(!session_id()) session_start(); ?>
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -25,64 +24,70 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">
-    <img alt="Brand" src="images/Logistikuslogosmall.png"></a>
+      <a class="navbar-brand" href="index.php">
+    <img src="images/Logistikuslogosmall.png"></a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home <span class="sr-only">(current)</span></a></li>
+        <li class="active"><a href="csv.php">Home <span class="sr-only">(current)</span></a></li>
         <li><a href="index.php">Track</a></li>
           <?php if(isset($_SESSION['type']) && ($_SESSION['type']=='admin'))	{ 
             
-          echo '<li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Userm Maintenance <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-                <li><a href="register.php">Add User</a></li>
-				<li class="disabled"><a href="#">Edit User</a></li>
-				<li class="disabled"><a href="#">Grant Role</a></li>
-          </ul>
+          echo '<li><a href="edit_user.php">User Maintenance</a></li>
+     
           <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Maintenance <span class="caret"></span></a>
           <ul class="dropdown-menu">
-				<li><a href="csv.php">Upload</a></li>
+				
 				<li class="disabled"><a href="#">Scan Barcode</a></li>
 				<li><a href="delete.php">Delete Entry</a></li>
-          </ul>
-        </li>
-    </ul>';
-         } ?>
-		<?php if(isset($_SESSION['type']) && ($_SESSION['type']=='user'))
-		{ ?>
-          <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Maintenance <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-				<!--<li><a href="csv.php">Upload</a></li> -->
-				<li class="disabled"><a href="#">Scan Barcode</a></li>
-				<li><a href="delete.php">Delete Entry</a></li>
+                <li><a href="deletebatch.php">Delete Batch File</a></li>
           </ul>
         </li>
     </ul>
+ ';
+         } ?>
+		<?php if(isset($_SESSION['type']) && ($_SESSION['type']=='user'))
+		{ ?>
+ 
+    </ul>
       <?php } ?>
-      <div class="user" id="user">
+    
+ 
+
+        
+        <?php 
+        
+           if (isset($_SESSION['user'])) {
+            ?>
+           <!--<div class="user" id="user">
             <ul class="navbar-nav navbar-right">
-                 <li><?php echo "Welcome " . $_SESSION['user']; ?></li>
+                 <li>Welcome <?php //echo $_SESSION["user"] ?></li>
              </ul>  
-         </div>
-        <?php if (isset($_SESSION['user'])) {
-            
-        echo '<ul class="nav navbar-nav navbar-right">
-            <li><a href="do_logout.php">Logout</a></li>          
-            ';
+         </div>-->
+        <ul class="nav navbar-nav navbar-right">
+              <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome <?php echo $_SESSION["user"] ?> <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+				
+              <li><a href="do_logout.php">Logout</a></li>
+              <?php if(isset($_SESSION['type']) && ($_SESSION['type']=='user'))	{ 
+              echo '<li><a href="forgotPassword.php">Change Passwrod</a></li>';          
+            }
+               ?>
+    <?php 
         
         }else {
+
         echo '
-            <li><a href="login.php">Login</a></li>          
+            <li class="nav navbar-nav navbar-right"><a href="login.php">Login</a></li>          
             </ul>';
 }
 $txt = "user id date";
- $myfile = file_put_contents('logs.txt', $txt.PHP_EOL , FILE_APPEND | LOCK_EX);?>
+ $myfile = file_put_contents('logs.txt', $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
+?>
 
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
