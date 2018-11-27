@@ -1,18 +1,20 @@
 <?php 
-
-if(isset($_POST["submit"])) {
+session_start();
+if(isset($_POST["add_user"])) {
 	
-		
+	$id =  $_SESSION['user'];
+    $date = date('Y-m-d H:i:s');
 
 	include_once 'connect.php';
 	
 	$user= mysqli_real_escape_string($con, $_POST["txtuser"]);
+    $email= mysqli_real_escape_string($con, $_POST["txtemail"]);
 	$type= mysqli_real_escape_string($con, $_POST["txttype"]);
     $pass=mysqli_real_escape_string($con, $_POST["txtpass"]);
 	$cpass=mysqli_real_escape_string($con, $_POST["cpass"]);
 	
 
-	if (empty($user) || empty($user) || empty($pass) || empty($cpass)) {
+	if (empty($user) || empty($email) || empty($pass) || empty($cpass)) {
 		header("Location:register.php?signup=empty");
 		exit();
 	} else {
@@ -32,8 +34,8 @@ if(isset($_POST["submit"])) {
 						exit();
 
 				   }else {
-					   $hashedPwd = password_hash($pass, PASSWORD_DEFAULT);
-					   $sql  = "INSERT INTO register (user, type, pass) VALUES ('".$user."','".$type."', '".$hashedPwd."');";
+					   $hashedPwd = password_hash($cpass, PASSWORD_DEFAULT);
+					   $sql  = "INSERT INTO register (user, email, type, pass, date_created, createdBy) VALUES ('".$user."', '".$email."','".$type."', '".$hashedPwd."','".$date."','".$id."');";
 					   mysqli_query($con, $sql);
 					   
 					   header("Location:register.php?signup=Adding username success");

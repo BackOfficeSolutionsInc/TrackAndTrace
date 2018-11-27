@@ -20,7 +20,7 @@ $mysqli=NULL;
 		<title>Logistikus-Express</title>
         <meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
             
 		<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
@@ -37,7 +37,7 @@ $mysqli=NULL;
 	
 		<div class="sector-banner">
 			<div class="logo">
-			<a href="http://www.logistikus-express.com"><img src="images/Logistikuslogo.png" class="center"></a>
+			<a href="http://www.logistikus-express.com"><img src="images/Logistikuslogo.png" class="img-fluid center"></a>
 			</div>
 			<form method="POST">
 				<div class="box">

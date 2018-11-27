@@ -16,8 +16,22 @@ body  {
 	font-family: FamiliarPro;
 	color: #09717f;
 	margin-top: 55px;
-	
-	
+}
+
+.input{
+width: 50%!important;
+}
+
+.form-control { 
+    display: inline-block !important; 
+}
+
+.center{
+    margin-top: 50px;
+}
+
+#result{
+    margin-top: 70px;
 }
 
 .logo {
@@ -53,4 +67,13 @@ input[type="file"] {
 	width: 100%;
 	color: #09717f;
 	text-align: center;
+}
+.center {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;  
+}
+.btn {
+    text-decoration: none
 }

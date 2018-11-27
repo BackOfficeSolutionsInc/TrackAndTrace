@@ -12,6 +12,6 @@
 					  
 		 <div class="sector-banner">
 			<div class="logo">
-				<a href="http://www.logistikus-express.com"><img src="images/Logistikuslogo.png" class="center"></a>
+				<a href="http://www.logistikus-express.com"><img src="images/Logistikuslogo.png" class="img-fluid center"></a>
 			</div>
 		 </div>
