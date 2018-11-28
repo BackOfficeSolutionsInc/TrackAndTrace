@@ -14,6 +14,12 @@ $isSet=true;
 $search=NULL;
 $resultSet=NULL;
 $mysqli=NULL;
+if(isSet($_GET['urlDirect'])){
+		$urlDirect=true;
+		$search=$_GET['urlDirect'];
+	}else{
+		$urlDirect=false;
+}
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 		<head>
@@ -63,9 +69,15 @@ $mysqli=NULL;
 
 <?php
 
-if(isset($_POST['submit'])) { 
+if(isset($_POST['submit']) || $urlDirect) { 
+	if($urlDirect){
+		$search=$_GET['search'];
+	}else{
+		$search=$_POST['search'];
+	}
+	//echo "<script>alert('".$search."');</script>";
 	$mysqli = NEW MySQLi("localhost","root","","trackandtrace");
-	$search = $mysqli->real_escape_string($_POST['search']);
+	$search = $mysqli->real_escape_string($search);
 	$resultSet = $mysqli->query("SELECT DISTINCT TrackingNumber, Date, Reference, Sender, Consignee FROM tbl_trackandtrace WHERE TrackingNumber = '$search' LIMIT 1");
 
 	if($resultSet->num_rows > 0 ) {
@@ -79,7 +91,7 @@ if(isset($_POST['submit'])) {
 		
 		?>
 		
-		<?php if(isset($_POST['submit'])) {  ?>
+		<?php if(isset($_POST['submit']) || $urlDirect) {  ?>
 		<div class="sector-frame">
 		<div class="warpper" id="trackArea">
 			<div class="sector-frame">
