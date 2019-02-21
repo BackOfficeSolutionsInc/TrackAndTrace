@@ -51,19 +51,19 @@
 					<div class="section-status">
 						<div class="wrapper">
 							<div class="row">
-								<div class="col">
+								<div class="col" id='divMain' >
 									<div class="info">
-										<div class="line">Waybill Number: <span id='waybill'></span></div>
-										<div class="line">Date: <span id='date'></span></div>
-										<div class="line">Reference:<span></span></div>
-										<div class="line">Sender: <span id='sender'></span></div>
-										<div class="line">Consignee: <span id='consignee'></span></div>
+										<div class="line"><span id='waybillLabel'></span><span id='waybill'></span></div>
+										<div class="line"><span id='dateLabel'></span><span id='date'></span></div>
+										<div class="line"><span id='referenceLabel'></span><span></span></div>
+										<div class="line"><span id='senderLabel'></span><span id='sender'></span></div>
+										<div class="line"><span id='consigneeLabel'></span><span id='consignee'></span></div>
 									</div>
-									<div class="fb">
+									<div class="fb" id='fbdiv' style="display: none;"  >
 										<div class="logo"><a href="#"><img alt="Like us" src="images/icon/fbicon.png"></a></div>
 										<div class="txt">
 											<div class="t1">Like us on</div>
-											<div class="t2">/Logistikus-express<br></div>
+											<div class="t2" >/Logistikus-express<br></div>
 										</div>
 									</div>
 								</div>
@@ -102,10 +102,19 @@
     dataType: 'json',
     success: function (data) {
     $.each(data, function(index, element) {
-        $('#waybill').text(element.transaction_code)
-        $('#date').text(element.picked_up_date)
-        $('#sender').text(element.shipper_name)
-        $('#consignee').text(element.consignee_name)
+		$("#fbdiv").css("display", "block");
+		$('#waybillLabel').show();
+		$('#waybillLabel').text('Waybill Number: ');
+		$('#dateLabel').text('Date: ');
+		$('#referenceLabel').text('Reference: ');
+		$('#senderLabel').text('Sender: ');
+		$('#consigneeLabel').text('Consignee: ');
+		
+        $('#waybill').text(element.transaction_code);
+        $('#date').text(element.picked_up_date);
+        $('#sender').text(element.shipper_name);
+        $('#consignee').text(element.consignee_name);
+		
         $.each(element.transaction_movements, function(index, movement) {
             var strDateTime = movement.created;
             var date = new Date(strDateTime);
