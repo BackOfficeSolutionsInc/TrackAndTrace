@@ -1,15 +1,20 @@
-
-Editing:  
-/home/logistikus3cl/public_html/track/style/banner_style.css
- Encoding:       
+*{
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}     
 
 body { 
-	background-color: #ccc
+	background-color: #f1f1f1
 }
+
+
 .sector-banner {
-	height:300px;
+	height:auto;
 	width:100%;
-	padding-top: 0px;
+	padding-top: 25px;
+    padding-bottom: 10px;
+    margin: 20px, 20px, 20px, 20px;
 	background:url(../images/banner.jpg) center no-repeat;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
@@ -18,6 +23,26 @@ body {
 	background-size:cover;
 	text-align:center
 }
+
+.logo a img {
+    margin-top: auto;
+    display: block;
+    margin-left: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-right: auto;
+}
+ input.input {
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+input::placeholder {
+  padding: 0 10px;
+}
+
 
 .sector-banner .box {
 	display:inline-block;
@@ -30,7 +55,7 @@ body {
 .sector-banner .box > .txt { font-size:24px;padding-left:4px;margin-top:-2px; }
 .sector-banner .box .form { margin-top:14px;display:table }
 .sector-banner .box .form > * { display:table-cell;vertical-align:middle }
-.sector-banner .box .iCode { border:0px;border-radius:10px;font-size:24px;height:50px;color:#000000;padding:0px 20px;width:440px; }
+.sector-banner .box .iCode { border:0px;border-radius:10px;font-size:24px;height:50px;color:#000000;padding:0px 0px;width:100%; }
 .sector-banner .box .btn { height:50px;font-size:18px;margin:0px;margin-left:12px; }
 .sector-banner .box .btn { background-color: #09717f; /* Blue */ border-color: #0ea6bb; border: 2px; color: white; padding: 15px 32px; text-align: center; text-shadow: 0 2px 0 rgba(0,0,0,0.5); display: inline-block; font-size: 16px; }
 	input:focus { outline: none; }
@@ -55,10 +80,10 @@ body {
 }
 
 @media only screen and (max-width: 700px) {
-
-	.sector-banner {	height:350px; }
-
-	.sector-banner .box { margin:0px 30px;display:block;padding-top:110px; }
+    
+    
+	.sector-banner { height:auto; }
+    .sector-banner .box { margin:0px 30px;display:block;padding-top:110px; }
 	.sector-banner .box .form { display:block; }
 	.sector-banner .box .form > * { display:block; }
 	.sector-banner .box .iCode { width:100%; }
@@ -71,6 +96,13 @@ body {
 	.sector-banner .box > h1 { font-size:36px; }
 	.sector-banner .box > .txt { font-size:20px; }
 	.sector-banner .box .btn { margin:10px 0px; }
+
+}
+
+@media only screen and (max-width: 360px) {
+    
+    #logo { width: 150px; height: auto;}
+    .sector-banner .box .iCode { border:0px;border-radius:10px;font-size:24px;height:50px;color:#000000;width:100%; }
 
 }
 .footer {

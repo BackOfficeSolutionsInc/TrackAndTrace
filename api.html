@@ -1,0 +1,175 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head>
+		<title>Logistikus-Express</title>
+        <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+            
+		<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+		<link rel="manifest" href="/site.webmanifest">
+		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+		<link rel="stylesheet" type="text/css" href="style/banner_style.css">		
+		<link rel="stylesheet" type="text/css" href="style/status_style.css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		</head>
+		<body>
+	
+		<div class="sector-banner">
+			<div class="logo">
+			<a href="http://www.logistikus-express.com"><img src="images/Logistikuslogo.png" class="img-responsive"></a>
+			</div>
+			<form>
+				<div class="box">
+					<h1>Track Your Parcel</h1>
+						<div class="txt">Type your tracking number below</div>
+					<div class="form">
+						<div class="col1"><input type="text" id="search" class="iCode" placeholder="Enter your Tracking #" autocomplete="off"></div>
+						<div class="col2"><input type="button" id="track" class="btn" value="Track"></div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+	           <style>  
+                .notfound  
+                {  
+                     padding:20px;  
+                     margin-top:90px;  
+					 postion: absolute;
+					 font-size:20px;
+                }  
+           </style> 
+
+		
+				<div class="sector-frame">
+		<div class="warpper" id="trackArea">
+			<div class="sector-frame">
+				<div class="warpper">
+					<div class="section-status">
+						<div class="wrapper">
+							<div class="row">
+								<div class="col">
+									<div class="info">
+										<div class="line">Waybill Number: <span id='waybill'></span></div>
+										<div class="line">Date: <span id='date'></span></div>
+										<div class="line">Reference:<span></span></div>
+										<div class="line">Sender: <span id='sender'></span></div>
+										<div class="line">Consignee: <span id='consignee'></span></div>
+									</div>
+									<div class="fb">
+										<div class="logo"><a href="#"><img alt="Like us" src="images/icon/fbicon.png"></a></div>
+										<div class="txt">
+											<div class="t1">Like us on</div>
+											<div class="t2">/Logistikus-express<br></div>
+										</div>
+									</div>
+								</div>
+								<div class="col colStatus" id="div1">							
+								    
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		 <div class="nf">		
+        <div class="notfound" align="center">Tracking number not found</div>
+	    </div>		
+        <div class="nf"></div>
+		<div class="footer">
+		<p>© Copyright Logistikus Express Philippines, Inc.</p>
+		</div>		
+</body>
+<script>
+        $(document).ready(function() {
+        $("#track").click(function() {
+        $( "#div1" ).empty();
+        Track();
+             
+            });
+        });          
+
+    function Track(){
+    var filename='https://api-express-test.codedisruptors.com:8084/transaction/' + $("#search").val();
+    $.ajax({
+    type: 'GET',
+    url: filename,
+    dataType: 'json',
+    success: function (data) {
+    $.each(data, function(index, element) {
+        $('#waybill').text(element.transaction_code)
+        $('#date').text(element.picked_up_date)
+        $('#sender').text(element.shipper_name)
+        $('#consignee').text(element.consignee_name)
+        $.each(element.transaction_movements, function(index, movement) {
+            var strDateTime = movement.created;
+            var date = new Date(strDateTime);
+             var str ="<div class='status piority-success'>";
+				str +="<div class='date'>";
+                str +="<div>" + date.toLocaleString() + "</div>";
+                str +="<div></div>";
+				str +="</div>";
+				str +="<div class='desc'>";
+				str +="<div class='d1'>";
+            var stat;
+            var img;
+            switch(movement.transaction_status){
+                case "SIP":
+                    stat="Arrived at hub/transit station";
+                    img='images/icon/status/arrive.png';
+                    break;
+                case "SOPL":
+                    stat="In transit to destination station";
+                    img='images/icon/status/arrive.png';
+                    break;
+                case "SIPL":
+                    stat="Arrived at destination station";
+                    img='images/icon/status/arrive.png';
+                    break;
+                case "SOPD":
+                    stat="Out for delivery";
+                    img='images/icon/status/package.png';
+                    break;
+                case "POD":
+                    stat="Successfully delivered";
+                    img='images/icon/status/complete.png';
+                    break;
+                case "PODEX":
+                    stat="Undelivered (pls see reasons below)";
+                    img='images/icon/status/warning.png';
+                    break;
+                case "ON HOLD":
+                    stat="On-hold";
+                    img='images/icon/status/return.png';
+                    break;
+                default:
+                    stat=movement.transaction_status;
+                    
+            }
+            
+				str +="<div class='0'>" + stat + "</div>";
+				str +="</div>";
+				str +="<div class='d2'>" + movement.location.name + "</div>";
+				str +="</div>";
+				str +="<div class='icon'>";
+				str +="<div>";
+				str +="<img src='"+ img + "'>";
+				str +="</div>";
+				str +="</div>";
+				str +="</div>";
+            $('#div1').append(str);
+        });
+                });
+            }
+        });
+    }
+    function elementValue(element){
+    $("#shipper_country").val(element.shipper_country);
+    }
+</script>
+</html>
