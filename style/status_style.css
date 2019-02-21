@@ -29,15 +29,15 @@ body {
 .info .line { }
 .info span { color:#09717f }
 
-.fb { position:absolute;bottom:0px;left:0px;right:0px;top:auto;padding:20px;border-top:1px #c8c8c8 solid;}
+.fb { position:absolute;bottom:0px;left:0px;right:0px;top:150px;padding:20px;border-top:1px #c8c8c8 solid; }
 .fb .logo { margin-right:15px;float:left }
 .fb .t1 { color:#09717f;font-weight:bold;  }
 .fb .t2 { color:#1c1c1c;font-size:14px;margin-top:5px;font-weight:normal }
 
 
 .status { font-size:16px;width:550px;position:relative;overflow:auto;padding-bottom:20px;  }
-.status > .date { color:#808080;text-align:right;width:120px;float:left;margin-top:4px;margin-right:90px;padding-left:5px;   }
-.status > .icon { width:45px;margin:0px 30px;background:url(../images/icon/status/bar.png) center repeat-y;height:100%;position:absolute;left:130px;top:0px;height:100%;overflow:hidden }
+.status > .date { color:#808080;text-align:right;width:130px;float:left;margin-top:4px;margin-right:90px;padding-left:5px;   }
+.status > .icon { width:40px;margin:0px 25px;background:url(../images/icon/status/bar.png) center repeat-y;height:100%;position:absolute;left:150px;top:0px;height:100%;overflow:hidden }
 .status > .icon > .img {
 	height:45px;
 	width:45px;
@@ -70,6 +70,7 @@ body {
 }
 
 @media only screen and (max-width: 1300px) {
+    
 
 }
 
@@ -108,7 +109,7 @@ body {
 	.info {  padding:0px 0px 20px 0px; }
 	.fb { text-align:center;padding:20px 0px; }
 	.fb .logo { float:none;margin-bottom:10px; }
-	.status { padding-left:80px; }
+	.status { padding-left:70px; }
 	.status > .icon { margin-left:10px; }
 }
 
