@@ -1,3 +1,14 @@
+<?php
+$search="";
+$urlDirect=false;
+if(isSet($_GET['urlDirect'])){
+		$urlDirect=true;
+		$search=$_GET['search'];
+	}else{
+		$urlDirect=false;
+}
+
+?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head>
 		<title>Logistikus-Express</title>
         <meta charset="utf-8">
@@ -26,7 +37,7 @@
 					<h1>Track Your Parcel</h1>
 						<div class="txt">Type your tracking number below</div>
 					<div class="form">
-						<div class="col1"><input type="text" id="search" class="iCode" placeholder="Enter your Tracking #" autocomplete="off"></div>
+						<div class="col1"><input type="text" id="search" class="iCode" value="<?php echo htmlspecialchars($search); ?>"  placeholder="Enter your Tracking #" autocomplete="off"></div>
 						<div class="col2"><input type="button" id="track" class="btn" value="Track"></div>
 					</div>
 				</div>
@@ -86,6 +97,12 @@
 		<p>© Copyright Logistikus Express Philippines, Inc.</p>
 		</div>		
 </body>
+<?php
+if($urlDirect){
+	echo "<script>$(document).ready(function(){ Track(); });</script>";
+	
+}
+?>
 <script>
     $('#search').on('keyup  change',function(){
 
