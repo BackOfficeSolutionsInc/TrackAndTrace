@@ -110,7 +110,6 @@ if(!isset($_SESSION['user'])){
  <body>
      <?php 
     include('navbar.php');
-    include('header.php');
      ?>
 
 		 <div class="container">
