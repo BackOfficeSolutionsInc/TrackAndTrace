@@ -26,7 +26,7 @@ body {
 .section-status .row > .colStatus { border-left:1px #c8c8c8 solid;width:60%; }
 
 .info { color:#1c1c1c;line-height:1.4;padding:20px; }
-.info .line { }
+info span #waybillLabel { color:#1c1c1c }
 .info span { color:#09717f }
 
 .fb { position:absolute;bottom:0px;left:0px;right:0px;top:150px;padding:20px;border-top:1px #c8c8c8 solid; }

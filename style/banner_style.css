@@ -95,7 +95,7 @@ input::placeholder {
 	.sector-banner .box  { text-align:center }
 	.sector-banner .box > h1 { font-size:36px; }
 	.sector-banner .box > .txt { font-size:20px; }
-	.sector-banner .box .btn { margin:10px 0px; }
+	.sector-banner .box .btn { margin:10px 0px; padding-bottom:10px; }
 
 }
 
@@ -106,12 +106,17 @@ input::placeholder {
 
 }
 .footer {
-	position: fixed;
-	left: 0;
-	bottom: 0;
-	width: 100%;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
 	background-color: #09717f;
-	color: white;
 	text-align: center;
+    padding-bottom: none;
+}
+
+.footer p {
+    padding-top: 15px;
+    color: white;
 }
 
