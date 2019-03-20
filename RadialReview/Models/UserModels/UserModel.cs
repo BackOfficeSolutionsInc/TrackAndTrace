@@ -28,6 +28,7 @@ namespace RadialReview.Models {
 		//public virtual String IdMapping { get; set; }
 		public virtual string FirstName { get; set; }
 		public virtual string LastName { get; set; }
+		
 #pragma warning disable CS0114 // Member hides inherited member; missing override keyword
 		public virtual string Email { get { return UserName; } }
 #pragma warning restore CS0114 // Member hides inherited member; missing override keyword

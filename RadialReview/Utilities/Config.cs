@@ -292,7 +292,7 @@ namespace RadialReview.Utilities {
 				case Env.local_mysql:
 					goto case Env.local_sqlite;
 				case Env.local_sqlite: {
-						var dir = Path.Combine(Path.GetTempPath(), "TractionTools");
+						var dir = Path.Combine(Path.GetTempPath(), "Tam");
 						var file = Path.Combine(dir, "dbversion" + env + ".txt");
 						if (!Directory.Exists(dir))
 							Directory.CreateDirectory(dir);
