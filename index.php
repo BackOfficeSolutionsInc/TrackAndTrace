@@ -32,7 +32,7 @@ if(isSet($_GET['urlDirect'])){
 			<div class="logo">
 			<a href="http://www.logistikus-express.com"><img src="images/Logistikuslogo.png" class="img-responsive"></a>
 			</div>
-			<form>
+			
 				<div class="box">
 					<h1>Track Your Parcel</h1>
 						<div class="txt">Type your tracking number below</div>
@@ -41,7 +41,7 @@ if(isSet($_GET['urlDirect'])){
 						<div class="col2"><input type="button" id="track" class="btn" value="Track"></div>
 					</div>
 				</div>
-			</form>
+			
 		</div>
 
 	           <style>  
@@ -104,28 +104,28 @@ if($urlDirect){
 }
 ?>
 <script>
-    $('#search').on('keyup  change',function(){
-
-     var text = $.trim($(this).val() )
-     this.value="";      
-     this.value=text;
-
-    validateSearch.init(this.value);
-    if(validateSearch.done()){
-        console.log('this is correct');
-    }
-});
     
-    
-        $(document).ready(function() {
-        $("#track").click(function() {
-        $( "#div1" ).empty();
-        Track();
+     
+            $('#search').keypress(function(e){
+               
+               if(e.keyCode==13){
+                  
+                    $("#div1").empty();
+
+                    Track();
+               }
+            });
+             $("#track").click(function() {
+        
+             $("#div1").empty();
+
+            Track();
              
             });
-        });          
+            
 
     function Track(){
+    
     var filename='https://api-alexsys.codedisruptors.com:8084/transaction/' + $("#search").val();
     $.ajax({
     type: 'GET',

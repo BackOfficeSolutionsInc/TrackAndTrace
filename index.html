@@ -41,6 +41,7 @@
 					 postion: absolute;
 					 font-size:20px;
                 }  
+                   
            </style> 
 
 		
@@ -53,11 +54,11 @@
 							<div class="row">
 								<div class="col" id='divMain' >
 									<div class="info">
-										<div class="line"><span id='waybillLabel'></span><span id='waybill'></span></div>
-										<div class="line"><span id='dateLabel'></span><span id='date'></span></div>
-										<div class="line"><span id='referenceLabel'></span><span></span></div>
-										<div class="line"><span id='senderLabel'></span><span id='sender'></span></div>
-										<div class="line"><span id='consigneeLabel'></span><span id='consignee'></span></div>
+										<div class="line"><span id='waybillLabel' style='color:black'></span><span id='waybill'></span></div>
+										<div class="line"><span id='dateLabel' style='color:black'></span><span id='date'></span></div>
+										<div class="line"><span id='referenceLabel' style='color:black'></span><span></span></div>
+										<div class="line"><span id='senderLabel' style='color:black'></span><span id='sender'></span></div>
+										<div class="line"><span id='consigneeLabel' style='color:black'></span><span id='consignee'></span></div>
 									</div>
 									<div class="fb" id='fbdiv' style="display: none;"  >
 										<div class="logo"><a href="#"><img alt="Like us" src="images/icon/fbicon.png"></a></div>
@@ -77,15 +78,28 @@
 				</div>
 			</div>
 		</div>
-		 <div class="nf">		
+		<!-- <div class="nf"  id='nfdiv' style="display: none;"  >		
         <div class="notfound" align="center">Tracking number not found</div>
-	    </div>		
+	    </div>-->		
         <div class="nf"></div>
 		<div class="footer">
 		<p>© Copyright Logistikus Express Philippines, Inc.</p>
 		</div>		
 </body>
 <script>
+    $('#search').on('keyup  change',function(){
+
+     var text = $.trim($(this).val() )
+     this.value="";      
+     this.value=text;
+
+    validateSearch.init(this.value);
+    if(validateSearch.done()){
+        console.log('this is correct');
+    }
+});
+    
+    
         $(document).ready(function() {
         $("#track").click(function() {
         $( "#div1" ).empty();
@@ -95,13 +109,15 @@
         });          
 
     function Track(){
-    var filename='https://api-express-test.codedisruptors.com:8084/transaction/' + $("#search").val();
+    var filename='https://api-alexsys.codedisruptors.com:8084/transaction/' + $("#search").val();
     $.ajax({
     type: 'GET',
     url: filename,
     dataType: 'json',
     success: function (data) {
     $.each(data, function(index, element) {
+        
+        $("#nfdiv").css("display", "block");
 		$("#fbdiv").css("display", "block");
 		$('#waybillLabel').show();
 		$('#waybillLabel').text('Waybill Number: ');
@@ -111,7 +127,15 @@
 		$('#consigneeLabel').text('Consignee: ');
 		
         $('#waybill').text(element.transaction_code);
-        $('#date').text(element.picked_up_date);
+        
+        if(typeof(element.picked_up_date)!="undefined"){
+            var pud=element.picked_up_date;
+            var pudcut=pud.substring(0,10)
+            var date1 = new Date(pudcut);
+            //var date1 = new Date(element.picked_up_date);
+            $('#date').text(date1.toLocaleDateString());
+        }
+       
         $('#sender').text(element.shipper_name);
         $('#consignee').text(element.consignee_name);
 		
@@ -127,43 +151,76 @@
 				str +="<div class='d1'>";
             var stat;
             var img;
+            var rece='';
+            var reason='';
             switch(movement.transaction_status){
-                case "SIP":
-                    stat="Arrived at hub/transit station";
+                case "POD":                    
+                    stat="<strong>Successfully delivered</strong>";
+                    rece="<div class='1' style='font-size:12px'><strong>Received by:</strong> " + element.receiver + "</div>";
+                    img='images/icon/status/complete.png';
+                    break;
+                case "PODEX": 
+                    stat="";
+                    reason="<div class='2'>" + movement.reason + "</div>";
+                    img='images/icon/status/warning.png';
+                    break;
+                case "RTS":
+                    stat="Return to sender";
+                    img='images/icon/status/warning.png';
+                    break;
+                case "ON HOLD":
+                    stat="On-hold";
+                    img='images/icon/status/warning.png';
+                    break;
+                case "SOPD":
+                    stat="Out for delivery";
+                    img='images/icon/status/package.png';
+                    break;
+                case "SIPL":
+                    stat="Arrived at destination station";
                     img='images/icon/status/arrive.png';
                     break;
                 case "SOPL":
                     stat="In transit to destination station";
                     img='images/icon/status/arrive.png';
                     break;
-                case "SIPL":
-                    stat="Arrived at destination station";
+                case "SIP":
+                    stat="Arrived at hub/transit station";
                     img='images/icon/status/arrive.png';
-                    break;
-                case "SOPD":
-                    stat="Out for delivery";
-                    img='images/icon/status/package.png';
-                    break;
-                case "POD":
-                    stat="Successfully delivered";
-                    img='images/icon/status/complete.png';
-                    break;
-                case "PODEX":
-                    stat="Undelivered (pls see reasons below)";
-                    img='images/icon/status/warning.png';
-                    break;
-                case "ON HOLD":
-                    stat="On-hold";
-                    img='images/icon/status/return.png';
                     break;
                 default:
                     stat=movement.transaction_status;
                     
             }
-            
+                
 				str +="<div class='0'>" + stat + "</div>";
+                str+=rece;
+                str +=reason;
 				str +="</div>";
-				str +="<div class='d2'>" + movement.location.name + "</div>";
+            var province="";
+            if(movement.transaction_status=="POD"){
+                if(typeof(movement.location.province)!="undefined"){
+                    province=movement.location.province;
+                }
+                str +="<div class='d2'>" + province + "</div>";
+            }else if(movement.transaction_status=="RTS"){
+               
+                str +="<div class='d2'>" + province + "</div>";
+            }
+            else{
+                
+                if(movement.location!=null){
+                    var nme="";
+                    if(typeof(movement.location.name)!="undefined"){
+                        nme=movement.location.name + ', ' ;
+                    }
+                
+                    if(typeof(movement.location.province)!="undefined"){
+                        province=movement.location.province ;
+                    }
+				    str +="<div class='d2'>" + nme + province + "</div>";
+                }
+            }
 				str +="</div>";
 				str +="<div class='icon'>";
 				str +="<div>";
